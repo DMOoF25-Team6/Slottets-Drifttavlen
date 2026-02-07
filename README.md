@@ -14,6 +14,19 @@
 - [Folder Structure & Responsibilities](#folder-structure--responsibilities)
 - [Opsætningsvejledning](#opsætningsvejledning)
 
+## Dokumentationsoversigt
+
+- [FURPS+](docs/furps.0001.md)
+- [KPI](docs/kpi.0001.md)
+- [Milepæle og leverancer](docs/milestones.0001.md)
+- [Risikoanalyse](docs/risk-analysis.0001.md)
+
+### Quality Criteria
+- [BMC kvalitetskriterier](docs/quality-criteria/artifact/qc-bmc.0001.md)
+- [BPMN kvalitetskriterier](docs/quality-criteria/artifact/qc-bpmn.0001.md)
+- [C# kodekvalitet](docs/quality-criteria/qc-csharp-code.0001.md)
+- [SQL kvalitetskriterier](docs/quality-criteria/qc-sql.0001.md)
+
 ## Virksomhedsprofil
 Slottet er et døgnbemandet bosted, der yder omsorg og pleje til borgere med særlige behov. Personalet arbejder i dag-, aften- og nattevagter og sikrer kontinuerlig støtte og pleje. Teamet samarbejder dagligt om at levere høj kvalitet og sikre borgernes trivsel og sikkerhed.
 
@@ -128,4 +141,3 @@ dotnet run --project src/WebUI/WebUI/WebUI.csproj
 6. **Docker (valgfrit):**  
 ```sh
 docker-compose up
-```
