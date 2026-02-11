@@ -1,10 +1,11 @@
 # Quality Criteria: Sequence Diagram
-A Sequence Diagram is a type of interaction diagram that shows how processes operate with one another and in what order. For this project, sequence diagrams must be written in Mermaid syntax for consistency and ease of integration.
+A Sequence Diagram is a type of interaction diagram that shows how processes operate with one another and in what order.
+For this project, sequence diagrams must be written in Mermaid syntax for consistency and ease of integration.
 
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | QC-SD                     |
+| Id                | QC-SD                             |
 | crossReference    |                                   |
 
 ## Version
@@ -46,6 +47,8 @@ When evaluating a Sequence Diagram, consider the following quality criteria:
 | Version | Date       | Description              | Author     |
 |---------|------------|--------------------------|------------|
 | 0001    | 2026-02-07 | Initial                  | project owner |
+
+## Sequence Diagram
 ```
 
 ### Mermaid Sequence Diagram Template
@@ -55,9 +58,11 @@ sequenceDiagram
     participant B as [Insert Participant B]
     participant C as [Insert Participant C]
 
-    A->>B: [Insert Message 1]
-    B->>C: [Insert Message 2]
-    C->>A: [Insert Message 3]
+    A->>+B: [Insert Message 1]
+    B->>+C: [Insert Message 2]
+    C-->>-B: [Insert Message 2 Response]
+    B->>-A: [Insert Message 1 Response]
+    note over B, A: [Insert Note if needed]
     %% Add more interactions as needed
 ```
 

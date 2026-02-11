@@ -1,5 +1,6 @@
 # Quality Criteria: System Sequence Diagram (SSD)
-The System Sequence Diagram (SSD) is a visual tool for specifying the sequence of interactions between external actors and the system for a particular use case. SSDs clarify system boundaries, events, and responses, supporting requirements analysis and design.
+The System Sequence Diagram (SSD) is a visual tool for specifying the sequence of interactions between external actors and the system for a particular use case.
+SSDs clarify system boundaries, events, and responses, supporting requirements analysis and design.
 
 ## Metadata
 | Key               | Value                             |
@@ -45,14 +46,12 @@ When evaluating a System Sequence Diagram, consider the following quality criter
 | Version | Date       | Description              | Author     |
 |---------|------------|--------------------------|------------|
 | 0001    | 2026-01-20 | Initial                  | project owner |
+
+## System Sequence Diagram
 ```
 
 ### Mermaid SSD Template
-```markdown
-## System Sequence Diagram
-
-<!-- System Sequence Diagram Template: Replace all [Insert ...] placeholders with project-specific content. -->
-```
+```mermaid
 sequenceDiagram
     actor [Insert Actor]
     participant [Insert System]
@@ -61,7 +60,6 @@ sequenceDiagram
     [Insert Actor] ->> [Insert System]: [Insert Event 2]
     [Insert System] -->> [Insert Actor]: [Insert Response 2]
     %% Add more events/responses as needed
-```
 ```
 
 ## Validation
