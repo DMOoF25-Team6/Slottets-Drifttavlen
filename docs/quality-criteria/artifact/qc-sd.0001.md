@@ -4,7 +4,7 @@ A Sequence Diagram is a type of interaction diagram that shows how processes ope
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | QC-SEQDIAGRAM                     |
+| Id                | QC-SD                     |
 | crossReference    |                                   |
 
 ## Version
@@ -28,7 +28,7 @@ When evaluating a Sequence Diagram, consider the following quality criteria:
 ## Common Patterns for Sequence Diagram Markdown Files
 
 ### Filename Convention
-- Name files in lowercase, using digits for version, following the pattern: `qc-seqdiagram.xxxx.md` (e.g., `qc-seqdiagram.0001.md`).
+- Name files in lowercase, using digits for version, following the pattern: `sd.xxxx.md` (e.g., `sd.0001.md`).
 
 ### Good Example
 ```markdown
