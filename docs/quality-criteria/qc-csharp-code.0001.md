@@ -40,3 +40,7 @@ The CSharp Code quality criteria focus on ensuring that C# code is well-structur
 - **Error handling**: Use exceptions for error handling instead of return codes. Ensure exceptions are caught and handled at appropriate locations.
 - **Indentation**: Use consistent indentation with 4 spaces per level.
 - **Use of `var`**: Avoid using `var`; use explicit types instead. (e.g., use `int count = 0;` instead of `var count = 0;`)
+
+### File and filename Convention
+- Use end of line lf.
+- Use charset utf-8.

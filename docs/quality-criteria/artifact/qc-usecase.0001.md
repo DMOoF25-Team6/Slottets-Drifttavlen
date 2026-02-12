@@ -37,9 +37,12 @@ When evaluating a Use Case, consider the following quality criteria:
 
 ## Common Patterns for Use Case Markdown Files
 
-### Filename and Folder Convention
+### File, filename and Folder Convention
 - Name files and folders without spaces, using digits for use case numbers, following the pattern: `UseCaseXXX-descriptions` (e.g., `UseCase001-descriptions`).
+- No spaces in folder and filenames.
 - Store use case markdown files in the corresponding folder.
+- Use end of line lf.
+- Use charset utf-8.
 
 ### Good Example
 ```markdown
@@ -56,7 +59,7 @@ When evaluating a Use Case, consider the following quality criteria:
 ## Version Log
 | Version | Date       | Description              | Author     |
 |---------|------------|--------------------------|------------|
-| 0001    | 2026-01-20 | Initial                  | project owner |
+| 0001    | 2026-01-20 | Initial                  | [Insert Project Owner] |
 ```
 
 ### Table Layout Template
@@ -129,3 +132,7 @@ b: At any time, [Insert Extension Description]
 ## Maintenance
 - Update the version and change log for major changes.
 - Regularly review use cases for accuracy and relevance.
+
+### Language
+- Translate table context to danish.
+- Use professional terminology appropriate for use cases.

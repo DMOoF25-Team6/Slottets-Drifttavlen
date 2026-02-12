@@ -34,7 +34,7 @@ end_of_line = lf
 [*.{cs,csx,vb,vbx}]
 indent_size = 4
 insert_final_newline = true
-end_of_line = crlf
+end_of_line = lf
 
 ###############################
 # .NET Coding Conventions     #

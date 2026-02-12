@@ -15,7 +15,7 @@ SSDs clarify system boundaries, events, and responses, supporting requirements a
 ### Change Log
 | Date       | Version | Description                     | Author        |
 |------------|---------|---------------------------------|---------------|
-| 2026-02-07 | 0001    | Initial creation of the document | Team6         |
+| 2026-02-07 | 0001    | Initial creation of the document | [Insert Project Owner] |
 
 ## Quality Criteria for System Sequence Diagram
 When evaluating a System Sequence Diagram, consider the following quality criteria:
@@ -27,15 +27,17 @@ When evaluating a System Sequence Diagram, consider the following quality criter
 
 ## Common Patterns for SSD Markdown Files
 
-### Filename Convention
-- Name files in lowercase, using digits for version, following the pattern: `qc-ssd.xxxx.md` (e.g., `qc-ssd.0001.md`).
+### File and filename Convention
+- Name files in lowercase, using digits for version, following the pattern: `ssd.xxxx.md` (e.g., `ssd.0001.md`).
+- Use end of line lf.
+- Use charset utf-8.
 
 ### Good Example
 ```markdown
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | QC-SSD                            |
+| Id                | SSD                               |
 | crossReference    |                                   |
 
 ## Version
@@ -45,7 +47,7 @@ When evaluating a System Sequence Diagram, consider the following quality criter
 ## Version Log
 | Version | Date       | Description              | Author     |
 |---------|------------|--------------------------|------------|
-| 0001    | 2026-01-20 | Initial                  | project owner |
+| 0001    | 2026-01-20 | Initial                  | [Insert Project Owner] |
 
 ## System Sequence Diagram
 ```
@@ -69,3 +71,7 @@ sequenceDiagram
 ## Maintenance
 - Update the version and change log for major changes.
 - Regularly review SSDs for accuracy and relevance.
+
+### Language
+- Translate table context to danish.
+- Use professional terminology appropriate for system sequence diagrams.

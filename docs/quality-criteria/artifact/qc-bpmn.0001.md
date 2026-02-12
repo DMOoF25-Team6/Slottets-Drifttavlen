@@ -1,5 +1,6 @@
 # Quality Criteria for BPMN Diagrams
-The Business Process Model and Notation (BPMN) is a standardized graphical representation for modeling business processes. BPMN diagrams help organizations visualize their workflows, making it easier to understand, analyze, and improve business processes.
+The Business Process Model and Notation (BPMN) is a standardized graphical representation for modeling business processes.
+BPMN diagrams help organizations visualize their workflows, making it easier to understand, analyze, and improve business processes.
 
 ## Metadata
 | Key               | Value                             |
@@ -14,7 +15,7 @@ The Business Process Model and Notation (BPMN) is a standardized graphical repre
 ### Change Log
 | Date       | Version | Description                     | Author        |
 |------------|---------|---------------------------------|---------------|
-| 2026-02-07 | 0001    | Initial creation of the document |               |
+| 2026-02-07 | 0001    | Initial creation of the document | [Insert Project Owner] |
 
 ## Quality Criteria for BPMN Diagrams
 When evaluating BPMN diagrams, consider the following quality criteria:
@@ -31,21 +32,32 @@ When evaluating BPMN diagrams, consider the following quality criteria:
 
 ## Common Patterns for BPMN Markdown Files
 ### Filename Convention
-- Name files in lowercase, using digits for version, following the pattern: `qc-bpmn.xxxx.md` (e.g., `qc-bpmn.0001.md`).
+- Name files in lowercase, using digits for version, following the pattern: `bpmn.xxxx.md` (e.g., `bpmn.0001.md`).
+- Use end of line lf.
+- Use charset utf-8.
+- Increment version numbers for significant changes.
+- Include the date and author in the version log.
+- we only keep the latest version in the main branch; archive older versions in a designated folder.
    
 ### Good Example
 ```markdown
+# Business Process Model and Notation (BPMN) Diagram for [Insert Process Name]
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | QC-BPMN                           |
+| Id                | BPMN                              |
 | crossReference    |                                   |
+
 ## Version
 - **Version**: 0001
 - **Date**: 2026-01-20
+
 ## Version Log
 | Version | Date       | Description              | Author     |
 |---------|------------|--------------------------|------------|
-| 0001    | 2026-01-20 | Initial                  | project owner |
+| 0001    | 2026-01-20 | Initial                  | [Insert Project Owner] |
 ```
 
+### Language
+- Translate to danish.
+- Use professional terminology appropriate for business process modeling.

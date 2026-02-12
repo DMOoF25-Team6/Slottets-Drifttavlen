@@ -30,6 +30,11 @@ When evaluating a Sequence Diagram, consider the following quality criteria:
 
 ### Filename Convention
 - Name files in lowercase, using digits for version, following the pattern: `sd.xxxx.md` (e.g., `sd.0001.md`).
+- Use end of line lf.
+- Use charset utf-8.
+- Increment version numbers for significant changes.
+- Include the date and author in the version log.
+- we only keep the latest version in the main branch; archive older versions in a designated folder.
 
 ### Good Example
 ```markdown
@@ -74,3 +79,7 @@ sequenceDiagram
 ## Maintenance
 - Update the version and change log for major changes.
 - Regularly review sequence diagrams for accuracy and relevance.
+
+### Language
+- Translate to english.
+- Use professional terminology appropriate for sequence diagrams.

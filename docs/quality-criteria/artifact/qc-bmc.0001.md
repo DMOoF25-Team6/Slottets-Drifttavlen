@@ -1,5 +1,7 @@
 # Quality Criteria: Business Model Canvas (BMC)
-The Business Model Canvas (BMC) is a strategic management tool that provides a visual framework for developing, describing, and analyzing business models. It consists of nine key building blocks that represent the essential components of a business. The BMC helps organizations to understand their value proposition, customer segments, revenue streams, and other critical aspects of their business.
+The Business Model Canvas (BMC) is a strategic management tool that provides a visual framework for developing, describing, and analyzing business models.
+It consists of nine key building blocks that represent the essential components of a business. 
+The BMC helps organizations to understand their value proposition, customer segments, revenue streams, and other critical aspects of their business.
 
 ## Metadata
 | Key               | Value                             |
@@ -15,7 +17,7 @@ The Business Model Canvas (BMC) is a strategic management tool that provides a v
 ### Cchange Log
 | Date       | Version | Description                     | Author        |
 |------------|---------|---------------------------------|---------------|
-| 2026-02-07 | 0001    | Initial creation of the document | Team6         |
+| 2026-02-07 | 0001    | Initial creation of the document | [Insert Project Owner] |
 
 ## Quality Criteria for Business Model Canvas
 When evaluating a Business Model Canvas, consider the following quality criteria:
@@ -38,14 +40,19 @@ When evaluating a Business Model Canvas, consider the following quality criteria
 ## Common Patterns for BMC Markdown Files
 
 ### Filename Convention
-- Name files in lowercase, using digits for version, following the pattern: `qc-bmc.xxxx.md` (e.g., `qc-bmc.0001.md`).
+- Name files in lowercase, using digits for version, following the pattern: `bmc.xxxx.md` (e.g., `bmc.0001.md`).
+- Use end of line lf.
+- Use charset utf-8.
+- Increment version numbers for significant changes.
+- Include the date and author in the version log.
+- we only keep the latest version in the main branch; archive older versions in a designated folder.
 
 ### Good Example
 ```markdown
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | QC-BMC                            |
+| Id                | BMC                               |
 | crossReference    |                                   |
 
 ## Version
@@ -55,7 +62,7 @@ When evaluating a Business Model Canvas, consider the following quality criteria
 ## Version Log
 | Version | Date       | Description              | Author     |
 |---------|------------|--------------------------|------------|
-| 0001    | 2026-01-20 | Initial                  | project owner |
+| 0001    | 2026-01-20 | Initial                  | [Insert Project Owner] |
 ```
 
 ### Table Layout Template
@@ -177,3 +184,7 @@ When evaluating a Business Model Canvas, consider the following quality criteria
 ## Maintenance
 - Update the version and change log for major changes.
 - Regularly review BMCs for accuracy and relevance.
+
+### Language
+- Translate table context to danish.
+- Use professional terminology appropriate for business modeling canvas.

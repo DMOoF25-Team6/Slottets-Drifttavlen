@@ -143,6 +143,19 @@ dotnet run --project src/WebUI/WebUI/WebUI.csproj
 docker-compose up
 ```
 
+## Windows Sandbox (version 2)
+
+I version 2 af projektet anvendes Windows Sandbox for at isolere miljøet, så der kun er adgang til lokalt netværk og ikke WAN. Dette øger sikkerheden og muliggør test i et afskærmet miljø.
+
+For at oprette et isoleret testmiljø på Windows kan du aktivere Windows Sandbox (version 2) med følgende PowerShell-kommando:
+
+```powershell
+Enable-WindowsOptionalFeature -Online -FeatureName "Containers-DisposableClientVM" -All
+```
+
+Kør PowerShell som administrator. Genstart computeren hvis nødvendigt. Dette giver mulighed for at køre en sikker sandbox til test og udvikling.
+
+
 ## Docker Compose MySQL Setup
 
 To run MySQL with Docker Compose, you need a `.env` file in your project root. This file provides environment variables for the MySQL container.
