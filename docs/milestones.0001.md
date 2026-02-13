@@ -18,7 +18,7 @@
 ---
 
 ## Phase 1 – Quick Prototype
-- **Milestone 1: Citizen Overview (MVP)**
+- **Milestone 1: Citizen Overview**
   - Display list of citizens with names and traffic light status (Red/Yellow/Green).
   - Manual update of status.
   - Simple Blazor-based interface.

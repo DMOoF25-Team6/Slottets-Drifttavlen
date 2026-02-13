@@ -4,7 +4,7 @@ The CSharp Code quality criteria focus on ensuring that C# code is well-structur
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | QC-CSharp-Code                    |
+| Id                | QC-CSHARP-CODE                    |
 
 ## Version
 - **Version**: 0001

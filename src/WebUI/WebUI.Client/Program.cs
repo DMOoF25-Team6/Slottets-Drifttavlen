@@ -1,14 +1,16 @@
+// Copyright (c) 2026 Team6. All rights reserved. 
+//  No warranty, explicit or implicit, provided.
+
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
-namespace WebUI.Client
-{
-    internal class Program
-    {
-        static async Task Main(string[] args)
-        {
-            var builder = WebAssemblyHostBuilder.CreateDefault(args);
+namespace WebUI.Client;
 
-            await builder.Build().RunAsync();
-        }
+internal class Program
+{
+    private static async Task Main(string[] args)
+    {
+        WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
+
+        await builder.Build().RunAsync();
     }
 }

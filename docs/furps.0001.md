@@ -1,10 +1,11 @@
 # FURPS+ 
-FURPS+ is a model for classifying software quality attributes. The acronym stands for Functionality, Usability, Reliability, Performance, and Supportability, with the "+" indicating additional considerations such as design constraints, implementation requirements, interface requirements, and physical requirements.
+FURPS+ is a model for classifying software quality attributes.
+The acronym stands for Functionality, Usability, Reliability, Performance, and Supportability, with the "+" indicating additional considerations such as design constraints, implementation requirements, interface requirements, and physical requirements.
 
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | FURPS			                    |
+| Id                | FURPS	                            |
 | crossReference    |                                   |
 
 ## Version
@@ -55,5 +56,3 @@ FURPS+ is a model for classifying software quality attributes. The acronym stand
 - API til integration med eksterne systemer.
 - Central konfiguration via miljøvariabler og secrets.
 - Ingen bindinger til lokalt filsystem, fast server eller IP.
-
-

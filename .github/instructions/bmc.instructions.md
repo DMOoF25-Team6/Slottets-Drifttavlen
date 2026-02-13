@@ -1,6 +1,6 @@
 ---
 description: 'Business Model Canvas (BMC) quality requirements and template for project documentation.'
-applyTo: '**/qc-bmc.*.md'
+applyTo: '**/docs/bmc.*.md'
 ---
 
 # Business Model Canvas (BMC) Instructions
