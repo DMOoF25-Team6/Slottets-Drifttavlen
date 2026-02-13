@@ -9,12 +9,12 @@ The Business Case (BC) is a structured document that justifies the initiation of
 
 ## Version
 - **Version**: 0001
-- **Date**: 2026-02-07
+- **Date**: 2026-02-13
 
 ### Change Log
 | Date       | Version | Description                     | Author        |
 |------------|---------|---------------------------------|---------------|
-| 2026-02-07 | 0001    | Initial creation of the document |               |
+| 2026-02-13 | 0001    | Initial creation of the document | Team 6       |
 
 ## Quality Criteria for Business Case
 When evaluating a Business Case, consider the following quality criteria:
@@ -23,7 +23,7 @@ When evaluating a Business Case, consider the following quality criteria:
    - Executive Summary
    - Problem Statement
    - Objectives
-   - Options and Alternatives
+   - Options and Alternatives (0-scenario, 1-scenario, 2-scenario)
    - Benefits
    - Costs
    - Risks and Mitigations
@@ -76,7 +76,7 @@ When evaluating a Business Case, consider the following quality criteria:
 ## Objectives
 [State the objectives of the project or task]
 
-## Options and Alternatives
+## Options and Alternatives (0-scenario, 1-scenario, 2-scenario)
 [List and briefly describe considered options]
 
 ## Benefits
@@ -102,4 +102,8 @@ When evaluating a Business Case, consider the following quality criteria:
 ## Maintenance
 - Update the version and change log for major changes.
 - Regularly review BCs for accuracy and relevance.
+
+## Language
+- Professional
+- Translate to Danish
 
