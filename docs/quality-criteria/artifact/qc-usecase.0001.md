@@ -5,7 +5,7 @@ This document provides quality criteria and a template for documenting Use Cases
 ## Use Case Types
 Use cases can be documented in three forms:
 - **Brief**: A short paragraph summarizing the use case goal and outcome.
-- **Casual**: A short description with main actors and basic flow.
+- **Casual**: A short description with main actors and main flow and 1-2 alternative flows.
 - **Fully Dressed**: Complete details including all sections listed below.
 
 ## Metadata
@@ -132,3 +132,8 @@ b: At any time, [Insert Extension Description]
 ## Maintenance
 - Update the version and change log for major changes.
 - Regularly review use cases for accuracy and relevance.
+
+## Language
+- Professional (the customers domain language)
+- Active form
+- Translate to Danish
