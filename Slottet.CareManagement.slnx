@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="TestResults/CoverageReport/Latest/Html/index.html" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Domain.Tests/Domain.Tests.csproj" Id="a54c1d07-06af-4a82-b9ec-d92db1c5e467" />
+  </Folder>
   <Project Path="src/Core/Core.csproj" Id="48c4fa7e-a726-452e-b00e-f0b162ce55e8" />
   <Project Path="src/Domain/Domain.csproj" Id="eae4d9a6-80fc-4178-a3b3-7d7ed8b2867b" />
   <Project Path="src/Infrastructure/Infrastructure.csproj" Id="0f7a76b9-030c-4175-9888-a0a012232edd" />

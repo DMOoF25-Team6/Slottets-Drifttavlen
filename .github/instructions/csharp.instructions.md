@@ -98,7 +98,8 @@ applyTo: '**/*.cs'
 
 - Always include test cases for critical paths of the application.
 - Guide users through creating unit tests.
-- Do not emit "Act", "Arrange" or "Assert" comments.
+- Use mstest for testing, and Moq for mocking dependencies.
+- Do emit "Act", "Arrange" or "Assert" comments.
 - Copy existing style in nearby files for test method names and capitalization.
 - Explain integration testing approaches for API endpoints.
 - Demonstrate how to mock dependencies for effective testing.
