@@ -10,12 +10,12 @@ The Business Model Canvas (BMC) is a strategic management tool that provides a v
 
 ## Version
 - **Version**: 0001
-- **Date**: 2026-02-07
+- **Date**: 2026-02-13
 
 ### Change Log
 | Date       | Version | Description                     | Author        |
 |------------|---------|---------------------------------|---------------|
-| 2026-02-07 | 0001    | Initial creation of the document |               |
+| 2026-02-13 | 0001    | Initial creation of the document | Team 6      |
 
 ## Quality Criteria for Business Model Canvas
 When evaluating a Business Model Canvas, consider the following quality criteria:
@@ -180,3 +180,7 @@ When evaluating a Business Model Canvas, consider the following quality criteria
 ## Maintenance
 - Update the version and change log for major changes.
 - Regularly review BMCs for accuracy and relevance.
+
+## Language
+- Professional
+- Translate to Danish

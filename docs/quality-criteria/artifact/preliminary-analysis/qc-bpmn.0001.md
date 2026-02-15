@@ -10,17 +10,18 @@ BPMN diagrams help organizations visualize their workflows, making it easier to 
 
 ## Version
 - **Version**: 0001
-- **Date**: 2026-02-07
+- **Date**: 2026-02-13
 
 ### Change Log
 | Date       | Version | Description                     | Author        |
 |------------|---------|---------------------------------|---------------|
-| 2026-02-07 | 0001    | Initial creation of the document |               |
+| 2026-02-13 | 0001    | Initial creation of the document | Team 6       |
 
 ## Quality Criteria for BPMN Diagrams
 When evaluating BPMN diagrams, consider the following quality criteria:
+1. **As-Is-BPMN and To-Be-BPMN**: Make both types, the process as it is and the process using a system.
 1. **Clarity and Readability**: The diagram should be easy to read and understand. Use clear labels, consistent shapes, and appropriate colors to enhance visibility.
-1. **Correctness**: Ensure that the BPMN elements are used correctly according to the BPMN specification. This includes proper use of events, activities, gateways, and flows.
+1. **Correctness**: Ensure that the BPMN elements are used correctly according to the BPMN specification. This includes pools and swimlanes and proper use of events, activities, gateways, and flows.
 1. **Completeness**: The diagram should comprehensively represent the business process, including all relevant activities, decision points, and interactions.
 1. **Logical Flow**: The process flow should be logical and coherent, with a clear start and end. Ensure that all paths are connected and that there are no orphaned elements.
 1. **Consistency**: The BPMN diagram should be consistent with other related documentation and models. Terminology and symbols should align with organizational standards.
@@ -54,3 +55,7 @@ When evaluating BPMN diagrams, consider the following quality criteria:
 ## Diagram
 <img src="[insert diagram file path or URL]" alt="BPMN Diagram" />
 ```
+
+## Language
+- Professional
+- Translate to Danish
