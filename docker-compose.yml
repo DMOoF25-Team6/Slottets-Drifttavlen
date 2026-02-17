@@ -13,7 +13,7 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       slottets-dockernet:
-        ipv4_address: 172.29.0.2
+        ipv4_address: 10.29.0.2
 
   build-stage:
     build:
@@ -21,6 +21,9 @@ services:
       dockerfile: Dockerfile
       target: build-stage
     restart: "no"
+    networks:
+      slottets-dockernet:
+        ipv4_address: 10.29.0.5
 
   tests-stage:  
     build:
@@ -35,7 +38,7 @@ services:
       - ./TestResults:/artifacts/TestResults
     networks:
       slottets-dockernet: 
-        ipv4_address: 172.29.0.10
+        ipv4_address: 10.29.0.10
     environment:
       - DOTNET_RUNNING_IN_CONTAINER=true
       - DOTNET_CLI_TELEMETRY_OPTOUT=1
@@ -55,6 +58,25 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
     restart: no
 
+  final-stage:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: final-stage
+    depends_on:
+      publish-stage:
+        condition: service_completed_successfully
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://0.0.0.0:5000
+    # entrypoint: ["dotnet", "Slottet.CareManagement.dll"]
+    ports:
+      - "5000:5000"
+    networks:
+      slottets-dockernet:
+        ipv4_address: 10.29.0.30
+    restart: "no"
+
 volumes:
   mysql_data:
 
@@ -63,4 +85,4 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.29.0.0/24
+        - subnet: 10.29.0.0/24

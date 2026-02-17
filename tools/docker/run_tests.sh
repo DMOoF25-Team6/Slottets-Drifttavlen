@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-framework="net10.0"
+framework="net8.0"
 
 #export NUGET_PACKAGES=/root/.nuget/packages
 

@@ -44,7 +44,7 @@ ENTRYPOINT ["/run_tests.sh"]
 ################################################################################
 FROM build-stage AS publish-stage
 ARG BUILD_CONFIGURATION=Release
-#RUN ["dotnet", "publish", "-c", "$BUILD_CONFIGURATION", "/p:UseAppHost=false"]
+RUN ["dotnet", "publish"]
 #dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 ################################################################################
@@ -52,5 +52,5 @@ ARG BUILD_CONFIGURATION=Release
 ################################################################################
 FROM base AS final-stage
 WORKDIR /app
-COPY --from=publish-stage /app/publish .
-ENTRYPOINT ["dotnet", "Slottet.CareManagement.dll"]
+COPY --from=publish-stage /src/g/publish ./
+ENTRYPOINT ["dotnet", "/app/WebUI/release/WebUI.dll"]

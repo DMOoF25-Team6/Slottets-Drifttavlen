@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Solution Items/">
+    <File Path="README.md" />
     <File Path="TestResults/CoverageReport/Latest/Html/index.html" />
   </Folder>
   <Folder Name="/tests/">

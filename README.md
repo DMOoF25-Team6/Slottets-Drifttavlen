@@ -101,7 +101,7 @@ This solution follows Clean Architecture principles and is organized as follows:
 ├── .github/            # GitHub workflows and Copilot instructions
 ├── docker-compose.yml  # Docker Compose configuration
 ├── Directory.Build.props/targets # Solution-wide MSBuild settings
-├── DMOoF25-Team6.Slottets-Drifttavlen.slnx # Solution file
+├── Slottet.CareManagement.slnx # Solution file
 └── global.json         # .NET SDK version management
 ```
 
@@ -120,76 +120,57 @@ For more details, see the documentation in `docs/` and `.github/copilot-instruct
 ---
 
 ## Opsætningsvejledning
-1. **Krav:** .NET 8 SDK, Docker (valgfrit), SQL Server/MySQL
-2. **Clone repo:**  
+
+### Krav
+- .NET 8 SDK
+- Docker (valgfrit, anbefales til database)
+- SQL Server eller MySQL
+
+### Klon Repository
 ```sh
-git clone https://github.com/Tirsvad/DMOoF25-Team6.Slottets-Drifttavlen.git
+git@github.com:DMOoF25-Team6/Slottets-Drifttavlen.git
 cd DMOoF25-Team6.Slottets-Drifttavlen
 ```
-3. **Build solution:**  
-```sh
-dotnet build DMOoF25-Team6-Slottets-Drifttavlen.slnx
-```
-4. **Kør tests:**  
-```sh
-dotnet test DMOoF25-Team6-Slottets-Drifttavlen.slnx
-```
-5. **Start applikation:**  
-```sh
-dotnet run --project src/WebUI/WebUI/WebUI.csproj
-```
-6. **Docker (valgfrit):**  
-```sh
-docker-compose up
-```
 
-## Windows Sandbox (version 2)
-
-I version 2 af projektet anvendes Windows Sandbox for at isolere miljøet, så der kun er adgang til lokalt netværk og ikke WAN. Dette øger sikkerheden og muliggør test i et afskærmet miljø.
-
-For at oprette et isoleret testmiljø på Windows kan du aktivere Windows Sandbox (version 2) med følgende PowerShell-kommando:
-
-```powershell
-Enable-WindowsOptionalFeature -Online -FeatureName "Containers-DisposableClientVM" -All
-```
-
-Kør PowerShell som administrator. Genstart computeren hvis nødvendigt. Dette giver mulighed for at køre en sikker sandbox til test og udvikling.
-
-
-## Docker Compose MySQL Setup
-
-To run MySQL with Docker Compose, you need a `.env` file in your project root. This file provides environment variables for the MySQL container.
-
-### Create `.env` file
-Add a file named `.env` in the same directory as `docker-compose.yml` with the following content:
-
+### Docker database
+Opret en `.env`-fil i projektroden med følgende indhold:
 ```
 MYSQL_ROOT_PASSWORD=your_root_password
 MYSQL_DATABASE=your_database_name
 MYSQL_USER=your_username
 MYSQL_PASSWORD=your_user_password
 ```
+Ændre værdierne til dine ønskede databaseindstillinger.
 
-Replace the values with your desired credentials.
-
-### Example
+#### Start MySQL-containeren:
+```sh
+docker-compose up
 ```
-MYSQL_ROOT_PASSWORD=rootpassword
-MYSQL_DATABASE=slottetsdb
-MYSQL_USER=appuser
-MYSQL_PASSWORD=apppassword
-```
-
-### Usage
-When you run `docker-compose up`, these variables will be used to configure the MySQL container.
-or just only run mysql container:
-`docker-compose up slottets-sqlserver`
-
-Alternatively, you can run the MySQL container directly with Docker using the following command:
+Alternativt direkte med Docker:
 ```sh
 docker run --name slottets-sqlserver -e MYSQL_ROOT_PASSWORD=your_root_password -e MYSQL_DATABASE=your_database_name -e MYSQL_USER=your_username -e MYSQL_PASSWORD=your_user_password -p 3307:3306 -d mysql
 ```
 
+### Byg og kør applikationen
+Byg løsningen:
+```sh
+dotnet build Slottet.CareManagement.slnx
+```
+Kør tests:
+```sh
+dotnet test Slottet.CareManagement.slnx
+```
+Start applikationen:
+```sh
+dotnet run --project src/WebUI/WebUI/WebUI.csproj
+```
+
+### Windows sandbox
+For at oprette et isoleret testmiljø på Windows kan du aktivere Windows Sandbox (version 2) med:
+```powershell
+Enable-WindowsOptionalFeature -Online -FeatureName "Containers-DisposableClientVM" -All
+```
+Kør PowerShell som administrator og genstart computeren hvis nødvendigt.
 
 
 ---
