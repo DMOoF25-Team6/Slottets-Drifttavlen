@@ -73,12 +73,12 @@
     </td>
   </tr>
   <tr>
-    <th colspan="2">Nøgleaktiver</th>
+    <th colspan="2">Nøgleressourcer</th>
     <th colspan="2">Kanaler</th>
   </tr>
   <tr>
     <td colspan="2">
-      <!--- Nøgleaktiver List -->
+      <!--- Nøgleressourcer List -->
       <ul>
         <li>Udviklingsteam (softwareudviklere, UX-designere)</li>
         <li>Infrastruktur (servere, cloud, netværk)</li>
@@ -111,6 +111,7 @@
         <li>Hardwareindkøb og -vedligehold</li>
         <li>Support, oplæring og sikkerhed</li>
         <li>Engangsbetaling for opsætning og tilpasning</li>
+        <li>Personaleomkostninger</li>
       </ul>
     </td>
     <td colspan="5">
