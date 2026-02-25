@@ -14,6 +14,8 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       vlan-db:
+        ipv4_address: 10.29.10.10
+
       # vlan-app:
 
   build-stage:

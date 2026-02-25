@@ -33,7 +33,6 @@ SHELL ["/bin/bash"]
 WORKDIR /workspace
 COPY --from=build-stage /src/ ./
 COPY .runsettings ./.runsettings
-WORKDIR /workspace
 COPY tools/docker/run_tests.sh /run_tests.sh
 RUN ["chmod", "+x", "/run_tests.sh"]
 
