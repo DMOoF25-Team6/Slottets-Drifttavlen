@@ -1,4 +1,3 @@
-
 ---
 description: 'Entity Relationship Diagram (ERD) quality requirements and template for project documentation.'
 applyTo: '**/erd.*.md'
@@ -44,14 +43,10 @@ Use this as a starting point for any project requiring an ERD. Replace all place
 | Id                | ERD                               |
 | crossReference    |                                   |
 
-## Version
-- **Version**: 0001
-- **Date**: 2026-01-20
-
 ## Version Log
 | Version | Date       | Description              | Author     |
 |---------|------------|--------------------------|------------|
-| 0001    | 2026-01-20 | Initial                  | project owner |
+| 0001    | [yyyy-mm-dd] | Initial                  | Team 6     |
 ```
 
 ```mermaid

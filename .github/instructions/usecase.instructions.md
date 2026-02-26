@@ -31,7 +31,7 @@ Replace all placeholders in the template with project-specific content.
 - Use the provided markdown template for consistency.
 
 ### File Naming
-- Name files and folders without spaces, using digits for use case numbers, following the pattern: `UseCaseXXX-descriptions` (e.g., `UseCase001-descriptions`).
+- Name files and folders without spaces, using digits for use case numbers, following the pattern: `usecase.xxxx.md` (e.g., `usecase.0001.md`).
 
 ## Common Patterns
 ### Good Example
@@ -42,28 +42,33 @@ Replace all placeholders in the template with project-specific content.
 | Id                | UC-001                            |
 | crossReference    |                                   |
 
-## Version
-- **Version**: 0001
-- **Date**: 2026-01-20
-
 ## Version Log
 | Version | Date       | Description              | Author     |
 |---------|------------|--------------------------|------------|
-| 0001    | 2026-01-20 | Initial                  | project owner |
+| 0001    | [yyyy-mm-dd] | Initial                  | project owner |
 ```
 
 ```markdown
 ## Use Case Description
 <!-- Use Case Template: Replace all [Insert ...] placeholders with project-specific content. -->
 
+## User story
+[Insert user story here, describing the use case from the perspective of the end user.]
+
 ### Brief Use Case
 **Use Case Number**: [Insert Use Case Number]
 **Title**: [Insert Title]
 **Summary**: [Insert brief summary]
+**Preconditions**:
+- [Insert Precondition 1]
+- [Insert Precondition 2]
 **Success Flow**:
 1. [Insert Main Flow Step 1]
 2. [Insert Main Flow Step 2]
 3. [Insert Main Flow Step 3]
+**Postconditions**:
+- [Insert Postcondition 1]
+- [Insert Postcondition 2]
 
 ### Casual Use Case
 **Use Case Number**: [Insert Use Case Number]
@@ -71,6 +76,10 @@ Replace all placeholders in the template with project-specific content.
 **Actors**:
 - [Insert Actor 1]
 - [Insert Actor 2]
+**Summary**: [Insert casual summary]
+**Preconditions**:
+- [Insert Precondition 1]
+- [Insert Precondition 2]
 **Main Flow**:
 1. [Insert Main Flow Step 1]
 2. [Insert Main Flow Step 2]
@@ -78,7 +87,9 @@ Replace all placeholders in the template with project-specific content.
 **Main Exceptions**:
 1.a [Insert Exception 1 paragraph description]
 3.a [Insert Exception 2 paragraph description]
-**Summary**: [Insert casual summary]
+**Postconditions**:
+- [Insert Postcondition 1]
+- [Insert Postcondition 2]
 
 ### Fully Dressed Use Case
 **Use Case Number**: [Insert Use Case Number]
