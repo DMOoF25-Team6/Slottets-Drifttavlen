@@ -47,11 +47,10 @@ public abstract class Repository<TEntity>() : IRepository<TEntity>
     /// <inheritdoc/>
     public async Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        List<TEntity> entitiesList = entities.ToList();
+        List<TEntity> entitiesList = [.. entities];
         foreach (TEntity entity in entitiesList)
         {
-            entity.Id = Guid.NewGuid();
-            Entities = Entities.Append(entity);
+            _ = await AddAsync(entity, cancellationToken);
         }
         return entitiesList.AsEnumerable();
     }

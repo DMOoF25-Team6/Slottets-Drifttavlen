@@ -4,7 +4,9 @@
     <File Path="TestResults/CoverageReport/Latest/Html/index.html" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Core.Tests/Core.Tests.csproj" Id="614f68a1-2942-4944-bcaa-8846d669d1ad" />
     <Project Path="tests/Domain.Tests/Domain.Tests.csproj" Id="a54c1d07-06af-4a82-b9ec-d92db1c5e467" />
+    <Project Path="tests/Infrastructure.Tests/Infrastructure.Tests.csproj" Id="af1c3c93-603c-45d7-a101-a125dca868cd" />
   </Folder>
   <Project Path="src/Core/Core.csproj" Id="48c4fa7e-a726-452e-b00e-f0b162ce55e8" />
   <Project Path="src/Domain/Domain.csproj" Id="eae4d9a6-80fc-4178-a3b3-7d7ed8b2867b" />
