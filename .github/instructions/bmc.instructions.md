@@ -1,29 +1,25 @@
 ---
 description: 'Business Model Canvas (BMC) quality requirements and template for project documentation.'
-applyTo: '**/docs/bmc.*.md'
+applyTo: '**/docs/bmc.*.md' and '**/docs/bmc.*.*.md'
 ---
 
 # Business Model Canvas (BMC) Instructions
-
 This instruction file provides a template and quality criteria for documenting Business Model Canvas (BMC) diagrams in markdown format. 
 Use this as a starting point for any project requiring a BMC. Replace all placeholders in the table with project-specific content.
 
 ## General Instructions
-
 - Use this template for all BMC documentation in markdown format.
 - Replace all bracketed placeholders in the table with project-specific information.
 - Store BMC files in the centralized repository.
 - Review and approve BMCs with relevant stakeholders before acceptance.
 
 ## Best Practices
-
 - Clearly define all nine BMC building blocks.
 - Use clear, concise, and business-oriented language.
 - Document all assumptions and dependencies.
 - Ensure visuals and layout are consistent and easy to understand.
 
 ## Code Standards
-
 - Each BMC must have a unique version identifier and a documented change log.
 - Use the provided HTML table layout for consistency.
 
@@ -162,7 +158,6 @@ Use this as a starting point for any project requiring a BMC. Replace all placeh
 ```
 
 ### Bad Example
-  
 ```
 ## Business Model Canvas Components
 | Key Partners         | Key Activities         | Key Resources         |
@@ -180,12 +175,14 @@ Use this as a starting point for any project requiring a BMC. Replace all placeh
 
 
 ## Validation
-
 - Review BMCs for completeness, clarity, and correct use of the template.
 - Verify that all placeholders are replaced with project-specific content.
 
 ## Maintenance
-
 - Update the version and change log for major changes.
 - Regularly review BMCs for accuracy and relevance.
 
+## Language
+- Professional
+- English
+- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `bmc.0001.da.md` for Danish). So now we have two files: `bmc.0001.md` (English) and `bmc.0001.da.md` (Danish).
