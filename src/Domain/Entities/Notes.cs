@@ -12,3 +12,4 @@ public class ResidentNotes : IEntity
     public string Note { get; set; } = string.Empty;
     public Guid CareTakers { get; set; }
 }
+

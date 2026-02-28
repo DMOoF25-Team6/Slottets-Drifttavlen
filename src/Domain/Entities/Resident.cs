@@ -10,5 +10,9 @@ public class Resident : IEntity
 {
     public Guid Id { get; set; }
     public string Initials { get; set; } = string.Empty;
-    public MentalStatus? MentalStatus { get; set; }
+    public TrafficLight? TrafficLight { get; set; }
+    
+    #region Navigation Properties
+    public virtual ICollection<ResidentNotes> Notes { get; set; } = new List<ResidentNotes>();
+    #endregion
 }

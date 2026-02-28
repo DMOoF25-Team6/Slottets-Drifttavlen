@@ -3,7 +3,7 @@
 
 namespace Domain.Enums;
 
-public enum MentalStatus
+public enum TrafficLight
 {
     Green,
     Yellow,
