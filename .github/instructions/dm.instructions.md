@@ -71,10 +71,14 @@ classDiagram
 ```
 
 ## Validation
-
 - Review DMs for completeness, clarity, and correct use of the template.
 - Verify that all placeholders are replaced with project-specific content.
 
 ## Maintenance
 - Update the version and change log for major changes.
 - Regularly review DMs for accuracy and relevance.
+
+## Language
+- Professional
+- English
+- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `dm.0001.da.md` for Danish). So now we have two files: `dm.0001.md` (English) and `dm.0001.da.md` (Danish).

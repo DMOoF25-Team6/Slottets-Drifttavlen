@@ -7,6 +7,7 @@
 - Containerization is supported via Docker.
 - Major components are in `src/` (production code) and `tests/` (test projects). Each layer (Core, Domain, Infrastructure) is separated into its own project.
 - The solution is managed via `Slottets-Drifttavlen.slnx` and `global.json`.
+- Product owner domain language is Danish and variant for healthcare, so high level architecture documentation may include Danish terms.
 
 ## Architecture & Patterns
 - **Clean Architecture**: Core business logic is in `Core`, domain models in `Domain`, and infrastructure (e.g., data access) in `Infrastructure`.
