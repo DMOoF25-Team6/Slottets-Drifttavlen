@@ -4,20 +4,17 @@ applyTo: '**/use-cases/usecase*.md'
 ---
 
 # Use Case Instructions
-
 This instruction file provides a template and quality criteria for documenting Use Cases in markdown format.
 Use this as a starting point for any project requiring use case documentation.
 Replace all placeholders in the template with project-specific content.
 
 ## General Instructions
-
 - Use this template for all use case documentation in markdown format.
 - Replace all bracketed placeholders in the template with project-specific information.
 - Store use case files in the centralized repository under the `use-cases` folder and `UseCaseXXX-descriptions` subfolders (no spaces in names).
 - Review and approve use cases with relevant stakeholders before acceptance.
 
 ## Best Practices
-
 - Clearly define all required use case sections.
 - Use clear, concise, and business-oriented language.
 - Document all assumptions and dependencies.
@@ -26,7 +23,6 @@ Replace all placeholders in the template with project-specific content.
 - Reference flow step numbers in exceptions (e.g., 1.a, 3.a) and provide a paragraph description for each exception.
 
 ## Code Standards
-
 - Each use case must have a unique version identifier and a documented change log.
 - Use the provided markdown template for consistency.
 
@@ -120,11 +116,14 @@ Replace all placeholders in the template with project-specific content.
 ```
 
 ## Validation
-
 - Review use cases for completeness, clarity, and correct use of the template.
 - Verify that all placeholders are replaced with project-specific content.
 
 ## Maintenance
-
 - Update the version and change log for major changes.
 - Regularly review use cases for accuracy and relevance.
+
+## Language
+- Professional
+- English
+- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `usecase.0001.da.md` for Danish).
