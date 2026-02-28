@@ -14,7 +14,7 @@
 <!-- System Sequence Diagram Template: Replace all [Insert ...] placeholders with project-specific content. -->
 ```mermaid
 sequenceDiagram
-    actor Event as "Dashbourd Screen"
+    actor Event as "Dashboard Screen"
     participant System
     Event ->> System: See resident status and notes
     System -->> Event: Display resident status and notes
