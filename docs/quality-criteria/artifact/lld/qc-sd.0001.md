@@ -36,17 +36,17 @@ When evaluating a Sequence Diagram, consider the following quality criteria:
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | SD                                |
+| Id                | SD-[Insert Unique Identifier]     |
 | crossReference    |                                   |
 
 ## Version
 - **Version**: 0001
-- **Date**: [insert todays date]
+- **Date**: [yyyy-mm-dd]
 
 ## Version Log
 | Version | Date       | Description              | Author     |
 |---------|------------|--------------------------|------------|
-| 0001    | [insert todays date] | Initial                  | [insert author name] |
+| 0001    | [yyyy-mm-dd] | Initial                  | [insert author name] |
 
 ## Sequence Diagram
 ```
@@ -75,8 +75,6 @@ sequenceDiagram
 - Update the version and change log for major changes.
 - Regularly review sequence diagrams for accuracy and relevance.
 
-
 ## Language
 - Professional
 - English
- 

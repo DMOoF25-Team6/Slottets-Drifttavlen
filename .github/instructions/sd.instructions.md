@@ -1,23 +1,22 @@
 ---
-description: 'Sequence Diagram quality requirements and template for project documentation.'
+name: 'Sequence Diagram (SD) Instructions'
+description: 'Sequence Diagram (SD) quality requirements and template for project documentation.'
 applyTo: '**/sd.*.md'
 ---
 
-# Sequence Diagram Instructions
-
-This instruction file provides a template and quality criteria for documenting Sequence Diagrams in markdown format using Mermaid syntax.
+# Sequence Diagram (SD) Instructions
+This instruction file provides a template and quality criteria for documenting Sequence Diagrams (SD) in markdown format using Mermaid syntax.
 Use this as a starting point for any project requiring a Sequence Diagram.
 Replace all placeholders in the template with project-specific content.
 
 ## General Instructions
 
 - Use this template for all Sequence Diagram documentation in markdown format.
-- Replace all bracketed placeholders in the Mermaid diagram with project-specific information.
+- Replace all bracketed placeholders in the Mermaid diagram and Markdown with project-specific information.
 - Store Sequence Diagram files in the centralized repository.
 - Review and approve Sequence Diagrams with relevant stakeholders before acceptance.
 
 ## Best Practices
-
 - Clearly define all relevant participants and interactions.
 - Use clear, concise, and process-oriented language.
 - Document all assumptions and dependencies.
@@ -25,7 +24,6 @@ Replace all placeholders in the template with project-specific content.
 - Use valid Mermaid sequence diagram syntax.
 
 ## Code Standards
-
 - Each Sequence Diagram must have a unique version identifier and a documented change log.
 - Use the provided Mermaid diagram layout for consistency.
 
@@ -38,17 +36,13 @@ Replace all placeholders in the template with project-specific content.
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | QC-SEQDIAGRAM                     |
-| crossReference    |                                   |
-
-## Version
-- **Version**: 0001
-- **Date**: 2026-02-07
+| Id                | SD-[Insert Unique Identifier]     |
+| crossReference    | [Insert SSD Reference] or [Insert OC Reference] |
 
 ## Version Log
 | Version | Date       | Description              | Author     |
 |---------|------------|--------------------------|------------|
-| 0001    | 2026-02-07 | Initial                  | project owner |
+| 0001    | [yyyy-mm-dd] | Initial                  | [Author Name] |
 ```
 
 ```mermaid
@@ -80,3 +74,10 @@ sequenceDiagram
 
 - Update the version and change log for major changes.
 - Regularly review Sequence Diagrams for accuracy and relevance.
+
+## Language 
+- Professional
+- English
+
+## System object
+if object chenges name form artifacts before then make / update glosery `/docs/glosery.md` with class name in artifacts we transform from and class name in this artifacts.
