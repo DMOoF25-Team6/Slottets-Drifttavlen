@@ -33,13 +33,10 @@ This instruction file provides a template and quality criteria for documenting O
 | Id                | OC                                |
 | crossReference    | [Insert SSD Reference]            |
 
-## Version
-- **Version**: 0001
-- **Date**: [Insert Date yyyy-mm-dd]
 ## Version Log
 | Version | Date       | Description              | Author     |
 |---------|------------|--------------------------|------------|
-| 0001    | [Insert Date yyyy-mm-dd] | Initial                  | Project owner | 
+| 0001    | [Insert Today Date yyyy-mm-dd] | Initial                  | Project owner | 
 ```
 
 ```markdown
@@ -61,6 +58,7 @@ This instruction file provides a template and quality criteria for documenting O
 - Ensure that each interaction is clearly defined and follows a logical sequence.
 - Use clear and concise language to describe each step of the interaction.
 - Include any relevant details that may help stakeholders understand the interaction better, such as expected outcomes or potential edge cases.
+- Fields should be filled out from a use case ssd.*.md, and all interactions to system should have its own oc chapter.
 
 ## Validation
 - Review OCs for completeness, clarity, and correct use of the template.
