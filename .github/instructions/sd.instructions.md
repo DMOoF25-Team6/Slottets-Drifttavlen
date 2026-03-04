@@ -1,7 +1,7 @@
 ---
 name: 'Sequence Diagram (SD) Instructions'
 description: 'Sequence Diagram (SD) quality requirements and template for project documentation.'
-applyTo: '**/sd.*.md'
+applyTo: '**/uc*.sd.*.md'
 ---
 
 # Sequence Diagram (SD) Instructions

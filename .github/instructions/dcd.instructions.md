@@ -1,6 +1,6 @@
 ---
 description: 'Domain Class Diagram (DCD) quality requirements and template for project documentation.'
-applyTo: '**/docs/dcd.*.md' and '**/use-cases/**/dcd.*.mdx'
+applyTo: '**/docs/dcd.*.md' and '**/use-cases/**/uc*.dcd.*.mdx'
 ---
 
 # Domain Class Diagram (DCD) Instructions

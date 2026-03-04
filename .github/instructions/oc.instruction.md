@@ -1,6 +1,6 @@
 ---
 description: 'Object Constract (OC) quality requirements and template for project documentation.'
-applyTo: '**/oc.*.md'
+applyTo: '**/uc*.oc.*.md'
 ---
 
 # Object Constract (OC) Instructions
