@@ -1,4 +1,4 @@
-# Slottets Drifttavlen
+# Slottets Drifttavlen.
 
 ## Indholdsfortegnelse
 
