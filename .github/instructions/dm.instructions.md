@@ -1,6 +1,6 @@
 ---
 description: 'Domain Model (DM) quality requirements and template for project documentation.'
-applyTo: '**/dm.*.md'
+applyTo: '**/docs/dm.*.md' and '**/use-cases/**/uc*.dm.*.mdx'
 ---
 
 # Domain Model (DM) Instructions

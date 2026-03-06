@@ -13,6 +13,6 @@ public class Resident : IEntity
     public TrafficLight? TrafficLight { get; set; }
     
     #region Navigation Properties
-    public virtual ICollection<ResidentNotes> Notes { get; set; } = new List<ResidentNotes>();
+    public virtual ICollection<ResidentNote> Notes { get; set; } = new List<ResidentNote>();
     #endregion
 }

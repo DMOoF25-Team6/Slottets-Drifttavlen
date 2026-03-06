@@ -1,6 +1,6 @@
 ---
 description: 'System Sequence Diagram (SSD) quality requirements and template for project documentation.'
-applyTo: '**/docs/ssd.*.md'
+applyTo: '**/docs/uc*.ssd.*.md'
 ---
 
 # System Sequence Diagram (SSD) Instructions

@@ -5,11 +5,11 @@ using Domain.Interfaces;
 
 namespace Domain.Entities;
 
-public class ResidentNotes : IEntity
+public class ResidentNote : IEntity
 {
     public Guid Id { get; set; }
     public DateTime DateTime { get; set; }
     public string Note { get; set; } = string.Empty;
-    public Guid CareTakers { get; set; }
+    public Guid CareTakerId { get; set; }
 }
 
