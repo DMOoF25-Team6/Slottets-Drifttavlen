@@ -34,40 +34,14 @@ Medarbejder vælger en beboer. Systemet viser aktuelle beskeder. Medarbejder til
 1. Medarbejder vælger en beboer 
 2. Systemet viser aktuelle beskeder for beboeren
 3. Medarbejder tilføjer besked
-4. Medarbejder retter besked  
-5. Medarbejder sletter besked 
+4. Systemet viser bekræftelse på tilføjelse
+5. Medarbejder retter besked  
+6. Systemet viser bekræftelse på redigering
+7. Medarbejder sletter besked   
+8. Systemet viser bekræftelse på sletning
 **Main Exceptions**:
 3.a Besked kan ikke gemmes – Medarbejder får fejlmeddelelse
-4.a Besked kan ikke gemmes – Medarbejder får fejlmeddelelse
-**Postconditions**:
-- Beskeder er opdateret og synlige
-- Slettede beskeder eksisterer ikke længere
-
-### Fully Dressed Use Case
-**Use Case Number**: UC-002
-**Title**: Beskeder på beboer-dashboard
-**Actors**:
-- Medarbejder
-- System
-**Related Requirements**:
-- Beskeder skal kunne oprettes, redigeres og slettes
-- Beskeder skal vises på tavlen/skærmen
-**Preconditions**:
-- Medarbejder er logget ind
-- Beboer eksisterer i systemet
-**Main Flow**:
-1. Medarbejder vælger beboer
-2. System viser aktuelle beskeder
-3. Medarbejder tilføjer en besked
-4. Medarbejder redigerer en besked
-5. Medarbejder sletter en besked
-**Alternate Flows**:
-2.1 Ingen beskeder – system viser tom liste
-2.2 Flere beskeder – system viser alle beskeder
-**Exceptions**:
-1.a Beboer findes ikke – system viser fejl
-2.2.a Besked kan ikke vises – system viser fejl
-3.a Besked kan ikke gemmes – system viser fejl
+5.a Besked kan ikke gemmes – Medarbejder får fejlmeddelelse
 **Postconditions**:
 - Beskeder er opdateret og synlige
 - Slettede beskeder eksisterer ikke længere
