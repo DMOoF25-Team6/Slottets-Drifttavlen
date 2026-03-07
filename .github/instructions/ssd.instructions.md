@@ -1,6 +1,6 @@
 ---
 description: 'System Sequence Diagram (SSD) quality requirements and template for project documentation.'
-applyTo: '**/docs/uc*.ssd.*.md'
+applyTo: 'docs/use-cases/**/uc*.ssd.*.md'
 ---
 
 # System Sequence Diagram (SSD) Instructions
@@ -24,7 +24,13 @@ Use this as a starting point for any project requiring an SSD. Replace all place
 - Use the provided Mermaid sequence diagram layout for consistency.
 
 ### File Naming
-- Name files in lowercase, using digits for version, following the pattern: `ssd.xxxx.md` (e.g., `ssd.0001.md`).
+- Name files in lowercase, using digits for version,
+  - following the file name pattern: `uc-xxx.ssd.xxxx.md` (e.g., `uc-xxx.ssd.0001.md`).
+    - add use case identifier as prefix for filename.
+    - save files in a subfolder named after the use case (e.g., `docs/use-cases/uc-xxx/uc-xxx.ssd.0001.md`).
+- Increment version numbers for significant changes.
+- Include the todays date and author in the version log.
+- we only keep the latest version in the main branch; delete older versions or archive them in a designated folder `archive`.
 
 ## Common Patterns
 ### Good Example
@@ -32,23 +38,19 @@ Use this as a starting point for any project requiring an SSD. Replace all place
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | SSD                               |
-| crossReference    |                                   |
-
-## Version
-- **Version**: 0001
-- **Date**: 2026-01-20
+| Id                | [Use case identifier].SSD         |
+| crossReference    | [Use case identifier] [Use case identifier].DM |
 
 ## Version Log
 | Version | Date       | Description              | Author     |
 |---------|------------|--------------------------|------------|
-| 0001    | 2026-01-20 | Initial                  | project owner |
-```
+| 0001    | [insert todays date] | Initial                  | project owner |
 
-```markdown
 ## System Sequence Diagram
 <!-- System Sequence Diagram Template: Replace all [Insert ...] placeholders with project-specific content. -->
-```meramid
+```
+
+```mermaid
 sequenceDiagram
     actor [Insert Actor]
     participant [Insert System]
@@ -57,17 +59,6 @@ sequenceDiagram
     [Insert Actor] ->> [Insert System]: [Insert Event 2]
     [Insert System] -->> [Insert Actor]: [Insert Response 2]
     %% Add more events/responses as needed
-```
-```
-
-### Bad Example
-
-```mermaid
-sequenceDiagram
-    [Actor] ->> [System]: [Event 1]
-    [System] -->> [Actor]: [Response 1]
-    [Actor] ->> [System]: [Event 2]
-    [System] -->> [Actor]: [Response 2]
 ```
 
 ## Validation
@@ -81,4 +72,4 @@ sequenceDiagram
 ## Language
 - Professional
 - English
-- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `ssd.0001.da.md` for Danish). So now we have two files: `ssd.0001.md` (English) and `ssd.0001.da.md` (Danish).
+- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `uc-xxx.ssd.0001.da.md` for Danish). So now we have two files: `uc-xxx.ssd.0001.md` (English) and `uc-xxx.ssd.0001.da.md` (Danish).

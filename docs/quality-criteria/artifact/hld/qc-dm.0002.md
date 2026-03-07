@@ -6,7 +6,7 @@ A well-designed Domain Model provides clarity, supports maintainability, and ens
 | Key               | Value                             |
 |-------------------|-----------------------------------|
 | Id                | QC-DM                             |
-| crossReference    |                                   |
+| crossReference    | Applying UML and patterns by Craig Larman |
  
 ### Change Log
 | Date       | Version | Description                     | Author        |
