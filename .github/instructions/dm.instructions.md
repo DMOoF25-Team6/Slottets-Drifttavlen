@@ -1,6 +1,6 @@
 ---
 description: 'Domain Model (DM) quality requirements and template for project documentation.'
-applyTo: '**/docs/dm.*.md' and '**/use-cases/**/uc*.dm.*.mdx'
+applyTo: 'docs/dm.*.md' and 'docs/use-cases/**/uc-*.dm.*.md'
 ---
 
 # Domain Model (DM) Instructions
@@ -24,10 +24,15 @@ Use this as a starting point for any project requiring a domain model. Replace a
 - Use the provided Mermaid diagram layout for consistency.
 
 ### File Naming
-- Name files in lowercase, using digits for version, following the pattern: `dm.xxxx.md` (e.g., `dm.0001.md`).
+- Name files in lowercase, using digits for version,
+  - following the pattern in domain model for use case: `dm.xxxx.md` (e.g., `dm.0001.md`).
+    - for use case domain models, include the use case identifier in the file name as a prefix.
+      - save files for use case domain models in a subfolder named after the use case (e.g., `docs/use-cases/uc-001/dm.0001.md`).
+    - for solution domain models, do not include a use case identifier in the file name.
+      - save files for solution domain models in the main `docs` folder (e.g., `docs/dm.0001.md`).
 - Increment version numbers for significant changes.
-- Include the date and author in the version log.
-- we only keep the latest version in the main branch; archive older versions in a designated folder.
+- Include the todays date and author in the version log.
+- we only keep the latest version in the main branch; delete older versions.
 
 ## Common Patterns
 ### Good Example
@@ -36,8 +41,8 @@ Use this as a starting point for any project requiring a domain model. Replace a
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | DM                               |
-| crossReference    |                                   |
+| Id                | UC-xxx.DM                         |
+| crossReference    | BC                                |
 
 ## Version Log
 | Version | Date       | Description              | Author     |
@@ -58,7 +63,7 @@ classDiagram
         [AttributeA]
         [AttributeB]
     }
-    [Entity1] "0..1" --> "*" [Entity2] : [RelationshipName]
+    [Entity1] "0..1" -- "*" [Entity2] : [RelationshipName]
 ```
 
 ### Bad Example
@@ -81,4 +86,4 @@ classDiagram
 ## Language
 - Professional
 - English
-- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `dm.0001.da.md` for Danish). So now we have two files: `dm.0001.md` (English) and `dm.0001.da.md` (Danish).
+- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `uc-xxx.dm.0001.da.md` for Danish). So now we have two files: `uc-xxx.dm.0001.md` (English) and `uc-xxx.dm.0001.da.md` (Danish).

@@ -1,6 +1,6 @@
 ---
 description: 'Object Constract (OC) quality requirements and template for project documentation.'
-applyTo: '**/uc*.oc.*.md'
+applyTo: 'docs/use-cases/**/uc*.oc.*.md'
 ---
 
 # Object Constract (OC) Instructions
@@ -13,7 +13,7 @@ This instruction file provides a template and quality criteria for documenting O
 - Review and approve OCs with relevant stakeholders before acceptance.
 
 ## Best Practices
-- Transformed from a `ssd.*.md`. All interaction to system has it own oc chapter.
+- Transformed from a `uc-xxx.ssd.*.md`. All interaction to system has it own oc chapter.
 - Ensure visuals and layout are consistent and easy to understand.
 - Use markdown format.
 
@@ -22,7 +22,13 @@ This instruction file provides a template and quality criteria for documenting O
 - Ensure that all OC documentation follows the provided markdown layout for consistency.
 
 ### File Naming
-- Name files in lowercase, using digits for version, following the pattern: `oc.xxxx.md` (e.g., `oc.0001.md`).
+- Name files in lowercase, using digits for version,
+  - following the file name pattern: `uc-yyy.oc.xxxx.md` (e.g., `uc-001.oc.0001.md`).
+    - for use case operational contracts, include the use case identifier in the file name as a prefix.
+      - save files for use case operational contracts in a subfolder named after the use case (e.g., `docs/use-cases/uc-001/uc-001.oc.0001.md`).
+- Increment version numbers for significant changes.
+- Include today's date and author in the version log.
+- Only keep the latest version in the main branch; delete older versions.
 
 ## Common Patterns
 ### Good Example
@@ -44,14 +50,8 @@ This instruction file provides a template and quality criteria for documenting O
 <!-- Object Constract Template: Replace all [Insert ...] placeholders with project-specific content. -->
 
 ### [Insert Interaction Name]
-- **Description**: [Insert a brief description of the interaction and its purpose.]
-- **Actors Involved**: [Insert a list of actors involved in this interaction.]
 - **Preconditions**: [Insert any preconditions that must be met before this interaction can  occur.]
 - **Postconditions**: [Insert any postconditions that will be true after this interaction occurs.]
-- **Steps**:
-1. [Insert Step 1: Describe the first step of the interaction.]
-2. [Insert Step 2: Describe the second step of the interaction.]
-3. [Insert Step 3: Describe the third step of the interaction.]
 ```
 
 ### Additional Guidelines
@@ -71,4 +71,3 @@ This instruction file provides a template and quality criteria for documenting O
 ## Language 
 - Professional
 - English
-
