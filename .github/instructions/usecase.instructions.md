@@ -1,6 +1,6 @@
 ---
 description: 'Use Case quality requirements and template for project documentation.'
-applyTo: '**/use-cases/**/uc-*.*.md'
+applyTo: 'docs/use-cases/**/uc-*.*.md'
 ---
 
 # Use Case Instructions
