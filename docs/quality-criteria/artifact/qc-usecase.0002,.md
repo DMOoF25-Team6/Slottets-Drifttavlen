@@ -1,6 +1,6 @@
 # Quality Criteria: Use Case Documentation
 
-This document provides quality criteria and a template for documenting Use Cases in markdown format. Each use case must be saved under the `use-cases` folder, and a dedicated folder named `UseCaseXXX-descriptions` (where XXX is the unique use case number, no spaces) must be created for each use case.
+This document provides quality criteria and a template for documenting Use Cases in markdown format. Each use case must be saved under the `use-cases` folder, and a dedicated folder named `uc-XXX` (where XXX is the unique use case number, no spaces) must be created for each use case.
 
 ## Use Case Types
 Use cases can be documented in three forms:
@@ -11,23 +11,20 @@ Use cases can be documented in three forms:
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | QC-USECASE                        |
+| Id                | QC-UC                             |
 | crossReference    |                                   |
-
-## Version
-- **Version**: 0001
-- **Date**: 2026-02-07
 
 ### Change Log
 | Date       | Version | Description                     | Author        |
 |------------|---------|---------------------------------|---------------|
-| 2026-02-07 | 0001    | Initial creation of the document |               |
+| 2026-02-07 | 0001    | Initial creation of the document | Team 6       |
+| 2026-03-07 | 0002    | Updated quality criteria and template | Tirsvad |
 
 ## Quality Criteria for Use Case Documentation
 When evaluating a Use Case, consider the following quality criteria:
 1. **Clarity and Simplicity**: Each use case must be easy to understand, with clear and concise descriptions. Avoid jargon and complex language.
 1. **Completeness**: Ensure that all required sections of the use case are addressed, depending on the type:
-   - **Brief**: Use Case Number, Title, short summary, success flow only. Each flow step is numbered (1, 2, 3, ...).
+   - **Brief**: Use Case Number, Title, success flow only as one paragraph.
    - **Casual**: Use Case Number, Title, Actors, Main Flow, main exceptions, summary. Each flow step is numbered. Each exception references the flow step number (e.g., 1a, 3a) and includes a paragraph description.
    - **Fully Dressed**: Use Case Number, Title, Actors, Preconditions, Main Flow, Alternate Flows, Postconditions, Exceptions, Related Requirements. Each flow step is numbered. Each exception references the flow step number and includes a paragraph description.
 
@@ -38,22 +35,18 @@ When evaluating a Use Case, consider the following quality criteria:
 ## Common Patterns for Use Case Markdown Files
 
 ### Filename and Folder Convention
-- Name files and folders without spaces, using digits for use case numbers, following the pattern: `UseCaseXXX-descriptions` (e.g., `UseCase001-descriptions`).
+- Name files and folders without spaces, using digits for use case numbers, following the pattern: `uc-XXX` (e.g., `uc-001`).
 - Store use case markdown files in the corresponding folder.
 
 ### Good Example
 ```markdown
-# Use Case Description: Use Case 001 - [Insert Title]
+# Use Case Description: Use Case [insert use case number example 001] - [Insert Title]
 
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | UC-001                            |
-| crossReference    |                                   |
-
-## Version
-- **Version**: 0001
-- **Date**: [insert todays date]
+| Id                | UC-[insert use case number example 001] |
+| crossReference    | BC                                |
 
 ## Version Log
 | Version | Date       | Description              | Author     |
@@ -68,17 +61,14 @@ When evaluating a Use Case, consider the following quality criteria:
 <!-- Use Case Template: Replace all [Insert ...] placeholders with project-specific content. -->
 
 ### Brief Use Case
-**Use Case Number**: [Insert Use Case Number]
 **Title**: [Insert Title]
-**Summary**: [Insert brief summary]
 **Success Flow**:
-1. [Insert Main Flow Step 1]
-2. [Insert Main Flow Step 2]
-3. [Insert Main Flow Step 3]
+[insert flow as one paragraph]
 
 ### Casual Use Case
-**Use Case Number**: [Insert Use Case Number]
 **Title**: [Insert Title]
+**Scope**: [Insert Scope]
+**Level**: [Insert Level]
 **Actors**:
 - [Insert Actor 1]
 - [Insert Actor 2]
@@ -92,8 +82,9 @@ When evaluating a Use Case, consider the following quality criteria:
 **Summary**: [Insert casual summary]
 
 ### Fully Dressed Use Case
-**Use Case Number**: [Insert Use Case Number]
 **Title**: [Insert Title]
+**Scope**: [Insert Scope]
+**Level**: [Insert Level]
 **Actors**:
 - [Insert Actor 1]
 - [Insert Actor 2]
@@ -134,6 +125,7 @@ b: At any time, [Insert Extension Description]
 - Regularly review use cases for accuracy and relevance.
 
 ## Language
-- Professional (the customers domain language)
 - Active form
-- Translate to Danish
+- Professional
+- English
+- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `uc-xxx.0001.da.md` for Danish). So now we have two files: `uc-xxx.0001.md` (English) and `uc-xxx.0001.da.md` (Danish).

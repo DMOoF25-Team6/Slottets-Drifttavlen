@@ -1,6 +1,6 @@
 ---
 description: 'Use Case quality requirements and template for project documentation.'
-applyTo: '**/use-cases/usecase.*.md' or '**/use-cases/usecase.*.*.md'
+applyTo: 'docs/use-cases/**/uc-*.*.md'
 ---
 
 # Use Case Instructions
@@ -35,7 +35,7 @@ Replace all placeholders in the template with project-specific content.
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | UC-001                            |
+| Id                | UC-XXX                            |
 | crossReference    |                                   |
 
 ## Version Log
@@ -52,44 +52,30 @@ Replace all placeholders in the template with project-specific content.
 [Insert user story here, describing the use case from the perspective of the end user.]
 
 ### Brief Use Case
-**Use Case Number**: [Insert Use Case Number]
 **Title**: [Insert Title]
-**Summary**: [Insert brief summary]
-**Preconditions**:
-- [Insert Precondition 1]
-- [Insert Precondition 2]
 **Success Flow**:
-1. [Insert Main Flow Step 1]
-2. [Insert Main Flow Step 2]
-3. [Insert Main Flow Step 3]
-**Postconditions**:
-- [Insert Postcondition 1]
-- [Insert Postcondition 2]
+[insert flow as one paragraph]
 
 ### Casual Use Case
-**Use Case Number**: [Insert Use Case Number]
 **Title**: [Insert Title]
+**Scope**: [Insert Scope]
+**Level**: [Insert Level]
 **Actors**:
 - [Insert Actor 1]
 - [Insert Actor 2]
-**Summary**: [Insert casual summary]
-**Preconditions**:
-- [Insert Precondition 1]
-- [Insert Precondition 2]
 **Main Flow**:
-1. [Insert Main Flow Step 1]
-2. [Insert Main Flow Step 2]
-3. [Insert Main Flow Step 3]
-**Main Exceptions**:
-1.a [Insert Exception 1 paragraph description]
-3.a [Insert Exception 2 paragraph description]
-**Postconditions**:
-- [Insert Postcondition 1]
-- [Insert Postcondition 2]
+1: [Insert Main Flow Step 1]
+2: [Insert Main Flow Step 2]
+3: [Insert Main Flow Step 3]
+**Main Extensions**:
+1a: [Insert Extensions Description 1]
+3a: [Insert Extensions Description 2]
+**Summary**: [Insert casual summary]
 
 ### Fully Dressed Use Case
-**Use Case Number**: [Insert Use Case Number]
 **Title**: [Insert Title]
+**Scope**: [Insert Scope]
+**Level**: [Insert Level]
 **Actors**:
 - [Insert Actor 1]
 - [Insert Actor 2]
@@ -103,16 +89,22 @@ Replace all placeholders in the template with project-specific content.
 1. [Insert Main Flow Step 1]
 2. [Insert Main Flow Step 2]
 3. [Insert Main Flow Step 3]
-**Alternate Flows**:
-2.1 [Insert Alternate Flow 1]
-2.2 [Insert Alternate Flow 2]
-**Exceptions**:
-1.a [Insert Exception 1 paragraph description]
-2.2.a [Insert Exception 2 paragraph description]
-3.a [Insert Exception 3 paragraph description]
+**Extensions**:
+
+a: At any time, [Insert Extension Description]  
+b: At any time, [Insert Extension Description]  
+&nbsp;&nbsp;&nbsp;&nbsp;1: [Insert Extension Description]  
+
+1a: At any time, [Insert Extension Description]  
+&nbsp;&nbsp;&nbsp;&nbsp;1: [Insert Extension Description]  
+&nbsp;&nbsp;&nbsp;&nbsp;2: [Insert Extension Description]  
+2a: [Insert Extension Description 1]  
+3a: [Insert Extension Description 2]  
+
 **Postconditions**:
 - [Insert Postcondition 1]
 - [Insert Postcondition 2]
+
 ```
 
 ## Validation
@@ -124,6 +116,7 @@ Replace all placeholders in the template with project-specific content.
 - Regularly review use cases for accuracy and relevance.
 
 ## Language
+- Active form
 - Professional
 - English
-- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `usecase.0001.da.md` for Danish).
+- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `uc-xxx.0001.da.md` for Danish). So now we have two files: `uc-xxx.0001.md` (English) and `uc-xxx.0001.da.md` (Danish).
