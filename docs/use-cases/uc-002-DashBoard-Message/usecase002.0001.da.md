@@ -1,8 +1,8 @@
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | UC-002                            |
-| crossReference    | BC                                  |
+| Id                | uc-002                            |
+| crossReference    | bc                                |
 
 ## Version Log
 | Version | Date       | Description              | Author     |
@@ -15,13 +15,11 @@
 Som medarbejder vil jeg kunne se aktuelle beskeder om beboerne på tavlen/skærmen, tilføje en besked på en beboer, rette/redigere en eksisterende besked på en beboer, og slette en nuværende besked på en beboer, så beskederne altid er opdaterede og relevante.
 
 ### Brief Use Case
-**Use Case Number**: UC-002
 **Title**: Håndtering af beskeder på beboer
 **Success Flow**:
 Medarbejder vælger en beboer. Systemet viser aktuelle beskeder. Medarbejder tilføjer, retter eller sletter en besked på en beboer efter behov.
 
 ### Casual Use Case
-**Use Case Number**: UC-002
 **Title**: Håndtering af beskeder på beboer
 **Actors**:
 - Medarbejder
