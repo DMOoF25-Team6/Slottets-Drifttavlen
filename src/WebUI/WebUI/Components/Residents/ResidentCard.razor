@@ -1,0 +1,35 @@
+@*UC001 - Resident card shown for a quick status overview - stick to GDPR rules!*@
+@*UC001 Task - Low Fi prototype for first iteration of resident card*@
+
+@using Domain.Enums
+
+<article class="card">
+  <header class="card-header d-flex justify-content-between align-items-center">
+    <h2 class="card-title h5 mb-0">@Initials</h2><span class="badge @TrafficLightCssClass">@TrafficLight</span>
+  </header>
+    <section class="card-body">
+
+        @* TODO: Add resident details in next iteration *@
+         
+    </section>
+      <footer class="card-footer text-muted">
+        @LastUpdated
+      </footer>
+</article>
+
+@code
+{
+    [Parameter] public string Initials { get; set; } = "??";
+    // TODO: Should default be green? Do we need a default at all? Maybe we should make this a required parameter?
+    [Parameter] public TrafficLight TrafficLight { get; set; } = TrafficLight.Green;
+    [Parameter] public string LastUpdated { get; set; } = "--";
+
+    private string TrafficLightCssClass => TrafficLight switch
+    {
+        TrafficLight.Green => "bg-success",
+        TrafficLight.Yellow => "bg-warning text-dark",
+        TrafficLight.Red => "bg-danger",
+        _ => "bg-secondary"
+    };
+
+}
