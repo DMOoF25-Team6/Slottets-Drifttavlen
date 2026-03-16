@@ -21,6 +21,6 @@ namespace Infrastructure.Repositories;
 /// var notes = repository.GetAll();
 /// </code>
 /// </example>
-public class ResidentNotesRepository2 : Repository<ResidentNote>, IResidentNoteRepository
+public class ResidentNoteRepository : Repository<ResidentNote>, IResidentNoteRepository
 {
 }

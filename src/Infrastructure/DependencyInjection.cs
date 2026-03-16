@@ -16,7 +16,7 @@ public static class DependencyInjection
     {
         _ = services.AddCore();
         _ = services.AddScoped<IResidentRepository, ResidentRepository>();
-        _ = services.AddScoped<IResidentNoteRepository, ResidentNotesRepository>();
+        _ = services.AddScoped<IResidentNoteRepository, ResidentNoteRepository>();
         return services;
     }
 }
