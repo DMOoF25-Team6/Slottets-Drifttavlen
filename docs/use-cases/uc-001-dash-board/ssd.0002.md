@@ -2,7 +2,7 @@
 | Key            | Value                        |
 |----------------|------------------------------|
 | Id             | SSD-001                      |
-| crossReference | UC-001                       |
+| crossReference | UC001                        |
 
 ## Version Log
 | Version | Date       | Description              | Author     |

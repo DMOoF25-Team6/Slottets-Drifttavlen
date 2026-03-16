@@ -161,11 +161,11 @@ public class RepositoryTests
             new User { Name = "Bob" }
         ];
         IEnumerable<User> addedUsers = await _repository.AddRangeAsync(users, TestContext.Current.CancellationToken);
-        List<User> updatedUsers = addedUsers.Select(u =>
+        List<User> updatedUsers = [.. addedUsers.Select(u =>
         {
             u.Name += " Updated";
             return u;
-        }).ToList();
+        })];
         // Act
         await _repository.UpdateRangeAsync(updatedUsers, TestContext.Current.CancellationToken);
         // Assert

@@ -20,6 +20,7 @@ COPY Slottet.CareManagement.slnx ./
 COPY Directory.Build.props ./
 COPY Directory.Build.targets ./
 COPY Directory.Packages.props ./
+COPY .env ./
 COPY src/ ./src/
 COPY tests/ ./tests/
 RUN ["dotnet", "restore"]

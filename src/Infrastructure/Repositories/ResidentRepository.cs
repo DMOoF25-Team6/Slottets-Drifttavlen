@@ -5,8 +5,6 @@ using Core.Interfaces.Repositories;
 
 using Domain.Entities;
 
-using System.Net.Http;
-
 namespace Infrastructure.Repositories;
 
 /// <summary>
@@ -19,9 +17,6 @@ namespace Infrastructure.Repositories;
 /// and implements <see cref="IResidentRepository"/> for domain-specific queries.
 /// </remarks>
 
-
-
-//repository fetches Resident data from the database using Entity Framework.
 public class ResidentRepository : Repository<Resident>, IResidentRepository
 {
 }
