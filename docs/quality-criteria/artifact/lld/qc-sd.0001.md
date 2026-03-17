@@ -8,10 +8,6 @@ For this project, sequence diagrams must be written in Mermaid syntax for consis
 | Id                | QC-SD                             |
 | crossReference    |                                   |
 
-## Version
-- **Version**: 0001
-- **Date**: 2026-02-13
-
 ### Change Log
 | Date       | Version | Description                     | Author        |
 |------------|---------|---------------------------------|---------------|
@@ -38,10 +34,6 @@ When evaluating a Sequence Diagram, consider the following quality criteria:
 |-------------------|-----------------------------------|
 | Id                | SD-[Insert Unique Identifier]     |
 | crossReference    |                                   |
-
-## Version
-- **Version**: 0001
-- **Date**: [yyyy-mm-dd]
 
 ## Version Log
 | Version | Date       | Description              | Author     |
