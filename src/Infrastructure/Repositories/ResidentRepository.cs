@@ -16,7 +16,6 @@ namespace Infrastructure.Repositories;
 /// It inherits generic CRUD operations from <see cref="Repository{Resident}"/>
 /// and implements <see cref="IResidentRepository"/> for domain-specific queries.
 /// </remarks>
-
 public class ResidentRepository : Repository<Resident>, IResidentRepository
 {
 }
