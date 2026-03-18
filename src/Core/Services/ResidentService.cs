@@ -3,6 +3,8 @@
 
 using Core.Interfaces.Repositories;
 
+using System.Net.Http.Json;
+
 using Domain.Entities;
 
 /// <summary>
@@ -20,40 +22,72 @@ namespace Core.Services;
 public class ResidentService
 {
     private readonly IResidentRepository _residentRepository;
+    private readonly HttpClient _httpClient;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ResidentService"/> class.
     /// </summary>
     /// <param name="residentRepository">The repository abstraction for resident data access.</param>
-    public ResidentService(IResidentRepository residentRepository)
+    ///  The dependency injection system now provides: a ResidentRepository and an HttpClient to the ResidentService.
+    /// The service can now make HTTP requests to an API.
+    /// 
+    public ResidentService(IResidentRepository residentRepository, HttpClient httpClient)
     {
         _residentRepository = residentRepository;
+        _httpClient = httpClient;
     }
 
+
+
     /// <summary>
-    /// Retrieves a resident by their unique identifier.
+    /// Retrieves a resident by their unique identifier by calling the external API.
     /// </summary>
     /// <param name="id">The unique identifier of the resident.</param>
     /// <param name="cancellationToken">Optional cancellation token for the operation.</param>
     /// <returns>
     /// A <see cref="Task"/> containing the <see cref="Resident"/> if found; otherwise, <c>null</c>.
     /// </returns>
-    public Task<Resident?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    /// <remarks>
+    /// This method is now refactored to use an API instead of directly accessing the repository.
+    /// </remarks>
+    public async Task<Resident?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return _residentRepository.GetByIdAsync(id, cancellationToken);
+        return await _httpClient.GetFromJsonAsync<Resident>(
+            $"api/residents/{id}",
+            cancellationToken
+        );
     }
 
+
     /// <summary>
-    /// Retrieves all residents.
+    /// Retrieves all residents  by calling the API.
     /// </summary>
     /// <param name="cancellationToken">Optional cancellation token for the operation.</param>
     /// <returns>
-    /// A <see cref="Task"/> containing an <see cref="IEnumerable{Resident}"/> of all residents.
+    /// A <see cref="Task"/> containing an <see cref="IEnumerable{Resident}"/> of all residents.If no residents are returned from the API,
+    /// an empty collection is returned instead of null.
     /// </returns>
-    public Task<IEnumerable<Resident>> GetAllAsync(CancellationToken cancellationToken = default)
+    /// <remarks>
+    /// This method is refactored to use an API instead of the repository.
+    /// The <see cref="HttpClient"/> sends a GET request to the endpoint "api/residents".
+    /// The JSON response from the API is automatically deserialized into a collection of
+    /// <see cref="Resident"/> objects.
+    /// </remarks>
+    public async Task<IEnumerable<Resident>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return _residentRepository.GetAllAsync(cancellationToken);
+        var residents = await _httpClient.GetFromJsonAsync<IEnumerable<Resident>>(
+            "api/residents",
+            cancellationToken
+        );
+
+        //null-coalescing operator.If residents is null, return an empty list instead.
+        return residents ?? new List<Resident>();
+
     }
+
+
+
+
 
     /// <summary>
     /// Adds a new resident to the data store.
@@ -89,4 +123,7 @@ public class ResidentService
     {
         return _residentRepository.DeleteAsync(resident, cancellationToken);
     }
+
+
+
 }
