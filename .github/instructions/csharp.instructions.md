@@ -121,3 +121,6 @@ applyTo: '**/*.cs'
 - Demonstrate deployment to Azure App Service, Azure Container Apps, or other hosting options.
 - Show how to implement health checks and readiness probes.
 - Explain environment-specific configurations for different deployment stages.
+
+## Update README.md
+- Always keep README.md up to date

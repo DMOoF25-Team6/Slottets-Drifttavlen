@@ -1,23 +1,23 @@
-# Copilot Instructions for DMOoF25-Team6.Slottets-Drifttavlen
+# Copilot Instructions for Tirsvad affilities development
 
 ## Project Overview
-- This is a .NET solution for Slottet.CareManagement, using Clean Architecture principles.
-- The project use MySQL and Blazor for frontend development.
+- This is a .NET solution, using Clean Architecture principles.
+- The project may use SQLite or MySQL and Blazor for frontend development.
 - Solution should could run standalone, local network and cloud-ready (Azure, AWS).
 - Containerization is supported via Docker.
-- Major components are in `src/` (production code) and `tests/` (test projects). Each layer (Core, Domain, Infrastructure) is separated into its own project.
-- The solution is managed via `Slottets-Drifttavlen.slnx` and `global.json`.
-- Product owner domain language is Danish and variant for healthcare, so high level architecture documentation may include Danish terms.
+- Major components are in `src/` (production code) and `tests/` (test projects). Each layer (Domain, Application, Infrastructure) is separated into its own project.
+- The solution is managed via `[solutionname].slnx` and `global.json`.
+- For high level architecture documentation translation use product owner domain language.
 
 ## Architecture & Patterns
-- **Clean Architecture**: Core business logic is in `Core`, domain models in `Domain`, and infrastructure (e.g., data access) in `Infrastructure`.
-- **Testing**: Test projects mirror the main projects (e.g., `Core.Tests` for Core). Place new tests in the corresponding `tests/` subfolder.
+- **Clean Architecture**: Application business / use cases logic is in `Application`, domain models in `Domain`, and infrastructure (e.g., data access) in `Infrastructure`.
+- **Testing**: Test projects mirror the main projects (e.g., `Application.Tests` for Application). Place new tests in the corresponding `tests/` subfolder.
 - **Build System**: Uses solution-wide MSBuild props/targets (`Directory.Build.props`, `Directory.Build.targets`).
 - **NuGet**: Local NuGet packages are in `LocalNuget/`. Use `nuget.config` for custom feeds.
 
 ## Developer Workflows
-- **Build**: Run `dotnet build Slottets-Drifttavlen.slnx` from the repo root.
-- **Test**: Run `dotnet test Slottets-Drifttavlen.slnx` to execute all tests.
+- **Build**: Run `dotnet build [solutionname].slnx` from the repo root.
+- **Test**: Run `dotnet test [solutionname].slnx` to execute all tests.
 - **Debug**: Attach to the CLI process or use launch profiles in your IDE.
 - **Docs**: Architecture decisions and use cases are in `docs/`. Doxygen config is in `Doxyfile`.
 - **Docker**: Use `docker-compose.yml` and `Dockerfile` for containerized workflows.

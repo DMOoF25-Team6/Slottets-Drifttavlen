@@ -64,3 +64,6 @@ applyTo: '**/*.razor, **/*.razor.cs, **/*.razor.css'
 ## API Documentation and Swagger
 - Use Swagger/OpenAPI for API documentation for your backend API services.
 - Ensure XML documentation for models and API methods for enhancing Swagger documentation.
+
+## Update README.md
+- Always keep README.md up to date
