@@ -59,4 +59,3 @@ Papirbaserede processer og manuelle rutiner medfører ineffektivitet, risiko for
 - GDPR-overholdelse er dokumenteret
 - Projektet holder budget og tidsplan
 - Brugertilfredshed og forbedret arbejdsgang
-
