@@ -16,7 +16,9 @@ public class ResidentNote : IEntity
     public DateTime DateTime { get; set; }
     [Required]
     public string Note { get; set; } = string.Empty;
+    public DateTime? EditedAt { get; set; }
     [ForeignKey("Resident")]
     public Guid ResidentId { get; set; }
+
 }
 
