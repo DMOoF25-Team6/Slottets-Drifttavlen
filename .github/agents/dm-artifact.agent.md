@@ -9,21 +9,32 @@ tools:
 references:
   - docs/bc.md
   - docs/dm.md
+  - .github/instructions/dm.instructions.md
 ---
 
 # Domain Model (DM) Agent Specification
+
+# Instruction Compliance
+This agent MUST comply with the DM instructions in `.github/instructions/dm.instructions.md`. All DM artifacts must:
+- Follow the provided template and quality criteria.
+- Replace all placeholders with project-specific content.
+- Use correct file naming, versioning, and language handling as specified.
+- Maintain a version log and unique version identifier for each DM.
+- Store DM files in the centralized repository, deleting or archiving older versions as required.
+- Ensure all new terms are added to the glossary files as per instructions.
+- Validate DMs for completeness, clarity, and template compliance.
 
 ## Triggering Creation
 - When the user asks to "Generate" or "Create" a DM, the agent should immediately call the `new` tool with the path calculated from the **Agent File Naming** rules.
 - When the user asks to "Update" or "Edit" a DM, the agent should call `edit/editFiles` with the path of the existing DM file and the specific changes to be made.
 
+## Agent Role
+The DM Agent is responsible for generating, validating, and maintaining domain model documentation in markdown format for this project. It follows specific guidelines for content, structure, and file naming conventions to ensure consistency and clarity across all domain model files.
+
 ## Tool Usage Requirements
 - **File Creation**: The agent **must** use the `new` tool to physically create files in the workspace. It should never output raw markdown to the chat if a file creation is requested.
 - **File Updates**: The agent **must** use `edit/editFiles` to update existing diagrams or logs within files.
 - **Path Accuracy**: Before creating a file, the agent must check if the directory (e.g., `docs/use-cases/uc-001/`) exists. If not, it should create the directory structure first.
-
-## Agent Role
-The DM Agent is responsible for generating, validating, and maintaining domain model documentation in markdown format for this project. It follows specific guidelines for content, structure, and file naming conventions to ensure consistency and clarity across all domain model files.
 
 ## Agent Responsibilities
 - The agent creates DM files using the provided template and ensures all placeholders are replaced with project-specific content.
@@ -51,37 +62,7 @@ The DM Agent is responsible for generating, validating, and maintaining domain m
 - The agent keeps only the latest version in the main branch and deletes older versions.
 
 ## Agent Patterns
-
-### Good Example
-The agent generates DM files using the following structure:
-```markdown
-# Domain Model (DM) for [Insert Project Name]
-## Metadata
-| Key               | Value                             |
-|-------------------|-----------------------------------|
-| Id                | <Use case identifier>.DM          |
-| crossReference    | <Insert Business Case Identifier> |
-
-## Version Log
-| Version | Date       | Description              | Author     |
-|---------|------------|--------------------------|------------|
-| 0001    | <today date in format yyyy-mm-dd> | Initial                  | project owner |
-```
-```mermaid
-%% Domain Model Diagram Template: Replace all [Insert ...] placeholders with project-specific content.
-
-classDiagram
-    class [Entity1] {
-        [Attribute1]
-        [Attribute2]
-        [Attribute3]
-    }
-    class [Entity2] {
-        [AttributeA]
-        [AttributeB]
-    }
-    [Entity1] "0..1" -- "*" [Entity2] : [RelationshipName]
-```
+Use the DM template and Mermaid class diagram as shown in the instructions.
 
 ## Agent Validation
 - The agent reviews DMs for completeness, clarity, and correct use of the template.
