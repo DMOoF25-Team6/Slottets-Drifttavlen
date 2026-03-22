@@ -1,6 +1,5 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
-
 namespace Core.DTOs;
 
 
@@ -9,9 +8,6 @@ namespace Core.DTOs;
 /// Contains only the information needed by the frontend.
 /// </summary>
 /// 
-
-
-
 public class ResidentNoteDto
 {
     // The unique identifier of the resident note.
