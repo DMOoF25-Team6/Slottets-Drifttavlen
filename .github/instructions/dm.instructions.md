@@ -11,7 +11,7 @@ Use this as a starting point for any project requiring a domain model. Replace a
 - Use this template for all DM documentation in markdown format.
 - Replace all bracketed placeholders in the Mermaid diagram with project-specific information.
 - Store DM files in the centralized repository.
-- Review and approve DMs with relevant stakeholders before acceptance.
+- Keep solution domain models up to date with changes in the overall system design.
 
 ## Best Practices
 - Clearly define all entities, attributes, and relationships.
@@ -27,7 +27,7 @@ Use this as a starting point for any project requiring a domain model. Replace a
 - Name files in lowercase, using digits for version,
   - following the pattern in domain model for use case: `dm.xxxx.md` (e.g., `dm.0001.md`).
     - for use case domain models, include the use case identifier in the file name as a prefix.
-      - save files for use case domain models in a subfolder named after the use case (e.g., `docs/use-cases/uc-001/dm.0001.md`).
+      - save files for use case domain models in a subfolder named after the use case (e.g., `docs/use-cases/uc-001/uc-001.dm.0001.md`).
     - for solution domain models, do not include a use case identifier in the file name.
       - save files for solution domain models in the main `docs` folder (e.g., `docs/dm.0001.md`).
 - Increment version numbers for significant changes.
@@ -41,7 +41,7 @@ Use this as a starting point for any project requiring a domain model. Replace a
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | UC-xxx.DM                         |
+| Id                | DM                                |
 | crossReference    | BC                                |
 
 ## Version Log
@@ -81,7 +81,9 @@ classDiagram
 
 ## Maintenance
 - Update the version and change log for major changes.
+- Keep solution domain models up to date with changes in the overall system design.
 - Regularly review DMs for accuracy and relevance.
+- Review and approve DMs with relevant stakeholders before acceptance.
 
 ## Language
 - Professional
