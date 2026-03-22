@@ -57,7 +57,7 @@ Replace all placeholders in the template with project-specific content.
 **Success Flow**:
 [insert flow as one paragraph]
 
-### Casual Use CaseCasual Use Case
+### CaseCasual Use Case
 **Title**: [Insert Title]
 **Scope**: [Insert Scope]
 **Level**: [Insert Level]

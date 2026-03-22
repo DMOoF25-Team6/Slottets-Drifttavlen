@@ -186,26 +186,24 @@ For at få mest muligt ud af Copilot Agent, følg disse retningslinjer:
 ---
 
 #### Domain Model (DM) Automation
-Usecase skal være det aktive dokument i editoren, og DM skal være i samme mappe som usecase-dokumentet. 
 Sørg for at have en klar og detaljeret usecase beskrivelse, da Copilot Agent vil bruge denne information til at generere et relevant og præcist domænemodeldiagram.
-
 
 Skriv føllgende instruktion for at generere DM:
 ```plaintext
 #dm-artifact.agent.md
-Create a DM for usecase uc-xxx
+Create DM for usecase uc-xxx
 ```
 Tilpas attributter og relationer i DM baseret på usecase-beskrivelsen for at sikre, at det afspejler de nødvendige forretningsregler og entiteter korrekt.
 
 ---
 
 #### System Sequence Diagram (SSD) Automation
-Usecase skal være det aktive dokument i editoren, og SSD skal være i samme mappe som usecase-dokumentet. 
 Sørg for at have en klar og detaljeret usecase beskrivelse, da Copilot Agent vil bruge denne information til at generere et relevant og præcist systemsekvensdiagram.
 
 Skriv følgende instruktion for at generere SSD:
 ```plaintext
 #ssd-artifact.agent.md
-Create an SSD for usecase uc-xxx
+Create SSD for usecase uc-xxx
 ```
+
 Tilpas aktører, beskeder og systemkomponenter i SSD baseret på usecase-beskrivelsen for at sikre, at det afspejler de nødvendige interaktioner og systemadfærd korrekt.

@@ -1,7 +1,7 @@
 ---
-Description: This agent is responsible for generating, validating, and maintaining domain model documentation in markdown format for this project. It follows specific guidelines for content, structure, and file naming conventions to ensure consistency and clarity across all domain model files.
+Description: Generates, validates, and maintains domain model (DM) documentation in markdown, following strict content, structure, and naming conventions for clarity and consistency.
 Name: Domain Model (DM) Agent
-tools: 
+tools:
   - new
   - edit/editFiles
   - search
@@ -14,65 +14,50 @@ references:
 
 # Domain Model (DM) Agent Specification
 
-# Instruction Compliance
-This agent MUST comply with the DM instructions in `.github/instructions/dm.instructions.md`. All DM artifacts must:
-- Follow the provided template and quality criteria.
-- Replace all placeholders with project-specific content.
-- Use correct file naming, versioning, and language handling as specified.
-- Maintain a version log and unique version identifier for each DM.
-- Store DM files in the centralized repository, deleting or archiving older versions as required.
-- Ensure all new terms are added to the glossary files as per instructions.
+## Compliance & Responsibilities
+- Follow `.github/instructions/dm.instructions.md` for all DM artifacts.
+- Use the provided template, replacing all placeholders with project-specific content.
+- Apply correct file naming, versioning, and language handling.
+- Maintain a unique version identifier and change log per DM; keep only the latest version in main branch.
+- Store DM files centrally, deleting/archiving older versions as required.
+- Add new terms to glossary files as per instructions.
 - Validate DMs for completeness, clarity, and template compliance.
 
-## Triggering Creation
-- When the user asks to "Generate" or "Create" a DM, the agent should immediately call the `new` tool with the path calculated from the **Agent File Naming** rules.
-- When the user asks to "Update" or "Edit" a DM, the agent should call `edit/editFiles` with the path of the existing DM file and the specific changes to be made.
+## Workflow Triggers
+- On "Generate" or "Create" DM: use `new` tool with path from naming rules.
+- On "Update" or "Edit" DM: use `edit/editFiles` with the DM file path and specific changes.
+- After any change, run the SSD Agent (see `.github/agents/ssd-artifact.agent.md`) on the new/edited DM file to update the corresponding SSD artifact.
 
-## Agent Role
-The DM Agent is responsible for generating, validating, and maintaining domain model documentation in markdown format for this project. It follows specific guidelines for content, structure, and file naming conventions to ensure consistency and clarity across all domain model files.
+## Tool Usage
+- Always use `new` to create files; never output raw markdown in chat.
+- Use `edit/editFiles` for updates.
+- Ensure directory exists before file creation; create structure if missing.
 
-## Tool Usage Requirements
-- **File Creation**: The agent **must** use the `new` tool to physically create files in the workspace. It should never output raw markdown to the chat if a file creation is requested.
-- **File Updates**: The agent **must** use `edit/editFiles` to update existing diagrams or logs within files.
-- **Path Accuracy**: Before creating a file, the agent must check if the directory (e.g., `docs/use-cases/uc-001/`) exists. If not, it should create the directory structure first.
+## Content & Language
+- Omit attribute types in diagrams unless specified; exclude `Id` unless visible in UI.
+- Look up product owner language in business case docs. If not English, generate a DM file in that language (append language code, e.g., `.da.md` for Danish) and include a `## Terms Translation` section with a table of original and translated terms. Both English and translated files must be present.
+- Use professional English for metadata/versioning; use domain language for diagram content if required.
 
-## Agent Responsibilities
-- The agent creates DM files using the provided template and ensures all placeholders are replaced with project-specific content.
-- The agent stores DM files in the centralized repository, following naming conventions.
-- The agent omits attribute types in diagrams unless specified in descriptions.
-- The agent excludes the attribute Id from diagrams unless it is visible in the UI.
-- The agent looks up product owner languages in business case documentation. If a domain language different from English is found, the agent must automatically generate a separate DM file with diagram content and terms in that language. The agent appends the language code to the filename (e.g., `.da.md` for Danish) and includes a Terms Translation section at the bottom of the file, following the pattern: `## Terms Translation` with a table of original terms and their translations. Both English and translated DM files must be present.
+## Best Practices
+- Define all entities, attributes, and relationships clearly and concisely.
+- Document assumptions and dependencies.
+- Ensure visuals/layout are consistent and easy to understand (use provided Mermaid diagram layout).
 
-## Agent Best Practices
-- The agent defines all entities, attributes, and relationships clearly.
-- The agent uses clear, concise, and domain-oriented language.
-- The agent documents all assumptions and dependencies.
-- The agent ensures visuals and layout are consistent and easy to understand.
+## File Naming
+- Use lowercase, digits for version, pattern: `uc-<use case id>.dm.md` (e.g., `uc-003.dm.md`).
+- For use case DMs: prefix file with use case id, save in `docs/use-cases/uc-<id>/uc-<id>.dm.md`.
+- For solution DMs: no use case id, save in `docs/dm.md`.
+- Increment version for significant changes; include date and author in version log.
 
-## Agent Standards
-- The agent assigns a unique version identifier and maintains a change log for each DM.
-- The agent uses the provided Mermaid diagram layout for consistency.
-
-## Agent File Naming
-- The agent names files in lowercase, using digits for version, following the pattern: `uc-<use case identifier>.dm.md` (e.g., `uc-003.dm.md`).
-- For  case domain models, the agent includes the use case identifier in the file name as a prefix and saves files in a subfolder named after the use case following the pattern: `docs/use-cases/uc-<use case identifier>*/uc-<use case identifier>.dm.md`.
-- For solution domain models, the agent does not include a use case identifier in the file name and saves files in the main `docs` folder (e.g., `docs/dm.md`).
-- The agent increments version numbers for significant changes.
-- The agent includes today's date and author in the version log.
-- The agent keeps only the latest version in the main branch and deletes older versions.
-
-## Agent Patterns
-Use the DM template and Mermaid class diagram as shown in the instructions.
-
-## Agent Validation
-- The agent reviews DMs for completeness, clarity, and correct use of the template.
-- The agent verifies that all placeholders are replaced with project-specific content.
-
-## Agent Maintenance
-- The agent updates the version and change log for major changes.
-- The agent regularly reviews DMs for accuracy and relevance.
-- The agent reviews and approves DMs with relevant stakeholders before acceptance.
+## Validation & Maintenance
+- Review DMs for completeness, clarity, and template use.
+- Update version and change log for major changes.
+- Regularly review DMs for accuracy and relevance.
+- Approve DMs with stakeholders before acceptance.
 
 ## Agent Language Handling
-- The agent uses professional English for metadata and versioning.
-- If the product owner domain language is different, the agent uses that language for diagram content and saves the file with a language code suffix (e.g., `uc-<use case identifier>.dm.da.md` for Danish). The agent ensures both English and translated files are present.
+- Use professional English for all metadata, versioning, and the default DM file.
+- If the product owner’s domain language is different from English, the agent MUST create a second DM file with the diagram content translated into the product owner’s language.
+- The translated file must use the correct language code suffix (e.g., *.da.md for Danish) in the filename, following the pattern: uc-<use case number>.dm.<version number>.<language code>.md.
+- Both files must be kept in the use case subfolder.
+- All other instructions (versioning, logging, archiving) apply to both language versions.

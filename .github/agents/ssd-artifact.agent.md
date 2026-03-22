@@ -8,6 +8,7 @@ tools:
   - lookup
 references:
   - docs/bc.md
+  - docs/use-cases/uc-<id>/uc-<id>.md
   - .github/instructions/ssd.instructions.md
 ---
 
@@ -29,27 +30,31 @@ The SSD Agent is responsible for generating, validating, and maintaining System 
 ## Tool Usage Requirements
 - **File Creation**: The agent **must** use the `new` tool to physically create files in the workspace. It should never output raw markdown to the chat if a file creation is requested.
 - **File Updates**: The agent **must** use `edit/editFiles` to update existing diagrams or logs within files.
-- **Path Accuracy**: Before creating a file, the agent must check if the directory (e.g., `docs/use-cases/uc-001/`) exists. If not, it should create the directory structure first.
+- **Path Accuracy**: Before creating a file, the agent must check if the directory (e.g., `docs/use-cases/uc-<use case number>/`) exists. If not, it should create the directory structure first.
 
 ## Agent Responsibilities
-The agent creates SSD files using the provided template and ensures all placeholders are replaced with project-specific content.
-The agent stores SSD files in the centralized repository, following naming conventions and versioning rules from the instructions.
-The agent maintains version logs, ensures only the latest version is kept in the main branch, and archives older versions.
-The agent creates SSD files in both English and product owner domain language if required, using correct language code suffixes.
-The agent updates glossary files for new or changed terms.
+- The agent creates SSD files using the provided template and ensures all placeholders are replaced with project-specific content.
+- The agent stores SSD files in the centralized repository, following naming conventions and versioning rules from the instructions.
+- The agent maintains version logs, ensures only the latest version is kept in the main branch, and archives older versions.
+- The agent creates SSD files in both English and product owner domain language if required, using correct language code suffixes.
+- The agent updates glossary files for new or changed terms.
+- When the product owner’s language differs from English, generate both the English and translated SSD files as described in the language handling section.
 
 ## Agent Best Practices
 Clearly define all actors, system boundaries, events, and responses.
 Use clear, concise, and system-oriented language.
 Document all assumptions and dependencies.
 Ensure visuals and layout are consistent and easy to understand.
+Every interaction to system should be represented as a message in camelCase with () for parameters, following the sequence diagram conventions.
+For every alternative flow, clearly define the conditions and outcomes for the system responses.
+Do not show internal system calls
 
 ## Agent Standards
 Each SSD must have a unique version identifier and a documented change log.
 Use the provided Mermaid sequence diagram layout for consistency.
 
 ## Agent File Naming
-Name files in lowercase, using digits for version, following the pattern: `uc-xxx.ssd.xxxx.md`.
+Name files in lowercase, using digits for version, following the pattern: `uc-<use case number>.ssd.<version number>.md`.
 Add use case identifier as prefix for filename.
 Save files in a subfolder named after the use case (e.g., `docs/use-cases/uc-xxx/uc-xxx.ssd.0001.md`).
 Increment version numbers for significant changes.
@@ -68,6 +73,8 @@ Update the version and change log for major changes.
 Regularly review SSDs for accuracy and relevance.
 
 ## Agent Language Handling
-Use professional English for metadata and versioning.
-If product owner domain language is different, create a separate file for the diagram content in that language, using the correct language code suffix.
-
+- Use professional English for all metadata, versioning, and the default SSD file.
+- If the product owner’s domain language is different from English, the agent MUST create a second SSD file with the diagram content translated into the product owner’s language.
+- The translated file must use the correct language code suffix (e.g., bc.da.md for Danish) in the filename, following the pattern: uc-<use case number>.ssd.<version number>.<language code>.md.
+- Both files must be kept in the use case subfolder.
+- All other instructions (versioning, logging, archiving) apply to both language versions.
