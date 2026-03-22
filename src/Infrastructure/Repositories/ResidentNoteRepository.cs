@@ -5,14 +5,16 @@ using Core.Interfaces.Repositories;
 
 using Domain.Entities;
 
+using Infrastructure.Persistents;
+
 namespace Infrastructure.Repositories;
 
 /// <summary>
-/// Repository implementation for managing <see cref="ResidentNote"/> entities.
+/// RepositoryBase implementation for managing <see cref="ResidentNote"/> entities.
 /// </summary>
 /// <remarks>
 /// This class provides data access logic for resident notes, following the repository pattern.
-/// It inherits from <see cref="Repository{ResidentNote}"/> to leverage common CRUD operations,
+/// It inherits from <see cref="RepositoryBase{ResidentNote}"/> to leverage common CRUD operations,
 /// and implements <see cref="IResidentNoteRepository"/> for domain-specific queries or behaviors.
 /// </remarks>
 /// <example>
@@ -21,6 +23,6 @@ namespace Infrastructure.Repositories;
 /// var notes = repository.GetAll();
 /// </code>
 /// </example>
-public class ResidentNoteRepository : Repository<ResidentNote>, IResidentNoteRepository
+public class ResidentNoteRepository(AppDbContext context) : RepositoryBase<ResidentNote>(context), IResidentNoteRepository
 {
 }

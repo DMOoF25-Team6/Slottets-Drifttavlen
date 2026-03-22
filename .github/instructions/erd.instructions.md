@@ -1,6 +1,6 @@
 ---
 description: 'Entity Relationship Diagram (ERD) quality requirements and template for project documentation.'
-applyTo: '**/erd.*.md'
+applyTo: 'docs/erd.*.md' and 'docs/use-cases/**/uc-*.erd.*.md'
 ---
 
 # Entity Relationship Diagram (ERD) Instructions
@@ -12,6 +12,7 @@ Use this as a starting point for any project requiring an ERD. Replace all place
 - Replace all bracketed placeholders in the Mermaid diagram with project-specific information.
 - Store ERD files in the centralized repository.
 - Review and approve ERDs with relevant stakeholders before acceptance.
+- Keep solution ERDs up to date with changes in the overall system design.
 
 ## Best Practices
 - Clearly define all entities, attributes, and relationships.
@@ -24,10 +25,15 @@ Use this as a starting point for any project requiring an ERD. Replace all place
 - Use the provided Mermaid diagram layout for consistency.
 
 ### File Naming
-- Name files in lowercase, using digits for version, following the pattern: `erd.xxxx.md` (e.g., `erd.0001.md`).
+- Name files in lowercase, using digits for version,
+  - following the pattern in ERD model for use case: `erd.xxxx.md` (e.g., `erd.0001.md`).
+    - for use case ERD models, include the use case identifier in the file name as a prefix.
+      - save files for use case ERD models in a subfolder named after the use case (e.g., `docs/use-cases/uc-001/uc-001.erd.0001.md`).
+    - for solution ERD models, do not include a use case identifier in the file name.
+      - save files for solution ERD models in the main `docs` folder (e.g., `docs/erd.0001.md`).
 - Increment version numbers for significant changes.
-- Include the date and author in the version log.
-- We only keep the latest version in the main branch; archive older versions in a designated folder.
+- Include the todays date and author in the version log.
+- we only keep the latest version in the main branch; delete older versions.
 
 ## Common Patterns
 ### Good Example
@@ -37,7 +43,7 @@ Use this as a starting point for any project requiring an ERD. Replace all place
 | Key               | Value                             |
 |-------------------|-----------------------------------|
 | Id                | ERD                               |
-| crossReference    |                                   |
+| crossReference    | DCD-xxx                           |
 
 ## Version Log
 | Version | Date       | Description              | Author     |

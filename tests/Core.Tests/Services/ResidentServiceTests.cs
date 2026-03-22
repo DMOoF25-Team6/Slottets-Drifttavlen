@@ -26,9 +26,9 @@ public class ResidentServiceTests
     {
         Guid id = Guid.NewGuid();
         Resident resident = new() { Id = id, Initials = "AB" };
-        _ = _mockRepo.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync(resident);
+        _ = _mockRepo.Setup(r => r.GetAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync(resident);
 
-        Resident? result = await _service.GetByIdAsync(id, TestContext.Current.CancellationToken);
+        Resident? result = await _service.GetAsync(id, TestContext.Current.CancellationToken);
 
         Assert.Equal(resident, result);
     }
@@ -37,9 +37,9 @@ public class ResidentServiceTests
     public async Task GetAllAsync_ReturnsResidents()
     {
         List<Resident> residents = [new Resident { Id = Guid.NewGuid(), Initials = "CD" }];
-        _ = _mockRepo.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(residents);
+        _ = _mockRepo.Setup(r => r.GetAsync(It.IsAny<CancellationToken>())).ReturnsAsync(residents);
 
-        IEnumerable<Resident> result = await _service.GetAllAsync(TestContext.Current.CancellationToken);
+        IEnumerable<Resident> result = await _service.GetAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(residents, result);
     }
