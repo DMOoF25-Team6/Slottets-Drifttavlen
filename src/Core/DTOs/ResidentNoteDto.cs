@@ -1,12 +1,5 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Core.DTOs;
 
 
@@ -15,9 +8,6 @@ namespace Core.DTOs;
 /// Contains only the information needed by the frontend.
 /// </summary>
 /// 
-
-
-
 public class ResidentNoteDto
 {
     // The unique identifier of the resident note.
@@ -25,9 +15,7 @@ public class ResidentNoteDto
 
     public string Note { get; set; } = string.Empty;
 
-    public DateTime dateTime {  get; set; }
+    public DateTime DateTime { get; set; }
 
     public string Initials { get; set; } = string.Empty;
-
-
 }

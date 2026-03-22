@@ -36,7 +36,7 @@ This instruction file provides a template and quality criteria for documenting O
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | OC                                |
+| Id                | [Use case identifier].OC          |
 | crossReference    | [Insert SSD Reference]            |
 
 ## Version Log

@@ -11,6 +11,9 @@
 |---------|------------|--------------------------|---------------|
 | 0001    | 2026-02-14 | Initial                  | Team 6        |
 
+## Product Owner Language
+Danish healthcare domain language
+
 ## Executive Summary
 Slottets Drifttavlen er et digitalt system designet til at optimere arbejdsgange og informationsdeling i pleje- og omsorgsmiljøer. Systemet skal erstatte papirbaserede rutiner og sikre effektiv kommunikation, opgavestyring og dokumentation.
 

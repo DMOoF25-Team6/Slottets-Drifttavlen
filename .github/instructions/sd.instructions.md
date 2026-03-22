@@ -63,7 +63,7 @@ Make a note if we need DTO or not, and if we need to transform data between laye
 
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | SD-[Insert Unique Identifier]     |
+| Id                | [Use case identifier].SD          |
 | crossReference    | [Insert SSD Reference] or [Insert OC Reference] |
 
 ## Version Log

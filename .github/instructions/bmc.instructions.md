@@ -32,7 +32,7 @@ Use this as a starting point for any project requiring a BMC. Replace all placeh
 ## Metadata
 | Key               | Value                             |
 |-------------------|-----------------------------------|
-| Id                | QC-BMC                            |
+| Id                | BMC                               |
 | crossReference    |                                   |
 
 ## Version

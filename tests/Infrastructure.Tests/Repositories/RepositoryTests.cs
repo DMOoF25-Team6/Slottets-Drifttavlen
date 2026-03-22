@@ -12,13 +12,13 @@ public class User : IEntity
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
 }
-public class UserRepository : Repository<User>
+public class UserRepository : RepositoryBase<User>
 {
     // No extra implementation needed for in-memory tests
 }
 
 /// <summary>
-/// Unit tests for the <see cref="Repository{TEntity}"/> class.
+/// Unit tests for the <see cref="RepositoryBase{TEntity}"/> class.
 /// </summary>
 public class RepositoryTests
 {
@@ -107,14 +107,14 @@ public class RepositoryTests
         User added = await _repository.AddAsync(user, TestContext.Current.CancellationToken);
 
         // Act
-        User? found = await _repository.GetByIdAsync(added.Id, TestContext.Current.CancellationToken);
+        User? found = await _repository.GetAsync(added.Id, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(found);
         Assert.Equal(added.Id, found!.Id);
     }
 
-    // GetAllAsync
+    // GetAsync
     [Fact]
     public async Task GetAllAsync_MultipleUsers_ReturnsAllUsers()
     {
@@ -126,7 +126,7 @@ public class RepositoryTests
         ];
         _ = await _repository.AddRangeAsync(users, TestContext.Current.CancellationToken);
         // Act
-        IEnumerable<User> results = await _repository.GetAllAsync(TestContext.Current.CancellationToken);
+        IEnumerable<User> results = await _repository.GetAsync(TestContext.Current.CancellationToken);
         // Assert
         Assert.Contains(results, u => u.Name == "Alice");
         Assert.Contains(results, u => u.Name == "Bob");
@@ -145,7 +145,7 @@ public class RepositoryTests
         await _repository.UpdateAsync(added, TestContext.Current.CancellationToken);
 
         // Assert
-        User? updated = await _repository.GetByIdAsync(added.Id, TestContext.Current.CancellationToken);
+        User? updated = await _repository.GetAsync(added.Id, TestContext.Current.CancellationToken);
         Assert.NotNull(updated);
         Assert.Equal("Alice Updated", updated!.Name);
     }
@@ -171,7 +171,7 @@ public class RepositoryTests
         // Assert
         foreach (User updated in updatedUsers)
         {
-            User? found = await _repository.GetByIdAsync(updated.Id, TestContext.Current.CancellationToken);
+            User? found = await _repository.GetAsync(updated.Id, TestContext.Current.CancellationToken);
             Assert.NotNull(found);
             Assert.EndsWith(" Updated", found!.Name);
         }
