@@ -1,6 +1,6 @@
 ---
 description: 'Use Case quality requirements and template for project documentation.'
-applyTo: 'docs/use-cases/**/uc-*.*.md'
+applyTo: 'docs/use-cases/**/uc-*.*.md' or 'docs/use-cases/**/uc-*.*.*.md'
 ---
 
 # Use Case Instructions
@@ -11,8 +11,9 @@ Replace all placeholders in the template with project-specific content.
 ## General Instructions
 - Use this template for all use case documentation in markdown format.
 - Replace all bracketed placeholders in the template with project-specific information.
-- Store use case files in the centralized repository under the `use-cases` folder and `UseCaseXXX-descriptions` subfolders (no spaces in names).
-- Review and approve use cases with relevant stakeholders before acceptance.
+- Store use case files in the centralized repository under the `use-cases` folder and `uc-<use case identifier>-descriptions` subfolders (no spaces in names).
+- If product owner domain language is different from English, create a separate file for the diagram content in that language while maintaining English for metadata and versioning. Use a language code suffix in the file name , following the pattern: `uc-<use case identifier>.<version>.da.md` for Danish). See Product Owner Domain Language in `docs/bc.0001.md` for more details.
+- Make or update Glossary entries for any new terms introduced in the use case documentation (e.g, "Painkiller", "Smertstillende" in Danish). Filename the glossary entry with the same language code suffix as the use case file (e.g., `docs/glossary.da.md` for Danish).
 
 ## Best Practices
 - Clearly define all required use case sections.
@@ -27,7 +28,7 @@ Replace all placeholders in the template with project-specific content.
 - Use the provided markdown template for consistency.
 
 ### File Naming
-- Name files and folders without spaces, using digits for use case numbers, following the pattern: `usecase.xxxx.md` (e.g., `usecase.0001.md`).
+- Name files and folders without spaces, using digits for use case numbers, following the pattern: `uc-<use case identifier>.<version>.md` (e.g., `uc-003.0001.md`).
 
 ## Common Patterns
 ### Good Example
@@ -36,7 +37,7 @@ Replace all placeholders in the template with project-specific content.
 | Key               | Value                             |
 |-------------------|-----------------------------------|
 | Id                | UC-XXX                            |
-| crossReference    |                                   |
+| crossReference    | BC                                |
 
 ## Version Log
 | Version | Date       | Description              | Author     |
@@ -56,7 +57,7 @@ Replace all placeholders in the template with project-specific content.
 **Success Flow**:
 [insert flow as one paragraph]
 
-### Casual Use Case
+### CaseCasual Use Case
 **Title**: [Insert Title]
 **Scope**: [Insert Scope]
 **Level**: [Insert Level]
@@ -107,13 +108,16 @@ b: At any time, [Insert Extension Description]
 
 ```
 
-## Validation
-- Review use cases for completeness, clarity, and correct use of the template.
-- Verify that all placeholders are replaced with project-specific content.
-
+```markdown
 ## Maintenance
 - Update the version and change log for major changes.
 - Regularly review use cases for accuracy and relevance.
+- Review and approve use cases with relevant stakeholders before acceptance.
+```
+
+## Validation
+- Review use cases for completeness, clarity, and correct use of the template.
+- Verify that all placeholders are replaced with project-specific content.
 
 ## Language
 - Active form
