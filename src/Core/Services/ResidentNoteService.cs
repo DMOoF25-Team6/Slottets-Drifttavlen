@@ -9,17 +9,10 @@ using Domain.Entities;
 
 namespace Core.Services;
 
-public class ResidentNoteService : IResidentNoteService
+public class ResidentNoteService(IResidentNoteRepository residentNoteRepository) : IResidentNoteService
 {
-    
-    private readonly IResidentNoteRepository _residentNoteRepository;
 
-
-    public ResidentNoteService(IResidentNoteRepository residentNoteRepository)
-    {
-        // Constructor logic, if needed
-        _residentNoteRepository = residentNoteRepository;
-    }
+    private readonly IResidentNoteRepository _residentNoteRepository = residentNoteRepository;
 
     public Task<ResidentNote> AddAsync(Guid residentId, string noteText, CancellationToken cancellationToken = default)
     {

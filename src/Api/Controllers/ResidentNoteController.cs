@@ -1,8 +1,10 @@
-﻿// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
 using Core.DTOs;
 using Core.Interfaces.Services;
+
+using Domain.Entities;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,17 +12,15 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ResidentNoteController : ControllerBase
+public class ResidentNoteController(IResidentNoteService residentNoteService) : ControllerBase
 {
-    private readonly IResidentNoteService _residentNoteService;
-
-    public ResidentNoteController(IResidentNoteService residentNoteService) => _residentNoteService = residentNoteService;
+    private readonly IResidentNoteService _residentNoteService = residentNoteService;
 
     // GET /api/residentnote/{residentId}
     [HttpGet("{residentId}")]
     public async Task<IActionResult> GetAllByResidentId(Guid residentId, CancellationToken cancellationToken)
     {
-        var notes = await _residentNoteService.GetAllByResidentIdAsync(residentId, cancellationToken);
+        IEnumerable<ResidentNote> notes = await _residentNoteService.GetAllByResidentIdAsync(residentId, cancellationToken);
         return Ok(notes);
     }
 
@@ -28,7 +28,7 @@ public class ResidentNoteController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] AddResidentNoteDto dto, CancellationToken cancellationToken)
     {
-        var note = await _residentNoteService.AddAsync(dto.ResidentId, dto.NoteText, cancellationToken);
+        ResidentNote note = await _residentNoteService.AddAsync(dto.ResidentId, dto.NoteText, cancellationToken);
         return Ok(note);
     }
 
