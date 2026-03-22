@@ -1,7 +1,11 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using Core.Interfaces.ApiClients;
+using Core.Services;
+
 using Infrastructure;
+using Infrastructure.Services;
 
 using WebUI.Components;
 
@@ -42,6 +46,10 @@ public class Program
             .AddInteractiveWebAssemblyComponents();
 
         _ = builder.Services.AddInfrastructure();
+
+        //Add ResidentService and API client 
+        builder.Services.AddHttpClient<IResidentApiClient, ResidentApiClient>();
+        builder.Services.AddScoped<ResidentService>();
 
         WebApplication app = builder.Build();
 
