@@ -28,7 +28,9 @@
 - [SQL kvalitetskriterier](docs/quality-criteria/qc-sql.0001.md)
 
 ## Virksomhedsprofil
-Slottet er et døgnbemandet bosted, der yder omsorg og pleje til borgere med særlige behov. Personalet arbejder i dag-, aften- og nattevagter og sikrer kontinuerlig støtte og pleje. Teamet samarbejder dagligt om at levere høj kvalitet og sikre borgernes trivsel og sikkerhed.
+Slottet er et døgnbemandet bosted, der yder omsorg og pleje til borgere med særlige behov.
+Personalet arbejder i dag-, aften- og nattevagter og sikrer kontinuerlig støtte og pleje.
+Teamet samarbejder dagligt om at levere høj kvalitet og sikre borgernes trivsel og sikkerhed.
 
 ## Arbejdsgang
 Ved vagtskifte udveksler afgående og tilgående vagthold kritisk information om borgernes tilstand, medicinhåndtering og opgaver. Overlapsskemaet indeholder:
@@ -39,7 +41,8 @@ Ved vagtskifte udveksler afgående og tilgående vagthold kritisk information om
 - Særlige hændelser
 
 ## Problemstilling
-Slottet anvender i dag et papirbaseret overlapsskema, hvilket medfører risiko for fejl, manglende historik og tidskrævende håndtering. Projektet har til formål at udvikle et digitalt IT-system, der erstatter det papirbaserede skema og understøtter personalets daglige arbejde mere effektivt og sikkert.
+Slottet anvender i dag et papirbaseret overlapsskema, hvilket medfører risiko for fejl, manglende historik og tidskrævende håndtering.
+Projektet har til formål at udvikle et digitalt IT-system, der erstatter det papirbaserede skema og understøtter personalets daglige arbejde mere effektivt og sikkert.
 
 ## Systemdesign og Funktionalitet
 - **Vagtvalg:** Personalet vælger vagttype ved login.
@@ -87,33 +90,33 @@ Se `docs/` for:
 
 ## Folder Structure & Responsibilities
 
-This solution follows Clean Architecture principles and is organized as follows:
+Løsningen følger Clean Architecture-principper og er organiseret således:
 
 ```
-├── src/                # All production source code
-│   ├── Core/           # Core business logic (use cases, interfaces)
-│   ├── Domain/         # Domain models and business entities
-│   ├── Infrastructure/ # Infrastructure (data access, external services)
-│   └── WebUI/          # Blazor frontend (UI and client logic)
-├── tests/              # All test projects, mirroring src/ structure
-├── docs/               # Documentation (architecture, use cases, analysis)
-├── LocalNuget/         # Local NuGet packages
-├── .github/            # GitHub workflows and Copilot instructions
-├── docker-compose.yml  # Docker Compose configuration
-├── Directory.Build.props/targets # Solution-wide MSBuild settings
-├── Slottet.CareManagement.slnx # Solution file
-└── global.json         # .NET SDK version management
+├── src/                # Al produktionskode
+│   ├── Core/           # Kerne forretningslogik (use cases, interfaces)
+│   ├── Domain/         # Domænemodeller og forretningsenheder
+│   ├── Infrastructure/ # Infrastruktur (dataadgang, eksterne services)
+│   └── WebUI/          # Blazor frontend (UI og klientlogik)
+├── tests/              # Alle testprojekter, spejler src/ strukturen
+├── docs/               # Dokumentation (arkitektur, use cases, analyse)
+├── LocalNuget/         # Lokale NuGet-pakker
+├── .github/            # GitHub workflows og Copilot-instruktioner
+├── docker-compose.yml  # Docker Compose-konfiguration
+├── Directory.Build.props/targets # Løsningsdækkende MSBuild-indstillinger
+├── Slottet.CareManagement.slnx # Løsningsfil
+└── global.json         # .NET SDK versionstyring
 ```
 
-### Folder Responsibilities
-- **src/Core/**: Contains core business logic, application services, and interfaces. No dependencies on other layers.
-- **src/Domain/**: Contains domain entities, value objects, and domain logic. Pure business rules.
-- **src/Infrastructure/**: Implements interfaces from Core, handles data access (e.g., MySQL), and external integrations.
-- **src/WebUI/**: Blazor frontend project for user interface and client-side logic.
-- **tests/**: Contains test projects for each main layer, following the same structure as `src/`.
-- **docs/**: Markdown documentation for architecture, use cases, and analysis.
-- **LocalNuget/**: Local NuGet package storage.
-- **.github/**: CI/CD workflows and Copilot instructions.
+### Mappeansvar
+- **src/Core/**: Indeholder kerne forretningslogik, applikationstjenester og interfaces. Ingen afhængigheder til andre lag.
+- **src/Domain/**: Indeholder domæneentiteter, value objects og domænelogik. Rene forretningsregler.
+- **src/Infrastructure/**: Implementerer interfaces fra Core, håndterer dataadgang (f.eks. MySQL) og eksterne integrationer.
+- **src/WebUI/**: Blazor frontend-projekt til brugergrænseflade og klientlogik.
+- **tests/**: Indeholder testprojekter for hvert hovedlag, følger samme struktur som `src/`.
+- **docs/**: Markdown-dokumentation for arkitektur, use cases og analyse.
+- **LocalNuget/**: Lokal NuGet-pakkelager.
+- **.github/**: CI/CD workflows og Copilot-instruktioner.
 
 For more details, see the documentation in `docs/` and `.github/copilot-instructions.md`.
 
@@ -173,4 +176,34 @@ Enable-WindowsOptionalFeature -Online -FeatureName "Containers-DisposableClientV
 Kør PowerShell som administrator og genstart computeren hvis nødvendigt.
 
 
+## For developers
+
+### Copilot Agent Instructions
+Visual Studio Code's Copilot Agent kan hjælpe med at automatisere opgaver og generere kode baseret på dine instruktioner. 
+BC skal være placeret i docs/bc.md for at Copilot Agent kan bruge det som reference til at generere relevante i relavant sprog og kontekst.
+For at få mest muligt ud af Copilot Agent, følg disse retningslinjer:
+
 ---
+
+#### Domain Model (DM) Automation
+Sørg for at have en klar og detaljeret usecase beskrivelse, da Copilot Agent vil bruge denne information til at generere et relevant og præcist domænemodeldiagram.
+
+Skriv føllgende instruktion for at generere DM:
+```plaintext
+#dm-artifact.agent.md
+Create DM for usecase uc-xxx
+```
+Tilpas attributter og relationer i DM baseret på usecase-beskrivelsen for at sikre, at det afspejler de nødvendige forretningsregler og entiteter korrekt.
+
+---
+
+#### System Sequence Diagram (SSD) Automation
+Sørg for at have en klar og detaljeret usecase beskrivelse, da Copilot Agent vil bruge denne information til at generere et relevant og præcist systemsekvensdiagram.
+
+Skriv følgende instruktion for at generere SSD:
+```plaintext
+#ssd-artifact.agent.md
+Create SSD for usecase uc-xxx
+```
+
+Tilpas aktører, beskeder og systemkomponenter i SSD baseret på usecase-beskrivelsen for at sikre, at det afspejler de nødvendige interaktioner og systemadfærd korrekt.
