@@ -5,6 +5,7 @@
 |------------------|-----------------------------------|
 | Id               | BC                                |
 | crossReference   |                                   |
+| ProductOwnerLanguage | Danish Healthcare             |
 
 ## Versionslog
 | Version | Dato       | Beskrivelse              | Forfatter     |

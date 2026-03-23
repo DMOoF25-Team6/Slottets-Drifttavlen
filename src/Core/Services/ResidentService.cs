@@ -1,9 +1,9 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-using Core.Interfaces.Repositories;
 
-using System.Net.Http.Json;
+using Core.Interfaces.ApiClients;
+using Core.Interfaces.Repositories;
 
 using Domain.Entities;
 
@@ -22,7 +22,8 @@ namespace Core.Services;
 public class ResidentService
 {
     private readonly IResidentRepository _residentRepository;
-    private readonly HttpClient _httpClient;
+    private readonly IResidentApiClient _residentApiClient;
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ResidentService"/> class.
@@ -31,10 +32,11 @@ public class ResidentService
     ///  The dependency injection system now provides: a ResidentRepository and an HttpClient to the ResidentService.
     /// The service can now make HTTP requests to an API.
     /// 
-    public ResidentService(IResidentRepository residentRepository, HttpClient httpClient)
+    public ResidentService(IResidentRepository residentRepository, IResidentApiClient residentApiClient)
     {
         _residentRepository = residentRepository;
-        _httpClient = httpClient;
+        _residentApiClient = residentApiClient;
+        
     }
 
 
@@ -50,13 +52,16 @@ public class ResidentService
     /// <remarks>
     /// This method is now refactored to use an API instead of directly accessing the repository.
     /// </remarks>
-    public async Task<Resident?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    
+    public Task<Resident?> GetByIdAsync(Guid id,CancellationToken cancellationToken = default)
     {
-        return await _httpClient.GetFromJsonAsync<Resident>(
-            $"api/residents/{id}",
-            cancellationToken
-        );
+        return _residentApiClient.GetByIdAsync(id, cancellationToken);
+
     }
+
+
+
+
 
 
     /// <summary>
@@ -73,17 +78,7 @@ public class ResidentService
     /// The JSON response from the API is automatically deserialized into a collection of
     /// <see cref="Resident"/> objects.
     /// </remarks>
-    public async Task<IEnumerable<Resident>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        var residents = await _httpClient.GetFromJsonAsync<IEnumerable<Resident>>(
-            "api/residents",
-            cancellationToken
-        );
-
-        //null-coalescing operator.If residents is null, return an empty list instead.
-        return residents ?? new List<Resident>();
-
-    }
+    
 
 
 

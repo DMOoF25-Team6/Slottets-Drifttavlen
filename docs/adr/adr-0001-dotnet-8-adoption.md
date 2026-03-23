@@ -1,7 +1,7 @@
 ---
 title: "ADR-0001: .NET 8 Adoption"
-status: "Proposed"
-date: "2024-06-07"
+status: "Accepted"
+date: "2026-02-07"
 authors: "Team6"
 tags: ["architecture", "decision"]
 supersedes: ""
@@ -12,7 +12,7 @@ superseded_by: ""
 
 ## Status
 
-**Proposed**
+**Accepted**
 
 ## Context
 
