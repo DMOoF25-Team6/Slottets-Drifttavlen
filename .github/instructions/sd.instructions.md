@@ -23,7 +23,7 @@ applyTo: '**/uc*.sd.*.md'
 ## Metadata
 | Key            | Value           |
 |----------------|-----------------|
-| Id             | [Use case].SD  |
+| Id             | [Use case].SD   |
 | crossReference | [Use case].SSD [Use case].OC   |
 
 ## Version Log
