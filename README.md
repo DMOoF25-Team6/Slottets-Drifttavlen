@@ -126,8 +126,7 @@ For more details, see the documentation in `docs/` and `.github/copilot-instruct
 
 ### Krav
 - .NET 8 SDK
-- Docker (valgfrit, anbefales til database)
-- SQL Server eller MySQL
+- Docker
 
 ### Klon Repository
 ```sh
@@ -142,68 +141,76 @@ MYSQL_ROOT_PASSWORD=your_root_password
 MYSQL_DATABASE=your_database_name
 MYSQL_USER=your_username
 MYSQL_PASSWORD=your_user_password
+MYSQL_HOST=localhost
 ```
 Ændre værdierne til dine ønskede databaseindstillinger.
 
-#### Start MySQL-containeren:
+#### Kør SQL-server:
+```sh
+docker-compose up slottets-sqlserver
+```
+
+#### Fjern containeren:
+```sh
+docker-compose down slottets-sqlserver
+```
+
+### Kør applikationen
 ```sh
 docker-compose up
 ```
+
 Alternativt direkte med Docker:
 ```sh
 docker run --name slottets-sqlserver -e MYSQL_ROOT_PASSWORD=your_root_password -e MYSQL_DATABASE=your_database_name -e MYSQL_USER=your_username -e MYSQL_PASSWORD=your_user_password -p 3307:3306 -d mysql
 ```
 
-### Byg og kør applikationen
-Byg løsningen:
-```sh
-dotnet build Slottet.CareManagement.slnx
-```
-Kør tests:
-```sh
-dotnet test Slottet.CareManagement.slnx
-```
-Start applikationen:
-```sh
-dotnet run --project src/WebUI/WebUI/WebUI.csproj
-```
-
-### Windows sandbox
-For at oprette et isoleret testmiljø på Windows kan du aktivere Windows Sandbox (version 2) med:
-```powershell
-Enable-WindowsOptionalFeature -Online -FeatureName "Containers-DisposableClientVM" -All
-```
-Kør PowerShell som administrator og genstart computeren hvis nødvendigt.
-
-
+---
 ## For developers
+To ensure consistency and quality in the code, follow these guidelines:
 
 ### Copilot Agent Instructions
-Visual Studio Code's Copilot Agent kan hjælpe med at automatisere opgaver og generere kode baseret på dine instruktioner. 
-BC skal være placeret i docs/bc.md for at Copilot Agent kan bruge det som reference til at generere relevante i relavant sprog og kontekst.
-For at få mest muligt ud af Copilot Agent, følg disse retningslinjer:
+Visual Studio Coplit Agent can help automate tasks and generate code based on your instructions.
+BC should be placed in docs/bc.md for Copilot Agent to use it as a reference to generate relevant code in the relevant language and context.
+To get the most out of Copilot Agent, follow these guidelines:
 
----
+#### Create Use Cases (Coming soon)
+```plaintext
+#uc-artifact.agent.md
+Create use case for "Vagtvalg og Borgeroversigt"
+```
 
-#### Domain Model (DM) Automation
-Sørg for at have en klar og detaljeret usecase beskrivelse, da Copilot Agent vil bruge denne information til at generere et relevant og præcist domænemodeldiagram.
+#### Create Domain Models
 
-Skriv føllgende instruktion for at generere DM:
 ```plaintext
 #dm-artifact.agent.md
-Create DM for usecase uc-xxx
+Update dm for usecase 003
 ```
-Tilpas attributter og relationer i DM baseret på usecase-beskrivelsen for at sikre, at det afspejler de nødvendige forretningsregler og entiteter korrekt.
 
----
-
-#### System Sequence Diagram (SSD) Automation
-Sørg for at have en klar og detaljeret usecase beskrivelse, da Copilot Agent vil bruge denne information til at generere et relevant og præcist systemsekvensdiagram.
-
-Skriv følgende instruktion for at generere SSD:
+#### Create SSD
 ```plaintext
 #ssd-artifact.agent.md
-Create SSD for usecase uc-xxx
+Create ssd for use case 003
 ```
 
-Tilpas aktører, beskeder og systemkomponenter i SSD baseret på usecase-beskrivelsen for at sikre, at det afspejler de nødvendige interaktioner og systemadfærd korrekt.
+#### Create OC
+```plaintext
+#oc-artifact.agent.md
+Create oc for use case 003
+```
+
+#### Create SD
+```plaintext
+#sd-artifact.agent.md
+Create sd for use case 003
+We are using webapi for data access
+```
+
+#### Create DCD / Code (Coming soon)
+```plaintext
+#dcd-artifact.agent.md
+Create dcd for use case 003
+```
+
+##### Note
+- Trigger words are create / update `[dm,sd,oc,ssd,dcd,uc]` for "Use Case Name"
