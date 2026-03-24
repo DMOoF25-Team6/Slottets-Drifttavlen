@@ -33,8 +33,8 @@ classDiagram
       Red
     }
     class ResidentNote {
-      +Content: string
-      +CreatedAt: DateTime
+      +Note: string
+      +EditedAt: DateTime
     }
   }
 
@@ -122,4 +122,4 @@ classDiagram
 
 This DCD documents the core repository and interface abstractions used in the solution, following Clean Architecture principles. All repositories implement the generic `IRepository<TEntity>` interface, which enforces CRUD operations for domain entities implementing `IEntity`. The `Repository<TEntity>` class provides a base implementation for infrastructure repositories.
 
-> All placeholders have been replaced with project-specific content. See `/docs/quality-criteria/artifact/lld/qc-dcd.0001.md` for quality criteria and `/docs/glosery.md` for glossary updates if class names change from previous artifacts.
+

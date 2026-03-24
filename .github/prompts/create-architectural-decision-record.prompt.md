@@ -48,7 +48,7 @@ superseded_by: ""
 
 ## Status
 
-**Proposed** | Accepted | Rejected | Superseded | Deprecated
+**Proposed** | **Accepted** | **Rejected** | **Superseded** | **Deprecated**
 
 ## Context
 

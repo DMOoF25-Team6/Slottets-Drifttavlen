@@ -7,8 +7,6 @@ using Domain.Entities;
 
 using Infrastructure.Persistents;
 
-using Microsoft.EntityFrameworkCore;
-
 namespace Infrastructure.Repositories;
 
 /// <summary>
@@ -26,28 +24,6 @@ namespace Infrastructure.Repositories;
 /// </code>
 /// </example>
 /// 
-
-
-
-public class ResidentNoteRepository : Repository<ResidentNote>, IResidentNoteRepository
+public class ResidentNoteRepository(AppDbContext context) : Repository<ResidentNote>(context), IResidentNoteRepository
 {
-
-    private readonly AppDbContext _context;
-
-    //The constructor receives AppDbContext through dependency injection
-    public ResidentNoteRepository(AppDbContext context) 
-    {
-        _context = context;
-    }
-
-
-    public async Task<IEnumerable<ResidentNote>> GetAllbyResidentAsync()
-    {
-        // get all resident notes with their associated resident. 
-        return await _context.ResidentNotes.Include (n=> n.Resident).ToListAsync();
-
-    }
-
 }
-
-

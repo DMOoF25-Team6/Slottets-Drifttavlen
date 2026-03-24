@@ -28,7 +28,9 @@
 - [SQL kvalitetskriterier](docs/quality-criteria/qc-sql.0001.md)
 
 ## Virksomhedsprofil
-Slottet er et døgnbemandet bosted, der yder omsorg og pleje til borgere med særlige behov. Personalet arbejder i dag-, aften- og nattevagter og sikrer kontinuerlig støtte og pleje. Teamet samarbejder dagligt om at levere høj kvalitet og sikre borgernes trivsel og sikkerhed.
+Slottet er et døgnbemandet bosted, der yder omsorg og pleje til borgere med særlige behov.
+Personalet arbejder i dag-, aften- og nattevagter og sikrer kontinuerlig støtte og pleje.
+Teamet samarbejder dagligt om at levere høj kvalitet og sikre borgernes trivsel og sikkerhed.
 
 ## Arbejdsgang
 Ved vagtskifte udveksler afgående og tilgående vagthold kritisk information om borgernes tilstand, medicinhåndtering og opgaver. Overlapsskemaet indeholder:
@@ -39,7 +41,8 @@ Ved vagtskifte udveksler afgående og tilgående vagthold kritisk information om
 - Særlige hændelser
 
 ## Problemstilling
-Slottet anvender i dag et papirbaseret overlapsskema, hvilket medfører risiko for fejl, manglende historik og tidskrævende håndtering. Projektet har til formål at udvikle et digitalt IT-system, der erstatter det papirbaserede skema og understøtter personalets daglige arbejde mere effektivt og sikkert.
+Slottet anvender i dag et papirbaseret overlapsskema, hvilket medfører risiko for fejl, manglende historik og tidskrævende håndtering.
+Projektet har til formål at udvikle et digitalt IT-system, der erstatter det papirbaserede skema og understøtter personalets daglige arbejde mere effektivt og sikkert.
 
 ## Systemdesign og Funktionalitet
 - **Vagtvalg:** Personalet vælger vagttype ved login.
@@ -87,33 +90,33 @@ Se `docs/` for:
 
 ## Folder Structure & Responsibilities
 
-This solution follows Clean Architecture principles and is organized as follows:
+Løsningen følger Clean Architecture-principper og er organiseret således:
 
 ```
-├── src/                # All production source code
-│   ├── Core/           # Core business logic (use cases, interfaces)
-│   ├── Domain/         # Domain models and business entities
-│   ├── Infrastructure/ # Infrastructure (data access, external services)
-│   └── WebUI/          # Blazor frontend (UI and client logic)
-├── tests/              # All test projects, mirroring src/ structure
-├── docs/               # Documentation (architecture, use cases, analysis)
-├── LocalNuget/         # Local NuGet packages
-├── .github/            # GitHub workflows and Copilot instructions
-├── docker-compose.yml  # Docker Compose configuration
-├── Directory.Build.props/targets # Solution-wide MSBuild settings
-├── Slottet.CareManagement.slnx # Solution file
-└── global.json         # .NET SDK version management
+├── src/                # Al produktionskode
+│   ├── Core/           # Kerne forretningslogik (use cases, interfaces)
+│   ├── Domain/         # Domænemodeller og forretningsenheder
+│   ├── Infrastructure/ # Infrastruktur (dataadgang, eksterne services)
+│   └── WebUI/          # Blazor frontend (UI og klientlogik)
+├── tests/              # Alle testprojekter, spejler src/ strukturen
+├── docs/               # Dokumentation (arkitektur, use cases, analyse)
+├── LocalNuget/         # Lokale NuGet-pakker
+├── .github/            # GitHub workflows og Copilot-instruktioner
+├── docker-compose.yml  # Docker Compose-konfiguration
+├── Directory.Build.props/targets # Løsningsdækkende MSBuild-indstillinger
+├── Slottet.CareManagement.slnx # Løsningsfil
+└── global.json         # .NET SDK versionstyring
 ```
 
-### Folder Responsibilities
-- **src/Core/**: Contains core business logic, application services, and interfaces. No dependencies on other layers.
-- **src/Domain/**: Contains domain entities, value objects, and domain logic. Pure business rules.
-- **src/Infrastructure/**: Implements interfaces from Core, handles data access (e.g., MySQL), and external integrations.
-- **src/WebUI/**: Blazor frontend project for user interface and client-side logic.
-- **tests/**: Contains test projects for each main layer, following the same structure as `src/`.
-- **docs/**: Markdown documentation for architecture, use cases, and analysis.
-- **LocalNuget/**: Local NuGet package storage.
-- **.github/**: CI/CD workflows and Copilot instructions.
+### Mappeansvar
+- **src/Core/**: Indeholder kerne forretningslogik, applikationstjenester og interfaces. Ingen afhængigheder til andre lag.
+- **src/Domain/**: Indeholder domæneentiteter, value objects og domænelogik. Rene forretningsregler.
+- **src/Infrastructure/**: Implementerer interfaces fra Core, håndterer dataadgang (f.eks. MySQL) og eksterne integrationer.
+- **src/WebUI/**: Blazor frontend-projekt til brugergrænseflade og klientlogik.
+- **tests/**: Indeholder testprojekter for hvert hovedlag, følger samme struktur som `src/`.
+- **docs/**: Markdown-dokumentation for arkitektur, use cases og analyse.
+- **LocalNuget/**: Lokal NuGet-pakkelager.
+- **.github/**: CI/CD workflows og Copilot-instruktioner.
 
 For more details, see the documentation in `docs/` and `.github/copilot-instructions.md`.
 
@@ -123,8 +126,7 @@ For more details, see the documentation in `docs/` and `.github/copilot-instruct
 
 ### Krav
 - .NET 8 SDK
-- Docker (valgfrit, anbefales til database)
-- SQL Server eller MySQL
+- Docker
 
 ### Klon Repository
 ```sh
@@ -139,38 +141,76 @@ MYSQL_ROOT_PASSWORD=your_root_password
 MYSQL_DATABASE=your_database_name
 MYSQL_USER=your_username
 MYSQL_PASSWORD=your_user_password
+MYSQL_HOST=localhost
 ```
 Ændre værdierne til dine ønskede databaseindstillinger.
 
-#### Start MySQL-containeren:
+#### Kør SQL-server:
+```sh
+docker-compose up slottets-sqlserver
+```
+
+#### Fjern containeren:
+```sh
+docker-compose down slottets-sqlserver
+```
+
+### Kør applikationen
 ```sh
 docker-compose up
 ```
+
 Alternativt direkte med Docker:
 ```sh
 docker run --name slottets-sqlserver -e MYSQL_ROOT_PASSWORD=your_root_password -e MYSQL_DATABASE=your_database_name -e MYSQL_USER=your_username -e MYSQL_PASSWORD=your_user_password -p 3307:3306 -d mysql
 ```
 
-### Byg og kør applikationen
-Byg løsningen:
-```sh
-dotnet build Slottet.CareManagement.slnx
-```
-Kør tests:
-```sh
-dotnet test Slottet.CareManagement.slnx
-```
-Start applikationen:
-```sh
-dotnet run --project src/WebUI/WebUI/WebUI.csproj
-```
-
-### Windows sandbox
-For at oprette et isoleret testmiljø på Windows kan du aktivere Windows Sandbox (version 2) med:
-```powershell
-Enable-WindowsOptionalFeature -Online -FeatureName "Containers-DisposableClientVM" -All
-```
-Kør PowerShell som administrator og genstart computeren hvis nødvendigt.
-
-
 ---
+## For developers
+To ensure consistency and quality in the code, follow these guidelines:
+
+### Copilot Agent Instructions
+Visual Studio Coplit Agent can help automate tasks and generate code based on your instructions.
+BC should be placed in docs/bc.md for Copilot Agent to use it as a reference to generate relevant code in the relevant language and context.
+To get the most out of Copilot Agent, follow these guidelines:
+
+#### Create Use Cases (Coming soon)
+```plaintext
+#uc-artifact.agent.md
+Create use case for "Vagtvalg og Borgeroversigt"
+```
+
+#### Create Domain Models
+
+```plaintext
+#dm-artifact.agent.md
+Update dm for usecase 003
+```
+
+#### Create SSD
+```plaintext
+#ssd-artifact.agent.md
+Create ssd for use case 003
+```
+
+#### Create OC
+```plaintext
+#oc-artifact.agent.md
+Create oc for use case 003
+```
+
+#### Create SD
+```plaintext
+#sd-artifact.agent.md
+Create sd for use case 003
+We are using webapi for data access
+```
+
+#### Create DCD / Code (Coming soon)
+```plaintext
+#dcd-artifact.agent.md
+Create dcd for use case 003
+```
+
+##### Note
+- Trigger words are create / update `[dm,sd,oc,ssd,dcd,uc]` for "Use Case Name"

@@ -4,89 +4,81 @@ description: 'Sequence Diagram (SD) quality requirements and template for projec
 applyTo: '**/uc*.sd.*.md'
 ---
 
-# Sequence Diagram (SD) Instructions
+# SD Instructions (Summary)
+- Use the provided SD markdown template or examples.
+- Replace all placeholders with project-specific content.
+- Store SD files in `docs/use-cases/uc-<Insert Use Case Identifier>*/` as `uc-<Insert Use Case Identifier>.sd.<Insert Version>.md`.
+- Increment version numbers for significant changes; keep only the latest version in main, archive older versions.
+- Include metadata, version log (with date, author), and use Mermaid sequence diagram.
+- Create files in English; if product owner domain language differs, create a separate file with language code suffix.
+- Update glossary files for new terms.
+- Validate SDs for completeness, clarity, and template compliance.
 
-This instruction file provides a template and quality criteria for documenting Sequence Diagrams (SD) in markdown format using Mermaid syntax.
-Use this as a starting point for any project requiring a Sequence Diagram.
-Replace all placeholders in the template with project-specific content.
 
-## General Instructions
-
-- Use this template for all Sequence Diagram documentation in markdown format.
-- Replace all bracketed placeholders in the Mermaid diagram and Markdown with project-specific information.
-- Store Sequence Diagram files in the centralized repository.
-- Review and approve Sequence Diagrams with relevant stakeholders before acceptance.
-
-## Best Practices
-
-- Clearly define all relevant participants and interactions.
-- Use clear, concise, and process-oriented language.
-- Document all assumptions and dependencies.
-- Ensure visuals and layout are consistent and easy to understand.
-- Use valid Mermaid sequence diagram syntax.
-
-## Code Standards
-
-- Each Sequence Diagram must have a unique version identifier and a documented change log.
-- Use the provided Mermaid diagram layout for consistency.
-- Each participant lifecycle should be clearly defined.
-
-### File Naming
-- Name files in lowercase, using digits for version,
-  - following the file name pattern: `uc-xxx.sd.xxxx.md` (e.g., `uc-xxx.sd.0001.md`).
-    - add use case identifier as prefix for filename.
-    - save files in a subfolder named after the use case (e.g., `docs/use-cases/uc-xxx/uc-xxx.sd.0001.md`).
-- Increment version numbers for significant changes.
-- Include the todays date and author in the version log.
-- We only keep the latest version in the main branch; delete older versions or archive them in a designated folder `archive`.
-
-## Common Patterns
-
-Properly we have a WebUI, but we can also have other participants in the sequence diagram, such as backend services, databases, external APIs, or other system components.
-
-Backend participants could be an IService, IRepository, Controller, or any other relevant role or system component.
-
-Actor can be used to represent a user or external system that interacts with the system being modeled. For example, in a sequence diagram for a web application, an actor could represent a user who interacts with the WebUI.
-- As for interactions, we can use description without methods.
-
-Participants interactoins can be represented as messages between participants, and we can use the following guidelines for message descriptions:
-- Use methods names with parameters as message descriptions to clearly indicate the interactions between participants.
-- For paramters, use a simplified format (e.g., `methodName(param1, param2)`) to maintain clarity while conveying the necessary information about the interactions. See solutions dm.xxxx.md for examples of how to format messages with parameters in the sequence diagram.
-
-Make a note if we need DTO or not, and if we need to transform data between layers (e.g., from WebUI to Service layer) and example of how the data transformation should be done.
-
-### Good Example
+## SD Template (Minimal):
 ```markdown
 # [Insert Sequence Diagram Title]
 
-## Metadata
 
-| Key               | Value                             |
-|-------------------|-----------------------------------|
-| Id                | SD-[Insert Unique Identifier]     |
-| crossReference    | [Insert SSD Reference] or [Insert OC Reference] |
+## Metadata
+| Key            | Value           |
+|----------------|-----------------|
+| Id             | [Use case].SD   |
+| crossReference | [Use case].SSD [Use case].OC   |
 
 ## Version Log
+| Version | Date       | Description | Author |
+|---------|------------|-------------|--------|
+| 0001    | [date]     | Initial     | [name] |
 
-| Version | Date       | Description              | Author     |
-|---------|------------|--------------------------|------------|
-| 0001    | [yyyy-mm-dd] | Initial                  | [Author Name] |
 
 ## Sequence Diagram
+### Presentation Layer → Application Layer
 ```
 
 ```mermaid
 sequenceDiagram
     actor [Insert Actor Name] as Actor
-    participant A as [Insert Participant A]
-    participant B as [Insert Participant B]
-    participant C as [Insert Participant C]
+    participant A
+    participant B
+    participant C
+
+    Actor->>+A: [Insert Message 1]
+    A->>+B: [Insert Message 2]
+    B->>+C: [Insert Message 3]
+    C-->>-B: [Insert Message 4]
+    B-->>-A: [Insert Message 5]
+    A-->>-Actor: [Insert Message 6]
+    %% Add more interactions as needed
+```
+
+```markdown
+### Application Layer → Infrastructure Layer (External Interfaces)
+```
+
+```mermaid
+sequenceDiagram
+    %% Application Layer
+    participant A
+    participant B
 
     A->>+B: [Insert Message 1]
-    B->>+C: [Insert Message 2]
-    C-->>-B: [Insert Message 3]
-    B-->>-A: [Insert Message 4]
-    %% Add more interactions as needed
+    B-->>-A: [Insert Message 2]
+```
+
+if there are an WebApi for data access, we can add another sequence diagram for the interactions between Application Layer and Infrastructure Layer (Data Access):
+
+```markdown
+### Application Layer → Infrastructure Layer (Data Access)
+```
+
+```mermaid
+sequenceDiagram
+    %% Application Layer
+    participant A
+    participant B
+    A->>+B: [Insert Message 1]
+    B-->>-A: [Insert Message 2]
 ```
 
 ```
@@ -100,29 +92,165 @@ sequenceDiagram
 [Show class example if needed, e.g., for a DTO or data transformation]
 ```
 
-### Bad Example
+
+
+## SD Example: UC-002 Dashboard ResidentNote
+
+```markdown
+# UC-002 Dashboard ResidentNote Sequence Diagram
+
+## Metadata
+| Key            | Value           |
+|----------------|-----------------|
+| Id             | UC-002.SD  |
+| crossReference | UC-002.SSD UC-002.OC   |
+
+## Version Log
+| Version | Date       | Description | Author |
+|---------|------------|-------------|--------|
+| 0007    | 2026-06-09 | Change to WebApi→Infrastructure Data Access diagram | Team 6 |
+
+## Sequence Diagram
 ```
+
+```markdown
+### WebApi Layer → Infrastructure Layer (Data Access)
+```
+
+```mermaid
 sequenceDiagram
-    [Participant 1] -> [Participant 2]: [Message]
-    [Participant 2] -> [Participant 3]: [Message]
+    participant ResidentNoteService as ResidentNoteService
+    participant ResidentNoteManager as ResidentNoteManager
+    participant WebApi as WebApi
+
+    ResidentNoteService->>+ResidentNoteManager: GetResidentNotes(residentId)
+    ResidentNoteManager->>+WebApi: GET /api/residents/{residentId}/notes
+    WebApi-->>-ResidentNoteManager: JSON response with ResidentNotes
+    ResidentNoteManager-->>-ResidentNoteService: ResidentNotesDto[]
+
+    ResidentNoteService->>+ResidentNoteManager: AddResidentNote(AddResidentNoteDto)
+    ResidentNoteManager->>+WebApi: POST /api/residents/{residentId}/notes
+    alt addResidentNote success
+        WebApi-->>ResidentNoteManager: 201 Created with ResidentNote details
+        ResidentNoteManager-->>ResidentNoteService: ResidentNoteSaved
+    else addResidentNote error
+        WebApi-->>ResidentNoteManager: 400 Bad Request or 500 Internal Server Error
+        ResidentNoteManager-->>ResidentNoteService: error
+    end
+
+    ResidentNoteService->>+ResidentNoteManager: EditResidentNote(EditResidentNoteDto)
+    ResidentNoteManager->>+WebApi: PUT /api/residents/{residentId}/notes/{residentNoteId}
+    alt editResidentNote success
+        WebApi-->>ResidentNoteManager: 200 OK with ResidentNote details
+        ResidentNoteManager-->>ResidentNoteService: ResidentNoteUpdated
+    else editResidentNote error
+        WebApi-->>ResidentNoteManager: 400 Bad Request or 500 Internal Server Error
+        ResidentNoteManager-->>ResidentNoteService: error
+    end
+
+    ResidentNoteService->>+ResidentNoteManager: DeleteResidentNote(residentId, residentNoteId)
+    ResidentNoteManager->>+WebApi: DELETE /api/residents/{residentId}/notes/{residentNoteId}
+    alt deleteResidentNote success
+        WebApi-->>ResidentNoteManager: 200 OK with ResidentNote details
+        ResidentNoteManager-->>ResidentNoteService: ResidentNoteDeleted
+    else deleteResidentNote error
+        WebApi-->>ResidentNoteManager: 400 Bad Request or 500 Internal Server Error
+        ResidentNoteManager-->>ResidentNoteService: error
+    end
 ```
 
-## Validation
 
-- Review Sequence Diagrams for completeness, clarity, and correct use of the Mermaid template.
-- Verify that all placeholders are replaced with project-specific content.
-- Ensure Mermaid syntax is valid and renders correctly.
+```markdown
+### Application Layer → Infrastructure Layer (WebAPI)
+```
 
-## Maintenance
+```mermaid
+sequenceDiagram
+    participant ResidentNoteService as ResidentNoteService
+    participant WebApi as WebApi
+    participant ResidentNoteRepository as ResidentNoteRepository
 
-- Update the version and change log for major changes.
-- Regularly review Sequence Diagrams for accuracy and relevance.
+    ResidentNoteService->>+WebApi: GetResidentNotes(residentId)
+    WebApi->>+ResidentNoteRepository: FetchResidentNotes(residentId)
+    ResidentNoteRepository-->>-WebApi: ResidentNotes
+    WebApi-->>-ResidentNoteService: ResidentNotesDto[]
 
-## Language 
+    ResidentNoteService->>+WebApi: AddResidentNote(AddResidentNoteDto)
+    WebApi->>+ResidentNoteRepository: SaveResidentNote(residentId, noteText)
+    alt addResidentNote success
+        ResidentNoteRepository-->>WebApi: ResidentNoteSaved
+        WebApi-->>ResidentNoteService: ResidentNoteSaved
+    else addResidentNote error
+        ResidentNoteRepository-->>WebApi: error
+        WebApi-->>ResidentNoteService: error
+    end
 
-- Professional
-- English
+    ResidentNoteService->>+WebApi: EditResidentNote(EditResidentNoteDto)
+    WebApi->>+ResidentNoteRepository: UpdateResidentNote(residentId, residentNoteId, newText)
+    alt editResidentNote success
+        ResidentNoteRepository-->>WebApi: ResidentNoteUpdated
+        WebApi-->>ResidentNoteService: ResidentNoteUpdated
+    else editResidentNote error
+        ResidentNoteRepository-->>WebApi: error
+        WebApi-->>ResidentNoteService: error
+    end
 
-## System object
+    ResidentNoteService->>+WebApi: DeleteResidentNote(residentId, residentNoteId)
+    WebApi->>+ResidentNoteRepository: DeleteResidentNote(residentId, residentNoteId)
+    alt deleteResidentNote success
+        ResidentNoteRepository-->>WebApi: ResidentNoteDeleted
+        WebApi-->>ResidentNoteService: ResidentNoteDeleted
+    else deleteResidentNote error
+        ResidentNoteRepository-->>WebApi: error
+        WebApi-->>ResidentNoteService: error
+    end
+```
 
-if object chenges name form artifacts before then make / update glosery `/docs/glosery.md` with class name in artifacts we transform from and class name in this artifacts.
+```markdown
+### Presentation Layer → Application Layer
+```
+
+```mermaid
+sequenceDiagram
+    actor Employee as Actor
+    participant WebUI as WebUI
+    participant ResidentNoteService as ResidentNoteService
+
+    Employee->>+WebUI: selectResident(residentId)
+    WebUI->>+ResidentNoteService: GetResidentNotes(residentId)
+    ResidentNoteService-->>-WebUI: ResidentNotesDto[]
+    WebUI-->>-Employee: showResidentNotes(ResidentNotesDto[])
+
+    Employee->>+WebUI: addResidentNote(residentId, noteText)
+    WebUI->>+ResidentNoteService: AddResidentNote(residentId, noteText)
+    ResidentNoteService-->>-WebUI: confirmResidentNoteAdded()
+    WebUI-->>-Employee: confirmResidentNoteAdded()
+
+    Employee->>+WebUI: editResidentNote(residentId, residentNoteId, newText)
+    WebUI->>+ResidentNoteService: EditResidentNote(residentId, residentNoteId, newText)
+    ResidentNoteService-->>-WebUI: confirmResidentNoteEdited()
+    WebUI-->>-Employee: confirmResidentNoteEdited()
+
+    Employee->>+WebUI: deleteResidentNote(residentId, residentNoteId)
+    WebUI->>+ResidentNoteService: DeleteResidentNote(residentId, residentNoteId)
+    ResidentNoteService-->>-WebUI: confirmResidentNoteDeleted()
+    WebUI-->>-Employee: confirmResidentNoteDeleted()
+```
+
+---
+
+**Notes:**
+- The WebUI never calls the controller or data access directly; it always calls the Application layer (Service/Handler), which orchestrates all business logic and data access.
+- Data Transfer Objects (DTOs) are used between layers to decouple UI and domain models.
+- Example: `AddResidentNote(residentId, noteText)` in WebUI is transformed into an `AddResidentNoteDto` when sent to the Application layer, which then passes it to the WebApi.
+- Data returned from the database is mapped to DTOs before being sent to the WebUI.
+- All data transformations are explicit and documented in the implementation.
+
+**DTO Example:**
+```csharp
+public class AddResidentNoteDto
+{
+    public Guid Id { get; set; }
+    public string ResidentNote { get; set; }
+}
+
