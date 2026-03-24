@@ -23,6 +23,11 @@ This agent MUST comply with the SD instructions in `.github/instructions/sd.inst
 - Ensure all new terms are added to the glossary files as per instructions.
 - Validate SDs for completeness, clarity, and template compliance.
 
+## WebAPI Data Access Compliance
+- If WebAPI is used for data access, the SD MUST include a dedicated diagram section titled `WebApi Layer → Infrastructure Layer (Data Access)`.
+- This diagram must show the flow from the WebApi controller to the infrastructure manager/repository, following Clean Architecture conventions.
+- See the SD instructions and the UC-002 ResidentNote SD example for the required structure and naming.
+
 ## Pattern Compliance
 - Sequence Diagrams MUST explicitly represent the three Clean Architecture layers: Domain, Application, and Infrastructure.
 - Enforce the Dependency Rule: dependencies must always point inward (Infrastructure → Application → Domain), never the reverse. The core business logic (Domain, Application) must not depend on Infrastructure (UI, database, frameworks, etc.).

@@ -33,20 +33,52 @@ applyTo: '**/uc*.sd.*.md'
 
 
 ## Sequence Diagram
+### Presentation Layer → Application Layer
 ```
 
 ```mermaid
 sequenceDiagram
     actor [Insert Actor Name] as Actor
-    participant A as [Insert Participant A]
-    participant B as [Insert Participant B]
-    participant C as [Insert Participant C]
+    participant A
+    participant B
+    participant C
+
+    Actor->>+A: [Insert Message 1]
+    A->>+B: [Insert Message 2]
+    B->>+C: [Insert Message 3]
+    C-->>-B: [Insert Message 4]
+    B-->>-A: [Insert Message 5]
+    A-->>-Actor: [Insert Message 6]
+    %% Add more interactions as needed
+```
+
+```markdown
+### Application Layer → Infrastructure Layer (External Interfaces)
+```
+
+```mermaid
+sequenceDiagram
+    %% Application Layer
+    participant A
+    participant B
 
     A->>+B: [Insert Message 1]
-    B->>+C: [Insert Message 2]
-    C-->>-B: [Insert Message 3]
-    B-->>-A: [Insert Message 4]
-    %% Add more interactions as needed
+    B-->>-A: [Insert Message 2]
+```
+
+if there are an WebApi for data access, we can add another sequence diagram for the interactions between Application Layer and Infrastructure Layer (Data Access):
+
+```markdown
+### Application Layer → Infrastructure Layer (Data Access)
+```
+
+```mermaid
+sequenceDiagram
+    %% Application Layer
+    participant A
+    participant B
+    A->>+B: [Insert Message 1]
+    B-->>-A: [Insert Message 2]
 ```
 
 ```
@@ -60,86 +92,165 @@ sequenceDiagram
 [Show class example if needed, e.g., for a DTO or data transformation]
 ```
 
-## SD Example
+
+
+## SD Example: UC-002 Dashboard ResidentNote
 
 ```markdown
-# Use case 003 - Request Medical Record and Painkiller Record Sequence Diagram
+# UC-002 Dashboard ResidentNote Sequence Diagram
 
 ## Metadata
 | Key            | Value           |
 |----------------|-----------------|
-| Id             | UC-003.SD  |
-| crossReference | UC-003.SSD UC-003.OC   |
+| Id             | UC-002.SD  |
+| crossReference | UC-002.SSD UC-002.OC   |
 
 ## Version Log
 | Version | Date       | Description | Author |
 |---------|------------|-------------|--------|
-| 0001    | 23.03.2026 | Initial     | Team 6 |
+| 0007    | 2026-06-09 | Change to WebApi→Infrastructure Data Access diagram | Team 6 |
 
 ## Sequence Diagram
-### Presentation → Application
+```
+
+```markdown
+### WebApi Layer → Infrastructure Layer (Data Access)
 ```
 
 ```mermaid
 sequenceDiagram
-    actor Timer as Timer
+    participant ResidentNoteService as ResidentNoteService
+    participant ResidentNoteManager as ResidentNoteManager
+    participant WebApi as WebApi
+
+    ResidentNoteService->>+ResidentNoteManager: GetResidentNotes(residentId)
+    ResidentNoteManager->>+WebApi: GET /api/residents/{residentId}/notes
+    WebApi-->>-ResidentNoteManager: JSON response with ResidentNotes
+    ResidentNoteManager-->>-ResidentNoteService: ResidentNotesDto[]
+
+    ResidentNoteService->>+ResidentNoteManager: AddResidentNote(AddResidentNoteDto)
+    ResidentNoteManager->>+WebApi: POST /api/residents/{residentId}/notes
+    alt addResidentNote success
+        WebApi-->>ResidentNoteManager: 201 Created with ResidentNote details
+        ResidentNoteManager-->>ResidentNoteService: ResidentNoteSaved
+    else addResidentNote error
+        WebApi-->>ResidentNoteManager: 400 Bad Request or 500 Internal Server Error
+        ResidentNoteManager-->>ResidentNoteService: error
+    end
+
+    ResidentNoteService->>+ResidentNoteManager: EditResidentNote(EditResidentNoteDto)
+    ResidentNoteManager->>+WebApi: PUT /api/residents/{residentId}/notes/{residentNoteId}
+    alt editResidentNote success
+        WebApi-->>ResidentNoteManager: 200 OK with ResidentNote details
+        ResidentNoteManager-->>ResidentNoteService: ResidentNoteUpdated
+    else editResidentNote error
+        WebApi-->>ResidentNoteManager: 400 Bad Request or 500 Internal Server Error
+        ResidentNoteManager-->>ResidentNoteService: error
+    end
+
+    ResidentNoteService->>+ResidentNoteManager: DeleteResidentNote(residentId, residentNoteId)
+    ResidentNoteManager->>+WebApi: DELETE /api/residents/{residentId}/notes/{residentNoteId}
+    alt deleteResidentNote success
+        WebApi-->>ResidentNoteManager: 200 OK with ResidentNote details
+        ResidentNoteManager-->>ResidentNoteService: ResidentNoteDeleted
+    else deleteResidentNote error
+        WebApi-->>ResidentNoteManager: 400 Bad Request or 500 Internal Server Error
+        ResidentNoteManager-->>ResidentNoteService: error
+    end
+```
+
+
+```markdown
+### Application Layer → Infrastructure Layer (WebAPI)
+```
+
+```mermaid
+sequenceDiagram
+    participant ResidentNoteService as ResidentNoteService
+    participant WebApi as WebApi
+    participant ResidentNoteRepository as ResidentNoteRepository
+
+    ResidentNoteService->>+WebApi: GetResidentNotes(residentId)
+    WebApi->>+ResidentNoteRepository: FetchResidentNotes(residentId)
+    ResidentNoteRepository-->>-WebApi: ResidentNotes
+    WebApi-->>-ResidentNoteService: ResidentNotesDto[]
+
+    ResidentNoteService->>+WebApi: AddResidentNote(AddResidentNoteDto)
+    WebApi->>+ResidentNoteRepository: SaveResidentNote(residentId, noteText)
+    alt addResidentNote success
+        ResidentNoteRepository-->>WebApi: ResidentNoteSaved
+        WebApi-->>ResidentNoteService: ResidentNoteSaved
+    else addResidentNote error
+        ResidentNoteRepository-->>WebApi: error
+        WebApi-->>ResidentNoteService: error
+    end
+
+    ResidentNoteService->>+WebApi: EditResidentNote(EditResidentNoteDto)
+    WebApi->>+ResidentNoteRepository: UpdateResidentNote(residentId, residentNoteId, newText)
+    alt editResidentNote success
+        ResidentNoteRepository-->>WebApi: ResidentNoteUpdated
+        WebApi-->>ResidentNoteService: ResidentNoteUpdated
+    else editResidentNote error
+        ResidentNoteRepository-->>WebApi: error
+        WebApi-->>ResidentNoteService: error
+    end
+
+    ResidentNoteService->>+WebApi: DeleteResidentNote(residentId, residentNoteId)
+    WebApi->>+ResidentNoteRepository: DeleteResidentNote(residentId, residentNoteId)
+    alt deleteResidentNote success
+        ResidentNoteRepository-->>WebApi: ResidentNoteDeleted
+        WebApi-->>ResidentNoteService: ResidentNoteDeleted
+    else deleteResidentNote error
+        ResidentNoteRepository-->>WebApi: error
+        WebApi-->>ResidentNoteService: error
+    end
+```
+
+```markdown
+### Presentation Layer → Application Layer
+```
+
+```mermaid
+sequenceDiagram
+    actor Employee as Actor
     participant WebUI as WebUI
-    participant Application.Service as MedicalService
+    participant ResidentNoteService as ResidentNoteService
 
-    Timer->>+WebUI: Trigger Request
-    WebUI->>+MedicalService: GetMedicalRecord(ResidentId, TimeSpan)
-    MedicalService-->>-WebUI: Return MedicalRecord
-    WebUI->>+MedicalService: GetPainkillerRecord(ResidentId, TimeSpan)
-    MedicalService-->>-WebUI: Return PainkillerRecord
+    Employee->>+WebUI: selectResident(residentId)
+    WebUI->>+ResidentNoteService: GetResidentNotes(residentId)
+    ResidentNoteService-->>-WebUI: ResidentNotesDto[]
+    WebUI-->>-Employee: showResidentNotes(ResidentNotesDto[])
+
+    Employee->>+WebUI: addResidentNote(residentId, noteText)
+    WebUI->>+ResidentNoteService: AddResidentNote(residentId, noteText)
+    ResidentNoteService-->>-WebUI: confirmResidentNoteAdded()
+    WebUI-->>-Employee: confirmResidentNoteAdded()
+
+    Employee->>+WebUI: editResidentNote(residentId, residentNoteId, newText)
+    WebUI->>+ResidentNoteService: EditResidentNote(residentId, residentNoteId, newText)
+    ResidentNoteService-->>-WebUI: confirmResidentNoteEdited()
+    WebUI-->>-Employee: confirmResidentNoteEdited()
+
+    Employee->>+WebUI: deleteResidentNote(residentId, residentNoteId)
+    WebUI->>+ResidentNoteService: DeleteResidentNote(residentId, residentNoteId)
+    ResidentNoteService-->>-WebUI: confirmResidentNoteDeleted()
+    WebUI-->>-Employee: confirmResidentNoteDeleted()
 ```
 
-```markdown
-### Application → Infrastructure - External Interfaces
-```
+---
 
-```mermaid
-sequenceDiagram
-    %% Application Layer
-    participant Application.Service as MedicalService
+**Notes:**
+- The WebUI never calls the controller or data access directly; it always calls the Application layer (Service/Handler), which orchestrates all business logic and data access.
+- Data Transfer Objects (DTOs) are used between layers to decouple UI and domain models.
+- Example: `AddResidentNote(residentId, noteText)` in WebUI is transformed into an `AddResidentNoteDto` when sent to the Application layer, which then passes it to the WebApi.
+- Data returned from the database is mapped to DTOs before being sent to the WebUI.
+- All data transformations are explicit and documented in the implementation.
 
-    %% Infrastructure - External Interfaces
-    participant Infrastructure.Managers as MedicalManager
-    participant WebAPI.Controllers as MedicalController
-
-    %% Infrastructure - Data Access
-    participant Infrastructure.Repositories as Repositories
-    participant Infrastructure.Persistance as Persistance
-    participant Database as Database
-
-    %% Flow: MedicalRecord
-    MedicalService->>+MedicalManager: GetMedicalRecord(ResidentId, TimeSpan)
-    MedicalManager->>+MedicalController: GetMedicalRecord(ResidentId, TimeSpan)
-    MedicalController->>+Repositories: GetAsync(ResidentId, TimeSpan)
-    Repositories->>+Persistance: DbSet<MedicalRecord>.Find(ResidentId, TimeSpan)
-    Persistance-->>+Database: Query MedicalRecord
-    Database-->>-Persistance: Return MedicalRecord
-    Persistance-->>-Repositories: Return MedicalRecord
-    Repositories-->>-MedicalController: Return MedicalRecord
-    MedicalController-->>-MedicalManager: Return MedicalRecord
-    MedicalManager-->>-MedicalService: Return MedicalRecord
-
-    %% Flow: PainkillerRecord
-    MedicalService->>+MedicalManager: GetPainkillerRecord(ResidentId, TimeSpan)
-    MedicalManager->>+MedicalController: GetPainkillerRecord(ResidentId, TimeSpan)
-    MedicalController->>+Repositories: GetAsync(ResidentId, TimeSpan)
-    Repositories->>+Persistance: DbSet<PainkillerRecord>.Find(ResidentId, TimeSpan)
-    Persistance-->>+Database: Query PainkillerRecord
-    Database-->>-Persistance: Return PainkillerRecord
-    Persistance-->>-Repositories: Return PainkillerRecord
-    Repositories-->>-MedicalController: Return PainkillerRecord
-    MedicalController-->>-MedicalManager: Return PainkillerRecord
-    MedicalManager-->>-MedicalService: Return PainkillerRecord
-```
-
-```markdown
-**Note:** This sequence diagram illustrates the interactions between various components of the system when a timer triggers a request for medical records and painkiller records. The diagram shows how the WebUI interacts with the MedicalService, which in turn interacts with the MedicalManager, MedicalController, Repositories, Persistance layer, and Database to retrieve the necessary information.
-
-**Note on DTOs and Data Transformation:**
-In this example, if there is a need for Data Transfer Objects (DTOs) to facilitate data transfer between layers, we can define DTOs for MedicalRecord and PainkillerRecord. For instance, we might have a `MedicalRecordDTO` that contains only the necessary fields required by the WebUI, and a `PainkillerRecordDTO` for the painkiller information. The MedicalController can be responsible for transforming the data from the database entities to the DTOs before returning them to the MedicalManager and ultimately to the WebUI.
-```
+**DTO Example:**
+```csharp
+public class AddResidentNoteDto
+{
+    public Guid Id { get; set; }
+    public string ResidentNote { get; set; }
+}
 
