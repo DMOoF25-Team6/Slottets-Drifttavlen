@@ -5,6 +5,8 @@ using Core.Interfaces.Repositories;
 
 using Domain.Interfaces;
 
+using Infrastructure.Persistents;
+
 namespace Infrastructure.Repositories;
 
 /// <summary>
@@ -30,9 +32,11 @@ namespace Infrastructure.Repositories;
 /// </code>
 /// </example>
 /// </summary>
-public abstract class Repository<TEntity>() : IRepository<TEntity>
+public abstract class Repository<TEntity>(AppDbContext context) : IRepository<TEntity>
     where TEntity : class, IEntity
 {
+    protected readonly AppDbContext _context = context;
+
     /// <inheritdoc/>
     public IEnumerable<TEntity> Entities { get; set; } = [];
 

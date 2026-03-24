@@ -5,6 +5,8 @@ using Core.Interfaces.Repositories;
 
 using Domain.Entities;
 
+using Infrastructure.Persistents;
+
 namespace Infrastructure.Repositories;
 
 /// <summary>
@@ -17,6 +19,6 @@ namespace Infrastructure.Repositories;
 /// and implements <see cref="IResidentRepository"/> for domain-specific queries.
 /// </remarks>
 
-public class ResidentRepository : Repository<Resident>, IResidentRepository
+public class ResidentRepository(AppDbContext context) : Repository<Resident>(context), IResidentRepository
 {
 }

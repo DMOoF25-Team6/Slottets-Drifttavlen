@@ -17,14 +17,14 @@ public class ResidentServiceTests
     [Fact]
     public async Task GetByIdAsync_ReturnsResident()
     {
-    //    Guid id = Guid.NewGuid();
-    //    Resident resident = new() { Id = id, Initials = "AB" };
-    //    _ = _mockRepo.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync(resident);
+        //    Guid id = Guid.NewGuid();
+        //    Resident resident = new() { Id = id, Initials = "AB" };
+        //    _ = _mockRepo.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync(resident);
 
-    //    Resident? result = await _service.GetByIdAsync(id, TestContext.Current.CancellationToken);
+        //    Resident? result = await _service.GetByIdAsync(id, TestContext.Current.CancellationToken);
 
-    //    Assert.Equal(resident, result);
-    var result = true;
+        //    Assert.Equal(resident, result);
+        bool result = true;
         Assert.True(result);
     }
 

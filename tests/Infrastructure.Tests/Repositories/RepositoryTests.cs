@@ -3,30 +3,37 @@
 
 using Domain.Interfaces;
 
+using Infrastructure.Persistents;
 using Infrastructure.Repositories;
 
-namespace Infrastructure.Tests.Repositories;
+using Microsoft.EntityFrameworkCore;
 
-public class User : IEntity
-{
-    public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-}
-public class UserRepository : Repository<User>
-{
-    // No extra implementation needed for in-memory tests
-}
+namespace Infrastructure.Tests.Repositories;
 
 /// <summary>
 /// Unit tests for the <see cref="Repository{TEntity}"/> class.
 /// </summary>
 public class RepositoryTests
 {
+    public class User : IEntity
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public class UserRepository(AppDbContext context) : Repository<User>(context)
+    {
+        // No extra implementation needed for in-memory tests
+    }
+
     private readonly UserRepository _repository;
 
     public RepositoryTests()
     {
-        _repository = new UserRepository();
+        DbContextOptions<AppDbContext> options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+        _repository = new UserRepository(new AppDbContext(options));
     }
 
     [Theory]
