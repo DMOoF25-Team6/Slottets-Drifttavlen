@@ -78,8 +78,11 @@ public class ResidentService
     /// The JSON response from the API is automatically deserialized into a collection of
     /// <see cref="Resident"/> objects.
     /// </remarks>
-    
 
+    public Task<IEnumerable<Resident>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return _residentApiClient.GetAllAsync(cancellationToken);
+    }
 
 
 
