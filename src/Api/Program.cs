@@ -1,6 +1,9 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+
+// For SwaggerGen extension methods
+
 namespace Api;
 
 public class Program
@@ -14,7 +17,10 @@ public class Program
         _ = builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         _ = builder.Services.AddEndpointsApiExplorer();
-        _ = builder.Services.AddSwaggerGen();
+        if (builder.Environment.IsDevelopment())
+        {
+            _ = builder.Services.AddSwaggerGen();
+        }
 
         WebApplication app = builder.Build();
 

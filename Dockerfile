@@ -11,7 +11,9 @@ RUN ["apt-get", "install", "-y", "aspnetcore-runtime-8.0" ]
 RUN ["dotnet", "tool", "install", "--global", "dotnet-ef"]
 ENV PATH="$PATH:/root/.dotnet/tools"
 
+################################################################################
 # This stage is used to build the service project
+################################################################################
 FROM base AS build-stage
 SHELL ["/bin/bash"]
 ARG BUILD_CONFIGURATION=Release
@@ -43,8 +45,7 @@ ENTRYPOINT ["/run_tests.sh"]
 # publish stage: This stage is used to publish the service project to be copied to the final stage
 ################################################################################
 FROM build-stage AS publish-stage
-ARG BUILD_CONFIGURATION=Release
-RUN ["dotnet", "publish"]
+RUN ["dotnet", "publish", "-c", "Release"]
 #dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 ################################################################################

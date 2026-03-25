@@ -35,20 +35,22 @@ init_dirs() {
 build_solution() {
   echo "Restoring and building solution..."
   dotnet restore || exit_code=$?
-  dotnet build -c Debug --no-restore || exit_code=$?
-}
-
-run_tests() {
+  dotnet build --no-restore -c Release || exit_code=$?
   if [[ $exit_code -ne 0 ]]; then
     echo "Build failed with exit code $exit_code"
     exit $exit_code
   fi
+}
+
+run_tests() {
   # Check if .runsettings exists before running tests
   if [[ ! -f .runsettings ]]; then
     echo ".runsettings file not found in $(pwd). Aborting tests."
     exit 1
   fi
-  dotnet test -c Debug --results-directory "${resultDir}" --collect:"XPlat Code Coverage" --logger "trx" --settings .runsettings || exit_code=$?
+  #dotnet test Slottet.CareManagement.slnx -c Release --no-build --logger \"trx;LogFileName=test_results.trx\" || exit_code=$?
+  dotnet test -c Release --results-directory "${resultDir}" --collect:"XPlat Code Coverage" --logger "trx" || exit_code=$?
+  #dotnet test --results-directory "${resultDir}" --collect:"XPlat Code Coverage" --logger "trx" --settings .runsettings || exit_code=$?
   if [[ $exit_code -ne 0 ]]; then
     echo "Some tests failed with exit code $exit_code"
     exit $exit_code
@@ -86,8 +88,8 @@ main() {
   #echo "Update databses for tests..."
   #dotnet ef database update --project src/Infrastructure/Infrastructure.csproj --startup-project src/Infrastructure --configuration Debug || true
   #echo "Discovering test projects..."
-  dotnet clean
-  dotnet nuget locals all --clear
+  #dotnet clean
+  #dotnet nuget locals all --clear
   run_tests
   generate_coverage_report
   exit $exit_code

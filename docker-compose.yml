@@ -4,10 +4,10 @@ services:
     image: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     ports:
       - "3307:3306"
     volumes:
@@ -23,6 +23,9 @@ services:
       context: .
       dockerfile: Dockerfile
       target: build-stage
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      DOTNET_RUNNING_IN_CONTAINER: true
     restart: "no"
     networks:
       vlan-db:
@@ -47,7 +50,7 @@ services:
     environment:
       - DOTNET_RUNNING_IN_CONTAINER=true
       - DOTNET_CLI_TELEMETRY_OPTOUT=1
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - DOCKER_DOTNET_TEST=true
     restart: "no"
 
