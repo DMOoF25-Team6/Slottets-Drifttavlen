@@ -3,8 +3,12 @@ description: 'Domain Class Diagram (DCD) quality requirements and template for p
 applyTo: '**/docs/dcd.*.md' and '**/use-cases/**/uc*.dcd.*.mdx'
 ---
 
+
 # Domain Class Diagram (DCD) Instructions
-This instruction file provides a template and quality criteria for documenting Domain Class Diagrams (DCD) in markdown format. Use this as a starting point for any project requiring a DCD. Replace all placeholders in the diagram with project-specific content.
+
+This instruction file provides the authoritative template, syntax, naming, and quality requirements for documenting Domain Class Diagrams (DCD) in markdown format. All DCD automation agents (such as `.github/agents/dcd-artifact.agent.md`) must strictly follow these instructions for DCD content, structure, and compliance. Any new or changed commands, conventions, or templates introduced by the agent must be reflected here, and vice versa. 
+
+**Note:** All automation/agent workflow and process steps are maintained in `.github/agents/dcd-artifact.agent.md`. This file is focused on standards, templates, and requirements only. Replace all placeholders in the diagram with project-specific content.
 
 ## General Instructions
 - Use this template for all DCD documentation in markdown format.
@@ -26,10 +30,37 @@ This instruction file provides a template and quality criteria for documenting D
 - Use the provided Mermaid diagram layout for consistency.
 
 ### File Naming
-- Name files in lowercase, using digits for version, following the pattern: `dcd.xxxx.md` (e.g., `dcd.0001.md`).
+- Name files in lowercase
+  - following the pattern in DCD model for use case: `dcd.md` (e.g., `dcd.md`).
+    - for use case DCD models, include the use case identifier in the file name as a prefix.
+      - save files for use case DCD models in a subfolder named after the use case (e.g., `docs/use-cases/uc-001/uc-001.dcd.md`).
+    - for solution DCD models, do not include a use case identifier in the file name.
+      - save files for solution DCD models in the main `docs` folder (e.g., `docs/dcd.md`).
 - Increment version numbers for significant changes.
-- Include the date and author in the version log.
-- We only keep the latest version in the main branch; archive older versions in a designated folder.
+- Include the todays date and author in the version log.
+
+## Namespaces and Folder Structure
+All Mermaid class diagrams **must** use namespaces that match the Clean Architecture folder structure (excluding `src`).
+
+**Folder to namespace mapping:**
+- `Domain/Entities/` → `Domain.Entities`
+- `Domain/Enums/` → `Domain.Enums`
+- `Domain/Interfaces/` → `Domain.Interfaces`
+- `Domain/Attributes/` → `Domain.Attributes`
+- `Core/DTOs/` → `Core.DTOs`
+- `Core/Handlers/` → `Core.Handlers`
+- `Core/Helpers/` → `Core.Helpers`
+- `Core/Interfaces/` → `Core.Interfaces`
+- `Core/Managers/` → `Core.Managers`
+- `Core/Mappers/` → `Core.Mappers`
+- `Core/Services/` → `Core.Services`
+- `Infrastructure/Persistents/` → `Infrastructure.Persistents`
+- `Infrastructure/Persistents/Configurations/` → `Infrastructure.Persistents.Configurations`
+- `Infrastructure/Repositories/` → `Infrastructure.Repositories`
+- `WebUI/` → `WebUI`
+
+Each class in the diagram should be placed in the appropriate namespace according to its folder. Do **not** include `src` in the namespace. This ensures diagrams are consistent with the codebase structure and Clean Architecture principles.
+
 
 ## Common Patterns
 ### Good Example
@@ -48,25 +79,26 @@ This instruction file provides a template and quality criteria for documenting D
 ```
 
 ```mermaid
-%% Design Class Diagram Template: Replace all [Insert ...] placeholders with project-specific content.
+%% Design Class Diagram Template: Use namespaces matching Clean Architecture folders (excluding src)
 classDiagram
-  namespace [NamespaceName] {
-    class [Class1] {
-      +[Attribute1]: [Type]
-      +[Attribute2]: [Type]
-      +[Method1]([params]): [ReturnType]
-      +[Method2]([params]): [ReturnType]
-    }
-  }
-  namespace [NamespaceName] {
-    class [Class2] {
+  namespace Domain.Entities {
+    class [EntityClass] {
       +[Attribute1]: [Type]
       +[Method1]([params]): [ReturnType]
     }
   }
-  [Class1] <|-- [Class2] : [Inheritance]
-  [Class1] o-- [Class3] : [Association]
-  [Class2] *-- [Class4] : [Composition]
+  namespace Core.DTOs {
+    class [DtoClass] {
+      +[Attribute1]: [Type]
+    }
+  }
+  namespace Infrastructure.Repositories {
+    class [RepositoryClass] {
+      +[Method1]([params]): [ReturnType]
+    }
+  }
+  [EntityClass] o-- [DtoClass] : [Association]
+  [RepositoryClass] *-- [EntityClass] : [Composition]
 ```
 
 ## accepted parts of the DCD syntax:
@@ -81,10 +113,11 @@ o--	Aggregation
 
 if link is between entities then we need multiplicities ala
 "0..1" -- "*"
+"1" -- "1..*"
 
 ## Language 
 - Professional
 - English
 
 ## Class object
-if class object chenges name form artifacts before then make / update glosery `/docs/glosery.md` with class name in artifacts we transform from and class name in this artifacts.
+if class object changes name form artifacts before then make / update glosery `/docs/glosery.md` with class name in artifacts we transform from and class name in this artifacts.

@@ -1,6 +1,6 @@
 ---
 description: 'Business Model Canvas (BMC) quality requirements and template for project documentation.'
-applyTo: '**/docs/bmc.*.md' and '**/docs/bmc.*.*.md'
+applyTo: '/docs/bmc.md' and '/docs/bmc.*.md'
 ---
 
 # Business Model Canvas (BMC) Instructions
@@ -24,7 +24,7 @@ Use this as a starting point for any project requiring a BMC. Replace all placeh
 - Use the provided HTML table layout for consistency.
 
 ### File Naming
-- Name files in lowercase, using digits for version, following the pattern: `qc-bmc.xxxx.md` (e.g., `qc-bmc.0001.md`).
+- Name files in lowercase, using digits for version, following the pattern: `bmc.md` (e.g., `bmc.md`).
 
 ## Common Patterns
 ### Good Example
@@ -157,23 +157,6 @@ Use this as a starting point for any project requiring a BMC. Replace all placeh
 </table>
 ```
 
-### Bad Example
-```
-## Business Model Canvas Components
-| Key Partners         | Key Activities         | Key Resources         |
-|----------------------|-----------------------|----------------------|
-| [Partner 1]<br>[Partner 2]<br>[Partner 3]<br>[Partner 4] | [Activity 1]<br>[Activity 2]<br>[Activity 3]<br>[Activity 4] | [Resource 1]<br>[Resource 2]<br>[Resource 3]<br>[Resource 4] |
-
-| Value Propositions   | Customer Relationships | Channels             |
-|----------------------|-----------------------|----------------------|
-| [Value Proposition 1]<br>[Value Proposition 2]<br>[Value Proposition 3]<br>[Value Proposition 4] | [Relationship 1]<br>[Relationship 2]<br>[Relationship 3] | [Channel 1]<br>[Channel 2]<br>[Channel 3]<br>[Channel 4] |
-
-| Customer Segments    | Cost Structure         | Revenue Streams      |
-|----------------------|-----------------------|----------------------|
-| [Segment 1]<br>[Segment 2]<br>[Segment 3]<br>[Segment 4] | [Cost 1]<br>[Cost 2]<br>[Cost 3]<br>[Cost 4] | [Revenue 1]<br>[Revenue 2]<br>[Revenue 3] |
-```
-
-
 ## Validation
 - Review BMCs for completeness, clarity, and correct use of the template.
 - Verify that all placeholders are replaced with project-specific content.
@@ -185,4 +168,4 @@ Use this as a starting point for any project requiring a BMC. Replace all placeh
 ## Language
 - Professional
 - English
-- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `bmc.0001.da.md` for Danish). So now we have two files: `bmc.0001.md` (English) and `bmc.0001.da.md` (Danish).
+- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `bmc.da.md` for Danish). So now we have two files: `bmc.md` (English) and `bmc.da.md` (Danish).

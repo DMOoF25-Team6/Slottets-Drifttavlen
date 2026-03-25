@@ -3,14 +3,15 @@
 ## Project Overview
 - This is a .NET solution, using Clean Architecture principles.
 - The project may use SQLite or MySQL and Blazor for frontend development.
-- Solution should could run standalone, local network and cloud-ready (Azure, AWS).
+- Solution should run standalone, local network, and be cloud-ready (Azure, AWS).
 - Containerization is supported via Docker.
 - Major components are in `src/` (production code) and `tests/` (test projects). Each layer (Domain, Application, Infrastructure) is separated into its own project.
 - The solution is managed via `[solutionname].slnx` and `global.json`.
-- For high level architecture documentation translation use product owner domain language.
+- For high-level architecture documentation translation, use product owner domain language.
 
 ## Architecture & Patterns
-- **Clean Architecture**: Application business / use cases logic is in `Application`, domain models in `Domain`, and infrastructure (e.g., data access) in `Infrastructure`.
+- **Clean Architecture**: Application business/use cases logic is in `Application`, domain models in `Domain`, and infrastructure (e.g., data access) in `Infrastructure`.
+- **Documentation**: All documentation and diagrams must use domain language and follow the conventions in `.github/copilot-instructions.md`.
 - **Testing**: Test projects mirror the main projects (e.g., `Application.Tests` for Application). Place new tests in the corresponding `tests/` subfolder.
 - **Build System**: Uses solution-wide MSBuild props/targets (`Directory.Build.props`, `Directory.Build.targets`).
 - **NuGet**: Local NuGet packages are in `LocalNuget/`. Use `nuget.config` for custom feeds.
@@ -30,7 +31,7 @@
 
 ## Integration Points
 - **External Dependencies**: Managed via NuGet; see `Directory.Packages.props` for versions.
-- **Database**: (If used) Connection/configuration is handled in Infrastructure layer.
+- **Database**: (If used) Connection/configuration is handled in the Infrastructure layer.
 - **Doxygen**: For API docs, run Doxygen using the provided config.
 
 ## Examples
