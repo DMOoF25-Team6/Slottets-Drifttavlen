@@ -88,40 +88,6 @@ Se `docs/` for:
 
 ---
 
-## Folder Structure & Responsibilities
-
-Løsningen følger Clean Architecture-principper og er organiseret således:
-
-```
-├── src/                # Al produktionskode
-│   ├── Core/           # Kerne forretningslogik (use cases, interfaces)
-│   ├── Domain/         # Domænemodeller og forretningsenheder
-│   ├── Infrastructure/ # Infrastruktur (dataadgang, eksterne services)
-│   └── WebUI/          # Blazor frontend (UI og klientlogik)
-├── tests/              # Alle testprojekter, spejler src/ strukturen
-├── docs/               # Dokumentation (arkitektur, use cases, analyse)
-├── LocalNuget/         # Lokale NuGet-pakker
-├── .github/            # GitHub workflows og Copilot-instruktioner
-├── docker-compose.yml  # Docker Compose-konfiguration
-├── Directory.Build.props/targets # Løsningsdækkende MSBuild-indstillinger
-├── Slottet.CareManagement.slnx # Løsningsfil
-└── global.json         # .NET SDK versionstyring
-```
-
-### Mappeansvar
-- **src/Core/**: Indeholder kerne forretningslogik, applikationstjenester og interfaces. Ingen afhængigheder til andre lag.
-- **src/Domain/**: Indeholder domæneentiteter, value objects og domænelogik. Rene forretningsregler.
-- **src/Infrastructure/**: Implementerer interfaces fra Core, håndterer dataadgang (f.eks. MySQL) og eksterne integrationer.
-- **src/WebUI/**: Blazor frontend-projekt til brugergrænseflade og klientlogik.
-- **tests/**: Indeholder testprojekter for hvert hovedlag, følger samme struktur som `src/`.
-- **docs/**: Markdown-dokumentation for arkitektur, use cases og analyse.
-- **LocalNuget/**: Lokal NuGet-pakkelager.
-- **.github/**: CI/CD workflows og Copilot-instruktioner.
-
-For more details, see the documentation in `docs/` and `.github/copilot-instructions.md`.
-
----
-
 ## Opsætningsvejledning
 
 ### Krav
@@ -166,8 +132,57 @@ docker run --name slottets-sqlserver -e MYSQL_ROOT_PASSWORD=your_root_password -
 ```
 
 ---
+
 ## For developers
 To ensure consistency and quality in the code, follow these guidelines:
+
+### Folder Structure & Responsibilities
+
+The solution follows Clean Architecture principles and is organized as follows:
+
+```
+├── src/                          # All production code
+│   ├── Core/                     # Core business logic (use cases, interfaces)
+│   │   ├── DTOs                  # Data Transfer Objects for use cases
+│   │   ├── Handlers              # Use case handlers implementing business logic
+│   │   ├── Helpers               # Utility classes and functions
+│   │   ├── Interfaces            # Interfaces for services and repositories
+│   │   ├── Managers              # Service classes that implement interfaces and contain business logic
+│   │   ├── Mappers               # Mapping logic between domain models and DTOs
+│   │   └── Services              # Application services that orchestrate use cases
+│   ├── Domain/                   # Domain models and business entities
+│   │   ├── Attributes/           # Custom attributes for domain models
+│   │   ├── Entities/             # Core domain entities
+│   │   ├── Enums/                # Enumerations used in the domain
+│   │   └── Interfaces/           # Domain interfaces
+│   ├── Infrastructure/           # Infrastructure (data access, external services)
+│   │   ├── Persistents           # Database context and repositories
+│   │   │   └── Configurations    # Database configurations and migrations
+│   │   └── Repositories          # Repository implementations for data access
+│   └── WebUI/                    # Blazor frontend (UI and client logic)
+├── tests/                        # All test projects, mirrors src/ structure
+├── docs/                         # Documentation (architecture, use cases, analysis)
+├── LocalNuget/                   # Local NuGet packages
+├── .github/                      # GitHub workflows and Copilot instructions
+├── docker-compose.yml            # Docker Compose configuration
+├── Directory.Build.props/targets # Solution-wide MSBuild settings
+├── Slottet.CareManagement.slnx   # Solution file
+└── global.json                   # .NET SDK version management
+```
+
+### Folder Responsibilities
+- **src/Core/**: Contains core business logic, application services, and interfaces. No dependencies on other layers.
+- **src/Domain/**: Contains domain entities, value objects, and domain logic. Pure business rules.
+- **src/Infrastructure/**: Implements interfaces from Core, handles data access (e.g., MySQL) and external integrations.
+- **src/WebUI/**: Blazor frontend project for user interface and client logic.
+- **tests/**: Contains test projects for each main layer, follows the same structure as `src/`.
+- **docs/**: Markdown documentation for architecture, use cases, and analysis.
+- **LocalNuget/**: Local NuGet package repository.
+- **.github/**: CI/CD workflows and Copilot instructions.
+
+For more details, see the documentation in `docs/` and `.github/copilot-instructions.md`.
+
+
 
 ### Copilot Agent Instructions
 Visual Studio Coplit Agent can help automate tasks and generate code based on your instructions.
