@@ -1,35 +1,102 @@
 @*UC001 - Resident card shown for a quick status overview - stick to GDPR rules!*@
 @*UC001 Task - Low Fi prototype for first iteration of resident card*@
-
+@using Domain.Entities
 @using Domain.Enums
 
-<article class="card">
-  <header class="card-header d-flex justify-content-between align-items-center">
-    <h2 class="card-title h5 mb-0">@Initials</h2><span class="badge @TrafficLightCssClass">@TrafficLight</span>
-  </header>
-    <section class="card-body">
 
-        @* TODO: Add resident details in next iteration *@
+<section class="dashboard-grid container-fluid min-vh-100 d-flex align-items-center">
+    <div class="row g-3 row-cols-1 row-cols-md-4">
+@foreach (var Resident in residents)
+{
+    
+    <div class="col">
+
+        <article class="card h-100">
+                    <header class="card-header @GetTrafficLightClass(Resident.TrafficLight) flex-fill">
+                        <h5 class="card-title">@Resident.Initials</h5>
+                        <span class="badge bg-success position-absolute top-0 end-0 m-0 px-4 col-auto">PN-Tid: 02:34:16</span>
+                    </header>
+          <section class="card-body">
+
+      
+                        
+                          <div class="col">
+                            <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">aktivitet </th>
+                                    <th scope="col">personer</th>
+                                    <th scope="col">beløb</th>
+                                  </tr>
+                                    
+                                </thead>
+                                <tbody>
+                                    <tr scope="row">
+                                      <td>Handle</td>
+                                      <td>👤</td>
+                                      <td>300kr</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Info</th>
+                                        <td colspan="2" >Eget kort</td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                            <div class="row">
+                                @{
+                                    var latestNote = Resident.Notes
+                                    .OrderByDescending(n => n.EditedAt ?? n.DateTime)
+                                    .FirstOrDefault();
+                                }
+
+                                @if (latestNote is null)
+                                {
+                                    <p><em>Ingen note endnu</em></p>
+                                }
+                                else
+                                {
+                                    <p>@latestNote.Note</p>
+                                }
+                            </div>
+
          
-    </section>
-      <footer class="card-footer text-muted">
-        @LastUpdated
-      </footer>
+                </section>
 </article>
+            </div>
 
+        }
+    </div>
+</section>
 @code
 {
-    [Parameter] public string Initials { get; set; } = "??";
-    // TODO: Should default be green? Do we need a default at all? Maybe we should make this a required parameter?
-    [Parameter] public TrafficLight TrafficLight { get; set; } = TrafficLight.Green;
-    [Parameter] public string LastUpdated { get; set; } = "--";
-
-    private string TrafficLightCssClass => TrafficLight switch
+    private List<Resident> residents = new List<Resident>
     {
-        TrafficLight.Green => "bg-success",
-        TrafficLight.Yellow => "bg-warning text-dark",
-        TrafficLight.Red => "bg-danger",
-        _ => "bg-secondary"
+        new Resident { Id = Guid.NewGuid(), Initials = "AB", TrafficLight = TrafficLight.Green, Notes = new List<ResidentNote> { new ResidentNote { Id = Guid.NewGuid(), Note = "sov godt i nat og var i godt humør til morges.", DateTime = DateTime.Now.AddHours(-5) }, new ResidentNote { Id = Guid.NewGuid(), Note = "stresset da han var ude at handle", DateTime = DateTime.Now.AddHours(-2), EditedAt = DateTime.Now.AddHours(-1)} } },
+        new Resident { Initials = "CD", TrafficLight = TrafficLight.Yellow, Notes = new List<ResidentNote> { new ResidentNote { Id = Guid.NewGuid(), Note = "Virker lidt urolig før frokost.", DateTime = DateTime.Now.AddHours(-4) } } },
+        new Resident { Initials = "EF", TrafficLight = TrafficLight.Red,  },
+        new Resident { Initials = "DH", TrafficLight = TrafficLight.Green,  },
+        new Resident { Initials = "JC", TrafficLight = TrafficLight.Yellow,  },
+        new Resident { Initials = "GD", TrafficLight = TrafficLight.Red,  },
+        new Resident { Initials = "YX", TrafficLight = TrafficLight.Green,  },
+        new Resident { Initials = "ZB", TrafficLight = TrafficLight.Yellow,  },
+        new Resident { Initials = "HU", TrafficLight = TrafficLight.Red,  },
+        new Resident { Initials = "RD", TrafficLight = TrafficLight.Green,  },
+        new Resident { Initials = "MD", TrafficLight = TrafficLight.Yellow,  },
+        new Resident { Initials = "IB", TrafficLight = TrafficLight.Red,  }
     };
+
+    private string GetTrafficLightClass(TrafficLight? trafficLight)
+    {
+        return trafficLight switch
+        {
+            TrafficLight.Green => "resident-green",
+            TrafficLight.Yellow => "resident-yellow",
+            TrafficLight.Red => "resident-red",
+            _ => "resident-default"
+        };
+    }
 
 }
