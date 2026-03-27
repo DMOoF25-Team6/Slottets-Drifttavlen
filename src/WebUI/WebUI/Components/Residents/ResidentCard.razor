@@ -48,7 +48,7 @@
                             <div class="row">
                                 @{
                                     var latestNote = Resident.Notes
-                                    .OrderByDescending(n => n.EditedAt ?? n.DateTime)
+                                    .OrderByDescending(n => n.EditedAt)
                                     .FirstOrDefault();
                                 }
 
@@ -70,33 +70,4 @@
         }
     </div>
 </section>
-@code
-{
-    private List<Resident> residents = new List<Resident>
-    {
-        new Resident { Id = Guid.NewGuid(), Initials = "AB", TrafficLight = TrafficLight.Green, Notes = new List<ResidentNote> { new ResidentNote { Id = Guid.NewGuid(), Note = "sov godt i nat og var i godt humør til morges.", DateTime = DateTime.Now.AddHours(-5) }, new ResidentNote { Id = Guid.NewGuid(), Note = "stresset da han var ude at handle", DateTime = DateTime.Now.AddHours(-2), EditedAt = DateTime.Now.AddHours(-1)} } },
-        new Resident { Initials = "CD", TrafficLight = TrafficLight.Yellow, Notes = new List<ResidentNote> { new ResidentNote { Id = Guid.NewGuid(), Note = "Virker lidt urolig før frokost.", DateTime = DateTime.Now.AddHours(-4) } } },
-        new Resident { Initials = "EF", TrafficLight = TrafficLight.Red,  },
-        new Resident { Initials = "DH", TrafficLight = TrafficLight.Green,  },
-        new Resident { Initials = "JC", TrafficLight = TrafficLight.Yellow,  },
-        new Resident { Initials = "GD", TrafficLight = TrafficLight.Red,  },
-        new Resident { Initials = "YX", TrafficLight = TrafficLight.Green,  },
-        new Resident { Initials = "ZB", TrafficLight = TrafficLight.Yellow,  },
-        new Resident { Initials = "HU", TrafficLight = TrafficLight.Red,  },
-        new Resident { Initials = "RD", TrafficLight = TrafficLight.Green,  },
-        new Resident { Initials = "MD", TrafficLight = TrafficLight.Yellow,  },
-        new Resident { Initials = "IB", TrafficLight = TrafficLight.Red,  }
-    };
-
-    private string GetTrafficLightClass(TrafficLight? trafficLight)
-    {
-        return trafficLight switch
-        {
-            TrafficLight.Green => "resident-green",
-            TrafficLight.Yellow => "resident-yellow",
-            TrafficLight.Red => "resident-red",
-            _ => "resident-default"
-        };
-    }
-
-}
+@* Code moved to ResidentCard.razor.cs (partial class) *@
