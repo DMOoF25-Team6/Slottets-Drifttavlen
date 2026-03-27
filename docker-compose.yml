@@ -101,11 +101,11 @@ services:
       - ASPNETCORE_URLS=http://0.0.0.0:5035
     ports:
       - "5035:5035"
+    volumes:
+      - ./src/WebUI/WebUI/DataProtection-Keys:/app/DataProtection-Keys
     networks:
       vlan-web:
           ipv4_address: 10.29.30.10
-    volumes:
-      - ./DataProtection-Keys:/root/.aspnet/DataProtection-Keys
     restart: "always"
 
 volumes:
