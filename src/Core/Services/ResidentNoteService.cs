@@ -38,11 +38,35 @@ public class ResidentNoteService : IResidentNoteService
 
     public async Task<bool> UpdateAsync(Guid residentId, Guid noteId, string newText, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        // Step 1 - Fetch the note
+        var note = await _residentNoteRepository.GetByIdAsync(noteId, cancellationToken);
+
+        // Step 2 - Check if note exists
+        if (note is null) return false;
+
+        // Step 3 - Update fields
+        note.Content = newText;
+        note.EditedAt = DateTime.UtcNow;
+
+        // Step 4 - Save via repository
+        await _residentNoteRepository.UpdateAsync(note, cancellationToken);
+
+        // Step 5 - Return success
+        return true;
     }
 
     public async Task<bool> DeleteAsync(Guid residentId, Guid noteId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        // Step 1 - Fetch the note
+        var note = await _residentNoteRepository.GetByIdAsync(noteId, cancellationToken);
+
+        // Step 2 - Check if note exists
+        if (note is null) return false;
+
+        // Step 3 - Delete via repository
+        await _residentNoteRepository.DeleteAsync(note, cancellationToken);
+
+        // Step 4 - Return success
+        return true;
     }
 }

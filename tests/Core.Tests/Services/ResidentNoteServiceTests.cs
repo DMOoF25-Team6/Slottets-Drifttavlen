@@ -57,6 +57,59 @@ public class ResidentNoteServiceTests
         // Assert
         Assert.True(result);
     }
+    [Fact]
+    public async Task UpdateAsync_ReturnsTrueWhenNoteUpdated()
+    {
+        //ARRANGE:
+        // 1. Create residentId and noteId
+        var residentId = Guid.NewGuid();
+        var noteId = Guid.NewGuid();
+
+        // 2. Create an existing note
+        var existingNote = new ResidentNote { Id = noteId, ResidentId = residentId, Content = "Old text" };
+
+        // 3. Mock GetByIdAsync - repository finds the note
+        _mockRepo.Setup(r => r.GetByIdAsync(noteId, It.IsAny<CancellationToken>()))
+                 .ReturnsAsync(existingNote);
+
+        // 4. Mock UpdateAsync - repository updates the note
+        _mockRepo.Setup(r => r.UpdateAsync(It.IsAny<ResidentNote>(), It.IsAny<CancellationToken>()))
+                 .Returns(Task.CompletedTask);
+
+        // ACT:
+        var result = await _service.UpdateAsync(residentId, noteId, "New text", TestContext.Current.CancellationToken);
+
+        //ASSERT:
+        Assert.True(result);
+        // Verify that UpdateAsync was called exactly once
+        _mockRepo.Verify(r => r.UpdateAsync(It.IsAny<ResidentNote>(), It.IsAny<CancellationToken>()), Times.Once);
+
+    }
+
+    [Fact]
+    public async Task DeleteAsync_ReturnsTrueWhenNoteDeleted()
+    {
+        // Arrange
+        var residentId = Guid.NewGuid();
+        var noteId = Guid.NewGuid();
+        var existingNote = new ResidentNote { Id = noteId, ResidentId = residentId, Content = "Note to delete" };
+
+        // Mock GetByIdAsync - repository finds the note
+        _mockRepo.Setup(r => r.GetByIdAsync(noteId, It.IsAny<CancellationToken>()))
+                 .ReturnsAsync(existingNote);
+
+        // Mock DeleteAsync - repository deletes the note
+        _mockRepo.Setup(r => r.DeleteAsync(It.IsAny<ResidentNote>(), It.IsAny<CancellationToken>()))
+                 .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _service.DeleteAsync(residentId, noteId, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.True(result);
+        // Verify that DeleteAsync was called exactly once
+        _mockRepo.Verify(r => r.DeleteAsync(It.IsAny<ResidentNote>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
 }
 
 
