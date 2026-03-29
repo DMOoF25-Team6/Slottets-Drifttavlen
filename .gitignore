@@ -417,3 +417,4 @@ FodyWeavers.xsd
 *.msm
 *.msp
 /docs/doxygen/html
+/src/WebUI/WebUI/DataProtection-Keys

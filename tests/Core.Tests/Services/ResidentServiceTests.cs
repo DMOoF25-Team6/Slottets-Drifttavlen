@@ -31,6 +31,7 @@ public class ResidentServiceTests
     [Fact]
     public async Task GetByIdAsync_ReturnsResident()
     {
+        await Task.Yield();
         Guid id = Guid.NewGuid();
         Resident resident = new() { Id = id, Initials = "AB" };
 
@@ -43,6 +44,7 @@ public class ResidentServiceTests
     [Fact]
     public async Task GetAllAsync_ReturnsResidents()
     {
+        await Task.Yield();
         List<Resident> residents = [new Resident { Id = Guid.NewGuid(), Initials = "CD" }];
 
         _ = _mockApiClient.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(residents);
