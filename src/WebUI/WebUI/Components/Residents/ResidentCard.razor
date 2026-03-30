@@ -1,35 +1,73 @@
 @*UC001 - Resident card shown for a quick status overview - stick to GDPR rules!*@
 @*UC001 Task - Low Fi prototype for first iteration of resident card*@
-
+@using Domain.Entities
 @using Domain.Enums
 
-<article class="card">
-  <header class="card-header d-flex justify-content-between align-items-center">
-    <h2 class="card-title h5 mb-0">@Initials</h2><span class="badge @TrafficLightCssClass">@TrafficLight</span>
-  </header>
-    <section class="card-body">
 
-        @* TODO: Add resident details in next iteration *@
-         
-    </section>
-      <footer class="card-footer text-muted">
-        @LastUpdated
-      </footer>
-</article>
-
-@code
+<section class="dashboard-grid container-fluid min-vh-100 d-flex align-items-center">
+    <div class="row g-3 row-cols-1 row-cols-md-4">
+@foreach (var Resident in residents)
 {
-    [Parameter] public string Initials { get; set; } = "??";
-    // TODO: Should default be green? Do we need a default at all? Maybe we should make this a required parameter?
-    [Parameter] public TrafficLightStatus TrafficLight { get; set; } = TrafficLightStatus.Green;
-    [Parameter] public string LastUpdated { get; set; } = "--";
+    
+    <div class="col">
 
-    private string TrafficLightCssClass => TrafficLight switch
-    {
-        TrafficLightStatus.Green => "bg-success",
-        TrafficLightStatus.Yellow => "bg-warning text-dark",
-        TrafficLightStatus.Red => "bg-danger",
-        _ => "bg-secondary"
-    };
+        <article class="card h-100">
+                    <header class="card-header @GetTrafficLightClass(Resident.TrafficLight) flex-fill">
+                        <h5 class="card-title">@Resident.Initials</h5>
+                        <span class="badge bg-success position-absolute top-0 end-0 m-0 px-4 col-auto">PN-Tid: 02:34:16</span>
+                    </header>
+          <section class="card-body">
 
-}
+      
+                        
+                          <div class="col">
+                            <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">aktivitet </th>
+                                    <th scope="col">personer</th>
+                                    <th scope="col">beløb</th>
+                                  </tr>
+                                    
+                                </thead>
+                                <tbody>
+                                    <tr scope="row">
+                                      <td>Handle</td>
+                                      <td>👤</td>
+                                      <td>300kr</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Info</th>
+                                        <td colspan="2" >Eget kort</td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                            <div class="row">
+                                @{
+                                    var latestNote = Resident.Notes
+                                    .OrderByDescending(n => n.EditedAt)
+                                    .FirstOrDefault();
+                                }
+
+                                @if (latestNote is null)
+                                {
+                                    <p><em>Ingen note endnu</em></p>
+                                }
+                                else
+                                {
+                                    <p>@latestNote.Note</p>
+                                }
+                            </div>
+
+         
+                </section>
+</article>
+            </div>
+
+        }
+    </div>
+</section>
+@* Code moved to ResidentCard.razor.cs (partial class) *@

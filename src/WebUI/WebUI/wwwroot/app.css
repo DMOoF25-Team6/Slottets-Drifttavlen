@@ -27,3 +27,30 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+
+.dashboard-grid > .col {
+  height: calc((100vh - 140px) / 3); /* adjust 140px to match your layout */
+}
+
+:root {
+  --green-200: #c3f7c8;
+  --yellow-200: #fcfcca;
+  --red-200: #ffd9d9;
+}
+
+.resident-green {
+  background-color: var(--green-200) !important;
+  color: black;
+}
+
+.resident-yellow {
+  background-color: var(--yellow-200) !important;
+  color: black;
+}
+
+.resident-red {
+  background-color: var(--red-200) !important;
+  color: black;
+}
+
