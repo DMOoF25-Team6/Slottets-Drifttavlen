@@ -16,9 +16,6 @@ public class Resident : IEntity
     [MaxLength(2)]
     public string Initials { get; set; } = string.Empty;
     [Required]
-    public TrafficLight? TrafficLight { get; set; }
-
-    #region Navigation Properties
+    public TrafficLightStatus? TrafficLightStatus { get; set; }
     public virtual ICollection<ResidentNote> Notes { get; set; } = [];
-    #endregion
 }
