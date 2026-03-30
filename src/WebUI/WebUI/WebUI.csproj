@@ -12,10 +12,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="../../../.env">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>  
+  
   
 </Project>

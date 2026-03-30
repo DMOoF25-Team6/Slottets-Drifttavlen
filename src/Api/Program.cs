@@ -1,6 +1,13 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using Core.Handlers;
+using Core.Interfaces;
+using Core.Interfaces.Repositories;
+using Infrastructure.Persistents;
+using Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+
 
 // For SwaggerGen extension methods
 
@@ -11,6 +18,16 @@ public class Program
     public static void Main(string[] args)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+
+        //  Adds DbContext
+        builder.Services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        //Adds repository and handler
+        builder.Services.AddScoped<IMedicineRepository, MedicineRepository>();
+        builder.Services.AddScoped<MedicineStatusHandler>();
+
 
         // Add services to the container.
 
