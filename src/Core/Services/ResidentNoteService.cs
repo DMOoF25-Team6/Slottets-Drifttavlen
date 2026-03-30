@@ -19,33 +19,36 @@ public class ResidentNoteService : IResidentNoteService
 
     public async Task<IEnumerable<ResidentNote>> GetAllByResidentIdAsync(Guid residentId, CancellationToken cancellationToken = default)
     {
-        var allNotes = await _residentNoteRepository.GetAllAsync(cancellationToken);
+        IEnumerable<ResidentNote> allNotes = await _residentNoteRepository.GetAllAsync(cancellationToken);
         return allNotes.Where(n => n.ResidentId == residentId);
     }
 
     public async Task<bool> AddAsync(Guid residentId, string noteText, CancellationToken cancellationToken = default)
     {
-        var note = new ResidentNote
+        ResidentNote note = new()
         {
             Id = Guid.NewGuid(),
             ResidentId = residentId,
-            Content = noteText,
-            CreatedAt = DateTime.UtcNow
+            Note = noteText,
+            EditedAt = DateTime.UtcNow
         };
-        await _residentNoteRepository.AddAsync(note, cancellationToken);
+        _ = await _residentNoteRepository.AddAsync(note, cancellationToken);
         return true;
     }
 
     public async Task<bool> UpdateAsync(Guid residentId, Guid noteId, string newText, CancellationToken cancellationToken = default)
     {
         // Step 1 - Fetch the note
-        var note = await _residentNoteRepository.GetByIdAsync(noteId, cancellationToken);
+        ResidentNote? note = await _residentNoteRepository.GetByIdAsync(noteId, cancellationToken);
 
         // Step 2 - Check if note exists
-        if (note is null) return false;
+        if (note is null)
+        {
+            return false;
+        }
 
         // Step 3 - Update fields
-        note.Content = newText;
+        note.Note = newText;
         note.EditedAt = DateTime.UtcNow;
 
         // Step 4 - Save via repository
@@ -58,10 +61,13 @@ public class ResidentNoteService : IResidentNoteService
     public async Task<bool> DeleteAsync(Guid residentId, Guid noteId, CancellationToken cancellationToken = default)
     {
         // Step 1 - Fetch the note
-        var note = await _residentNoteRepository.GetByIdAsync(noteId, cancellationToken);
+        ResidentNote? note = await _residentNoteRepository.GetByIdAsync(noteId, cancellationToken);
 
         // Step 2 - Check if note exists
-        if (note is null) return false;
+        if (note is null)
+        {
+            return false;
+        }
 
         // Step 3 - Delete via repository
         await _residentNoteRepository.DeleteAsync(note, cancellationToken);

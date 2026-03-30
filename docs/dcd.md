@@ -7,9 +7,10 @@
 | crossReference | DM                            |
 
 ## Version Log
-| Version | Date       | Description              | Author     |
-|---------|------------|--------------------------|------------|
-| 0001    | 2026-03-06 | Initial                  | Team 6     |
+| Version | Date       | Description                        | Author     |
+|---------|------------|------------------------------------|------------|
+| 0001    | 2026-03-06 | Initial                            | Team 6     |
+| 0002    | 2026-03-30 | Add login/auth classes from UC-004 | Team 6     |
 
 ---
 
@@ -82,10 +83,17 @@ classDiagram
   namespace Core.Services {
     class ResidentService {
       -IResidentRepository _residentRepository
-      -IResidentApiClient _residentApiClient
+      -IResidentManager _ResidentManager
     }
     class ResidentNoteService {
       -IResidentNoteRepository _residentNoteRepository
+    }
+    class LoginService {
+      +LoginAsync(username: string, password: string): LoginResult
+    }
+    class NotificationHandler {
+      +Info(message: string)
+      +Error(message: string)
     }
   }
 
@@ -100,7 +108,7 @@ classDiagram
   }
 
   namespace Core.Interfaces.ApiClients {
-    class IResidentApiClient {
+    class IResidentManager {
       <<interface>>
       +GetByIdAsync(id, cancellationToken): Task~Resident?~
       +GetAllAsync(cancellationToken): Task~IEnumerable~Resident~~
@@ -116,6 +124,21 @@ classDiagram
     }
   }
 
+  namespace Core.DTOs {
+    class LoginResult {
+      +Success: bool
+      +JwtToken: string
+    }
+    class AuthResult {
+      +Success: bool
+      +User: object
+    }
+    class CredentialsDto {
+      +Username: string
+      +Password: string
+    }
+  }
+
   namespace Domain.Entities {
     class Resident {
     }
@@ -125,12 +148,17 @@ classDiagram
 
   %% Associations
   ResidentService --> IResidentRepository : uses
-  ResidentService --> IResidentApiClient : uses
+  ResidentService --> IResidentManager : uses
   ResidentNoteService --> IResidentNoteRepository : uses
+
   ResidentNoteService ..|> IResidentNoteService : implements
   IResidentNoteRepository <|.. IResidentNoteService : dependency
   ResidentNoteService --> ResidentNote : manages
   ResidentService --> Resident : manages
+  LoginService --> NotificationHandler : notifies
+  LoginService --> LoginResult : returns
+  LoginService --> CredentialsDto : receives
+  NotificationHandler --> LoginService : notifies
 ```
 
 ---
@@ -138,7 +166,7 @@ classDiagram
 ## DCD for Infrastructure Layer
 
 ```mermaid
-%% Design Class Diagram for Infrastructure Layer (Repositories, Services)
+%% Design Class Diagram for Infrastructure Layer (Repositories, Services, Identity)
 classDiagram
   direction TB
 
@@ -160,12 +188,34 @@ classDiagram
     }
   }
 
-  namespace Infrastructure.Services {
-    class ResidentApiClient {
+  namespace Infrastructure.Managers {
+    class ResidentManager {
       -HttpClient _httpClient
       +GetByIdAsync(id, cancellationToken): Task~Resident?~
       +GetAllAsync(cancellationToken): Task~IEnumerable~Resident~~
     }
+
+    class AuthManager {
+      +AuthenticateAsync(username: string, password: string): AuthResult
+      +GenerateJwtToken(user: object): string
+    }
+  }
+
+  namespace WebApi.Controllers {
+    class LoginApiController {
+      +Login(CredentialsDto): LoginResult
+    }
+  }
+
+  %% External dependencies (Identity framework abstractions)
+  class Microsoft.AspNetCore.Identity.SignInManager {
+    <<external>>
+  }
+  class Microsoft.AspNetCore.Identity.UserManager {
+    <<external>>
+  }
+  class System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler {
+    <<external>>
   }
 
   namespace Domain.Entities {
@@ -175,21 +225,93 @@ classDiagram
     }
   }
 
-  %% Associations
-  %% Repository Associations
-  ResidentRepository <|-- Repository~Resident~ : extends
-  ResidentNoteRepository <|-- Repository~ResidentNote~ : extends
+%% Associations
+ResidentRepository <|-- Repository~Resident~ : extends
+ResidentNoteRepository <|-- Repository~ResidentNote~ : extends
+ResidentManager --> Resident : fetches
+Repository~TEntity~ --> Resident : manages
+Repository~TEntity~ --> ResidentNote : manages
+LoginApiController --> AuthManager : uses
+LoginApiController --> LoginService : uses
 
-  ResidentApiClient --> Resident : fetches
+%% Associations for Interfaces
 
-  Repository~TEntity~ --> Resident : manages
-  Repository~TEntity~ --> ResidentNote : manages
+%% Interface Implementations
+
+%% Inheritance
+
+%% Implementation
+AuthManager --> AuthResult : returns
+AuthManager --> LoginResult : issues
+
+%% Service Dependencies
+AuthManager ..> Microsoft.AspNetCore.Identity.SignInManager : depends
+AuthManager ..> Microsoft.AspNetCore.Identity.UserManager : depends
+AuthManager ..> System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler : depends
 ```
 
 ---
 
 This DCD documents the core repository and interface abstractions used in the solution, following Clean Architecture principles.
+
 All repositories implement the generic `IRepository<TEntity>` interface, which enforces CRUD operations for domain entities implementing `IEntity`.
 The `Repository<TEntity>` class provides a base implementation for infrastructure repositories.
+
+---
+
+## DCD for WebApi Layer
+
+```mermaid
+%% Design Class Diagram for WebApi Layer (Controllers, Endpoints)
+classDiagram
+  direction TB
+
+  namespace WebApi.Controllers {
+    class LoginApiController {
+      +Login(CredentialsDto): LoginResult
+    }
+    class ResidentApiController {
+      +GetResident(id: Guid): Resident
+      +GetAllResidents(): List~Resident~
+    }
+  }
+
+  %% Associations
+  LoginApiController --> Infrastructure.Identity.AuthManager : uses
+  ResidentApiController --> Core.Services.ResidentService : uses
+```
+
+---
+
+## DCD for WebUI Layer
+
+```mermaid
+%% Design Class Diagram for WebUI Layer (Pages, Components)
+classDiagram
+  direction TB
+
+  namespace WebUI.Pages {
+    class LoginPage {
+      +EnterCredentials(username: string, password: string)
+      +ShowLoginError()
+      +RedirectToDashboard(jwtToken: string)
+    }
+    class DashboardPage {
+      +DisplayResidents(residents: List~Resident~)
+    }
+  }
+
+  namespace WebUI.Components {
+    class NotificationComponent {
+      +ShowInfo(message: string)
+      +ShowError(message: string)
+    }
+  }
+
+  %% Associations
+  LoginPage --> NotificationComponent : uses
+  DashboardPage --> NotificationComponent : uses
+  NotificationComponent --> Core.Services.NotificationHandler : subscribes
+```
 
 

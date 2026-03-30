@@ -36,7 +36,7 @@ public class ResidentService
     {
         _residentRepository = residentRepository;
         _residentApiClient = residentApiClient;
-        
+
     }
 
 
@@ -52,17 +52,11 @@ public class ResidentService
     /// <remarks>
     /// This method is now refactored to use an API instead of directly accessing the repository.
     /// </remarks>
-    
-    public Task<Resident?> GetByIdAsync(Guid id,CancellationToken cancellationToken = default)
+    public Task<Resident?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return _residentApiClient.GetByIdAsync(id, cancellationToken);
 
     }
-
-
-
-
-
 
     /// <summary>
     /// Retrieves all residents  by calling the API.
@@ -78,14 +72,10 @@ public class ResidentService
     /// The JSON response from the API is automatically deserialized into a collection of
     /// <see cref="Resident"/> objects.
     /// </remarks>
-
     public Task<IEnumerable<Resident>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return _residentApiClient.GetAllAsync(cancellationToken);
     }
-
-
-
 
     /// <summary>
     /// Adds a new resident to the data store.
@@ -121,7 +111,4 @@ public class ResidentService
     {
         return _residentRepository.DeleteAsync(resident, cancellationToken);
     }
-
-
-
 }

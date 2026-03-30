@@ -4,6 +4,8 @@
 using Core.DTOs;
 using Core.Interfaces.Services;
 
+using Domain.Entities;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -14,13 +16,16 @@ public class ResidentNoteController : ControllerBase
 {
     private readonly IResidentNoteService _residentNoteService;
 
-    public ResidentNoteController(IResidentNoteService residentNoteService) => _residentNoteService = residentNoteService;
+    public ResidentNoteController(IResidentNoteService residentNoteService)
+    {
+        _residentNoteService = residentNoteService;
+    }
 
     // GET /api/residentnote/{residentId}
     [HttpGet("{residentId}")]
     public async Task<IActionResult> GetAllByResidentId(Guid residentId, CancellationToken cancellationToken)
     {
-        var notes = await _residentNoteService.GetAllByResidentIdAsync(residentId, cancellationToken);
+        IEnumerable<ResidentNote> notes = await _residentNoteService.GetAllByResidentIdAsync(residentId, cancellationToken);
         return Ok(notes);
     }
 

@@ -6,7 +6,7 @@ using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistents.Configurations;
+namespace Infrastructure.Persistent.Configurations;
 
 /// <summary>
 /// Provides configuration for the <see cref="Resident"/> entity using Entity Framework Core.

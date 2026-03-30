@@ -3,7 +3,7 @@
 
 using Domain.Interfaces;
 
-using Infrastructure.Persistents;
+using Infrastructure.Persistent;
 using Infrastructure.Repositories;
 
 using Microsoft.EntityFrameworkCore;

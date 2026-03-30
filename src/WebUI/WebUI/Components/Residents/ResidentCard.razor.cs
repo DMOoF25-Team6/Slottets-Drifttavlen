@@ -1,6 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+// Copyright (c) 2026 Team6. All rights reserved. 
+//  No warranty, explicit or implicit, provided.
 
 using Domain.Entities;
 using Domain.Enums;
@@ -11,15 +10,15 @@ namespace WebUI.Components.Residents;
 
 public partial class ResidentCard : ComponentBase
 {
-    private List<Resident> residents = new List<Resident>
-    {
+    private readonly List<Resident> residents =
+    [
         new Resident
         {
             Id = Guid.NewGuid(),
             Initials = "AB",
-            TrafficLight = TrafficLight.Green,
-            Notes = new List<ResidentNote>
-            {
+            TrafficLightStatus = TrafficLightStatus.Green,
+            Notes =
+            [
                 new ResidentNote
                 {
                     Id = Guid.NewGuid(),
@@ -31,41 +30,41 @@ public partial class ResidentCard : ComponentBase
                     Note = "stresset da han var ude at handle",
                     EditedAt = DateTime.Now.AddHours(-1)
                 }
-            }
+            ]
         },
 
         new Resident
         {
             Initials = "CD",
-            TrafficLight = TrafficLight.Yellow,
-            Notes = new List<ResidentNote>
-            {
+            TrafficLightStatus = TrafficLightStatus.Yellow,
+            Notes =
+            [
                 new ResidentNote
                 {
                     Id = Guid.NewGuid(),
                     Note = "Virker lidt urolig før frokost."
                 }
-            }
+            ]
         },
-        new Resident { Initials = "EF", TrafficLight = TrafficLight.Red },
-        new Resident { Initials = "DH", TrafficLight = TrafficLight.Green },
-        new Resident { Initials = "JC", TrafficLight = TrafficLight.Yellow },
-        new Resident { Initials = "GD", TrafficLight = TrafficLight.Red },
-        new Resident { Initials = "YX", TrafficLight = TrafficLight.Green },
-        new Resident { Initials = "ZB", TrafficLight = TrafficLight.Yellow },
-        new Resident { Initials = "HU", TrafficLight = TrafficLight.Red },
-        new Resident { Initials = "RD", TrafficLight = TrafficLight.Green },
-        new Resident { Initials = "MD", TrafficLight = TrafficLight.Yellow },
-        new Resident { Initials = "IB", TrafficLight = TrafficLight.Red }
-    };
+        new Resident { Initials = "EF", TrafficLightStatus = TrafficLightStatus.Red },
+        new Resident { Initials = "DH", TrafficLightStatus = TrafficLightStatus.Green },
+        new Resident { Initials = "JC", TrafficLightStatus = TrafficLightStatus.Yellow },
+        new Resident { Initials = "GD", TrafficLightStatus = TrafficLightStatus.Red },
+        new Resident { Initials = "YX", TrafficLightStatus = TrafficLightStatus.Green },
+        new Resident { Initials = "ZB", TrafficLightStatus = TrafficLightStatus.Yellow },
+        new Resident { Initials = "HU", TrafficLightStatus = TrafficLightStatus.Red },
+        new Resident { Initials = "RD", TrafficLightStatus = TrafficLightStatus.Green },
+        new Resident { Initials = "MD", TrafficLightStatus = TrafficLightStatus.Yellow },
+        new Resident { Initials = "IB", TrafficLightStatus = TrafficLightStatus.Red }
+    ];
 
-    private string GetTrafficLightClass(TrafficLight? trafficLight)
+    private string GetTrafficLightClass(TrafficLightStatus? trafficLight)
     {
         return trafficLight switch
         {
-            TrafficLight.Green => "resident-green",
-            TrafficLight.Yellow => "resident-yellow",
-            TrafficLight.Red => "resident-red",
+            TrafficLightStatus.Green => "resident-green",
+            TrafficLightStatus.Yellow => "resident-yellow",
+            TrafficLightStatus.Red => "resident-red",
             _ => "resident-default"
         };
     }

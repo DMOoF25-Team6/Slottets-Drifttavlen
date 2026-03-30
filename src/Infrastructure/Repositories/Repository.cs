@@ -5,7 +5,7 @@ using Core.Interfaces.Repositories;
 
 using Domain.Interfaces;
 
-using Infrastructure.Persistents;
+using Infrastructure.Persistent;
 
 namespace Infrastructure.Repositories;
 

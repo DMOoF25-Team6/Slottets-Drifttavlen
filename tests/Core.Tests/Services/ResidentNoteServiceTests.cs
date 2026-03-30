@@ -26,16 +26,16 @@ public class ResidentNoteServiceTests
     public async Task GetAllByResidentIdAsync_ReturnsNotesForResident()
     {
         // Arrange
-        var residentId = Guid.NewGuid();
-        var notes = new List<ResidentNote>
-        {
-            new ResidentNote { Id = Guid.NewGuid(), ResidentId = residentId, Content = "Note 1" },
-            new ResidentNote { Id = Guid.NewGuid(), ResidentId = residentId, Content = "Note 2" }
-        };
-        _mockRepo.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+        Guid residentId = Guid.NewGuid();
+        List<ResidentNote> notes =
+        [
+            new ResidentNote { Id = Guid.NewGuid(), ResidentId = residentId, Note = "Note 1" },
+            new ResidentNote { Id = Guid.NewGuid(), ResidentId = residentId, Note = "Note 2" }
+        ];
+        _ = _mockRepo.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
           .ReturnsAsync(notes);
         // Act
-        var result = await _service.GetAllByResidentIdAsync(residentId, TestContext.Current.CancellationToken);
+        IEnumerable<ResidentNote> result = await _service.GetAllByResidentIdAsync(residentId, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -47,12 +47,12 @@ public class ResidentNoteServiceTests
     public async Task AddAsync_ReturnsTrueWhenNoteAdded()
     {
         // Arrange
-        var residentId = Guid.NewGuid();
-        _mockRepo.Setup(r => r.AddAsync(It.IsAny<ResidentNote>(), It.IsAny<CancellationToken>()))
+        Guid residentId = Guid.NewGuid();
+        _ = _mockRepo.Setup(r => r.AddAsync(It.IsAny<ResidentNote>(), It.IsAny<CancellationToken>()))
          .ReturnsAsync(new ResidentNote());
 
         // Act
-        var result = await _service.AddAsync(residentId, "New Note", TestContext.Current.CancellationToken);
+        bool result = await _service.AddAsync(residentId, "New Note", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(result);
@@ -62,22 +62,22 @@ public class ResidentNoteServiceTests
     {
         //ARRANGE:
         // 1. Create residentId and noteId
-        var residentId = Guid.NewGuid();
-        var noteId = Guid.NewGuid();
+        Guid residentId = Guid.NewGuid();
+        Guid noteId = Guid.NewGuid();
 
         // 2. Create an existing note
-        var existingNote = new ResidentNote { Id = noteId, ResidentId = residentId, Content = "Old text" };
+        ResidentNote existingNote = new() { Id = noteId, ResidentId = residentId, Note = "Old text" };
 
         // 3. Mock GetByIdAsync - repository finds the note
-        _mockRepo.Setup(r => r.GetByIdAsync(noteId, It.IsAny<CancellationToken>()))
+        _ = _mockRepo.Setup(r => r.GetByIdAsync(noteId, It.IsAny<CancellationToken>()))
                  .ReturnsAsync(existingNote);
 
         // 4. Mock UpdateAsync - repository updates the note
-        _mockRepo.Setup(r => r.UpdateAsync(It.IsAny<ResidentNote>(), It.IsAny<CancellationToken>()))
+        _ = _mockRepo.Setup(r => r.UpdateAsync(It.IsAny<ResidentNote>(), It.IsAny<CancellationToken>()))
                  .Returns(Task.CompletedTask);
 
         // ACT:
-        var result = await _service.UpdateAsync(residentId, noteId, "New text", TestContext.Current.CancellationToken);
+        bool result = await _service.UpdateAsync(residentId, noteId, "New text", TestContext.Current.CancellationToken);
 
         //ASSERT:
         Assert.True(result);
@@ -90,20 +90,20 @@ public class ResidentNoteServiceTests
     public async Task DeleteAsync_ReturnsTrueWhenNoteDeleted()
     {
         // Arrange
-        var residentId = Guid.NewGuid();
-        var noteId = Guid.NewGuid();
-        var existingNote = new ResidentNote { Id = noteId, ResidentId = residentId, Content = "Note to delete" };
+        Guid residentId = Guid.NewGuid();
+        Guid noteId = Guid.NewGuid();
+        ResidentNote existingNote = new() { Id = noteId, ResidentId = residentId, Note = "Note to delete" };
 
         // Mock GetByIdAsync - repository finds the note
-        _mockRepo.Setup(r => r.GetByIdAsync(noteId, It.IsAny<CancellationToken>()))
+        _ = _mockRepo.Setup(r => r.GetByIdAsync(noteId, It.IsAny<CancellationToken>()))
                  .ReturnsAsync(existingNote);
 
         // Mock DeleteAsync - repository deletes the note
-        _mockRepo.Setup(r => r.DeleteAsync(It.IsAny<ResidentNote>(), It.IsAny<CancellationToken>()))
+        _ = _mockRepo.Setup(r => r.DeleteAsync(It.IsAny<ResidentNote>(), It.IsAny<CancellationToken>()))
                  .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _service.DeleteAsync(residentId, noteId, TestContext.Current.CancellationToken);
+        bool result = await _service.DeleteAsync(residentId, noteId, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(result);
