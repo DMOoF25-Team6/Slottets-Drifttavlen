@@ -1,52 +1,55 @@
-# KPI for Slottet – Digital Overlap System (FURPS+)
+# Key Performance Indicators (KPI) for Slottets Drifttavlen
+## Metadata
+| Key               | Value                             |
+|-------------------|-----------------------------------|
+| Id                | KPI                               |
+| crossReference    | FURPS                             |
 
-## Requirements
+## Change log
+| Version | Date       | Description              | Author     |
+|---------|------------|--------------------------|------------|
+| 0001    | 2026-03-30 | Initial                  | Team 6     |
 
-| ID         | Type                      | Requirement                                                                                      |
-|------------|---------------------------|---------------------------------------------------------------------------------------------------|
-| KPI-R-001  | Functional requirement    | Systemet skal registrere og opdatere borgerstatus, medicin, personale og opgaver digitalt.        |
-| KPI-R-002  | Functional requirement    | Systemet skal understøtte vagtvalg (dag, aften, nat) og vise borgeroversigt.                      |
-| KPI-R-003  | Non-functional requirement| Systemet skal være brugervenligt og intuitivt for personalet.                                     |
-| KPI-R-004  | Non-functional requirement| Systemet skal være tilgængeligt 99,9% af tiden.                                                   |
-| KPI-R-005  | Non-functional requirement| Systemet skal kunne håndtere minimum 20 samtidige brugere.                                        |
-| KPI-R-006  | Non-functional requirement| Systemet skal logge alle ændringer og sikre sporbarhed.                                           |
-| KPI-R-007  | Business requirement      | Systemet skal understøtte fremtidig udvidelse (integration, rapportering, FMK).                   |
-| KPI-R-008  | Business requirement      | Systemet skal overholde GDPR og datasikkerhed.                                                    |
-| KPI-R-009  | Business requirement      | Systemet skal holdes inden for projektbudget.                                                     |
-| KPI-R-010  | Non-functional requirement| CRUD-operationer skal udføres inden for acceptabel tid (< 1 sekund).                              |
-| KPI-R-011  | Functional requirement    | Systemet skal understøtte både Skoven og Slottet afdelinger med mulighed for separat og samlet visning. |
-| KPI-R-012  | Non-functional requirement| Systemet skal have hurtig og nem login-proces (login < 5 sekunder for 95% af brugere).             |
-| KPI-R-013  | Functional requirement    | Systemet skal understøtte differentierede brugerrettigheder (almindelige medarbejdere vs. ledere/koordinatorer). |
-| KPI-R-014  | Non-functional requirement| Systemet skal have audit trail, der viser hvem der har skrevet/redigeret hvad og hvornår.          |
-| KPI-R-015  | Functional requirement    | Systemet skal kunne markere sene/tilbagevirkende indtastninger med korrekt tidsstempel.            |
-| KPI-R-016  | Non-functional requirement| Systemet skal kunne anvendes på arbejdstelefoner og mobile enheder.                               |
+---
 
-## Functional KPI measurements
+## KPI Tracking
 
-| ID         | KPI                                 | Measurement method                   | Target | Frequency         |
-|------------|-------------------------------------|--------------------------------------|--------|-------------------|
-| KPI-K-001  | Digital dokumentation af vagtskifte | Antal vagtskifter dokumenteret digitalt | 100%   | Monthly           |
-| KPI-K-002  | Opdateret borgerstatus              | Antal borgere med opdateret status      | 100%   | Monthly           |
-| KPI-K-003  | Opgaver og beskeder                 | Antal opgaver/beskeder registreret      | 100%   | Monthly           |
+### Functionality KPIs
+| KPI Name        | Reference      | Description                                                      | Target Value | Current Value | Status  |
+|-----------------|---------------|------------------------------------------------------------------|--------------|---------------|---------|
+| KPI-FUNC-001    | REQ-F-001     | Digital handover form completion rate                            | 100%         | [Current]     | [Status]|
+| KPI-FUNC-002    | REQ-F-006     | Audit trail completeness                                         | 100%         | [Current]     | [Status]|
 
-## Non-functional KPI measurements
+### Usability KPIs
+| KPI Name        | Reference      | Description                                                      | Target Value | Current Value | Status  |
+|-----------------|---------------|------------------------------------------------------------------|--------------|---------------|---------|
+| KPI-USR-001     | REQ-U-001     | User satisfaction with interface                                 | >= 80%       | [Current]     | [Status]|
+| KPI-USR-002     | REQ-U-003     | Mobile device compatibility rate                                 | 100%         | [Current]     | [Status]|
 
-| ID         | KPI                         | Measurement method                       | Target             | Frequency         |
-|------------|-----------------------------|------------------------------------------|--------------------|-------------------|
-| KPI-K-004  | Brugervenlighed             | Brugerundersøgelse (1-5)                 | avg >= 4           | Annual            |
-| KPI-K-005  | Tilgængelighed              | System uptime                            | 99,9%              | Monthly           |
-| KPI-K-006  | Samtidige brugere           | Stress test                              | 20 brugere         | Annual            |
-| KPI-K-007  | Sporbarhed                  | Audit-log for alle ændringer             | 100%               | Monthly           |
-| KPI-K-008  | CRUD-operationer            | Gennemsnitstid for CRUD                  | < 1 sekund         | Monthly           |
-| KPI-K-012  | Login-hastighed              | Måling af login-tid for brugere          | 95% < 5 sekunder   | Quarterly         |
-| KPI-K-013  | Mobilunderstøttelse          | Brugerundersøgelse og test               | 100%               | Annual            |
-| KPI-K-014  | Rollebaseret adgang          | Test af adgangsrettigheder               | 100% korrekt       | Annual            |
-| KPI-K-015  | Markering af sene indtastninger | Stikprøvekontrol                        | 100% korrekt       | Quarterly         |
+### Reliability KPIs
+| KPI Name        | Reference      | Description                                                      | Target Value | Current Value | Status  |
+|-----------------|---------------|------------------------------------------------------------------|--------------|---------------|---------|
+| KPI-REL-001     | REQ-R-001     | System uptime                                                    | >= 99.5%     | [Current]     | [Status]|
+| KPI-REL-002     | REQ-R-003     | Audit log accuracy                                               | 100%         | [Current]     | [Status]|
 
-## Business KPI measurements
+### Performance KPIs
+| KPI Name        | Reference      | Description                                                      | Target Value | Current Value | Status  |
+|-----------------|---------------|------------------------------------------------------------------|--------------|---------------|---------|
+| KPI-PERF-001    | REQ-P-001     | Average data load time (seconds)                                 | <= 2         | [Current]     | [Status]|
+| KPI-PERF-002    | REQ-P-003     | Concurrent user support during shift changes                     | >= 20        | [Current]     | [Status]|
 
-| ID         | KPI                         | Measurement method                       | Target             | Frequency         |
-|------------|-----------------------------|------------------------------------------|--------------------|-------------------|
-| KPI-K-009  | Fremtidig udvidelse         | Bygget til integration og rapportering   | Testet             | One-time test     |
-| KPI-K-010  | GDPR-overholdelse           | Compliance audit                         | 100%               | Annual            |
-| KPI-K-011  | Budget                      | Projektregnskab                          | <= projektbudget   | One-time test     |
+### Supportability KPIs
+| KPI Name        | Reference      | Description                                                      | Target Value | Current Value | Status  |
+|-----------------|---------------|------------------------------------------------------------------|--------------|---------------|---------|
+| KPI-SUP-001     | REQ-S-001     | User documentation completeness                                 | 100%         | [Current]     | [Status]|
+| KPI-SUP-002     | REQ-S-003     | System update/maintenance time (hours per month)                 | <= 2         | [Current]     | [Status]|
+
+### Design Constraints KPIs
+| KPI Name        | Reference      | Description                                                      | Target Value | Current Value | Status  |
+|-----------------|---------------|------------------------------------------------------------------|--------------|---------------|---------|
+| KPI-DC-001      | REQ-DC-001    | GDPR compliance audit pass rate                                  | 100%         | [Current]     | [Status]|
+
+### Implementation KPIs
+| KPI Name        | Reference      | Description                                                      | Target Value | Current Value | Status  |
+|-----------------|---------------|------------------------------------------------------------------|--------------|---------------|---------|
+| KPI-IMPL-001    | REQ-IMPL-001  | Containerization coverage                                        | 100%         | [Current]     | [Status]|

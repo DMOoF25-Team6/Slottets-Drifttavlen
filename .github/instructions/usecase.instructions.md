@@ -12,7 +12,7 @@ Replace all placeholders in the template with project-specific content.
 - Use this template for all use case documentation in markdown format.
 - Replace all bracketed placeholders in the template with project-specific information.
 - Store use case files in the centralized repository under the `use-cases` folder and `uc-<use case identifier>-descriptions` subfolders (no spaces in names).
-- If product owner domain language is different from English, create a separate file for the diagram content in that language while maintaining English for metadata and versioning. Use a language code suffix in the file name , following the pattern: `uc-<use case identifier>.<version>.da.md` for Danish). See Product Owner Domain Language in `docs/bc.0001.md` for more details.
+- If product owner domain language is different from English, create a separate file for the diagram content in that language while maintaining English for metadata and versioning. Use a language code suffix in the file name , following the pattern: `uc-<use case identifier>.<version>.da.md` for Danish). See Product Owner Domain Language in `docs/bc.md` for more details.
 - Make or update Glossary entries for any new terms introduced in the use case documentation (e.g, "Painkiller", "Smertstillende" in Danish). Filename the glossary entry with the same language code suffix as the use case file (e.g., `docs/glossary.da.md` for Danish).
 
 ## Best Practices
@@ -53,63 +53,62 @@ Replace all placeholders in the template with project-specific content.
 [Insert user story here, describing the use case from the perspective of the end user.]
 
 ### Brief Use Case
-**Title**: [Insert Title]
-**Success Flow**:
-[insert flow as one paragraph]
+**Title**: [Insert Title]  
+**Success Flow**:  
+[insert flow as one paragraph]  
 
 ### CaseCasual Use Case
-**Title**: [Insert Title]
-**Scope**: [Insert Scope]
-**Level**: [Insert Level]
-**Actors**:
+**Title**: [Insert Title]  
+**Scope**: [Insert Scope]  
+**Level**: [Insert Level]  
+**Actors**:  
 - [Insert Actor 1]
 - [Insert Actor 2]
-**Main Flow**:
+**Main Flow**:  
 1: [Insert Main Flow Step 1]
 2: [Insert Main Flow Step 2]
 3: [Insert Main Flow Step 3]
-**Main Extensions**:
-1a: [Insert Extensions Description 1]
-3a: [Insert Extensions Description 2]
+**Main Extensions**:  
+&nbsp;&nbsp;&nbsp;&nbsp;1a: [Insert Extensions Description 1]  
+&nbsp;&nbsp;&nbsp;&nbsp;3a: [Insert Extensions Description 2]  
 **Summary**: [Insert casual summary]
 
 ### Fully Dressed Use Case
-**Title**: [Insert Title]
-**Scope**: [Insert Scope]
-**Level**: [Insert Level]
-**Actors**:
-- [Insert Actor 1]
-- [Insert Actor 2]
-**Related Requirements**:
-- [Insert Requirement 1]
-- [Insert Requirement 2]
-**Preconditions**:
-- [Insert Precondition 1]
-- [Insert Precondition 2]
-**Main Flow**:
-1. [Insert Main Flow Step 1]
-2. [Insert Main Flow Step 2]
-3. [Insert Main Flow Step 3]
+**Title**: [Insert Title]  
+**Scope**: [Insert Scope]  
+**Level**: [Insert Level]  
+**Actors**:  
+- [Insert Actor 1]  
+- [Insert Actor 2]  
+**Related Requirements**:  
+- [Insert Requirement 1]  
+- [Insert Requirement 2]  
+**Preconditions**:  
+- [Insert Precondition 1]  
+- [Insert Precondition 2]  
+**Main Flow**:  
+1. [Insert Main Flow Step 1]  
+2. [Insert Main Flow Step 2]  
+3. [Insert Main Flow Step 3]  
 **Extensions**:
 
-a: At any time, [Insert Extension Description]  
-b: At any time, [Insert Extension Description]  
-&nbsp;&nbsp;&nbsp;&nbsp;1: [Insert Extension Description]  
+&nbsp;&nbsp;&nbsp;&nbsp;a: At any time, [Insert Extension Description]  
+&nbsp;&nbsp;&nbsp;&nbsp;b: At any time, [Insert Extension Description]  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: [Insert Extension Description]  
 
-1a: At any time, [Insert Extension Description]  
-&nbsp;&nbsp;&nbsp;&nbsp;1: [Insert Extension Description]  
-&nbsp;&nbsp;&nbsp;&nbsp;2: [Insert Extension Description]  
-2a: [Insert Extension Description 1]  
-3a: [Insert Extension Description 2]  
-
-**Postconditions**:
+&nbsp;&nbsp;&nbsp;&nbsp;1a: At any time, [Insert Extension Description]  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: [Insert Extension Description]  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2: [Insert Extension Description]  
+&nbsp;&nbsp;&nbsp;&nbsp;2a: [Insert Extension Description 1]  
+&nbsp;&nbsp;&nbsp;&nbsp;3a: [Insert Extension Description 2]  
+**Postconditions**:  
 - [Insert Postcondition 1]
 - [Insert Postcondition 2]
 
 ```
 
 ```markdown
-## Maintenance
+## Maintenance  
 - Update the version and change log for major changes.
 - Regularly review use cases for accuracy and relevance.
 - Review and approve use cases with relevant stakeholders before acceptance.
