@@ -1,10 +1,12 @@
 ---
 Description: 'Domain Model (DM) template for project documentation.'
 applyTo: 'docs/dm.md' and 'docs/use-cases/**/uc-*.dm.md'
+references:
+  - docs/quality-criteria/qc-dm.md
 ---
 
 # DM Instructions (Summary)
-- Use the provided DM markdown template.
+- Use the provided DM markdown template / examples.
 - Replace all placeholders with project-specific content.
 - Store DM files in `docs/use-cases/uc-<Insert Use Case Identifier>*/` as `uc-<Insert Use Case Identifier>.dm.md` or in `docs/` as `dm.md` for solution domain models.
 - Increment version numbers for significant changes; keep only the latest version in main, archive older versions

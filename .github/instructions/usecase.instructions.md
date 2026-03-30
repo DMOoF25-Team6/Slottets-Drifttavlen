@@ -1,10 +1,12 @@
 ---
 description: 'Use Case quality requirements and template for project documentation.'
 applyTo: 'docs/use-cases/**/uc-*.*.md' or 'docs/use-cases/**/uc-*.*.*.md'
+references:
+  - docs/quality-criteria/artifact/qc-usecase.md
 ---
 
 # Use Case Instructions
-This instruction file provides a template and quality criteria for documenting Use Cases in markdown format.
+This instruction file provides a template and authoring instructions for documenting Use Cases in markdown format.
 Use this as a starting point for any project requiring use case documentation.
 Replace all placeholders in the template with project-specific content.
 
@@ -28,7 +30,7 @@ Replace all placeholders in the template with project-specific content.
 - Use the provided markdown template for consistency.
 
 ### File Naming
-- Name files and folders without spaces, using digits for use case numbers, following the pattern: `uc-<use case identifier>.<version>.md` (e.g., `uc-003.0001.md`).
+- Name files and folders without spaces, using digits for use case numbers, following the pattern: `uc-<use case identifier>.md` (e.g., `uc-003.md`).
 
 ## Common Patterns
 ### Good Example
@@ -123,4 +125,4 @@ b: At any time, [Insert Extension Description]
 - Active form
 - Professional
 - English
-- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `uc-xxx.0001.da.md` for Danish). So now we have two files: `uc-xxx.0001.md` (English) and `uc-xxx.0001.da.md` (Danish).
+- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `uc-xxx.da.md` for Danish). So now we have two files: `uc-xxx.md` (English) and `uc-xxx.da.md` (Danish).
