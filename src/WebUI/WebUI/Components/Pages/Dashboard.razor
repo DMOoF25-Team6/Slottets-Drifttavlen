@@ -16,10 +16,11 @@
         {
           
             <div class="col">
-                    <ResidentCard Initials="@resident.Initials" TrafficLight="@(resident.TrafficLight ?? TrafficLight.Green)" LastUpdated="Just now" />
-                </div>          
+                    @* Korrekt *@
+                    <ResidentCard Initials="@resident.Initials" TrafficLight="@(resident.TrafficLightStatus ?? TrafficLightStatus.Green)" LastUpdated="Just now" />
+                </div>
 
-        }
+               }
         </div>
     </section>
 </main>
@@ -32,9 +33,9 @@
 {
     private List<Resident> _residents =
     [
-       new() { Id = Guid.NewGuid(), Initials = "AB", TrafficLight = TrafficLight.Green },
-       new() { Id = Guid.NewGuid(), Initials = "TS", TrafficLight = TrafficLight.Yellow },
-       new() { Id = Guid.NewGuid(), Initials = "MK", TrafficLight = TrafficLight.Red },
+       new() { Id = Guid.NewGuid(), Initials = "AB", TrafficLightStatus = TrafficLightStatus.Green },
+       new() { Id = Guid.NewGuid(), Initials = "TS", TrafficLightStatus = TrafficLightStatus.Yellow },
+       new() { Id = Guid.NewGuid(), Initials = "MK", TrafficLightStatus = TrafficLightStatus.Red },
     ];
    
     //TODO: Replace with real timestamp in LastUpdated and update it when traffic light changes

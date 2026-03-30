@@ -21,14 +21,14 @@
 {
     [Parameter] public string Initials { get; set; } = "??";
     // TODO: Should default be green? Do we need a default at all? Maybe we should make this a required parameter?
-    [Parameter] public TrafficLight TrafficLight { get; set; } = TrafficLight.Green;
+    [Parameter] public TrafficLightStatus TrafficLight { get; set; } = TrafficLightStatus.Green;
     [Parameter] public string LastUpdated { get; set; } = "--";
 
     private string TrafficLightCssClass => TrafficLight switch
     {
-        TrafficLight.Green => "bg-success",
-        TrafficLight.Yellow => "bg-warning text-dark",
-        TrafficLight.Red => "bg-danger",
+        TrafficLightStatus.Green => "bg-success",
+        TrafficLightStatus.Yellow => "bg-warning text-dark",
+        TrafficLightStatus.Red => "bg-danger",
         _ => "bg-secondary"
     };
 
