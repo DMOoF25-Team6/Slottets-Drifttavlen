@@ -8,7 +8,7 @@ tools:
   - lookup
 references:
   - .github/instructions/oc.instruction.md
-  - .docs/use-cases/uc-<id>/uc-<id>.ssd.<version>.md
+  - .docs/use-cases/uc-<id>*/uc-<id>.ssd.md
 ---
 
 # Operation Contract (OC) Agent Specification
@@ -37,11 +37,11 @@ references:
 - Ensure directory exists before file creation; create structure if missing.
 
 ## Content & Language
-- Use professional English for metadata/versioning; use domain language for diagram content if required.
+- Use professional English for metadata/versioning.
 
 ## File Naming
 - Use lowercase, digits for version, pattern: `uc-<use case id>.oc.md` (e.g., `uc-003.oc.md`).
-- Prefix file with use case id, save in `docs/use-cases/uc-<id>/uc-<id>.oc.md`.
+- Prefix file with use case id, save in `docs/use-cases/uc-<id>*/uc-<id>.oc.md`.
 - Increment version for significant changes; include date and author in version log.
 
 ## Validation & Maintenance

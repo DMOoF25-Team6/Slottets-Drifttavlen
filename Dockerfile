@@ -1,13 +1,11 @@
 ################################################################################
 # Base SDK image
 ################################################################################
-FROM tirsvad/tirsvadcli_debian13_nginx AS base
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS base
 #USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
-RUN ["apt-get", "update"]
-RUN ["apt-get", "install", "-y", "aspnetcore-runtime-8.0" ]
+#EXPOSE 8080
+#EXPOSE 8081
 RUN ["dotnet", "tool", "install", "--global", "dotnet-ef"]
 ENV PATH="$PATH:/root/.dotnet/tools"
 
@@ -18,7 +16,7 @@ FROM base AS build-stage
 SHELL ["/bin/bash"]
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY Slottet.CareManagement.slnx ./
+COPY Slottet.CareManagement.sln ./
 COPY Directory.Build.props ./
 COPY Directory.Build.targets ./
 COPY Directory.Packages.props ./
@@ -45,13 +43,21 @@ ENTRYPOINT ["/run_tests.sh"]
 # publish stage: This stage is used to publish the service project to be copied to the final stage
 ################################################################################
 FROM build-stage AS publish-stage
-RUN ["dotnet", "publish", "-c", "Release"]
-#dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN ["dotnet", "publish", "src/WebUI/WebUI/WebUI.csproj", "-c", "Release", "-o", "/app/publish/WebUI", "/p:UseAppHost=false"]
+RUN ["dotnet", "publish", "src/Api/Api.csproj", "-c", "Release", "-o", "/app/publish/WebApi", "/p:UseAppHost=false"]
 
 ################################################################################
-# Final stage: production or when running from VS in regular mode (Default when not using the Debug configuration)
+# Web Api Final stage: This stage is used to create the final runtime container for the service project
 ################################################################################
-FROM base AS final-stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS webapi-final-stage
 WORKDIR /app
-COPY --from=publish-stage /src/g/publish ./
-ENTRYPOINT ["dotnet", "/app/WebUI/release/WebUI.dll"]
+COPY --from=publish-stage /app/publish/WebApi ./
+ENTRYPOINT ["dotnet", "/app/Api.dll"]
+
+################################################################################
+# Web UI Final stage: This stage is used to create the final runtime container for the service project
+################################################################################
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS webui-final-stage
+WORKDIR /app
+COPY --from=publish-stage /app/publish/WebUI ./
+ENTRYPOINT ["dotnet", "/app/WebUI.dll"]

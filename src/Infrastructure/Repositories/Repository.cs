@@ -45,7 +45,7 @@ public abstract class Repository<TEntity>(AppDbContext context) : IRepository<TE
     {
         entity.Id = Guid.NewGuid();
         Entities = Entities.Append(entity);
-        return entity;
+        return await Task.FromResult(entity);
     }
 
     /// <inheritdoc/>
@@ -56,13 +56,14 @@ public abstract class Repository<TEntity>(AppDbContext context) : IRepository<TE
         {
             _ = await AddAsync(entity, cancellationToken);
         }
-        return entitiesList.AsEnumerable();
+        return await Task.FromResult(entitiesList.AsEnumerable());
     }
 
     /// <inheritdoc/>
     public async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         Entities = Entities.Where(e => e.Id != entity.Id);
+        await Task.CompletedTask;
     }
 
     /// <inheritdoc/>
@@ -72,24 +73,26 @@ public abstract class Repository<TEntity>(AppDbContext context) : IRepository<TE
         {
             Entities = Entities.Where(e => e.Id != entity.Id);
         }
+        await Task.CompletedTask;
     }
 
     /// <inheritdoc/>
     public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return Entities;
+        return await Task.FromResult(Entities);
     }
 
     /// <inheritdoc/>
     public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return Entities.FirstOrDefault(e => e.Id == id);
+        return await Task.FromResult(Entities.FirstOrDefault(e => e.Id == id));
     }
 
     /// <inheritdoc/>
     public async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         Entities = Entities.Select(e => e.Id == entity.Id ? entity : e);
+        await Task.CompletedTask;
     }
 
     /// <inheritdoc/>
@@ -99,5 +102,6 @@ public abstract class Repository<TEntity>(AppDbContext context) : IRepository<TE
         {
             Entities = Entities.Select(e => e.Id == entity.Id ? entity : e);
         }
+        await Task.CompletedTask;
     }
 }

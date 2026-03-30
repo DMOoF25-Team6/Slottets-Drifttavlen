@@ -8,4 +8,36 @@
 
 <PageTitle>Dashboard</PageTitle>
 
-<ResidentCard/>
+<main>
+  <h1 class="mb-4">Slottets Dashboard</h1>
+  <section aria-label="Resident Overview">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var resident in _residents)
+        {
+          
+            <div class="col">
+                    @* Korrekt *@
+                    <ResidentCard Initials="@resident.Initials" TrafficLight="@(resident.TrafficLightStatus ?? TrafficLightStatus.Green)" LastUpdated="Just now" />
+                </div>
+
+               }
+        </div>
+    </section>
+</main>
+
+
+
+
+
+@code 
+{
+    private List<Resident> _residents =
+    [
+       new() { Id = Guid.NewGuid(), Initials = "AB", TrafficLightStatus = TrafficLightStatus.Green },
+       new() { Id = Guid.NewGuid(), Initials = "TS", TrafficLightStatus = TrafficLightStatus.Yellow },
+       new() { Id = Guid.NewGuid(), Initials = "MK", TrafficLightStatus = TrafficLightStatus.Red },
+    ];
+   
+    //TODO: Replace with real timestamp in LastUpdated and update it when traffic light changes
+
+}

@@ -33,13 +33,22 @@ This agent MUST strictly follow all templates, syntax, and command patterns defi
 - Validate DCDs for completeness, clarity, and template compliance as per instructions.
 
 ## Agent Workflow
-1. **Input**: Accept a use case SD file path (e.g., `docs/use-cases/uc-XXX/uc-XXX.sd.YYYY.md`).
+If working with Clean Architecture, split the Domain Class Diagram (DCD) into two diagrams: one for the Domain layer and one for the Application layer.
+If a WebAPI is present, add a third diagram specifically for the WebAPI area.
+The result should be a separate diagram for each architectural area (Domain, Application, WebAPI, etc.), ensuring clear separation and documentation for each.
+1. **Input**: Accept a use case SD file path (e.g., `docs/use-cases/uc-XXX/uc-XXX.sd.md`).
 2. **Analyze SD**: Parse the SD to identify domain classes, DTOs, services, and controller interactions.
 3. **Check Solution DCD**: Load `docs/dcd.*.md` and compare for reusable classes/interfaces.
 4. **Check Use Case DCD**: If a DCD for the use case exists, load and compare for needed updates.
 5. **Generate/Update DCD**:
+   - All entities implements IEntity interface in solution DCD, unless explicitly stated otherwise in the SD.
    - Reuse solution DCD elements where possible.
    - Add/modify classes, DTOs, and relationships based on the SD. Use namespace classes.
+   - Ensure all relationships, associations, and dependencies are accurately represented.
+   - Document all assumptions and design decisions in the DCD notes section.
+   - Solution DCD should be updated if new reusable elements are identified, following the same process and ensuring backward compatibility.
+     - Ensure we have DCD for Domain Layer, Application Layer, and Infrastructure Layer in solution DCD. If not, create them with the appropriate namespaces and structure.
+     - Layers can only reference inward layers, never outward layers. For example, Domain Layer cannot reference Application Layer or Infrastructure Layer, but Application Layer can reference Domain Layer, and Infrastructure Layer can reference both Application and Domain Layers.
    - Ensure compliance with naming, versioning, and documentation standards.
    - Validate the Mermaid diagram using the `validate/mermaid` tool.
    - Update the glossary and cross-reference files automatically if class/object names change or new terms are introduced.

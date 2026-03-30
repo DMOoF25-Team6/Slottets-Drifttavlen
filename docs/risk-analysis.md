@@ -22,6 +22,8 @@ Tekniske risici omfatter problemer i systemets arkitektur, kode eller infrastruk
 | R-RT-004 | Databaseforbindelsesproblemer | Nedetid eller ydeevneproblemer, især ved netværksfejl eller cloud-migration |
 | R-RT-005 | Systemintegration | Fejl i integration med eksterne systemer (fx FMK) |
 | R-RT-006 | Datahistorik og sporbarhed | Tab af historik eller manglende sporbarhed ved fejl eller forkert brug |
+| R-RT-007 | Manglende audit trail | Manglende ansvarlighed og opfølgning ved manglende logning af brugerhandlinger |
+| R-RT-008 | Manglende markering af sene indtastninger | Manglende mulighed for at se om data er indtastet efterfølgende |
 
 ### Risikoniveau
 | ID | Likelihood (1-5) | Severity (1-5) | Score | Risiko-niveau |
@@ -61,6 +63,14 @@ Tekniske risici omfatter problemer i systemets arkitektur, kode eller infrastruk
     <li>Automatisk backup og versionering af data</li>
     <li>Audit-log for alle ændringer</li>
   </ul></td></tr>
+  <tr><td>R-RT-007</td><td><ul>
+    <li>Implementer audit trail/logning af alle brugerhandlinger</li>
+    <li>Regelmæssig kontrol af logning og sporbarhed</li>
+  </ul></td></tr>
+  <tr><td>R-RT-008</td><td><ul>
+    <li>Implementer funktionalitet til markering af sene/tilbagevirkende indtastninger</li>
+    <li>Stikprøvekontrol og brugerinstruktion</li>
+  </ul></td></tr>
 </table>
 
 ---
@@ -77,6 +87,9 @@ Operationelle risici vedrører interne processer, personale og driftsprocedurer 
 | R-RO-003 | Support | Utilstrækkelig support kan føre til utilfredse brugere |
 | R-RO-004 | Fejl i dataindtastning | Manuelle fejl ved indtastning af borgerdata eller medicin |
 | R-RO-005 | Manglende brugerinvolvering | Systemet matcher ikke arbejdsgange, hvis brugerne ikke inddrages i design og test |
+| R-RO-006 | Login opleves som for langsomt | Personalet undlader at bruge systemet |
+| R-RO-007 | Manglende mobilunderstøttelse | Personalet kan ikke dokumentere løbende |
+| R-RO-008 | Manglende rollebaseret adgang | Utilsigtet adgang til følsomme funktioner |
 
 ### Risikoniveau
 | ID | Likelihood (1-5) | Severity (1-5) | Score | Risiko-niveau |
@@ -110,6 +123,18 @@ Operationelle risici vedrører interne processer, personale og driftsprocedurer 
   <tr><td>R-RO-005</td><td><ul>
     <li>Brugerinvolvering i alle faser</li>
     <li>Workshops og feedbackrunder</li>
+  </ul></td></tr>
+  <tr><td>R-RO-006</td><td><ul>
+    <li>Optimeret loginflow, minimumskrav men hurtig adgang</li>
+    <li>Brugertest af loginproces</li>
+  </ul></td></tr>
+  <tr><td>R-RO-007</td><td><ul>
+    <li>Responsivt design, test på arbejdstelefoner og mobile enheder</li>
+    <li>Brugerinvolvering i test af mobilfunktionalitet</li>
+  </ul></td></tr>
+  <tr><td>R-RO-008</td><td><ul>
+    <li>Differentierede rettigheder, kodebeskyttelse af adminfunktioner</li>
+    <li>Test af adgangsrettigheder</li>
   </ul></td></tr>
 </table>
 

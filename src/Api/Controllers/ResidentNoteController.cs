@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
 using Core.DTOs;
@@ -28,23 +28,23 @@ public class ResidentNoteController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] AddResidentNoteDto dto, CancellationToken cancellationToken)
     {
-        var note = await _residentNoteService.AddAsync(dto.ResidentId, dto.NoteText, cancellationToken);
-        return Ok(note);
+        var success = await _residentNoteService.AddAsync(dto.ResidentId, dto.NoteText, cancellationToken);
+        return Ok(success);
     }
 
     // PUT /api/residentnote/{residentId}/{noteId}
     [HttpPut("{residentId}/{noteId}")]
     public async Task<IActionResult> Update(Guid residentId, Guid noteId, [FromBody] string newText, CancellationToken cancellationToken)
     {
-        await _residentNoteService.UpdateAsync(residentId, noteId, newText, cancellationToken);
-        return NoContent();
+        var success = await _residentNoteService.UpdateAsync(residentId, noteId, newText, cancellationToken);
+        return Ok(success);
     }
 
     // DELETE /api/residentnote/{residentId}/{noteId}
     [HttpDelete("{residentId}/{noteId}")]
     public async Task<IActionResult> Delete(Guid residentId, Guid noteId, CancellationToken cancellationToken)
     {
-        await _residentNoteService.DeleteAsync(residentId, noteId, cancellationToken);
-        return NoContent();
+        var success = await _residentNoteService.DeleteAsync(residentId, noteId, cancellationToken);
+        return Ok(success);
     }
 }

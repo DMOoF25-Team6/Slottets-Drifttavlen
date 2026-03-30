@@ -12,7 +12,6 @@ public class ResidentNote : IEntity
 {
     [Key]
     public Guid Id { get; set; }
-
     [Required]
     public string Note { get; set; } = string.Empty;
 

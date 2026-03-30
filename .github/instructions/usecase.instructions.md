@@ -1,10 +1,12 @@
 ---
 description: 'Use Case quality requirements and template for project documentation.'
 applyTo: 'docs/use-cases/**/uc-*.*.md' or 'docs/use-cases/**/uc-*.*.*.md'
+references:
+  - docs/quality-criteria/artifact/qc-usecase.md
 ---
 
 # Use Case Instructions
-This instruction file provides a template and quality criteria for documenting Use Cases in markdown format.
+This instruction file provides a template and authoring instructions for documenting Use Cases in markdown format.
 Use this as a starting point for any project requiring use case documentation.
 Replace all placeholders in the template with project-specific content.
 
@@ -12,7 +14,7 @@ Replace all placeholders in the template with project-specific content.
 - Use this template for all use case documentation in markdown format.
 - Replace all bracketed placeholders in the template with project-specific information.
 - Store use case files in the centralized repository under the `use-cases` folder and `uc-<use case identifier>-descriptions` subfolders (no spaces in names).
-- If product owner domain language is different from English, create a separate file for the diagram content in that language while maintaining English for metadata and versioning. Use a language code suffix in the file name , following the pattern: `uc-<use case identifier>.<version>.da.md` for Danish). See Product Owner Domain Language in `docs/bc.0001.md` for more details.
+- If product owner domain language is different from English, create a separate file for the diagram content in that language while maintaining English for metadata and versioning. Use a language code suffix in the file name , following the pattern: `uc-<use case identifier>.<version>.da.md` for Danish). See Product Owner Domain Language in `docs/bc.md` for more details.
 - Make or update Glossary entries for any new terms introduced in the use case documentation (e.g, "Painkiller", "Smertstillende" in Danish). Filename the glossary entry with the same language code suffix as the use case file (e.g., `docs/glossary.da.md` for Danish).
 
 ## Best Practices
@@ -28,7 +30,7 @@ Replace all placeholders in the template with project-specific content.
 - Use the provided markdown template for consistency.
 
 ### File Naming
-- Name files and folders without spaces, using digits for use case numbers, following the pattern: `uc-<use case identifier>.<version>.md` (e.g., `uc-003.0001.md`).
+- Name files and folders without spaces, using digits for use case numbers, following the pattern: `uc-<use case identifier>.md` (e.g., `uc-003.md`).
 
 ## Common Patterns
 ### Good Example
@@ -53,63 +55,62 @@ Replace all placeholders in the template with project-specific content.
 [Insert user story here, describing the use case from the perspective of the end user.]
 
 ### Brief Use Case
-**Title**: [Insert Title]
-**Success Flow**:
-[insert flow as one paragraph]
+**Title**: [Insert Title]  
+**Success Flow**:  
+[insert flow as one paragraph]  
 
 ### CaseCasual Use Case
-**Title**: [Insert Title]
-**Scope**: [Insert Scope]
-**Level**: [Insert Level]
-**Actors**:
+**Title**: [Insert Title]  
+**Scope**: [Insert Scope]  
+**Level**: [Insert Level]  
+**Actors**:  
 - [Insert Actor 1]
 - [Insert Actor 2]
-**Main Flow**:
+**Main Flow**:  
 1: [Insert Main Flow Step 1]
 2: [Insert Main Flow Step 2]
 3: [Insert Main Flow Step 3]
-**Main Extensions**:
-1a: [Insert Extensions Description 1]
-3a: [Insert Extensions Description 2]
+**Main Extensions**:  
+&nbsp;&nbsp;&nbsp;&nbsp;1a: [Insert Extensions Description 1]  
+&nbsp;&nbsp;&nbsp;&nbsp;3a: [Insert Extensions Description 2]  
 **Summary**: [Insert casual summary]
 
 ### Fully Dressed Use Case
-**Title**: [Insert Title]
-**Scope**: [Insert Scope]
-**Level**: [Insert Level]
-**Actors**:
-- [Insert Actor 1]
-- [Insert Actor 2]
-**Related Requirements**:
-- [Insert Requirement 1]
-- [Insert Requirement 2]
-**Preconditions**:
-- [Insert Precondition 1]
-- [Insert Precondition 2]
-**Main Flow**:
-1. [Insert Main Flow Step 1]
-2. [Insert Main Flow Step 2]
-3. [Insert Main Flow Step 3]
+**Title**: [Insert Title]  
+**Scope**: [Insert Scope]  
+**Level**: [Insert Level]  
+**Actors**:  
+- [Insert Actor 1]  
+- [Insert Actor 2]  
+**Related Requirements**:  
+- [Insert Requirement 1]  
+- [Insert Requirement 2]  
+**Preconditions**:  
+- [Insert Precondition 1]  
+- [Insert Precondition 2]  
+**Main Flow**:  
+1. [Insert Main Flow Step 1]  
+2. [Insert Main Flow Step 2]  
+3. [Insert Main Flow Step 3]  
 **Extensions**:
 
-a: At any time, [Insert Extension Description]  
-b: At any time, [Insert Extension Description]  
-&nbsp;&nbsp;&nbsp;&nbsp;1: [Insert Extension Description]  
+&nbsp;&nbsp;&nbsp;&nbsp;a: At any time, [Insert Extension Description]  
+&nbsp;&nbsp;&nbsp;&nbsp;b: At any time, [Insert Extension Description]  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: [Insert Extension Description]  
 
-1a: At any time, [Insert Extension Description]  
-&nbsp;&nbsp;&nbsp;&nbsp;1: [Insert Extension Description]  
-&nbsp;&nbsp;&nbsp;&nbsp;2: [Insert Extension Description]  
-2a: [Insert Extension Description 1]  
-3a: [Insert Extension Description 2]  
-
-**Postconditions**:
+&nbsp;&nbsp;&nbsp;&nbsp;1a: At any time, [Insert Extension Description]  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: [Insert Extension Description]  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2: [Insert Extension Description]  
+&nbsp;&nbsp;&nbsp;&nbsp;2a: [Insert Extension Description 1]  
+&nbsp;&nbsp;&nbsp;&nbsp;3a: [Insert Extension Description 2]  
+**Postconditions**:  
 - [Insert Postcondition 1]
 - [Insert Postcondition 2]
 
 ```
 
 ```markdown
-## Maintenance
+## Maintenance  
 - Update the version and change log for major changes.
 - Regularly review use cases for accuracy and relevance.
 - Review and approve use cases with relevant stakeholders before acceptance.
@@ -123,4 +124,4 @@ b: At any time, [Insert Extension Description]
 - Active form
 - Professional
 - English
-- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `uc-xxx.0001.da.md` for Danish). So now we have two files: `uc-xxx.0001.md` (English) and `uc-xxx.0001.da.md` (Danish).
+- If product owner domain language is different, use that language for the diagram content while maintaining English for metadata and versioning. And save the file with a language code suffix (e.g., `uc-xxx.da.md` for Danish). So now we have two files: `uc-xxx.md` (English) and `uc-xxx.da.md` (Danish).

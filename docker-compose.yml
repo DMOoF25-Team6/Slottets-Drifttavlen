@@ -66,27 +66,47 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
     restart: no
 
-  final-stage:
+  webapi-final-stage:
     build:
       context: .
       dockerfile: Dockerfile
-      target: final-stage
+      target: webapi-final-stage
     depends_on:
       publish-stage:
         condition: service_completed_successfully
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://0.0.0.0:5000
-    # entrypoint: ["dotnet", "Slottet.CareManagement.dll"]
+      - ASPNETCORE_URLS=http://0.0.0.0:5025
     ports:
-      - "5000:5000"
+      - "5025:5025"
+    expose:
+      - 5025
     networks:
-      # vlan-app:
-      #   ipv4_address: 10.29.0.10
+      vlan-web:
+          ipv4_address: 10.29.30.11
+    volumes:
+      - ./DataProtection-Keys:/root/.aspnet/DataProtection-Keys
+    restart: "always"
+
+  webui-final-stage:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: webui-final-stage
+    depends_on:
+      publish-stage:
+        condition: service_completed_successfully
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://0.0.0.0:5035
+    ports:
+      - "5035:5035"
+    volumes:
+      - ./src/WebUI/WebUI/DataProtection-Keys:/app/DataProtection-Keys
+    networks:
       vlan-web:
           ipv4_address: 10.29.30.10
-
-    restart: "no"
+    restart: "always"
 
 volumes:
   mysql_data:
@@ -97,11 +117,6 @@ networks:
     ipam:
       config:
         - subnet: 10.29.10.0/24
-  # vlan-app:
-  #   driver: bridge
-  #   ipam:
-  #     config:
-  #       - subnet: 10.29.20.0/24
   vlan-web:
     driver: bridge
     ipam:

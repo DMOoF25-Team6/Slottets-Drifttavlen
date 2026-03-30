@@ -1,7 +1,6 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 
@@ -11,33 +10,63 @@ namespace Core.Services;
 
 public class ResidentNoteService : IResidentNoteService
 {
-    
     private readonly IResidentNoteRepository _residentNoteRepository;
-
 
     public ResidentNoteService(IResidentNoteRepository residentNoteRepository)
     {
-        // Constructor logic, if needed
         _residentNoteRepository = residentNoteRepository;
     }
 
-    public Task<ResidentNote> AddAsync(Guid residentId, string noteText, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<ResidentNote>> GetAllByResidentIdAsync(Guid residentId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var allNotes = await _residentNoteRepository.GetAllAsync(cancellationToken);
+        return allNotes.Where(n => n.ResidentId == residentId);
     }
 
-    public Task DeleteAsync(Guid residentId, Guid noteId, CancellationToken cancellationToken = default)
+    public async Task<bool> AddAsync(Guid residentId, string noteText, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var note = new ResidentNote
+        {
+            Id = Guid.NewGuid(),
+            ResidentId = residentId,
+            Content = noteText,
+            CreatedAt = DateTime.UtcNow
+        };
+        await _residentNoteRepository.AddAsync(note, cancellationToken);
+        return true;
     }
 
-    public Task<IEnumerable<ResidentNote>> GetAllByResidentIdAsync(Guid residentId, CancellationToken cancellationToken = default)
+    public async Task<bool> UpdateAsync(Guid residentId, Guid noteId, string newText, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        // Step 1 - Fetch the note
+        var note = await _residentNoteRepository.GetByIdAsync(noteId, cancellationToken);
+
+        // Step 2 - Check if note exists
+        if (note is null) return false;
+
+        // Step 3 - Update fields
+        note.Content = newText;
+        note.EditedAt = DateTime.UtcNow;
+
+        // Step 4 - Save via repository
+        await _residentNoteRepository.UpdateAsync(note, cancellationToken);
+
+        // Step 5 - Return success
+        return true;
     }
 
-    public Task UpdateAsync(Guid residentId, Guid noteId, string newText, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(Guid residentId, Guid noteId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        // Step 1 - Fetch the note
+        var note = await _residentNoteRepository.GetByIdAsync(noteId, cancellationToken);
+
+        // Step 2 - Check if note exists
+        if (note is null) return false;
+
+        // Step 3 - Delete via repository
+        await _residentNoteRepository.DeleteAsync(note, cancellationToken);
+
+        // Step 4 - Return success
+        return true;
     }
 }
