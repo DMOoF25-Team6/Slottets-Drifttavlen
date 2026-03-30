@@ -21,6 +21,8 @@ This instruction file provides the authoritative template, syntax, naming, and q
 - Use clear, concise, and domain-oriented language.
 - Document all assumptions and dependencies.
 - Ensure visuals and layout are consistent and easy to understand.
+- Ensure we have DCD for Domain Layer, Application Layer, and Infrastructure Layer in solution DCD. If not, create them with the appropriate namespaces and structure.
+- Layers can only reference inward layers, never outward layers. For example, Domain Layer cannot reference Application Layer or Infrastructure Layer, but Application Layer can reference Domain Layer, and Infrastructure Layer can reference both Application and Domain Layers.
 - Use valid Mermaid class diagram syntax.
 - Use appropriate class diagram notations to represent different types of relationships (e.g., inheritance, association, aggregation).
 - Include notes or comments in the diagram to clarify complex relationships or design decisions.
@@ -47,23 +49,22 @@ All Mermaid class diagrams **must** use namespaces that match the Clean Architec
 - `Domain/Enums/` → `Domain.Enums`
 - `Domain/Interfaces/` → `Domain.Interfaces`
 - `Domain/Attributes/` → `Domain.Attributes`
-- `Core/DTOs/` → `Core.DTOs`
-- `Core/Handlers/` → `Core.Handlers`
-- `Core/Helpers/` → `Core.Helpers`
-- `Core/Interfaces/` → `Core.Interfaces`
-- `Core/Managers/` → `Core.Managers`
-- `Core/Mappers/` → `Core.Mappers`
-- `Core/Services/` → `Core.Services`
+- `Application/DTOs/` → `Application.DTOs`
+- `Application/Handlers/` → `Application.Handlers`
+- `Application/Helpers/` → `Application.Helpers`
+- `Application/Interfaces/` → `Application.Interfaces`
+- `Application/Managers/` → `Application.Managers`
+- `Application/Mappers/` → `Application.Mappers`
+- `Application/Services/` → `Application.Services`
 - `Infrastructure/Persistents/` → `Infrastructure.Persistents`
 - `Infrastructure/Persistents/Configurations/` → `Infrastructure.Persistents.Configurations`
 - `Infrastructure/Repositories/` → `Infrastructure.Repositories`
 - `WebUI/` → `WebUI`
 
-Each class in the diagram should be placed in the appropriate namespace according to its folder. Do **not** include `src` in the namespace. This ensures diagrams are consistent with the codebase structure and Clean Architecture principles.
+Each class in the diagram should be placed in the appropriate namespace according to its folder. If solution use Core instead of Application then use Core. Do **not** include `src` in the namespace. This ensures diagrams are consistent with the codebase structure and Clean Architecture principles.
 
-
-## Common Patterns
-### Good Example
+## DM Template
+### Minimal Template:
 ```markdown
 # Domain Class Diagram (DCD) for [Insert Project Name]
 ## Metadata
@@ -101,6 +102,64 @@ classDiagram
   [RepositoryClass] *-- [EntityClass] : [Composition]
 ```
 
+### Example Diagram (Minimal) for a simple DCD with an entity, a DTO, and a repository:
+```mermaid
+classDiagram
+  namespace Domain.Interfaces {
+    class IEntity {
+      <<interface>>
+      +Id: Guid
+    }
+  }
+  namespace Domain.Entities {
+    class User {
+      +Username: string
+      +Email: string
+    }
+    class UserRole {
+      <<enumeration>>
+      Admin
+      User
+      Guest
+    }
+  }
+
+  namespace Application.DTOs {
+    class UserDto {
+      +Id: Guid
+      +Username: string
+      +Email: string
+    }
+  }
+  namespace Infrastructure.Repositories {
+    class UserRepository
+  }
+  %% Associations
+
+  %% Associations DTOs
+  User o-- UserDto : maps to
+  %% Repository Associations
+  UserRepository *-- User : persists
+  %% Interface Implementations
+  User <|-- IEntity : implements
+  %% Interface Inheritance
+  %% Inheritance and Implementation
+  %% Service Dependencies
+
+```
+
+### Example Diagram (Complex) for a DCD with multiple entities, relationships, and namespaces:
+```mermaid
+classDiagram
+  %% Associations
+  %% Associations DTOs
+  %% Repository Associations
+  %% Interface Implementations
+  %% Interface Inheritance
+  %% Inheritance and Implementation
+  %% Service Dependencies
+```
+
 ## accepted parts of the DCD syntax:
 <|--	Inheritance
 *--	Composition
@@ -109,7 +168,7 @@ o--	Aggregation
 --	Link (Solid)
 ..>	Dependency
 ..|>	Realization
-..	Link (Dashed
+..	Link (Dashed)
 
 if link is between entities then we need multiplicities ala
 "0..1" -- "*"
@@ -120,4 +179,4 @@ if link is between entities then we need multiplicities ala
 - English
 
 ## Class object
-if class object changes name form artifacts before then make / update glosery `/docs/glosery.md` with class name in artifacts we transform from and class name in this artifacts.
+if class object changes name form artifacts before then make / update glossary `/docs/glossary.md` with class name in artifacts we transform from and class name in this artifacts.

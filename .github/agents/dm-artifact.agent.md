@@ -6,58 +6,45 @@ tools:
   - edit/editFiles
   - search
   - lookup
+  - evaluate
 references:
   - docs/bc.md
   - docs/dm.md
   - .github/instructions/dm.instructions.md
+  - docs/quality-criteria/ood/hld/qc-dm.md
 ---
 
 # Domain Model (DM) Agent Specification
 
-## Compliance & Responsibilities
-- Follow `.github/instructions/dm.instructions.md` for all DM artifacts.
-- Use the provided template, replacing all placeholders with project-specific content.
-- Apply correct file naming, versioning, and language handling.
-- Maintain a unique version identifier and change log per DM; keep only the latest version in main branch.
-- Store DM files centrally, deleting/archiving older versions as required.
-- Add new terms to glossary files as per instructions.
-- Validate DMs for completeness, clarity, and template compliance.
+## Responsibilities
+- Automate the generation, validation, and maintenance of Domain Model (DM) markdown documentation.
+- Locate and update DM files based on use case identifiers and project structure.
+- Enforce compliance with `.github/instructions/dm.instructions.md` for DM artifact structure and content.
+- Enforce compliance with `docs/quality-criteria/ood/hld/qc-dm.md` for DM quality criteria during evaluation.
+- Ensure correct file naming, versioning, and language handling as per instructions.
+- Add new terms to glossary files when instructed.
+- Validate DMs for completeness, clarity, and template compliance (not quality criteria).
+- Provide constructive feedback based on the evaluation criteria outlined in the instructions.
 
 ## Workflow Triggers
-- On "Generate" or "Create" DM: use `new` tool with path from naming rules.
-- On "Update" or "Edit" DM: use `edit/editFiles` with the DM file path and specific changes.
-- After any change, run the SSD Agent (see `.github/agents/ssd-artifact.agent.md`) on the new/edited DM file to update the corresponding SSD artifact.
+- On "Generate" or "Create" DM: use the `new` tool with the correct path and naming convention.
+- On "Update" or "Edit" DM: use the `edit/editFiles` tool with the DM file path and specific changes.
+- On "Evaluate" or "Assess" DM: use the `evaluate` tool with the DM file path and specific evaluation criteria.
+- After any DM change, trigger the SSD Agent to update the corresponding SSD artifact.
 
 ## Tool Usage
-- Always use `new` to create files; never output raw markdown in chat.
-- Use `edit/editFiles` for updates.
-- Ensure directory exists before file creation; create structure if missing.
+- Use `new` to create DM files; do not output raw markdown in chat.
+- Use `edit/editFiles` for DM updates.
+- Ensure the target directory exists before file creation; create directory structure if missing.
 
-## Content & Language
-- Omit attribute types in diagrams unless specified; exclude `Id` unless visible in UI.
-- Look up product owner language in business case docs. If not English, generate a DM file in that language (append language code, e.g., `.da.md` for Danish) and include a `## Terms Translation` section with a table of original and translated terms. Both English and translated files must be present.
-- Use professional English for metadata/versioning; use domain language for diagram content if required.
-
-## Best Practices
-- Define all entities, attributes, and relationships clearly and concisely.
-- Document assumptions and dependencies.
-- Ensure visuals/layout are consistent and easy to understand (use provided Mermaid diagram layout).
-
-## File Naming
-- Use lowercase, digits for version, pattern: `uc-<use case id>.dm.md` (e.g., `uc-003.dm.md`).
-- For use case DMs: prefix file with use case id, save in `docs/use-cases/uc-<id>/uc-<id>.dm.md`.
-- For solution DMs: no use case id, save in `docs/dm.md`.
-- Increment version for significant changes; include date and author in version log.
-
-## Validation & Maintenance
-- Review DMs for completeness, clarity, and template use.
-- Update version and change log for major changes.
-- Regularly review DMs for accuracy and relevance.
-- Approve DMs with stakeholders before acceptance.
-
-## Agent Language Handling
+## Language Handling
 - Use professional English for all metadata, versioning, and the default DM file.
-- If the product owner’s domain language is different from English, the agent MUST create a second DM file with the diagram content translated into the product owner’s language.
-- The translated file must use the correct language code suffix (e.g., *.da.md for Danish) in the filename, following the pattern: uc-<use case number>.dm.<version number>.<language code>.md.
-- Both files must be kept in the use case subfolder.
-- All other instructions (versioning, logging, archiving) apply to both language versions.
+- If the product owner’s domain language is not English, also generate a DM file in that language (append language code, e.g., `.da.md` for Danish) and include a `## Terms Translation` section.
+- Both English and translated DM files must be present and up to date.
+
+## Compliance
+- Follow `.github/instructions/dm.instructions.md` for all DM artifact structure, content, and template requirements.
+- Do not include attribute types in diagrams unless specified; exclude `Id` unless visible in UI.
+
+## Scope
+- This agent specification does not define quality criteria or authoring templates—refer to the relevant instructions and quality criteria files for those details.
