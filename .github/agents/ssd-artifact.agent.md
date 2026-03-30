@@ -30,7 +30,7 @@ The SSD Agent is responsible for generating, validating, and maintaining System 
 ## Tool Usage Requirements
 - **File Creation**: The agent **must** use the `new` tool to physically create files in the workspace. It should never output raw markdown to the chat if a file creation is requested.
 - **File Updates**: The agent **must** use `edit/editFiles` to update existing diagrams or logs within files.
-- **Path Accuracy**: Before creating a file, the agent must check if the directory (e.g., `docs/use-cases/uc-<use case number>/`) exists. If not, it should create the directory structure first.
+- **Path Accuracy**: Before creating a file, the agent must check if the directory (e.g., `docs/use-cases/uc-<use case number>*/`) exists. If not, it should create the directory structure first.
 
 ## Agent Responsibilities
 - The agent creates SSD files using the provided template and ensures all placeholders are replaced with project-specific content.
@@ -54,9 +54,9 @@ Each SSD must have a unique version identifier and a documented change log.
 Use the provided Mermaid sequence diagram layout for consistency.
 
 ## Agent File Naming
-Name files in lowercase, using digits for version, following the pattern: `uc-<use case number>.ssd.<version number>.md`.
+Name files in lowercase, using digits for version, following the pattern: `uc-<use case number>.ssd.md`.
 Add use case identifier as prefix for filename.
-Save files in a subfolder named after the use case (e.g., `docs/use-cases/uc-xxx/uc-xxx.ssd.0001.md`).
+Save files in a subfolder named after the use case (e.g., `docs/use-cases/uc-xxx/uc-xxx.ssd.md`).
 Increment version numbers for significant changes.
 Include today's date and author in the version log.
 Only keep the latest version in the main branch; delete older versions or archive them in a designated folder `archive`.

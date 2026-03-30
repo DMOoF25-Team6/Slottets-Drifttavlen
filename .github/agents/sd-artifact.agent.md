@@ -9,6 +9,7 @@ tools:
   - delete
 references:
   - docs/bc.md
+  - docs/dcd.md
   - docs/use-cases/uc-<id>/uc-<id>.ssd.*.md
   - .github/instructions/sd.instructions.md
 ---
@@ -22,6 +23,7 @@ This agent MUST comply with the SD instructions in `.github/instructions/sd.inst
 - Store SD files in the centralized repository, deleting or archiving older versions as required.
 - Ensure all new terms are added to the glossary files as per instructions.
 - Validate SDs for completeness, clarity, and template compliance.
+- Look up existing DCD artifacts to ensure consistency and avoid duplication.
 
 ## WebAPI Data Access Compliance
 - If WebAPI is used for data access, the SD MUST include a dedicated diagram section titled `WebApi Layer → Infrastructure Layer (Data Access)`.

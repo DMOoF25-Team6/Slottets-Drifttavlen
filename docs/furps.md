@@ -1,4 +1,4 @@
-# FURPS+ 
+# FURPS+
 FURPS+ is a model for classifying software quality attributes.
 The acronym stands for Functionality, Usability, Reliability, Performance, and Supportability, with the "+" indicating additional considerations such as design constraints, implementation requirements, interface requirements, and physical requirements.
 
@@ -8,57 +8,60 @@ The acronym stands for Functionality, Usability, Reliability, Performance, and S
 | Id                | FURPS	                            |
 | crossReference    |                                   |
 
-## Version
-- **Version**: 0001
-- **Date**: 2026-02-07
-
 ### Change Log
 | Date       | Version | Description                     | Author        |
 |------------|---------|---------------------------------|---------------|
-| 2026-02-07 | 0001    | Initial creation of the document |               |
+| 2026-02-07 | 0001    | Initial creation of the document | Team 6       |
+| 2026-03-30 | 0002    | New po requirements added       | Team 6        |
 
 ---
 
-## FURPS+ for Slottet – Digital Overlap System
+## FURPS+ for Slottet – Digital Handover System
 
 ### Functionality
-- Digitalt overlapsskema med borgerfelter, trafiklysmodel, medicinstatus, opgaver og beskeder.
-- Understøttelse af både Skoven og Slottet afdelinger med mulighed for separat og samlet visning.
-- Brugerroller: plejepersonale, vagtansvarlige, ledere/koordinatorer, admin.
-- Differentierede brugerrettigheder (almindelige medarbejdere vs. ledere/koordinatorer).
-- Adgangskontrol og login (hurtigt login, minimumskrav til kodeord, initialer/e-mail som brugernavn).
-- Historik og sporbarhed for alle overlaps og ændringer (audit trail: hvem har skrevet/redigeret hvad og hvornår).
-- Markering af sene/tilbagevirkende indtastninger med korrekt tidsstempel.
-- Hurtig og nem markering af medicin og risikovurdering (trafiklys-system).
-- Integration med FMK og notifikationssystem (udvidelse).
+- [REQ-F-001] Digital handover form with citizen fields, traffic light model, medication status, tasks, and messages.
+- [REQ-F-002] Support for both Skoven and Slottet departments with the option for separate and combined views.
+- [REQ-F-003] User roles: care staff, shift managers, leaders/coordinators, admin.
+- [REQ-F-004] Differentiated user permissions (regular staff vs. leaders/coordinators).
+- [REQ-F-005] Access control and login (quick login, minimum password requirements, initials/email as username).
+- [REQ-F-006] History and traceability for all handovers and changes (audit trail: who wrote/edited what and when).
+- [REQ-F-007] Marking of late/retroactive entries with correct timestamp.
+- [REQ-F-008] Quick and easy marking of medication and risk assessment (traffic light system).
+- [REQ-F-009] Integration with FMK and notification system (extension).
 
 ### Usability
-- Intuitiv brugergrænseflade tilpasset travle vagtskifter og alle medarbejdertyper (inkl. vikarer og nyansatte).
-- Klart visuelt overblik over borgerstatus og opgaver.
-- Responsivt design til tablets, PC og arbejdstelefoner (mobile enheder).
-- Hurtig navigation og let aflæsning af kritisk information.
-- Hurtig og nem login-proces.
-- Mulighed for løbende og efterfølgende dokumentation, med tydelig markering af sene indtastninger.
+- [REQ-U-001] Intuitive user interface adapted for busy shift changes and all employee types (including temps and new hires).
+- [REQ-U-002] Clear visual overview of citizen status and tasks.
+- [REQ-U-003] Responsive design for tablets, PCs, and work phones (mobile devices).
+- [REQ-U-004] Fast navigation and easy reading of critical information.
+- [REQ-U-005] Quick and easy login process.
+- [REQ-U-006] Possibility for ongoing and subsequent documentation, with clear marking of late entries.
 
 ### Reliability
-- Høj tilgængelighed og failover (cloud-ready, lokal og netværksdrift).
-- Automatisk backup og versionering af data.
-- Audit-log for alle ændringer og brugerhandlinger.
-- Robust håndtering af netværks- og strømudfald.
+- [REQ-R-001] High availability and failover (cloud-ready, local and network operation).
+- [REQ-R-002] Automatic backup and versioning of data.
+- [REQ-R-003] Audit log for all changes and user actions.
+- [REQ-R-004] Robust handling of network and power outages.
 
 ### Performance
-- Hurtig indlæsning og opdatering af borgerdata.
-- Skalerbar løsning (horisontal skalering, flere instanser).
-- Effektiv håndtering af samtidige brugere ved vagtskifte.
+- [REQ-P-001] Fast loading and updating of citizen data.
+- [REQ-P-002] Scalable solution (horizontal scaling, multiple instances).
+- [REQ-P-003] Efficient handling of concurrent users during shift changes.
 
 ### Supportability
-- Omfattende brugerdokumentation og træning.
-- Ticketing-system og supportfunktion.
-- Let opdatering og vedligeholdelse af systemet.
+- [REQ-S-001] Comprehensive user documentation and training.
+- [REQ-S-002] Ticketing system and support function.
+- [REQ-S-003] Easy updating and maintenance of the system.
 
-### + (Design Constraints, Implementation, Interface, Physical)
-- GDPR-compliance og sikker behandling af persondata.
-- Containerisering via Docker, cloud-ready arkitektur.
-- API til integration med eksterne systemer.
-- Central konfiguration via miljøvariabler og secrets.
-- Ingen bindinger til lokalt filsystem, fast server eller IP.
+### Design Constraints
+- [REQ-DC-001] GDPR compliance and secure handling of personal data.
+
+### Implementation
+- [REQ-IMPL-001] Containerization via Docker, cloud-ready architecture.
+
+### Interface
+- [REQ-INT-001] API for integration with external systems.
+
+### Physical
+- [REQ-PHY-001] Central configuration via environment variables and secrets.
+- [REQ-PHY-002] No dependencies on local file system, fixed server, or IP.
