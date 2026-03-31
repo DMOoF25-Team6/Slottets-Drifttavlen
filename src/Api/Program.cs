@@ -4,7 +4,7 @@
 using Core.Handlers;
 using Core.Interfaces;
 using Core.Interfaces.Repositories;
-using Infrastructure.Persistents;
+using Infrastructure.Persistent;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 

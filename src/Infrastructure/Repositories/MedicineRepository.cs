@@ -11,7 +11,7 @@ using Core.Interfaces;
 using Core.Interfaces.Repositories;
 
 using Infrastructure.Database.Entities;
-using Infrastructure.Persistents;
+using Infrastructure.Persistent;
 using Microsoft.EntityFrameworkCore;
 
 
