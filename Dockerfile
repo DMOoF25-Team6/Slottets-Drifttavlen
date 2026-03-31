@@ -19,7 +19,6 @@ WORKDIR /src
 COPY Slottet.CareManagement.sln ./
 COPY Directory.Build.props ./
 COPY Directory.Build.targets ./
-COPY Directory.Packages.props ./
 COPY .env ./
 COPY src/ ./src/
 COPY tests/ ./tests/
@@ -35,6 +34,7 @@ WORKDIR /workspace
 COPY --from=build-stage /src/ ./
 COPY .runsettings ./.runsettings
 COPY tools/docker/run_tests.sh /run_tests.sh
+RUN ["dotnet", "tool", "install", "--global", "dotnet-reportgenerator-globaltool"]
 RUN ["chmod", "+x", "/run_tests.sh"]
 
 ENTRYPOINT ["/run_tests.sh"]

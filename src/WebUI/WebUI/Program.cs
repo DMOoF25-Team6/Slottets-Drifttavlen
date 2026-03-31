@@ -18,11 +18,12 @@ public class Program
     public static void Main(string[] args)
     {
         // Ensure DataProtection-Keys directory exists for key persistence
-        var dataProtectionKeysDir = Path.Combine(AppContext.BaseDirectory, "DataProtection-Keys");
+        string dataProtectionKeysDir = Path.Combine(AppContext.BaseDirectory, "DataProtection-Keys");
         if (!Directory.Exists(dataProtectionKeysDir))
         {
-            Directory.CreateDirectory(dataProtectionKeysDir);
+            _ = Directory.CreateDirectory(dataProtectionKeysDir);
         }
+
         // Load environment variables from .env file
         _ = DotNetEnv.Env.Load(AppContext.BaseDirectory);
 
