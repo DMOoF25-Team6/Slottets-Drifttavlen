@@ -32,10 +32,10 @@ namespace Infrastructure.Repositories;
 /// </code>
 /// </example>
 /// </summary>
-public abstract class Repository<TEntity>(AppDbContext context) : IRepository<TEntity>
+public abstract class Repository<TEntity>(IAppDbContext context) : IRepository<TEntity>
     where TEntity : class, IEntity
 {
-    protected readonly AppDbContext _context = context;
+    protected readonly IAppDbContext _context = context;
 
     /// <inheritdoc/>
     public IEnumerable<TEntity> Entities { get; set; } = [];

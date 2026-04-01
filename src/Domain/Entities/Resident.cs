@@ -18,4 +18,6 @@ public class Resident : IEntity
     [Required]
     public TrafficLightStatus? TrafficLightStatus { get; set; }
     public virtual ICollection<ResidentNote> Notes { get; set; } = [];
+    public virtual ICollection<MedicineRecord> Medicines { get; set; } = [];
+    public virtual ICollection<PainkillerRecord> Painkillers { get; set; } = [];
 }

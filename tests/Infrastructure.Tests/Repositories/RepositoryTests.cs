@@ -6,7 +6,7 @@ using Domain.Interfaces;
 using Infrastructure.Persistent;
 using Infrastructure.Repositories;
 
-using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace Infrastructure.Tests.Repositories;
 
@@ -21,23 +21,18 @@ public class RepositoryTests
         public string Name { get; set; } = string.Empty;
     }
 
-    public class UserRepository(AppDbContext context) : Repository<User>(context)
+    public class UserRepository(IAppDbContext context) : Repository<User>(context)
     {
         // No extra implementation needed for in-memory tests
     }
 
     private readonly UserRepository _repository;
+    private readonly Mock<IAppDbContext> _mockContext;
 
     public RepositoryTests()
     {
-        DbContextOptions<AppDbContext> options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        _repository = new UserRepository(new AppDbContext(options)
-        {
-            Residents = null!,
-            ResidentNotes = null!
-        });
+        _mockContext = new Mock<IAppDbContext>();
+        _repository = new UserRepository(_mockContext.Object);
     }
 
     [Theory]

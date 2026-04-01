@@ -20,6 +20,30 @@ public class ResidentConfiguration : IEntityTypeConfiguration<Resident>
 {
     public void Configure(EntityTypeBuilder<Resident> builder)
     {
+        _ = builder.HasMany(r => r.Notes)
+            .WithOne()
+            .HasForeignKey("ResidentId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        _ = builder.HasMany(r => r.Medicines)
+            .WithOne()
+            .HasForeignKey("ResidentId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        _ = builder.HasMany(r => r.Painkillers)
+            .WithOne()
+            .HasForeignKey("ResidentId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        _ = builder.Navigation(r => r.Notes)
+            .AutoInclude();
+
+        _ = builder.Navigation(r => r.Medicines)
+            .AutoInclude();
+
+        _ = builder.Navigation(r => r.Painkillers)
+            .AutoInclude();
+
         SeedingData(builder);
     }
 

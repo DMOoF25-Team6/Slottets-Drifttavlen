@@ -1,11 +1,9 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-using Core.Interfaces.ApiClients;
 using Core.Services;
 
 using Infrastructure;
-using Infrastructure.Services;
 
 using Microsoft.AspNetCore.DataProtection;
 
@@ -57,7 +55,6 @@ public class Program
         _ = builder.Services.AddInfrastructure();
 
         //Add ResidentService and API client 
-        _ = builder.Services.AddHttpClient<IResidentApiClient, ResidentApiClient>();
         _ = builder.Services.AddScoped<ResidentService>();
         // Persist Data Protection keys to a directory for antiforgery token decryption across restarts/containers
         _ = builder.Services.AddDataProtection()

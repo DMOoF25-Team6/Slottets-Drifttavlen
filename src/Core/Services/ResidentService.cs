@@ -2,7 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 
-using Core.Interfaces.ApiClients;
+using Core.Interfaces.Managers;
 using Core.Interfaces.Repositories;
 
 using Domain.Entities;
@@ -19,27 +19,10 @@ using Domain.Entities;
 /// </remarks>
 namespace Core.Services;
 
-public class ResidentService
+public class ResidentService(IResidentRepository residentRepository, IResidentManager residentApiClient)
 {
-    private readonly IResidentRepository _residentRepository;
-    private readonly IResidentApiClient _residentApiClient;
-
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ResidentService"/> class.
-    /// </summary>
-    /// <param name="residentRepository">The repository abstraction for resident data access.</param>
-    ///  The dependency injection system now provides: a ResidentRepository and an HttpClient to the ResidentService.
-    /// The service can now make HTTP requests to an API.
-    /// 
-    public ResidentService(IResidentRepository residentRepository, IResidentApiClient residentApiClient)
-    {
-        _residentRepository = residentRepository;
-        _residentApiClient = residentApiClient;
-
-    }
-
-
+    private readonly IResidentRepository _residentRepository = residentRepository;
+    private readonly IResidentManager _residentApiClient = residentApiClient;
 
     /// <summary>
     /// Retrieves a resident by their unique identifier by calling the external API.

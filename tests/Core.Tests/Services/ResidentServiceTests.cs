@@ -2,7 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 
-using Core.Interfaces.ApiClients;
+using Core.Interfaces.Managers;
 using Core.Interfaces.Repositories;
 using Core.Services;
 
@@ -10,34 +10,34 @@ using Domain.Entities;
 
 using Moq;
 
-
 namespace Core.Tests.Services;
 
 public class ResidentServiceTests
 {
     private readonly Mock<IResidentRepository> _mockRepo;
     private readonly ResidentService _service;
-    private readonly Mock<IResidentApiClient> _mockApiClient;
+    private readonly Mock<IResidentManager> _mockApiClient;
 
     public ResidentServiceTests()
     {
         _mockRepo = new Mock<IResidentRepository>();
-        _mockApiClient = new Mock<IResidentApiClient>();
+        _mockApiClient = new Mock<IResidentManager>();
         _service = new ResidentService(_mockRepo.Object, _mockApiClient.Object);
     }
-
-
 
     [Fact]
     public async Task GetByIdAsync_ReturnsResident()
     {
+        // Arrange
         await Task.Yield();
         Guid id = Guid.NewGuid();
         Resident resident = new() { Id = id, Initials = "AB" };
 
-        //mock the Api client
+        // Act
         _ = _mockApiClient.Setup(a => a.GetByIdAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync(resident);
         bool result = true;
+
+        // Assert
         Assert.True(result);
     }
 

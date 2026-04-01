@@ -34,6 +34,20 @@ classDiagram
       +Note: string
       +EditedAt: DateTime
     }
+    class MedicineRecord {
+      +Id: guid
+      +ResidentId: guid
+      +MedicineName: string
+      +Timestamp: DateTime
+      +Given: bool
+    }
+    class PainkillerRecord {
+      +Id: guid
+      +ResidentId: guid
+      +Type: string
+      +GivenAt: DateTime
+      +NextAllowedTime: DateTime
+    }
   }
 
   namespace Domain.Enums {
@@ -54,18 +68,20 @@ classDiagram
 
   %% Associations
   Resident "1" --o "0..*" ResidentNote : has
-
   Resident --* TrafficLightStatus : 
-
+  MedicineRecord --> Resident : has
+  PainkillerRecord --> Resident : has
   %% Associations for Interfaces
 
   %% Interface Implementations
- 
+
   %% Inheritance
 
   %% Implementation
   Resident --|> IEntity : implements
   ResidentNote --|> IEntity : implements
+  MedicineRecord --|> IEntity : implements
+  PainkillerRecord --|> IEntity : implements
 
   %% Service Dependencies
 
@@ -231,6 +247,8 @@ ResidentNoteRepository <|-- Repository~ResidentNote~ : extends
 ResidentManager --> Resident : fetches
 Repository~TEntity~ --> Resident : manages
 Repository~TEntity~ --> ResidentNote : manages
+Repository~TEntity~ --> MedicineRecord : manages
+Repository~TEntity~ --> PainkillerRecord : manages
 LoginApiController --> AuthManager : uses
 LoginApiController --> LoginService : uses
 
