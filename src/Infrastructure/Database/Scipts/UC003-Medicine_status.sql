@@ -1,0 +1,29 @@
+CREATE TABLE MedicineRecord (
+    Id UNIQUEIDENTIFIER PRIMARY KEY Default NEWID(),
+    ResidentId UNIQUEIDENTIFIER NOT NULL,
+    MedicineName NVARCHAR(255) NOT NULL,
+    Timestamp DATETIME2 NOT NULL,
+    Given BIT NOT NULL,
+
+    CONSTRAINT FK_MedicineRecord_Resident
+    FOREIGN KEY (ResidentId) REFERENCES Resident(id)
+
+);
+
+
+CREATE TABLE PainkillerRecord (
+    Id UNIQUEIDENTIFIER PRIMARY KEY Default NEWID(),
+    ResidentId UNIQUEIDENTIFIER NOT NULL,
+    Type NVARCHAR(100) NOT NULL,
+    GivenAt DATETIME2 NOT NULL,
+    NextAllowedTime DATETIME2 NOT NULL,
+
+    CONSTRAINT FK_PainkillerRecord_Resident
+    FOREIGN KEY (ResidentId) REFERENCES Resident(Id)
+);
+
+
+CREATE TABLE Resident (
+    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    Initials NVARCHAR(10)
+);
