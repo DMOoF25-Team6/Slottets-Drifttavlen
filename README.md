@@ -108,6 +108,7 @@ MYSQL_DATABASE=your_database_name
 MYSQL_USER=your_username
 MYSQL_PASSWORD=your_user_password
 MYSQL_HOST=localhost
+ConnectionStrings__AppDbContext=Server={DB_HOST};Port=3307;Database={DB_NAME};User={DB_USER};Password={DB_PASSWORD};
 ```
 Ændre værdierne til dine ønskede databaseindstillinger.
 
@@ -129,6 +130,12 @@ docker-compose up
 Alternativt direkte med Docker:
 ```sh
 docker run --name slottets-sqlserver -e MYSQL_ROOT_PASSWORD=your_root_password -e MYSQL_DATABASE=your_database_name -e MYSQL_USER=your_username -e MYSQL_PASSWORD=your_user_password -p 3307:3306 -d mysql
+```
+
+Migrere og opdatere databasen:
+```sh
+dotnet ef migrations add IdentityFramework --project src/Infrastructure.Data --startup-project src/Api
+dotnet ef database update --project src/Infrastructure.Data --startup-project src/Api
 ```
 
 ---

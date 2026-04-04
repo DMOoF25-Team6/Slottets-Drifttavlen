@@ -5,19 +5,19 @@ using Core.Interfaces.Repositories;
 
 using Domain.Entities;
 
-using Infrastructure.Persistent;
+using Infrastructure.Data.Persistent;
 
 using Microsoft.EntityFrameworkCore;
 
 
-namespace Infrastructure.Repositories;
+namespace Infrastructure.Data.Repositories;
 
 /// <summary>
 /// EF Core implementation of IMedicineRepository.
 /// Uses AppDbContext to access the database.
 /// </summary>
 
-public class MedicineRepository(IAppDbContext context) : Repository<MedicineRecord>(context), IMedicineRepository
+public class MedicineRepository(AppDbContext context) : Repository<MedicineRecord>(context), IMedicineRepository
 {
     Task<IEnumerable<MedicineRecord>> IMedicineRepository.GetMedicineStatusLast24HoursAsync(Guid residentId, CancellationToken cancellationToken)
     {

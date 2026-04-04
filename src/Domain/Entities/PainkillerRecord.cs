@@ -9,7 +9,6 @@ public class PainkillerRecord : IEntity
 {
     public Guid Id { get; set; }
     public Guid ResidentId { get; set; }
-    public virtual Resident Resident { get; set; } = null!;
     public string Type { get; set; } = string.Empty;
     public DateTime GivenAt { get; set; }
     public DateTime NextAllowedTime { get; set; }

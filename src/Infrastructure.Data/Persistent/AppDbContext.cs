@@ -3,19 +3,19 @@
 
 using Domain.Entities;
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Persistent;
+namespace Infrastructure.Data.Persistent;
 
-public partial class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext(options), IAppDbContext
+public partial class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<IdentityUser<Guid>, IdentityRole<Guid>, Guid>(options)
 {
-    public required DbSet<Resident> Residents { get; set; }
-    public required DbSet<ResidentNote> ResidentNotes { get; set; }
+    public DbSet<Resident> Residents { get; set; }
+    public DbSet<ResidentNote> ResidentNotes { get; set; }
 
     public DbSet<MedicineRecord> MedicineRecord { get; set; }
-    public DbSet<PainkillerRecord> PainkillerAdministrationEntities { get; set; }
-    public DbSet<PainkillerRecord> PainkillerRecord { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public DbSet<PainkillerRecord> PainkillerRecord { get; set; }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         => base.SaveChangesAsync(cancellationToken);

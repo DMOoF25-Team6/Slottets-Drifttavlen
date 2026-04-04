@@ -5,9 +5,9 @@ using Core.Interfaces.Repositories;
 
 using Domain.Interfaces;
 
-using Infrastructure.Persistent;
+using Infrastructure.Data.Persistent;
 
-namespace Infrastructure.Repositories;
+namespace Infrastructure.Data.Repositories;
 
 /// <summary>
 /// Abstract base class for repository implementations in the Infrastructure layer.
@@ -32,10 +32,10 @@ namespace Infrastructure.Repositories;
 /// </code>
 /// </example>
 /// </summary>
-public abstract class Repository<TEntity>(IAppDbContext context) : IRepository<TEntity>
+public abstract class Repository<TEntity>(AppDbContext context) : IRepository<TEntity>
     where TEntity : class, IEntity
 {
-    protected readonly IAppDbContext _context = context;
+    protected readonly AppDbContext _context = context;
 
     /// <inheritdoc/>
     public IEnumerable<TEntity> Entities { get; set; } = [];
