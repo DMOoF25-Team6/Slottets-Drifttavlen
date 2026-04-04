@@ -5,14 +5,14 @@ using Core.Interfaces.Repositories;
 
 using Domain.Entities;
 
-using Infrastructure.Persistent;
+using Infrastructure.Data.Persistent;
 
 using Microsoft.EntityFrameworkCore;
 
 
-namespace Infrastructure.Repositories;
+namespace Infrastructure.Data.Repositories;
 
-public class PainKillerRepository(IAppDbContext context) : Repository<PainkillerRecord>(context), IPainkillerRepository
+public class PainKillerRepository(AppDbContext context) : Repository<PainkillerRecord>(context), IPainkillerRepository
 {
     public Task<IEnumerable<PainkillerRecord>> GetPainkillerStatusLast24HoursAsync(Guid residentId, CancellationToken cancellationToken = default)
     {

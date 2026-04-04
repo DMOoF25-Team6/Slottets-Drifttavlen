@@ -6,7 +6,7 @@ using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistent.Configurations;
+namespace Infrastructure.Data.Persistent.Configurations;
 
 public class PainKillerRecordConfiguration : IEntityTypeConfiguration<PainkillerRecord>
 {

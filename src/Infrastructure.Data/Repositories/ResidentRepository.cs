@@ -5,9 +5,9 @@ using Core.Interfaces.Repositories;
 
 using Domain.Entities;
 
-using Infrastructure.Persistent;
+using Infrastructure.Data.Persistent;
 
-namespace Infrastructure.Repositories;
+namespace Infrastructure.Data.Repositories;
 
 /// <summary>
 /// Repository implementation for <see cref="Resident"/> entities.

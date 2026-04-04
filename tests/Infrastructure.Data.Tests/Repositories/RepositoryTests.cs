@@ -21,17 +21,17 @@ public class RepositoryTests
         public string Name { get; set; } = string.Empty;
     }
 
-    public class UserRepository(IAppDbContext context) : Repository<User>(context)
+    public class UserRepository(AppDbContext context) : Repository<User>(context)
     {
         // No extra implementation needed for in-memory tests
     }
 
     private readonly UserRepository _repository;
-    private readonly Mock<IAppDbContext> _mockContext;
+    private readonly Mock<AppDbContext> _mockContext;
 
     public RepositoryTests()
     {
-        _mockContext = new Mock<IAppDbContext>();
+        _mockContext = new Mock<AppDbContext>();
         _repository = new UserRepository(_mockContext.Object);
     }
 
