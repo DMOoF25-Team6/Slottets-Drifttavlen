@@ -3,12 +3,12 @@
 
 using Domain.Interfaces;
 
-using Infrastructure.Persistent;
-using Infrastructure.Repositories;
+using Infrastructure.Data.Persistent;
+using Infrastructure.Data.Repositories;
 
 using Moq;
 
-namespace Infrastructure.Tests.Repositories;
+namespace Infrastructure.Data.Tests.Repositories;
 
 /// <summary>
 /// Unit tests for the <see cref="Repository{TEntity}"/> class.

@@ -58,7 +58,7 @@ public partial class ResidentCard : ComponentBase
         new Resident { Initials = "IB", TrafficLightStatus = TrafficLightStatus.Red }
     ];
 
-    private string GetTrafficLightClass(TrafficLightStatus? trafficLight)
+    private static string GetTrafficLightClass(TrafficLightStatus? trafficLight)
     {
         return trafficLight switch
         {

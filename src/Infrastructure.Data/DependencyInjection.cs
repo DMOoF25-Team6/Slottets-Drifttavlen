@@ -11,12 +11,17 @@ namespace Infrastructure.Data;
 
 public static class DependencyInjection
 {
+    /// <summary>
+    /// Registers infrastructure data services and provides a method to seed Identity roles and claims.
+    /// </summary>
     public static IServiceCollection AddInfrastructureData(this IServiceCollection services)
     {
         _ = services.AddScoped<IResidentRepository, ResidentRepository>();
         _ = services.AddScoped<IResidentNoteRepository, ResidentNoteRepository>();
         _ = services.AddScoped<IMedicineRepository, MedicineRepository>();
         _ = services.AddScoped<IPainkillerRepository, PainKillerRepository>();
+
+        // NOTE: To seed Identity roles and claims, call IdentitySeed.SeedRolesAndClaimsAsync(serviceProvider) at startup.
 
         return services;
     }

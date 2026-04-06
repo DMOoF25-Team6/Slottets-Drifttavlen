@@ -12,7 +12,7 @@ namespace Api.Controllers;
 
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class MedicineController(IMedicineRepository medicineRepository, IPainkillerRepository painkillerRepository) : Controller
 {
     private readonly IMedicineRepository _medicineRepository = medicineRepository;

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.Persistent.Configurations;
 
-public class PainKillerRecordConfiguration : IEntityTypeConfiguration<PainkillerRecord>
+public class PainkillerRecordConfiguration : IEntityTypeConfiguration<PainkillerRecord>
 {
     public void Configure(EntityTypeBuilder<PainkillerRecord> builder)
     {

@@ -26,16 +26,16 @@
   <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.25" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.25">
+    <!--<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.25">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.25" />
+    </PackageReference>-->
+    <!--<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.25" />-->
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
+    <!--<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />-->
   </ItemGroup>
 
 </Project>

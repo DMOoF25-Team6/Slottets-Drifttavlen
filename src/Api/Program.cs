@@ -4,9 +4,13 @@
 
 // For SwaggerGen extension methods
 
+using Domain.Entities;
+
 using Infrastructure.Data;
 using Infrastructure.Data.Persistent;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api;
@@ -20,6 +24,16 @@ public class Program
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+        _ = builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("EnableCORS", policy =>
+            {
+                _ = policy.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+            });
+        });
+
         // Replace the connection string params with the one from the environment variable
         ConfigurationManager conf = builder.Configuration;
         string connectionString = DbContextConfiguration(builder, conf);
@@ -30,11 +44,52 @@ public class Program
         });
         //_ = builder.Services.AddDbContextFactory<AppDbContext>();
 
+        _ = builder.Services.AddAuthorization();
+
         _ = builder.Services.AddInfrastructureData();
+
+        _ = builder.Services.AddIdentity<User, IdentityRole<Guid>>(opt =>
+        {
+            opt.Password.RequireDigit = true;
+            opt.Password.RequireLowercase = true;
+            opt.Password.RequireUppercase = true;
+            opt.Password.RequireNonAlphanumeric = true;
+            opt.Password.RequiredLength = 7;
+        })
+            .AddEntityFrameworkStores<AppDbContext>();
+        //.AddDefaultTokenProviders();
+
+        _ = builder.Services.AddAuthentication(opt =>
+        {
+            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+            .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                // IssuerSigningKey should be set here for production use
+
+                ValidIssuer = builder.Configuration["TokenValidationParameters:ValidIssuer"],
+                ValidAudience = builder.Configuration["TokenValidationParameters:ValidAudience"],
+                IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+                    System.Text.Encoding.UTF8.GetBytes(builder.Configuration["TokenValidationParameters:IssuerSigningKey"] ?? throw new InvalidOperationException("IssuerSigningKey not found in configuration."))
+                )
+            };
+        });
 
         // Add services to the container.
         _ = builder.Services.AddControllers();
         _ = builder.Services.AddSwaggerGen();
+
+        _ = builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
+
+        // Dummy email sender for Identity (required by MapIdentityApi)
+        _ = builder.Services.AddSingleton<IEmailSender<User>, DummyEmailSenderForUser>();
 
         WebApplication app = builder.Build();
 
@@ -50,6 +105,9 @@ public class Program
 
         _ = app.UseHttpsRedirection();
 
+        _ = app.UseCors("EnableCORS");
+
+        _ = app.UseAuthentication();
         _ = app.UseAuthorization();
 
         _ = app.MapControllers();
@@ -66,10 +124,6 @@ public class Program
             string dbPass = Environment.GetEnvironmentVariable("MYSQL_PASSWORD") ?? throw new InvalidOperationException("MYSQL_PASSWORD environment variable not found.");
             string dbHost = Environment.GetEnvironmentVariable("MYSQL_HOST") ?? throw new InvalidOperationException("MYSQL_HOST environment variable not found.");
             string dbName = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? throw new InvalidOperationException("MYSQL_DATABASE environment variable not found.");
-            //string dbUser = Environment.GetEnvironmentVariable("MYSQL_USER") ?? string.Empty;
-            //string dbPass = Environment.GetEnvironmentVariable("MYSQL_PASSWORD") ?? string.Empty;
-            //string dbHost = Environment.GetEnvironmentVariable("MYSQL_HOST") ?? string.Empty;
-            //string dbName = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? string.Empty;
             connStr = connStr.Replace("{DB_USER}", dbUser)
                              .Replace("{DB_PASSWORD}", dbPass)
                              .Replace("{DB_HOST}", dbHost)
@@ -78,5 +132,26 @@ public class Program
             return connStr;
         }
         throw new InvalidOperationException("Connection string for AppDbContext not found in environment variables.");
+    }
+}
+
+public class DummyEmailSenderForUser : IEmailSender<User>
+{
+    public Task SendConfirmationLinkAsync(User user, string email, string confirmationLink)
+    {
+        // Log or ignore in development
+        return Task.CompletedTask;
+    }
+
+    public Task SendPasswordResetLinkAsync(User user, string email, string resetLink)
+    {
+        // Log or ignore in development
+        return Task.CompletedTask;
+    }
+
+    public Task SendPasswordResetCodeAsync(User user, string email, string resetCode)
+    {
+        // Log or ignore in development
+        return Task.CompletedTask;
     }
 }

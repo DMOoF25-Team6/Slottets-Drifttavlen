@@ -26,7 +26,7 @@ namespace Api.Controllers;
 /// </code>
 /// </example>
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class ResidentNoteController : ControllerBase
 {
     /// <summary>
