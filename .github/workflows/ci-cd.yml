@@ -20,4 +20,4 @@ jobs:
       - name: Build
         run: dotnet build --no-restore Slottet.CareManagement.sln
       - name: Test
-        run: dotnet test --no-build --verbosity normal Slottet.CareManagement.sln
+        run: dotnet test --no-build --verbosity normal --solution Slottet.CareManagement.sln
