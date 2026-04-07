@@ -74,31 +74,29 @@ public class ResidentNoteController : ControllerBase
     /// <summary>
     /// Updates the text of an existing note for a resident.
     /// </summary>
-    /// <param name="residentId">A unique identifier for the resident.</param>
     /// <param name="noteId">A unique identifier for the note to update.</param>
     /// <param name="newText">The new text for the note.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>An <see cref="IActionResult"/> indicating whether the update was successful.</returns>
-    /// <remarks>PUT /api/residentnote/{residentId}/{noteId}</remarks>
-    [HttpPut("{residentId}/{noteId}")]
-    public async Task<IActionResult> Update(Guid residentId, Guid noteId, [FromBody] string newText, CancellationToken cancellationToken)
+    /// <remarks>PUT /api/residentnote/{noteId}</remarks>
+    [HttpPut("{noteId}")]
+    public async Task<IActionResult> Update(Guid noteId, [FromBody] string newText, CancellationToken cancellationToken)
     {
-        bool success = await _residentNoteService.UpdateAsync(residentId, noteId, newText, cancellationToken);
+        bool success = await _residentNoteService.UpdateAsync(noteId, newText, cancellationToken);
         return Ok(success);
     }
 
     /// <summary>
     /// Deletes a note for a resident.
     /// </summary>
-    /// <param name="residentId">A unique identifier for the resident.</param>
     /// <param name="noteId">A unique identifier for the note to delete.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>An <see cref="IActionResult"/> indicating whether the deletion was successful.</returns>
-    /// <remarks>DELETE /api/residentnote/{residentId}/{noteId}</remarks>
-    [HttpDelete("{residentId}/{noteId}")]
-    public async Task<IActionResult> Delete(Guid residentId, Guid noteId, CancellationToken cancellationToken)
+    /// <remarks>DELETE /residentnote/{noteId}</remarks>
+    [HttpDelete("{noteId}")]
+    public async Task<IActionResult> Delete(Guid noteId, CancellationToken cancellationToken)
     {
-        bool success = await _residentNoteService.DeleteAsync(residentId, noteId, cancellationToken);
+        bool success = await _residentNoteService.DeleteAsync(noteId, cancellationToken);
         return Ok(success);
     }
 }

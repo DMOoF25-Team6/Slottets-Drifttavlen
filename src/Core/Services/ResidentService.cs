@@ -4,6 +4,7 @@
 
 using Core.Interfaces.Managers;
 using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
 
 using Domain.Entities;
 
@@ -19,7 +20,7 @@ using Domain.Entities;
 /// </remarks>
 namespace Core.Services;
 
-public class ResidentService(IResidentRepository residentRepository, IResidentManager residentManager)
+public class ResidentService(IResidentRepository residentRepository, IResidentManager residentManager) : IResidentService
 {
     private readonly IResidentRepository _residentRepository = residentRepository;
     private readonly IResidentManager _residentManager = residentManager;
@@ -93,5 +94,20 @@ public class ResidentService(IResidentRepository residentRepository, IResidentMa
     public Task DeleteAsync(Resident resident, CancellationToken cancellationToken = default)
     {
         return _residentRepository.DeleteAsync(resident, cancellationToken);
+    }
+
+    public Task<IEnumerable<Resident>> AddRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 }

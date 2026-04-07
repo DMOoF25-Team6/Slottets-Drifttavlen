@@ -1,0 +1,11 @@
+# Exclude Infrastructure.Data.Migrations from code analysis
+
+# This file excludes the Migrations folder from code analysis (StyleCop, Roslyn analyzers, etc.)
+# Place this file in the Infrastructure.Data project root.
+
+[*.cs]
+# Exclude all files in the Migrations folder from code analysis
+# (relative to this .editorconfig location)
+[Persistent/Migrations/*]
+dotnet_diagnostic.SA0000.severity = none
+# If using Roslyn analyzers, you may need to add additional rules here

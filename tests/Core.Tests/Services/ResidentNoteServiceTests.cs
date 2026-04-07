@@ -103,7 +103,7 @@ public class ResidentNoteServiceTests
                  .Returns(Task.CompletedTask);
 
         // Act
-        bool result = await _service.DeleteAsync(residentId, noteId, TestContext.Current.CancellationToken);
+        bool result = await _service.DeleteAsync(noteId, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(result);

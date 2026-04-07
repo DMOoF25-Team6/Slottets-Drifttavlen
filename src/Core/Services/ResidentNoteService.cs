@@ -53,7 +53,7 @@ public class ResidentNoteService(IResidentNoteRepository residentNoteRepository)
         return true;
     }
 
-    public async Task<bool> DeleteAsync(Guid residentId, Guid noteId, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(Guid noteId, CancellationToken cancellationToken = default)
     {
         // Step 1 - Fetch the note
         ResidentNote? note = await _residentNoteRepository.GetByIdAsync(noteId, cancellationToken);
@@ -69,5 +69,10 @@ public class ResidentNoteService(IResidentNoteRepository residentNoteRepository)
 
         // Step 4 - Return success
         return true;
+    }
+
+    public Task<bool> UpdateAsync(Guid noteId, string newText, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

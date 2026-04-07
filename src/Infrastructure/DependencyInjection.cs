@@ -20,7 +20,10 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         _ = services.AddHttpClient<IResidentManager, ResidentManager>();
-        _ = services.AddHttpClient<IMedicineRecordManager, MedicineRecordManager>();
+        // _ = services.AddHttpClient<IResidentNoteManager, ResidentNoteManager>(); // TODO: Implement ResidentNoteManager
+        // _ = services.AddHttpClient<IPainkillerRecordManager, PainkillerRecordManager>(); // TODO: Implement PainkillerRecordManager
+        // _ = services.AddHttpClient<IMedicineRecordManager, MedicineRecordManager>(); // TODO: Implement MedicineRecordManager
+        _ = services.AddHttpClient<IAccountManager, AccountManager>();
 
         return services;
     }
