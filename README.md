@@ -100,8 +100,20 @@ git@github.com:DMOoF25-Team6/Slottets-Drifttavlen.git
 cd DMOoF25-Team6.Slottets-Drifttavlen
 ```
 
-### Docker database
+### Opret env-filer
 Opret en `.env`-fil i projektroden med følgende indhold:
+```sh
+MYSQL_ROOT_PASSWORD=rootpassword
+MYSQL_DATABASE=slottetsdb
+MYSQL_USER=appuser
+MYSQL_PASSWORD=apppassword
+MYSQL_HOST=localhost
+ConnectionStrings__AppDbContext=Server={DB_HOST};Port=3307;Database={DB_NAME};User={DB_USER};Password={DB_PASSWORD};
+TokenValidationParameters__IssuerSigningKey=bZcurjVyDJCm2%KHwwRcduIOyjeKyR22
+```
+
+### Docker database
+Ændrer værdierne i `.env`-filen i projektroden til dine ønskede databaseindstillinger:
 ```
 MYSQL_ROOT_PASSWORD=your_root_password
 MYSQL_DATABASE=your_database_name
@@ -110,7 +122,6 @@ MYSQL_PASSWORD=your_user_password
 MYSQL_HOST=localhost
 ConnectionStrings__AppDbContext=Server={DB_HOST};Port=3307;Database={DB_NAME};User={DB_USER};Password={DB_PASSWORD};
 ```
-Ændre værdierne til dine ønskede databaseindstillinger.
 
 #### Kør SQL-server:
 ```sh

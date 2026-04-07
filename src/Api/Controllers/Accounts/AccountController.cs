@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-using Core.DTOs.Accounts;
+using Core.DTOs.Account;
 using Core.Mappers.Accounts;
 
 using Domain.Entities;
@@ -35,7 +35,7 @@ public class AccountController(UserManager<User> userManager) : ControllerBase
             : BadRequest(new RegistrationResponseDto
             {
                 IsSuccessful = false,
-                Errors = result.Errors.Select(e => e.Description)
+                ErrorMessages = result.Errors.Select(e => e.Description)
             });
     }
 
@@ -54,7 +54,7 @@ public class AccountController(UserManager<User> userManager) : ControllerBase
         {
             return Unauthorized(new LoginResponseDto
             {
-                ErrorMessage = "Invalid email or password."
+                ErrorMessages = ["Invalid email or password."]
             });
         }
 
@@ -62,7 +62,7 @@ public class AccountController(UserManager<User> userManager) : ControllerBase
         {
             return Unauthorized(new LoginResponseDto
             {
-                ErrorMessage = "User email is not available."
+                ErrorMessages = ["User email is not available."]
             });
         }
 
@@ -91,25 +91,25 @@ public class AccountController(UserManager<User> userManager) : ControllerBase
     {
         if (!ModelState.IsValid || string.IsNullOrWhiteSpace(request.RefreshToken))
         {
-            return BadRequest(new RefreshTokenResponseDto { ErrorMessage = "Invalid refresh token request." });
+            return BadRequest(new RefreshTokenResponseDto { ErrorMessages = ["Invalid refresh token request."] });
         }
 
         // Find user by refresh token
         string? userEmail = RefreshTokens.FirstOrDefault(x => x.Value == request.RefreshToken).Key;
         if (userEmail is null)
         {
-            return Unauthorized(new RefreshTokenResponseDto { ErrorMessage = "Invalid refresh token." });
+            return Unauthorized(new RefreshTokenResponseDto { ErrorMessages = ["Invalid refresh token."] });
         }
 
         User? user = await userManager.FindByEmailAsync(userEmail);
         if (user is null)
         {
-            return Unauthorized(new RefreshTokenResponseDto { ErrorMessage = "User not found." });
+            return Unauthorized(new RefreshTokenResponseDto { ErrorMessages = ["User not found."] });
         }
 
         if (user.Email is null)
         {
-            return Unauthorized(new RefreshTokenResponseDto { ErrorMessage = "User email is not available." });
+            return Unauthorized(new RefreshTokenResponseDto { ErrorMessages = ["User email is not available."] });
         }
 
         string token = GenerateJwtToken();
@@ -151,10 +151,10 @@ public class AccountController(UserManager<User> userManager) : ControllerBase
         SymmetricSecurityKey secretKey = new(Encoding.UTF8.GetBytes(key));
         SigningCredentials signingCredentials = new(secretKey, SecurityAlgorithms.HmacSha256);
 
-        Claim[] claims = new[]
-        {
-            new System.Security.Claims.Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+        Claim[] claims =
+        [
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        ];
 
         JwtSecurityToken tokenOptions = new(
             issuer: Environment.GetEnvironmentVariable("TokenValidationParameters__ValidIssuer"),

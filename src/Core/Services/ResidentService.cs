@@ -19,10 +19,10 @@ using Domain.Entities;
 /// </remarks>
 namespace Core.Services;
 
-public class ResidentService(IResidentRepository residentRepository, IResidentManager residentApiClient)
+public class ResidentService(IResidentRepository residentRepository, IResidentManager residentManager)
 {
     private readonly IResidentRepository _residentRepository = residentRepository;
-    private readonly IResidentManager _residentApiClient = residentApiClient;
+    private readonly IResidentManager _residentManager = residentManager;
 
     /// <summary>
     /// Retrieves a resident by their unique identifier by calling the external API.
@@ -37,7 +37,7 @@ public class ResidentService(IResidentRepository residentRepository, IResidentMa
     /// </remarks>
     public Task<Resident?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return _residentApiClient.GetByIdAsync(id, cancellationToken);
+        return _residentManager.GetByIdAsync(id, cancellationToken);
 
     }
 
@@ -57,7 +57,7 @@ public class ResidentService(IResidentRepository residentRepository, IResidentMa
     /// </remarks>
     public Task<IEnumerable<Resident>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return _residentApiClient.GetAllAsync(cancellationToken);
+        return _residentManager.GetAllAsync(cancellationToken);
     }
 
     /// <summary>

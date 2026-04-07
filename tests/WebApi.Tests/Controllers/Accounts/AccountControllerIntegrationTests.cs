@@ -3,17 +3,13 @@
 
 using System.Net.Http.Json;
 
-using Core.DTOs.Accounts;
+using Core.DTOs.Account;
 
 namespace WebApi.Tests.Controllers.Accounts;
 
-public class AccountControllerIntegrationTests : IClassFixture<CustomWebApplicationFactory<Api.Program>>
+public class AccountControllerIntegrationTests(CustomWebApplicationFactory<Api.Program> factory) : IClassFixture<CustomWebApplicationFactory<Api.Program>>
 {
-    private readonly HttpClient _client;
-    public AccountControllerIntegrationTests(CustomWebApplicationFactory<Api.Program> factory)
-    {
-        _client = factory.CreateClient();
-    }
+    private readonly HttpClient _client = factory.CreateClient();
 
     [Fact]
     public async Task Register_ValidRequest_ReturnsOk()
@@ -27,6 +23,7 @@ public class AccountControllerIntegrationTests : IClassFixture<CustomWebApplicat
         // Optionally assert response content
         Assert.Equal(200, (int)response.StatusCode);
     }
+
     [Fact]
     public async Task Login_ValidCredentials_ReturnsJwtAndRefreshToken()
     {
@@ -82,7 +79,7 @@ public class AccountControllerIntegrationTests : IClassFixture<CustomWebApplicat
         // Act: Call refresh endpoint
         var refreshRequest = new
         {
-            RefreshToken = loginContent!.RefreshToken
+            loginContent!.RefreshToken
         };
         HttpResponseMessage refreshResponse = await _client.PostAsJsonAsync("/Account/refresh", refreshRequest, cancellationToken: TestContext.Current.CancellationToken);
         _ = refreshResponse.EnsureSuccessStatusCode();
