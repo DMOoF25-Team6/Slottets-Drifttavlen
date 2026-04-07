@@ -200,8 +200,6 @@ The solution follows Clean Architecture principles and is organized as follows:
 
 For more details, see the documentation in `docs/` and `.github/copilot-instructions.md`.
 
-
-
 ### Copilot Agent Instructions
 Visual Studio Coplit Agent can help automate tasks and generate code based on your instructions.
 BC should be placed in docs/bc.md for Copilot Agent to use it as a reference to generate relevant code in the relevant language and context.
