@@ -17,6 +17,8 @@ jobs:
         run: echo "${{ secrets.ENV_FILE }}" > .env
       - name: Copy .env file to API project
         run: cp .env src/Api/.env
+      - name: Load .env file
+        run: export $(cat .env | xargs)
       - name: Restore dependencies
         run: dotnet restore Slottet.CareManagement.sln
       - name: Build
