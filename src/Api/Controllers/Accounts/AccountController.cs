@@ -2,6 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -48,7 +49,7 @@ public class AccountController(UserManager<User> userManager) : ControllerBase
         {
             return BadRequest(ModelState);
         }
-        User? user = await userManager.FindByEmailAsync(request.Email);
+        User? user = await userManager.FindByEmailAsync(request.EmailAddress);
         if (user is null || !await userManager.CheckPasswordAsync(user, request.Password))
         {
             return Unauthorized(new LoginResponseDto
@@ -77,7 +78,7 @@ public class AccountController(UserManager<User> userManager) : ControllerBase
 
         return Ok(new LoginResponseDto
         {
-            Token = token,
+            JwtToken = token,
             RefreshToken = refreshToken
         });
     }
@@ -122,13 +123,13 @@ public class AccountController(UserManager<User> userManager) : ControllerBase
 
         return Ok(new RefreshTokenResponseDto
         {
-            Token = token,
+            JwtToken = token,
             RefreshToken = newRefreshToken
         });
     }
 
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout()
+    public IActionResult Logout()
     {
         if (!ModelState.IsValid)
         {
@@ -150,10 +151,15 @@ public class AccountController(UserManager<User> userManager) : ControllerBase
         SymmetricSecurityKey secretKey = new(Encoding.UTF8.GetBytes(key));
         SigningCredentials signingCredentials = new(secretKey, SecurityAlgorithms.HmacSha256);
 
+        Claim[] claims = new[]
+        {
+            new System.Security.Claims.Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
         JwtSecurityToken tokenOptions = new(
             issuer: Environment.GetEnvironmentVariable("TokenValidationParameters__ValidIssuer"),
             audience: Environment.GetEnvironmentVariable("TokenValidationParameters__ValidAudience"),
-            claims: [null],
+            claims: claims,
             expires: DateTime.Now.AddMinutes(5),
             signingCredentials: signingCredentials
         );

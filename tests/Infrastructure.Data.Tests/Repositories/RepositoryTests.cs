@@ -6,8 +6,6 @@ using Domain.Interfaces;
 using Infrastructure.Data.Persistent;
 using Infrastructure.Data.Repositories;
 
-using Moq;
-
 namespace Infrastructure.Data.Tests.Repositories;
 
 /// <summary>
@@ -27,12 +25,10 @@ public class RepositoryTests
     }
 
     private readonly UserRepository _repository;
-    private readonly Mock<AppDbContext> _mockContext;
 
     public RepositoryTests()
     {
-        _mockContext = new Mock<AppDbContext>();
-        _repository = new UserRepository(_mockContext.Object);
+        _repository = new UserRepository(null!); // Pass null since context is unused
     }
 
     [Theory]

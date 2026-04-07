@@ -8,6 +8,6 @@ namespace Core.DTOs.Accounts;
 public class LoginRequestDto
 {
     [EmailAddress(ErrorMessage = "Invalid email address.")]
-    public required string Email { get; set; }
+    public required string EmailAddress { get; set; }
     public required string Password { get; set; }
 }
