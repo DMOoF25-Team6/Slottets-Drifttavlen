@@ -1,6 +1,0 @@
-@WebAuthApi_HostAddress = http://localhost:5286
-
-GET {{WebAuthApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

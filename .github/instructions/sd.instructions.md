@@ -7,7 +7,7 @@ applyTo: '**/uc*.sd.*.md'
 # SD Instructions (Summary)
 - Use the provided SD markdown template or examples.
 - Replace all placeholders with project-specific content.
-- Store SD files in `docs/use-cases/uc-<Insert Use Case Identifier>*/` as `uc-<Insert Use Case Identifier>.sd.<Insert Version>.md`.
+- Store SD files in `docs/use-cases/uc-<Insert Use Case Identifier>*/` as `uc-<Insert Use Case Identifier>.sd.md`.
 - Increment version numbers for significant changes; keep only the latest version in main, archive older versions.
 - Include metadata, version log (with date, author), and use Mermaid sequence diagram.
 - Create files in English; if product owner domain language differs, create a separate file with language code suffix.
@@ -253,4 +253,3 @@ public class AddResidentNoteDto
     public Guid Id { get; set; }
     public string ResidentNote { get; set; }
 }
-

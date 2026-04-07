@@ -12,7 +12,7 @@ Use cases can be documented in three forms:
 | Key               | Value                             |
 |-------------------|-----------------------------------|
 | Id                | QC-UC                             |
-| crossReference    |                                   |
+| crossReference    | Applying UML and patterns by Craig Larman |
 
 ### Change Log
 | Date       | Version | Description                     | Author        |
