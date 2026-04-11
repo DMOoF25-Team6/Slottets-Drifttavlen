@@ -3,6 +3,7 @@
 
 using Core.Interfaces.Repositories;
 using Core.Services;
+using Core.DTOs;
 
 using Domain.Entities;
 
@@ -35,12 +36,11 @@ public class ResidentNoteServiceTests
         _ = _mockRepo.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
           .ReturnsAsync(notes);
         // Act
-        IEnumerable<ResidentNote> result = await _service.GetAllByResidentIdAsync(residentId, TestContext.Current.CancellationToken);
+        IEnumerable<ResidentNoteDto> result = await _service.GetAllByResidentIdAsync(residentId, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(result);
         Assert.Equal(2, result.Count());
-        Assert.All(result, note => Assert.Equal(residentId, note.ResidentId));
     }
 
     [Fact]

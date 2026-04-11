@@ -3,8 +3,8 @@
 
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
-
 using Domain.Entities;
+using Core.DTOs;
 
 namespace Core.Services;
 
@@ -12,10 +12,18 @@ public class ResidentNoteService(IResidentNoteRepository residentNoteRepository)
 {
     private readonly IResidentNoteRepository _residentNoteRepository = residentNoteRepository;
 
-    public async Task<IEnumerable<ResidentNote>> GetAllByResidentIdAsync(Guid residentId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<ResidentNoteDto>> GetAllByResidentIdAsync(Guid residentId, CancellationToken cancellationToken = default)
     {
         IEnumerable<ResidentNote> allNotes = await _residentNoteRepository.GetAllAsync(cancellationToken);
-        return allNotes.Where(n => n.ResidentId == residentId);
+        return allNotes
+     .Where(n => n.ResidentId == residentId)
+     .Select(n => new ResidentNoteDto
+     {
+         Id = n.Id,
+         Note = n.Note,
+         Timestamp = n.EditedAt,
+         Initials = string.Empty
+     });
     }
 
     public async Task<bool> AddAsync(Guid residentId, string noteText, CancellationToken cancellationToken = default)
