@@ -4,12 +4,11 @@
 
 // For SwaggerGen extension methods
 
-using Domain.Entities;
-
 using Core;
 
-using Infrastructure;
+using Domain.Entities;
 
+using Infrastructure;
 using Infrastructure.Data;
 using Infrastructure.Data.Persistent;
 

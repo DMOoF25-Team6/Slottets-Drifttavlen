@@ -2,12 +2,8 @@
 //  No warranty, explicit or implicit, provided.
 
 using Core;
-using Core.Interfaces.Managers;
-using Core.Interfaces.Services;
-using Core.Services;
 
 using Infrastructure;
-using Infrastructure.Services;
 
 using Microsoft.AspNetCore.DataProtection;
 
@@ -39,7 +35,7 @@ public class Program
         _ = builder.Services.AddCore();
         _ = builder.Services.AddInfrastructure();
 
-        
+
 
         // Persist Data Protection keys to a directory for antiforgery token decryption across restarts/containers
         _ = builder.Services.AddDataProtection()
@@ -59,7 +55,7 @@ public class Program
             //_ = app.UseHsts();
         }
 
-        // _ = app.UseHttpsRedirection();
+        _ = app.UseHttpsRedirection();
 
         _ = app.UseStaticFiles();
         _ = app.UseAntiforgery();
