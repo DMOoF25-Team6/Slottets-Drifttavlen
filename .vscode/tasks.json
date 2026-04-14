@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Api",
+            "type": "shell",
+            "command": "lsof -ti:5151 | xargs kill -9; dotnet run --project src/Api",
+            "group": "build",
+            "presentation": {
+                "label": "Api",
+                "group": "run",
+                "panel": "dedicated",
+                "reveal": "always"
+            },
+            "isBackground": true
+        },
+        {
+            "label": "Run WebUI",
+            "type": "shell",
+            "command": "lsof -ti:5083 | xargs kill -9; dotnet run --project src/WebUI/WebUI",
+            "group": "build",
+            "presentation": {
+                "label": "WebUI",
+                "group": "run",
+                "panel": "dedicated",
+                "reveal": "always"
+            },
+            "isBackground": true
+        }
+    ]
+}

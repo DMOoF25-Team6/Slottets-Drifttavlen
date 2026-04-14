@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Api",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/src/Api/Api.csproj"
+        },
+        {
+            "name": "WebUI",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/src/WebUI/WebUI/WebUI.csproj"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Api + WebUI",
+            "configurations": ["Api", "WebUI"],
+            "preLaunchTask": "Run Api"
+        }
+    ]
+}
