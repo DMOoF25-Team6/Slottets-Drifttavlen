@@ -14,13 +14,13 @@ namespace Core.Tests.Services;
 
 public class ResidentServiceTests
 {
-    private readonly Mock<IResidentRepository> _mockRepo;
+    
     private readonly ResidentService _service;
     private readonly Mock<IResidentManager> _mockApiClient;
 
     public ResidentServiceTests()
     {
-        _mockRepo = new Mock<IResidentRepository>();
+        
         _mockApiClient = new Mock<IResidentManager>();
         _service = new ResidentService(_mockRepo.Object, _mockApiClient.Object);
     }
@@ -36,9 +36,13 @@ public class ResidentServiceTests
         // Act
         _ = _mockApiClient.Setup(a => a.GetByIdAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync(resident);
         bool result = true;
+        resident? result = await _service.GetByIdAsync(id);
 
         // Assert
         Assert.True(result);
+        Assert.NotNull(result);
+        Assert.Equal(id, result.Id);
+        Assert.Equal("AB", result.Initials);
     }
 
     [Fact]
