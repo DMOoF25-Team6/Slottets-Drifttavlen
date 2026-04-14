@@ -1,9 +1,7 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 
-
 using Core.Interfaces.Managers;
-using Core.Interfaces.Repositories;
 using Core.Services;
 
 using Domain.Entities;
@@ -14,32 +12,27 @@ namespace Core.Tests.Services;
 
 public class ResidentServiceTests
 {
-    
+    private readonly Mock<IResidentManager> _mockManager;
     private readonly ResidentService _service;
-    private readonly Mock<IResidentManager> _mockApiClient;
 
     public ResidentServiceTests()
     {
-        
-        _mockApiClient = new Mock<IResidentManager>();
-        _service = new ResidentService(_mockRepo.Object, _mockApiClient.Object);
+        _mockManager = new Mock<IResidentManager>();
+        _service = new ResidentService(_mockManager.Object);
     }
 
     [Fact]
     public async Task GetByIdAsync_ReturnsResident()
     {
         // Arrange
-        await Task.Yield();
         Guid id = Guid.NewGuid();
         Resident resident = new() { Id = id, Initials = "AB" };
+        _mockManager.Setup(a => a.GetByIdAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync(resident);
 
         // Act
-        _ = _mockApiClient.Setup(a => a.GetByIdAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync(resident);
-        bool result = true;
-        resident? result = await _service.GetByIdAsync(id);
+        Resident? result = await _service.GetByIdAsync(id, TestContext.Current.CancellationToken);
 
         // Assert
-        Assert.True(result);
         Assert.NotNull(result);
         Assert.Equal(id, result.Id);
         Assert.Equal("AB", result.Initials);
@@ -48,12 +41,15 @@ public class ResidentServiceTests
     [Fact]
     public async Task GetAllAsync_ReturnsResidents()
     {
-        await Task.Yield();
+        // Arrange
         List<Resident> residents = [new Resident { Id = Guid.NewGuid(), Initials = "CD" }];
+        _mockManager.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(residents);
 
-        _ = _mockApiClient.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(residents);
+        // Act
+        IEnumerable<Resident> result = await _service.GetAllAsync(TestContext.Current.CancellationToken);
 
-        bool result = true;
-        Assert.True(result);
+        // Assert
+        Assert.NotNull(result);
+        Assert.Single(result);
     }
 }
