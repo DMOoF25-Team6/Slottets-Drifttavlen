@@ -24,6 +24,7 @@ public static class DependencyInjection
         // _ = services.AddHttpClient<IPainkillerRecordManager, PainkillerRecordManager>(); // TODO: Implement PainkillerRecordManager
         // _ = services.AddHttpClient<IMedicineRecordManager, MedicineRecordManager>(); // TODO: Implement MedicineRecordManager
         _ = services.AddHttpClient<IAccountManager, AccountManager>();
+        _ = services.AddHttpClient<IPhoneAssignmentManager, PhoneAssignmentManager>();
 
         return services;
     }

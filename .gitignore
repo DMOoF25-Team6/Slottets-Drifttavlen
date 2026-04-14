@@ -418,3 +418,11 @@ FodyWeavers.xsd
 *.msp
 /docs/doxygen/html
 /src/WebUI/WebUI/DataProtection-Keys
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes

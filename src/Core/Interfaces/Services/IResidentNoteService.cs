@@ -8,6 +8,5 @@ public interface IResidentNoteService
     Task<bool> AddAsync(Guid residentId, string noteText, CancellationToken cancellationToken);
     Task<bool> DeleteAsync(Guid noteId, CancellationToken cancellationToken);
     Task<bool> UpdateAsync(Guid noteId, string newText, CancellationToken cancellationToken);
-    Task<IEnumerable<Domain.Entities.ResidentNote>> GetAllByResidentIdAsync(Guid residentId, CancellationToken cancellationToken);
-
+    Task<IEnumerable<Core.DTOs.ResidentNoteDto>> GetAllByResidentIdAsync(Guid residentId, CancellationToken cancellationToken);
 }
