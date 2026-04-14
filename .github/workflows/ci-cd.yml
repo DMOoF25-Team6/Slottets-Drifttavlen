@@ -7,6 +7,7 @@ on:
 jobs:
   BuildSecreats:
     runs-on: ubuntu-latest
+    environment: Database
     steps:
       - uses: actions/checkout@v4
       - name: Create .env file
@@ -27,6 +28,7 @@ jobs:
       
   build:
     runs-on: ubuntu-latest
+    environment: Database
     steps:
       - uses: actions/checkout@v4
       - name : Setup .NET
