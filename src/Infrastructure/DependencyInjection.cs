@@ -3,7 +3,7 @@
 
 
 using Core.Interfaces.Managers;
-
+using Core.Interfaces.Services;
 using Infrastructure.Services;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +26,7 @@ public static class DependencyInjection
         // _ = services.AddHttpClient<IMedicineRecordManager, MedicineRecordManager>(); // TODO: Implement MedicineRecordManager
         _ = services.AddHttpClient<IAccountManager, AccountManager>();
         _ = services.AddHttpClient<IPhoneAssignmentManager, PhoneAssignmentManager>();
+        _ = services.AddScoped<IAuditService, AuditService>();
 
         return services;
     }

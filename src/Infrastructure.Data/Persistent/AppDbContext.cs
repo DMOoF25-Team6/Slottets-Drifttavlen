@@ -17,6 +17,10 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
     public DbSet<MedicineRecord> MedicineRecord { get; set; }
     public DbSet<PainkillerRecord> PainkillerRecord { get; set; }
 
+    public DbSet<AuditLog> AuditLogs { get; set; }
+    public DbSet<MedicineStatusView> MedicineStatusView { get; set; }
+    public DbSet<PainkillerStatusView> PainkillerStatusView { get; set; }
+
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         => base.SaveChangesAsync(cancellationToken);
 
@@ -30,6 +34,14 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
         _ = modelBuilder.ApplyConfiguration(new Configurations.ResidentNoteConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.MedicineRecordConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.PainkillerRecordConfiguration());
+
+        modelBuilder.Entity<MedicineStatusView>()
+            .HasNoKey()
+            .ToView("medicinestatusview");
+
+        modelBuilder.Entity<PainkillerStatusView>()
+            .HasNoKey()
+            .ToView("painkillerstatusview");
 
         // Seed Identity roles and claims
         IdentityRoleClaimSeed.Seed(modelBuilder);
