@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Core.DTOs;
 
-public class ResidentDto
+public class ResidentResponseDto
 {
     // gets or sets the unique identifier of the resident
 

@@ -3,7 +3,9 @@
 
 using System.Net.Http.Json;
 
+using Core.DTOs;
 using Core.Interfaces.Managers;
+using Core.Mappers;
 
 using Domain.Entities;
 
@@ -27,10 +29,12 @@ public class ResidentManager(HttpClient httpClient) : IResidentManager
     /// <returns>
     /// A task that represents the asynchronous operation. The task result contains a resident if found; otherwise, <see langword="null"/>.
     /// </returns>
-    public Task<Resident?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    public async Task<Resident?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
-        return _httpClient.GetFromJsonAsync<Resident>(
-            $"residents/{id}", ct);
+        ResidentResponseDto? dto =
+            await _httpClient.GetFromJsonAsync<ResidentResponseDto>(
+                $"residents/{id}", ct);
+        return dto != null ? ResidentMapper.ToResident(dto) : null;
     }
 
     /// <summary>
@@ -40,8 +44,13 @@ public class ResidentManager(HttpClient httpClient) : IResidentManager
     /// <returns>
     /// A task that represents the asynchronous operation. The task result contains a collection of residents.
     /// </returns>
-    public async Task<IEnumerable<Resident>> GetAllAsync(CancellationToken ct = default) => await _httpClient.GetFromJsonAsync<IEnumerable<Resident>>(
-            "residents", ct) ?? [];
+    public async Task<IEnumerable<Resident>> GetAllAsync(CancellationToken ct = default)
+    {
+        IEnumerable<ResidentResponseDto>? dtos =
+            await _httpClient.GetFromJsonAsync<IEnumerable<ResidentResponseDto>>(
+                "residents", ct);
+        return dtos != null ? dtos.Select(ResidentMapper.ToResident) : Enumerable.Empty<Resident>();
+    }
 
     /// <summary>
     /// Adds a new resident.
