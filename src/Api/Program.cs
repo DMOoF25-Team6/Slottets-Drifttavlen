@@ -4,6 +4,8 @@
 
 // For SwaggerGen extension methods
 
+using Api.Helpers;
+
 using Core;
 
 using Domain.Entities;
@@ -114,6 +116,9 @@ public class Program
 
         _ = app.UseAuthentication();
         _ = app.UseAuthorization();
+
+        // Add Identity API endpoints with custom registration authorization
+        _ = app.AddEndpointIdentityApi();
 
         _ = app.MapControllers();
 

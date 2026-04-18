@@ -5,9 +5,15 @@ on:
   pull_request:
     branches: [ main ]
 jobs:
-  BuildSecreats:
+  BuildSecrets:
     runs-on: ubuntu-latest
     environment: database
+    env:
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+      MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+      MYSQL_USER: ${{ secrets.MYSQL_USER }}
+      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
     steps:
       - uses: actions/checkout@v4
       - name: Create .env file
@@ -19,12 +25,6 @@ jobs:
           echo "MYSQL_HOST=$MYSQL_HOST" >> .env
           echo "ConnectionStrings__AppDbContext=Server=$MYSQL_HOST;Port=3307;Database=$MYSQL_DATABASE;User=$MYSQL_USER;Password=$MYSQL_PASSWORD" >> .env
           echo "TokenValidationParameters__IssuerSigningKey=bZcurjVyDJCm2%KHwwRcduIOyjeKyR22" >> .env
-        env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-          MYSQL_USER: ${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-          MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
       - name: Debug env
         run: printenv | grep MYSQL
       - name: Upload .env file as artifact

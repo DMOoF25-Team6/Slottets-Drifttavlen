@@ -6,7 +6,7 @@ using System.Net.Http.Json;
 using Core.DTOs.Account;
 using Core.Interfaces.Managers;
 
-namespace Infrastructure.Services;
+namespace Infrastructure.Managers;
 
 /// <summary>
 /// Provides account management operations by communicating with the backend API over HTTP.
@@ -26,16 +26,27 @@ public class AccountManager(HttpClient httpClient) : IAccountManager
     /// <remarks>
     /// Returns a failed response if the backend response cannot be parsed.
     /// </remarks>
-    public async Task<RegistrationResponseDto> CreateAccountAsync(RegistrationRequestDto registrationRequestDto)
+    public async Task<RegistrationResponseDto> Register(RegistrationRequestDto registrationRequestDto)
     {
         HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/accounts/register", registrationRequestDto);
-        return response.Content.ReadFromJsonAsync<RegistrationResponseDto>().GetAwaiter().GetResult() is RegistrationResponseDto registrationResponseDto
-            ? registrationResponseDto
-            : new RegistrationResponseDto
+        try
+        {
+            return response.Content.ReadFromJsonAsync<RegistrationResponseDto>().GetAwaiter().GetResult() is RegistrationResponseDto registrationResponseDto
+                ? registrationResponseDto
+                : new RegistrationResponseDto
+                {
+                    IsSuccessful = false,
+                    ErrorMessages = ["Failed to parse registration response."]
+                };
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return new RegistrationResponseDto
             {
                 IsSuccessful = false,
                 ErrorMessages = ["Failed to parse registration response."]
             };
+        }
     }
 
     /// <summary>
@@ -49,14 +60,26 @@ public class AccountManager(HttpClient httpClient) : IAccountManager
     public async Task<LoginResponseDto> LoginAsync(LoginRequestDto loginRequestDto)
     {
         HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/accounts/login", loginRequestDto);
-        return response.Content.ReadFromJsonAsync<LoginResponseDto>().GetAwaiter().GetResult() is LoginResponseDto loginResponseDto
-            ? loginResponseDto
-            : new LoginResponseDto
+        try
+        {
+            return await response.Content.ReadFromJsonAsync<LoginResponseDto>() is LoginResponseDto loginResponseDto
+                ? loginResponseDto
+                : new LoginResponseDto
+                {
+                    JwtToken = null,
+                    RefreshToken = null,
+                    ErrorMessages = ["Failed to parse login response."]
+                };
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return new LoginResponseDto
             {
                 JwtToken = null,
                 RefreshToken = null,
                 ErrorMessages = ["Failed to parse login response."]
             };
+        }
     }
 
     /// <summary>
@@ -70,13 +93,23 @@ public class AccountManager(HttpClient httpClient) : IAccountManager
     public async Task<LogoutResponseDto> LogoutAsync(LogoutRequestDto logoutRequestDto)
     {
         HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/accounts/logout", logoutRequestDto);
-        return response.Content.ReadFromJsonAsync<LogoutResponseDto>().GetAwaiter().GetResult() is LogoutResponseDto logoutResponseDto
-            ? logoutResponseDto
-            : new LogoutResponseDto
+        try
+        {
+            LogoutResponseDto? logoutResponseDto = await response.Content.ReadFromJsonAsync<LogoutResponseDto>();
+            return logoutResponseDto ?? new LogoutResponseDto
             {
                 IsSuccessful = false,
                 ErrorMessages = ["Failed to parse logout response."]
             };
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return new LogoutResponseDto
+            {
+                IsSuccessful = false,
+                ErrorMessages = ["Failed to parse logout response."]
+            };
+        }
     }
 
     /// <summary>
@@ -90,13 +123,28 @@ public class AccountManager(HttpClient httpClient) : IAccountManager
     public async Task<RefreshTokenResponseDto> RefreshTokenAsync(RefreshTokenRequestDto refreshTokenRequestDto)
     {
         HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/accounts/refresh-token", refreshTokenRequestDto);
-        return response.Content.ReadFromJsonAsync<RefreshTokenResponseDto>().GetAwaiter().GetResult() is RefreshTokenResponseDto refreshTokenResponseDto
-            ? refreshTokenResponseDto
-            : new RefreshTokenResponseDto
+        try
+        {
+            RefreshTokenResponseDto? refreshTokenResponseDto = await response.Content.ReadFromJsonAsync<RefreshTokenResponseDto>();
+            if (refreshTokenResponseDto != null)
             {
-                JwtToken = null,
-                RefreshToken = null,
-                ErrorMessages = ["Failed to parse refresh token response."]
-            };
+                return refreshTokenResponseDto;
+            }
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            // Fall through to return failed response
+        }
+        return new RefreshTokenResponseDto
+        {
+            JwtToken = null,
+            RefreshToken = null,
+            ErrorMessages = ["Failed to parse refresh token response."]
+        };
+    }
+
+    public Task<RegistrationResponseDto> CreateAccountAsync(RegistrationRequestDto registrationRequestDto)
+    {
+        throw new NotImplementedException();
     }
 }
