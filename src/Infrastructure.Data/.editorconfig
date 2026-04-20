@@ -9,7 +9,3 @@
 [src/Infrastructure.Data/Migrations/*]
 dotnet_diagnostic.SA0000.severity = none
 # If using Roslyn analyzers, you may need to add additional rules here
-
-[src/Infrastructure.Data/Migrations/*.cs]
-dotnet_diagnostic.IDE*.severity= none
-dotnet_diagnostic.CA*.severity = none

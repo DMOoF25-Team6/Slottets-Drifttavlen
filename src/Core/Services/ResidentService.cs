@@ -4,7 +4,6 @@
 
 
 using Core.Interfaces.Managers;
-using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 
 using Domain.Entities;

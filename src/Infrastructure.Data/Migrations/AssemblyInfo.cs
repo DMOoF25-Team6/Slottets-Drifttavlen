@@ -3,4 +3,4 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: ExcludeFromCodeCoverage]
+[assembly: ExcludeFromCodeCoverage(Justification = "This assembly contains auto-generated code for database migrations, which is not part of the core application logic and does not require unit testing.")]

@@ -35,11 +35,11 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
         _ = modelBuilder.ApplyConfiguration(new Configurations.MedicineRecordConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.PainkillerRecordConfiguration());
 
-        modelBuilder.Entity<MedicineStatusView>()
+        _ = modelBuilder.Entity<MedicineStatusView>()
             .HasNoKey()
             .ToView("medicinestatusview");
 
-        modelBuilder.Entity<PainkillerStatusView>()
+        _ = modelBuilder.Entity<PainkillerStatusView>()
             .HasNoKey()
             .ToView("painkillerstatusview");
 

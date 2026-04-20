@@ -1,9 +1,9 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using Core.DTOs;
 using Core.Interfaces.Repositories;
 using Core.Services;
-using Core.DTOs;
 
 using Domain.Entities;
 
@@ -77,7 +77,7 @@ public class ResidentNoteServiceTests
                  .Returns(Task.CompletedTask);
 
         // ACT:
-        bool result = await _service.UpdateAsync(residentId, noteId, "New text", TestContext.Current.CancellationToken);
+        bool result = await _service.UpdateAsync(noteId, "New text", TestContext.Current.CancellationToken);
 
         //ASSERT:
         Assert.True(result);

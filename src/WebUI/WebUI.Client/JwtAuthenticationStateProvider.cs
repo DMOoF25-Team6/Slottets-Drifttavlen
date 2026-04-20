@@ -11,20 +11,20 @@ using WebUI.Client.Services;
 namespace WebUI.Client;
 
 /// <summary>
-/// Provides authentication state based on JWT stored in local storage.
+/// Provides authentication state based on a JWT stored in local storage.
 /// </summary>
-public class JwtAuthenticationStateProvider : AuthenticationStateProvider
+/// <remarks>
+/// This provider reads a JWT from the <see cref="TokenStorageService"/> and parses claims to determine the current authentication state for Blazor WebAssembly applications.
+/// </remarks>
+public class JwtAuthenticationStateProvider(TokenStorageService tokenStorageService) : AuthenticationStateProvider
 {
-    private readonly TokenStorageService _tokenStorageService;
-
-    public JwtAuthenticationStateProvider(TokenStorageService tokenStorageService)
-    {
-        _tokenStorageService = tokenStorageService;
-    }
-
+    /// <summary>
+    /// Asynchronously gets the current authentication state based on the JWT in local storage.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the current <see cref="AuthenticationState"/>.</returns>
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        string? token = await _tokenStorageService.GetTokenAsync();
+        string? token = await tokenStorageService.GetTokenAsync();
         ClaimsIdentity identity = string.IsNullOrWhiteSpace(token)
             ? new ClaimsIdentity()
             : new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
@@ -32,11 +32,19 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
         return new AuthenticationState(user);
     }
 
+    /// <summary>
+    /// Notifies subscribers that the authentication state has changed.
+    /// </summary>
     public void NotifyAuthenticationStateChanged()
     {
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
 
+    /// <summary>
+    /// Parses claims from a JWT.
+    /// </summary>
+    /// <param name="jwt">A JWT string to parse.</param>
+    /// <returns>An enumerable collection of <see cref="Claim"/> parsed from the JWT.</returns>
     private static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
     {
         JwtSecurityTokenHandler handler = new();

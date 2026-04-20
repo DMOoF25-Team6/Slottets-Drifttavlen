@@ -6,11 +6,8 @@
 
 using Api.Helpers;
 
-using Core;
-
 using Domain.Entities;
 
-using Infrastructure;
 using Infrastructure.Data;
 using Infrastructure.Data.Persistent;
 
@@ -20,8 +17,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api;
 
+
+/// <summary>
+/// Entry point and configuration for the API application.
+/// </summary>
+/// <remarks>
+/// Configures services, authentication, authorization, and middleware for the API.
+/// </remarks>
 public class Program
 {
+    /// <summary>
+    /// Initializes and runs the API application.
+    /// </summary>
+    /// <param name="args">An array of command-line arguments.</param>
     public static void Main(string[] args)
     {
         // Load environment variables from .env file
@@ -41,7 +49,7 @@ public class Program
 
         // Replace the connection string params with the one from the environment variable
         ConfigurationManager conf = builder.Configuration;
-        string connectionString = DbContextConfiguration(builder, conf);
+        string connectionString = ConfigureDbContext(builder, conf);
         // Register both DbContext and DbContextFactory for DI
         _ = builder.Services.AddDbContext<AppDbContext>(options =>
         {
@@ -52,42 +60,11 @@ public class Program
         _ = builder.Services.AddAuthorization();
 
         _ = builder.Services.AddInfrastructureData();
-        _ = builder.Services.AddInfrastructure();
-        _ = builder.Services.AddCore();
+        //_ = builder.Services.AddInfrastructure();
+        //_ = builder.Services.AddCore();
 
-        _ = builder.Services.AddIdentity<User, IdentityRole<Guid>>(opt =>
-        {
-            opt.Password.RequireDigit = true;
-            opt.Password.RequireLowercase = true;
-            opt.Password.RequireUppercase = true;
-            opt.Password.RequireNonAlphanumeric = true;
-            opt.Password.RequiredLength = 7;
-        })
-            .AddEntityFrameworkStores<AppDbContext>();
-        //.AddDefaultTokenProviders();
-
-        _ = builder.Services.AddAuthentication(opt =>
-        {
-            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-            .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                // IssuerSigningKey should be set here for production use
-
-                ValidIssuer = builder.Configuration["TokenValidationParameters:ValidIssuer"],
-                ValidAudience = builder.Configuration["TokenValidationParameters:ValidAudience"],
-                IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                    System.Text.Encoding.UTF8.GetBytes(builder.Configuration["TokenValidationParameters:IssuerSigningKey"] ?? throw new InvalidOperationException("IssuerSigningKey not found in configuration."))
-                )
-            };
-        });
+        ConfigureIdentity(builder);
+        ConfigureJwtAuthentication(builder);
 
         // Add services to the container.
         _ = builder.Services.AddControllers();
@@ -125,7 +102,62 @@ public class Program
         app.Run();
     }
 
-    public static string DbContextConfiguration(WebApplicationBuilder builder, ConfigurationManager conf)
+    /// <summary>
+    /// Configures ASP.NET Core Identity for the application.
+    /// </summary>
+    /// <param name="builder">A web application builder instance.</param>
+    private static void ConfigureIdentity(WebApplicationBuilder builder)
+    {
+        _ = builder.Services.AddIdentityCore<User>(opt =>
+        {
+            opt.Password.RequireDigit = true;
+            opt.Password.RequireLowercase = true;
+            opt.Password.RequireUppercase = true;
+            opt.Password.RequireNonAlphanumeric = true;
+            opt.Password.RequiredLength = 7;
+        })
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
+    }
+
+    /// <summary>
+    /// Configures JWT Bearer authentication for the application.
+    /// </summary>
+    /// <param name="builder">A web application builder instance.</param>
+    private static void ConfigureJwtAuthentication(WebApplicationBuilder builder)
+    {
+        _ = builder.Services.AddAuthentication(opt =>
+        {
+            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    // IssuerSigningKey should be set here for production use
+
+                    ValidIssuer = builder.Configuration["TokenValidationParameters:ValidIssuer"],
+                    ValidAudience = builder.Configuration["TokenValidationParameters:ValidAudience"],
+                    IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+                        System.Text.Encoding.UTF8.GetBytes(builder.Configuration["TokenValidationParameters:IssuerSigningKey"] ?? throw new InvalidOperationException("IssuerSigningKey not found in configuration."))
+                    )
+                };
+            });
+    }
+
+    /// <summary>
+    /// Configures the database context connection string using environment variables.
+    /// </summary>
+    /// <param name="builder">A web application builder instance.</param>
+    /// <param name="conf">A configuration manager instance.</param>
+    /// <returns>A connection string for the application's database context.</returns>
+    /// <exception cref="InvalidOperationException">A required environment variable or connection string is missing.</exception>
+    public static string ConfigureDbContext(WebApplicationBuilder builder, ConfigurationManager conf)
     {
         string? connStr = conf.GetConnectionString("AppDbContext");
         if (!string.IsNullOrEmpty(connStr))
@@ -145,20 +177,48 @@ public class Program
     }
 }
 
+
+/// <summary>
+/// Dummy email sender implementation for development and testing.
+/// </summary>
+/// <remarks>
+/// This class is used to satisfy the <see cref="IEmailSender{TUser}"/> dependency for Identity without sending real emails.
+/// </remarks>
 public class DummyEmailSenderForUser : IEmailSender<User>
 {
+    /// <summary>
+    /// Simulates sending a confirmation link email.
+    /// </summary>
+    /// <param name="user">A user entity.</param>
+    /// <param name="email">An email address.</param>
+    /// <param name="confirmationLink">A confirmation link.</param>
+    /// <returns>A completed task.</returns>
     public Task SendConfirmationLinkAsync(User user, string email, string confirmationLink)
     {
         // Log or ignore in development
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Simulates sending a password reset link email.
+    /// </summary>
+    /// <param name="user">A user entity.</param>
+    /// <param name="email">An email address.</param>
+    /// <param name="resetLink">A password reset link.</param>
+    /// <returns>A completed task.</returns>
     public Task SendPasswordResetLinkAsync(User user, string email, string resetLink)
     {
         // Log or ignore in development
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Simulates sending a password reset code email.
+    /// </summary>
+    /// <param name="user">A user entity.</param>
+    /// <param name="email">An email address.</param>
+    /// <param name="resetCode">A password reset code.</param>
+    /// <returns>A completed task.</returns>
     public Task SendPasswordResetCodeAsync(User user, string email, string resetCode)
     {
         // Log or ignore in development
