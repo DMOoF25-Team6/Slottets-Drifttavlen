@@ -4,7 +4,6 @@
 
 using Core;
 using Core.Interfaces.Managers;
-using Core.Interfaces.Services;
 
 using Infrastructure.Managers;
 using Infrastructure.Services;
@@ -32,7 +31,7 @@ public static class DependencyInjection
         //_ = services.AddScoped<IAccountManager, AccountManager>();
         _ = services.AddHttpClient<IAccountManager, AccountManager>();
         _ = services.AddHttpClient<IPhoneAssignmentManager, PhoneAssignmentManager>();
-        _ = services.AddScoped<IAuditService, AuditService>();
+        //_ = services.AddScoped<IAuditService, AuditService>();
 
         return services;
     }
