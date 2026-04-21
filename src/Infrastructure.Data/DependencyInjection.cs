@@ -20,6 +20,7 @@ public static class DependencyInjection
         _ = services.AddScoped<IResidentNoteRepository, ResidentNoteRepository>();
         _ = services.AddScoped<IMedicineRepository, MedicineRepository>();
         _ = services.AddScoped<IPainkillerRepository, PainKillerRepository>();
+        _ = services.AddScoped<IPhoneAssignmentRepository, PhoneAssignmentRepository>();
 
         // NOTE: To seed Identity roles and claims, call IdentitySeed.SeedRolesAndClaimsAsync(serviceProvider) at startup.
 

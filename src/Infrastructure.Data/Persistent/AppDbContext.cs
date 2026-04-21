@@ -16,6 +16,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
     public DbSet<ResidentNote> ResidentNotes { get; set; }
     public DbSet<MedicineRecord> MedicineRecord { get; set; }
     public DbSet<PainkillerRecord> PainkillerRecord { get; set; }
+    public DbSet<PhoneAssignment> PhoneAssignments { get; set; }
 
     public DbSet<AuditLog> AuditLogs { get; set; }
     public DbSet<MedicineStatusView> MedicineStatusView { get; set; }
