@@ -54,13 +54,13 @@ public partial class ResidentCard : ComponentBase
         IEnumerable<Core.DTOs.ResidentNoteDto> notes = await ResidentNoteService
             .GetAllByResidentIdAsync(Resident.Id, CancellationToken.None);
 
-        Resident.Notes = notes.Select(n => new ResidentNote
+        Resident.Notes = [.. notes.Select(n => new ResidentNote
         {
             Id = n.Id,
             Note = n.Note,
             EditedAt = n.Timestamp,
             ResidentId = Resident.Id
-        }).ToList();
+        })];
     }
 
     private void ToggleAddForm()

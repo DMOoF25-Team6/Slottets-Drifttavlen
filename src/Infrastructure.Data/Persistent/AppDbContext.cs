@@ -1,10 +1,8 @@
-
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
 using Domain.Entities;
 
-using Infrastructure.Data.Persistent.Configurations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +18,12 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
     public DbSet<PainkillerRecord> PainkillerRecord { get; set; }
     public DbSet<PhoneAssignment> PhoneAssignments { get; set; }
 
+    // Identity-related DbSet for refresh tokens
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+
     public DbSet<AuditLog> AuditLogs { get; set; }
+
+    // Why do we have these views as DbSet? They are not entities!
     public DbSet<MedicineStatusView> MedicineStatusView { get; set; }
     public DbSet<PainkillerStatusView> PainkillerStatusView { get; set; }
 
@@ -33,16 +36,16 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        _ = modelBuilder.ApplyConfiguration(new ResidentConfiguration());
-        _ = modelBuilder.ApplyConfiguration(new ResidentNoteConfiguration());
-        _ = modelBuilder.ApplyConfiguration(new MedicineRecordConfiguration());
-        _ = modelBuilder.ApplyConfiguration(new PainkillerRecordConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new Configurations.ResidentConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new Configurations.ResidentNoteConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new Configurations.MedicineRecordConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new Configurations.PainkillerRecordConfiguration());
 
-        modelBuilder.Entity<MedicineStatusView>()
+        _ = modelBuilder.Entity<MedicineStatusView>()
             .HasNoKey()
             .ToView("medicinestatusview");
 
-        modelBuilder.Entity<PainkillerStatusView>()
+        _ = modelBuilder.Entity<PainkillerStatusView>()
             .HasNoKey()
             .ToView("painkillerstatusview");
 

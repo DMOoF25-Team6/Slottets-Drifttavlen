@@ -2,6 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
 
 using Infrastructure.Data.Repositories;
 
@@ -24,9 +25,9 @@ public static class DependencyInjection
         _ = services.AddScoped<IPhoneAssignmentRepository, PhoneAssignmentRepository>();
         _ = services.AddScoped<IAuditRepository, AuditRepository>();
 
-        // NOTE: To seed Identity roles and claims, call IdentitySeed.SeedRolesAndClaimsAsync(serviceProvider) at startup.
+        // Identity services
+        _ = services.AddScoped<IRefreshTokenStore, RefreshTokenStore>();
 
         return services;
     }
 }
-
