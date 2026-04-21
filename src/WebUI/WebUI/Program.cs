@@ -5,6 +5,7 @@
 using Core.Interfaces.Managers;
 using Core.Services;
 
+using Infrastructure;
 using Infrastructure.Managers;
 
 using Microsoft.AspNetCore.Components.Authorization;
@@ -42,6 +43,8 @@ public class Program
             .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysDir));
 
         _ = builder.Services.AddHttpClient();
+
+        _ = builder.Services.AddInfrastructure();
 
         _ = builder.Services.AddScoped<AccountService>();
         // And for the interface, e.g.:

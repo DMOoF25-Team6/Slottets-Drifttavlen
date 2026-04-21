@@ -2,6 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 
+using Core;
 using Core.Interfaces.Managers;
 using Core.Interfaces.Services;
 
@@ -22,6 +23,7 @@ public static class DependencyInjection
     /// <returns>The updated service collection.</returns>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
+        _ = services.AddCore();
         _ = services.AddHttpClient<IResidentManager, ResidentManager>(client => { client.BaseAddress = new Uri("http://localhost:5151/"); });
         // _ = services.AddHttpClient<IResidentNoteManager, ResidentNoteManager>(); // TODO: Implement ResidentNoteManager
         // _ = services.AddHttpClient<IPainkillerRecordManager, PainkillerRecordManager>(); // TODO: Implement PainkillerRecordManager

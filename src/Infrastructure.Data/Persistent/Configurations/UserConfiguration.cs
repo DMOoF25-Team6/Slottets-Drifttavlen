@@ -3,6 +3,7 @@
 
 using Domain.Entities;
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -20,7 +21,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             new User
             {
                 Id = Guid.Parse("12345678-90AB-CDEF-1234-567890ABCDEF"),
-                Email = "superuser@test.test"
+                Email = "superuser@test.test",
             },
             new User
             {
@@ -28,5 +29,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Email = "user@test.test"
             }
         );
+    }
+
+    public static string PasswordHash(User user, string password)
+    {
+        PasswordHasher<User> passwordHasher = new();
+        string hashed = passwordHasher.HashPassword(user, "UserPassword123!");
+        return hashed;
     }
 }

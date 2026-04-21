@@ -34,5 +34,4 @@ public class RegisterRequestDto
     [Required(ErrorMessage = Constants.PasswordRequired)]
     [MinLength(6, ErrorMessage = Constants.PasswordMinLength)]
     public required string Password { get; set; }
-
 }
