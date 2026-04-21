@@ -167,7 +167,7 @@ public class Program
                 // Use configuration values for JWT validation
                 string issuer = builder.Configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("Jwt:Issuer not found in configuration.");
                 string audience = builder.Configuration["Jwt:Audience"] ?? throw new InvalidOperationException("Jwt:Audience not found in configuration.");
-                string key = builder.Configuration["Jwt:SecretKey"] ?? throw new InvalidOperationException("Jwt:SecretKey not found in configuration.");
+                string key = builder.Configuration["Jwt:IssuerSigningKey"] ?? throw new InvalidOperationException("Jwt:IssuerSigningKey not found in configuration.");
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
