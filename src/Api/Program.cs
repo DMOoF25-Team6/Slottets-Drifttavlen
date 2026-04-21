@@ -56,7 +56,6 @@ public class Program
         {
             _ = options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
         });
-        //_ = builder.Services.AddDbContextFactory<AppDbContext>();
 
         _ = builder.Services.AddAuthorization();
 
@@ -64,35 +63,12 @@ public class Program
 
         ConfigureIdentity(builder);
         ConfigureJwtAuthentication(builder);
-        //_ = builder.Services.AddAuthentication(options =>
-        //{
-        //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        //    options.DefaultSignInScheme = IdentityConstants.ApplicationScheme;
-        //})
-        //    .
-        //.AddJwtBearer(options =>
-        //{
-        //    string issuer = builder.Configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("Jwt:Issuer not found in configuration.");
-        //    string audience = builder.Configuration["Jwt:Audience"] ?? throw new InvalidOperationException("Jwt:Audience not found in configuration.");
-        //    string key = builder.Configuration["Jwt:SecretKey"] ?? throw new InvalidOperationException("Jwt:SecretKey not found in configuration.");
-        //    options.TokenValidationParameters = new TokenValidationParameters
-        //    {
-        //        ValidateIssuer = true,
-        //        ValidateAudience = true,
-        //        ValidateLifetime = true,
-        //        ValidateIssuerSigningKey = true,
-        //        ValidIssuer = issuer,
-        //        ValidAudience = audience,
-        //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
-        //    };
-        //});
 
         // Add services to the container.
         _ = builder.Services.AddControllers();
         _ = builder.Services.AddSwaggerGen();
 
-        _ = builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
+        //_ = builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
 
         // Dummy email sender for Identity (required by MapIdentityApi)
         _ = builder.Services.AddSingleton<IEmailSender<User>, DummyEmailSenderForUser>();
@@ -141,14 +117,6 @@ public class Program
         })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
-
-        // Add cookie authentication for Identity.Application (default) and Identity.External
-        //_ = builder.Services.ConfigureApplicationCookie(options =>
-        //{
-        //    options.LoginPath = "/Account/Login";
-        //    options.AccessDeniedPath = "/Account/AccessDenied";
-        //    // You can further configure options as needed
-        //});
     }
 
     /// <summary>

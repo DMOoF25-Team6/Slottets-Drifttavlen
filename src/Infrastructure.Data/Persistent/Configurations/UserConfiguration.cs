@@ -34,7 +34,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     public static string PasswordHash(User user, string password)
     {
         PasswordHasher<User> passwordHasher = new();
-        string hashed = passwordHasher.HashPassword(user, "UserPassword123!");
+        string hashed = passwordHasher.HashPassword(user, password);
         return hashed;
     }
 }

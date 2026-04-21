@@ -18,7 +18,12 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
     public DbSet<PainkillerRecord> PainkillerRecord { get; set; }
     public DbSet<PhoneAssignment> PhoneAssignments { get; set; }
 
+    // Identity-related DbSet for refresh tokens
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+
     public DbSet<AuditLog> AuditLogs { get; set; }
+
+    // Why do we have these views as DbSet? They are not entities!
     public DbSet<MedicineStatusView> MedicineStatusView { get; set; }
     public DbSet<PainkillerStatusView> PainkillerStatusView { get; set; }
 
