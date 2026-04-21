@@ -10,9 +10,7 @@
     <ProjectReference Include="..\WebUI.Client\WebUI.Client.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="../../../.env">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="3.1.1" />

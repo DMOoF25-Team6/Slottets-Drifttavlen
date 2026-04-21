@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Infrastructure.Data.Persistent;
 
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Domain.Entities;
 
@@ -25,12 +25,14 @@ internal class AuditService : IAuditService
 {
 
 
-    private readonly AppDbContext _dbContext;
+   private readonly IAuditRepository _repository;
 
-    public AuditService(AppDbContext dbContext)
+    public AuditService(IAuditRepository repository)
     {
-        _dbContext = dbContext;
-    }
+        _repository = repository;
+    }   
+
+
 
     public async Task LogAsync(string entityName, string changeType, string? changedBy, string description)
     {
@@ -44,7 +46,7 @@ internal class AuditService : IAuditService
             Description = description
         };
 
-        _dbContext.AuditLogs.Add(log);
-        await _dbContext.SaveChangesAsync();
+        await _repository.AddAsync(log);
     }
 }
+    

@@ -37,21 +37,29 @@ public class Program
             });
         });
 
+       
+
         // Replace the connection string params with the one from the environment variable
+
         ConfigurationManager conf = builder.Configuration;
         string connectionString = DbContextConfiguration(builder, conf);
         // Register both DbContext and DbContextFactory for DI
+
         _ = builder.Services.AddDbContext<AppDbContext>(options =>
         {
-            _ = options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+             _ = options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+          
         });
-        //_ = builder.Services.AddDbContextFactory<AppDbContext>();
+
+
+        
 
         _ = builder.Services.AddAuthorization();
 
         _ = builder.Services.AddInfrastructureData();
         _ = builder.Services.AddInfrastructure();
         _ = builder.Services.AddCore();
+
 
         _ = builder.Services.AddIdentity<User, IdentityRole<Guid>>(opt =>
         {
@@ -61,23 +69,25 @@ public class Program
             opt.Password.RequireNonAlphanumeric = true;
             opt.Password.RequiredLength = 7;
         })
-            .AddEntityFrameworkStores<AppDbContext>();
-        //.AddDefaultTokenProviders();
+
+         .AddEntityFrameworkStores<AppDbContext>();
+        //  .AddDefaultTokenProviders();
 
         _ = builder.Services.AddAuthentication(opt =>
         {
             opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
-            .AddJwtBearer(options =>
+
+           .AddJwtBearer(options =>
         {
-            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+           options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                // IssuerSigningKey should be set here for production use
+                 // IssuerSigningKey should be set here for production use
 
                 ValidIssuer = builder.Configuration["TokenValidationParameters:ValidIssuer"],
                 ValidAudience = builder.Configuration["TokenValidationParameters:ValidAudience"],
@@ -86,6 +96,7 @@ public class Program
                 )
             };
         });
+
 
         // Add services to the container.
         _ = builder.Services.AddControllers();

@@ -11,9 +11,6 @@ using Core.Interfaces.Services;
 
 using Domain.Entities;
 
-using Infrastructure.Data.Persistent;
-using Infrastructure.Data.Repositories;
-
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -68,19 +65,27 @@ public class ResidentController(IResidentRepository residentRepository): Control
         };
         return Ok(result);
     }
-
-    [HttpGet("debug")]
-    public async Task<IActionResult> Debug([FromServices] AppDbContext db, CancellationToken cancellationToken)
-    {
-        var count = await db.Set<Resident>().CountAsync(cancellationToken);
-        var ids = await db.Set<Resident>()
-            .Select(r => new { r.Id, r.Initials, r.TrafficLightStatus })
-            .ToListAsync(cancellationToken);
-
-        return Ok(new
-        {
-            count,
-            ids
-        });
     }
+
+
+/*
+ * TODO: Debug endpoint uses AppDbContext directly.
+// This breaks clean architecture (API should not depend on Infrastructure.Data).
+// Should be refactored to use repository instead.
+
+[HttpGet("debug")]
+public async Task<IActionResult> Debug([FromServices] AppDbContext db, CancellationToken cancellationToken)
+{
+    var count = await db.Set<Resident>().CountAsync(cancellationToken);
+    var ids = await db.Set<Resident>()
+        .Select(r => new { r.Id, r.Initials, r.TrafficLightStatus })
+        .ToListAsync(cancellationToken);
+
+    return Ok(new
+    {
+        count,
+        ids
+    });
 }
+}
+*/

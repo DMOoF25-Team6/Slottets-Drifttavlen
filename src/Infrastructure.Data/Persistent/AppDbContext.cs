@@ -3,6 +3,8 @@
 
 using Domain.Entities;
 
+using Infrastructure.Data.Persistent.Configurations;
+using Infrastructure.Data.Persistent;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -30,10 +32,10 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        _ = modelBuilder.ApplyConfiguration(new Configurations.ResidentConfiguration());
-        _ = modelBuilder.ApplyConfiguration(new Configurations.ResidentNoteConfiguration());
-        _ = modelBuilder.ApplyConfiguration(new Configurations.MedicineRecordConfiguration());
-        _ = modelBuilder.ApplyConfiguration(new Configurations.PainkillerRecordConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new ResidentConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new ResidentNoteConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new MedicineRecordConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new PainkillerRecordConfiguration());
 
         modelBuilder.Entity<MedicineStatusView>()
             .HasNoKey()
