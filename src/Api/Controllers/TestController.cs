@@ -8,31 +8,33 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
+
 /// <summary>
-/// controller is used for testing the Audit Logging system.
-/// manually trigger an audit log entry to verify that:
-// -IAuditService is correctly injected via Dependency Injection
-// -AuditService correctly creates and saves AuditLog entries to the database
-// -The database connection and EF Core setup are working properly
+/// Provides endpoints for testing the Audit Logging system.
 /// </summary>
+/// <remarks>
+/// This controller allows manual triggering of an audit log entry to verify:
+/// <list type="bullet">
+/// <item><description><see cref="IAuditService"/> is correctly injected via dependency injection.</description></item>
+/// <item><description>AuditService correctly creates and saves <c>AuditLog</c> entries to the database.</description></item>
+/// <item><description>The database connection and EF Core setup are working properly.</description></item>
+/// </list>
+/// </remarks>
 
 [ApiController]
 [Route("api/test")]
-public class TestController : ControllerBase
+public class TestController(IAuditService auditService) : ControllerBase
 {
-    private readonly IAuditService _auditService;
-
-    public TestController(IAuditService auditService)
-    {
-        _auditService = auditService;
-    }
-
+    /// <summary>
+    /// Creates a test audit log entry to verify the audit logging system.
+    /// </summary>
+    /// <returns>An <see cref="IActionResult"/> indicating the result of the operation.</returns>
     [HttpPost("audit")]
     public async Task<IActionResult> CreateAuditTest()
     {
 
         // Calls the audit service to create a test audit log entry
-        await _auditService.LogAsync(
+        await auditService.LogAsync(
             entityName: "User",
             changeType: "Created",
             changedBy: "test-user",

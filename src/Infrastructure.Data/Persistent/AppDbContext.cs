@@ -1,10 +1,10 @@
+
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
 using Domain.Entities;
 
 using Infrastructure.Data.Persistent.Configurations;
-using Infrastructure.Data.Persistent;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +18,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
     public DbSet<ResidentNote> ResidentNotes { get; set; }
     public DbSet<MedicineRecord> MedicineRecord { get; set; }
     public DbSet<PainkillerRecord> PainkillerRecord { get; set; }
+    public DbSet<PhoneAssignment> PhoneAssignments { get; set; }
 
     public DbSet<AuditLog> AuditLogs { get; set; }
     public DbSet<MedicineStatusView> MedicineStatusView { get; set; }

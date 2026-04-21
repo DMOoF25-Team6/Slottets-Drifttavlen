@@ -49,7 +49,7 @@ public class ResidentManager(HttpClient httpClient) : IResidentManager
         IEnumerable<ResidentResponseDto>? dtos =
             await _httpClient.GetFromJsonAsync<IEnumerable<ResidentResponseDto>>(
                 "residents", ct);
-        return dtos != null ? dtos.Select(ResidentMapper.ToResident) : Enumerable.Empty<Resident>();
+        return dtos != null ? dtos.Select(ResidentMapper.ToResident) : [];
     }
 
     /// <summary>

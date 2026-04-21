@@ -2,12 +2,16 @@
 //  No warranty, explicit or implicit, provided.
 
 
-using Core;
+using Core.Interfaces.Managers;
+using Core.Services;
 
-using Infrastructure;
+using Infrastructure.Managers;
 
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 
+using WebUI.Client;
+using WebUI.Client.Services;
 using WebUI.Components;
 
 namespace WebUI;
@@ -33,14 +37,20 @@ public class Program
             .AddInteractiveServerComponents()
             .AddInteractiveWebAssemblyComponents();
 
-        _ = builder.Services.AddCore();
-        _ = builder.Services.AddInfrastructure();
-
-
-
         // Persist Data Protection keys to a directory for antiforgery token decryption across restarts/containers
         _ = builder.Services.AddDataProtection()
             .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysDir));
+
+        _ = builder.Services.AddHttpClient();
+
+        _ = builder.Services.AddScoped<AccountService>();
+        // And for the interface, e.g.:
+        _ = builder.Services.AddScoped<IAccountManager, AccountManager>();
+
+        _ = builder.Services.AddScoped<TokenStorageService>();
+        _ = builder.Services.AddScoped<AuthService>();
+        _ = builder.Services.AddAuthorizationCore();
+        _ = builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
 
         WebApplication app = builder.Build();
 

@@ -3,7 +3,7 @@
 
 using System.Net.Http.Json;
 
-using Core.DTOs.Account;
+using Core.DTOs.Identity;
 
 namespace WebApi.Tests.Controllers.Accounts;
 
@@ -15,7 +15,7 @@ public class AccountControllerIntegrationTests(CustomWebApplicationFactory<Api.P
     public async Task Register_ValidRequest_ReturnsOk()
     {
         // Arrange
-        RegistrationRequestDto request = new() { EmailAddress = "test@example.com", Password = "Password123!", ConfirmPassword = "Password123!" };
+        RegisterRequestDto request = new() { Email = "test@example.com", Password = "Password123!" };
         // Act
         HttpResponseMessage response = await _client.PostAsJsonAsync("/Account/register", request, cancellationToken: TestContext.Current.CancellationToken);
         // Assert
@@ -28,18 +28,17 @@ public class AccountControllerIntegrationTests(CustomWebApplicationFactory<Api.P
     public async Task Login_ValidCredentials_ReturnsJwtAndRefreshToken()
     {
         // Arrange: Register user first
-        RegistrationRequestDto registerRequest = new()
+        RegisterRequestDto registerRequest = new()
         {
-            EmailAddress = "testlogin@example.com",
-            Password = "Password123!",
-            ConfirmPassword = "Password123!"
+            Email = "testlogin@example.com",
+            Password = "Password123!"
         };
         HttpResponseMessage registerResponse = await _client.PostAsJsonAsync("/Account/register", registerRequest, cancellationToken: TestContext.Current.CancellationToken);
         _ = registerResponse.EnsureSuccessStatusCode();
 
         LoginRequestDto loginRequest = new()
         {
-            EmailAddress = "testlogin@example.com",
+            Email = "testlogin@example.com",
             Password = "Password123!"
         };
         // Act: Login
@@ -56,18 +55,17 @@ public class AccountControllerIntegrationTests(CustomWebApplicationFactory<Api.P
     public async Task Refresh_ValidRefreshToken_ReturnsNewJwt()
     {
         // Arrange: Register and login to get refresh token
-        RegistrationRequestDto registerRequest = new()
+        RegisterRequestDto registerRequest = new()
         {
-            EmailAddress = "testrefresh@example.com",
-            Password = "Password123!",
-            ConfirmPassword = "Password123!"
+            Email = "testrefresh@example.com",
+            Password = "Password123!"
         };
         HttpResponseMessage registerResponse = await _client.PostAsJsonAsync("/Account/register", registerRequest, cancellationToken: TestContext.Current.CancellationToken);
         _ = registerResponse.EnsureSuccessStatusCode();
 
         LoginRequestDto loginRequest = new()
         {
-            EmailAddress = "testrefresh@example.com",
+            Email = "testrefresh@example.com",
             Password = "Password123!"
         };
         HttpResponseMessage loginResponse = await _client.PostAsJsonAsync("/Account/login", loginRequest, cancellationToken: TestContext.Current.CancellationToken);
@@ -96,7 +94,7 @@ public class AccountControllerIntegrationTests(CustomWebApplicationFactory<Api.P
     public async Task Logout_ReturnsOk()
     {
         // Arrange: Register a user first to ensure a valid authentication context
-        RegistrationRequestDto request = new() { EmailAddress = "testlogout@example.com", Password = "Password123!", ConfirmPassword = "Password123!" };
+        RegisterRequestDto request = new() { Email = "testlogout@example.com", Password = "Password123!" };
         HttpResponseMessage registerResponse = await _client.PostAsJsonAsync("/Account/register", request, cancellationToken: TestContext.Current.CancellationToken);
         _ = registerResponse.EnsureSuccessStatusCode();
 

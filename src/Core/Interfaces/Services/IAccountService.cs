@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-using Core.DTOs.Account;
+using Core.DTOs.Identity;
 
 namespace Core.Interfaces.Services;
 
@@ -11,7 +11,7 @@ namespace Core.Interfaces.Services;
 /// <remarks>
 /// This service encapsulates authentication and authorization logic for user accounts.
 /// </remarks>
-/// <seealso cref="RegistrationRequestDto"/>
+/// <seealso cref="RegisterRequestDto"/>
 /// <seealso cref="LoginRequestDto"/>
 /// <seealso cref="RefreshTokenRequestDto"/>
 /// <seealso cref="LogoutRequestDto"/>
@@ -24,11 +24,11 @@ public interface IAccountService
     /// <returns>A response containing registration result details.</returns>
     /// <example>
     /// <code language="csharp">
-    /// var request = new RegistrationRequestDto { Email = "user@example.com", Password = "P@ssw0rd!" };
+    /// var request = new RegisterRequestDto { Email = "user@example.com", Password = "P@ssw0rd!" };
     /// var response = await accountService.CreateAccountAsync(request);
     /// </code>
     /// </example>
-    Task<RegistrationResponseDto> CreateAccountAsync(RegistrationRequestDto registrationRequestDto);
+    Task<RegistrationResponseDto> CreateAccountAsync(RegisterRequestDto registrationRequestDto);
 
     /// <summary>
     /// Authenticates a user and returns a login response with tokens.

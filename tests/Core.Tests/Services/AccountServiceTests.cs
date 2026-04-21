@@ -1,6 +1,6 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
-using Core.DTOs.Account;
+using Core.DTOs.Identity;
 using Core.Interfaces.Managers;
 using Core.Services;
 
@@ -19,16 +19,14 @@ public class AccountServiceTests
         _service = new AccountService(_accountManagerMock.Object);
     }
 
-
     [Fact]
     public async Task CreateAccountAsync_ValidRequest_CallsManager()
     {
         // Arrange
-        RegistrationRequestDto request = new()
+        RegisterRequestDto request = new()
         {
-            EmailAddress = "test@test.test",
-            Password = "Password123!",
-            ConfirmPassword = "Password123!"
+            Email = "test@test.test",
+            Password = "Password123!"
         };
         RegistrationResponseDto expectedResponse = new();
         _ = _accountManagerMock
@@ -85,7 +83,7 @@ public class AccountServiceTests
     public async Task LoginAsync_ValidCredentials_CallsManager(string username, string password)
     {
         // Arrange
-        LoginRequestDto request = new() { EmailAddress = username, Password = password };
+        LoginRequestDto request = new() { Email = username, Password = password };
         LoginResponseDto expectedResponse = new();
         _ = _accountManagerMock
             .Setup(m => m.LoginAsync(request))

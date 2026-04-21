@@ -3,4 +3,30 @@
 GET {{Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
-###
+### Identity Register user
+POST {{Api_HostAddress}}/Account/register
+Accept: application/json
+Content-Type: application/json
+
+{
+    "email": "testuser@example.com",
+    "password": "Password123!"
+}
+
+### Identity Login
+POST {{Api_HostAddress}}/Account/login
+Accept: application/json
+Content-Type: application/json
+{
+    "email": "testuser@example.com",
+    "password": "Password123!"
+}
+
+### Identity Refresh token
+POST {{Api_HostAddress}}/Account/refresh
+Accept: application/json
+Content-Type: application/json
+{
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4YmQwMTdmZi02MjEyLTQ1OWMtOGFjNC05ZTJiYzkyNjgyOTAiLCJleHAiOjE3NzY2NzA5MTEsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3QiLCJhdWQiOiJiWmN1cmpWeURKQ20yJUtId3dSY2R1SU95amVLeVIyMiJ9.My1ZXl2S5StgPNpSBdw3o1KDoE-2RjrL9mJm5cFDLgo",
+    "refreshToken": "dp4h2GA5PegKTI2cWyCAQ8zvhu7dQXo+36otqfX1ZcoeiahHsmiGMjnitNPeE5nB3W/o1HTi/CXTE4T6Mqle8g=="
+}

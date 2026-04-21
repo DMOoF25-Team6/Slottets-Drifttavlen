@@ -5,6 +5,13 @@ using Domain.Entities;
 
 namespace Core.Interfaces.Services;
 
+/// <summary>
+/// Defines a contract for managing residents in the system.
+/// </summary>
+/// <remarks>
+/// Inherits CRUD operations from <see cref="ICRUD{Resident}"/>.
+/// </remarks>
 public interface IResidentService : ICRUD<Resident>
 {
+    /// <inheritdoc/>
 }

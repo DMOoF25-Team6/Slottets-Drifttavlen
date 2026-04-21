@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Core.Interfaces.Repositories;
+
 using Core.Interfaces.Services;
+
 using Domain.Entities;
 
 
@@ -24,7 +27,6 @@ namespace Infrastructure.Services;
 internal class AuditService : IAuditService
 {
 
-
    private readonly IAuditRepository _repository;
 
     public AuditService(IAuditRepository repository)
@@ -34,9 +36,10 @@ internal class AuditService : IAuditService
 
 
 
+
     public async Task LogAsync(string entityName, string changeType, string? changedBy, string description)
     {
-        var log = new AuditLog
+        var log = new AuditLog()
         {
             Id = Guid.NewGuid(),
             EntityName = entityName,
@@ -47,6 +50,7 @@ internal class AuditService : IAuditService
         };
 
         await _repository.AddAsync(log);
+
     }
 }
     

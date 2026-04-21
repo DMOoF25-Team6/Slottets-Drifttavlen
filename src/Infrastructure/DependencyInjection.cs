@@ -4,6 +4,8 @@
 
 using Core.Interfaces.Managers;
 using Core.Interfaces.Services;
+
+using Infrastructure.Managers;
 using Infrastructure.Services;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +26,8 @@ public static class DependencyInjection
         // _ = services.AddHttpClient<IResidentNoteManager, ResidentNoteManager>(); // TODO: Implement ResidentNoteManager
         // _ = services.AddHttpClient<IPainkillerRecordManager, PainkillerRecordManager>(); // TODO: Implement PainkillerRecordManager
         // _ = services.AddHttpClient<IMedicineRecordManager, MedicineRecordManager>(); // TODO: Implement MedicineRecordManager
+        //_ = services.AddScoped<AccountService>();
+        //_ = services.AddScoped<IAccountManager, AccountManager>();
         _ = services.AddHttpClient<IAccountManager, AccountManager>();
         _ = services.AddHttpClient<IPhoneAssignmentManager, PhoneAssignmentManager>();
         _ = services.AddScoped<IAuditService, AuditService>();

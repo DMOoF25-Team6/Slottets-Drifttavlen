@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-using Core.DTOs.Account;
+using Core.DTOs.Identity;
 
 namespace Core.Interfaces.Managers;
 
@@ -15,7 +15,7 @@ public interface IAccountManager
     /// </summary>
     /// <param name="registrationRequestDto">An object containing the registration details.</param>
     /// <returns>A response object containing the result of the registration operation.</returns>
-    Task<RegistrationResponseDto> CreateAccountAsync(RegistrationRequestDto registrationRequestDto);
+    Task<RegistrationResponseDto> CreateAccountAsync(RegisterRequestDto registrationRequestDto);
 
     /// <summary>
     /// Authenticates a user and returns login information, including tokens if successful.
