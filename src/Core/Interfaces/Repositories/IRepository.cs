@@ -24,8 +24,4 @@ namespace Core.Interfaces.Repositories;
 /// </example>
 public interface IRepository<TEntity> : ICRUD<TEntity> where TEntity : Domain.Interfaces.IEntity
 {
-    /// <summary>
-    /// Gets or sets the collection of entities managed by the repository.
-    /// </summary>
-    IEnumerable<TEntity> Entities { get; set; }
 }

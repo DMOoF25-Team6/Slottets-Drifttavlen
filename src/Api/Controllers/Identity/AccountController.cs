@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 using Core.DTOs.Identity;
+using Core.Interfaces.Services;
 using Core.Mappers.Accounts;
 
 using Domain.Entities;
@@ -25,7 +26,7 @@ namespace Api.Controllers.Identity;
 /// </remarks>
 [Route("[controller]")]
 [ApiController]
-public class AccountController(UserManager<User> userManager) : ControllerBase
+public class AccountController(UserManager<User> userManager, IRefreshTokenStore refreshTokenStore) : ControllerBase
 {
     /// <summary>
     /// Registers a new user account.
@@ -88,17 +89,22 @@ public class AccountController(UserManager<User> userManager) : ControllerBase
         string token = GenerateJwtToken();
 
         // Generate a secure refresh token
-        string refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-        // Store refresh token with user identifier (for demo, use email)
-        lock (RefreshTokens)
+        string refreshTokenValue = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        RefreshToken refreshToken = new()
         {
-            RefreshTokens[user.Email] = refreshToken;
-        }
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            Token = refreshTokenValue,
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow.AddDays(7) // Set refresh token lifetime as needed
+        };
+        await refreshTokenStore.SaveAsync(refreshToken);
+
 
         return Ok(new LoginResponseDto
         {
             JwtToken = token,
-            RefreshToken = refreshToken
+            RefreshToken = refreshTokenValue
         });
     }
 
@@ -183,7 +189,7 @@ public class AccountController(UserManager<User> userManager) : ControllerBase
     /// <exception cref="InvalidOperationException">IssuerSigningKey not found in environment variables.</exception>
     private static string GenerateJwtToken()
     {
-        string key = Environment.GetEnvironmentVariable("Jwt__SecretKey") ?? throw new InvalidOperationException("IssuerSigningKey not found in environment variables.");
+        string key = Environment.GetEnvironmentVariable("Jwt__IssuerSigningKeyy") ?? throw new InvalidOperationException("IssuerSigningKey not found in environment variables.");
         SymmetricSecurityKey secretKey = new(Encoding.UTF8.GetBytes(key));
         SigningCredentials signingCredentials = new(secretKey, SecurityAlgorithms.HmacSha256);
 
@@ -194,7 +200,7 @@ public class AccountController(UserManager<User> userManager) : ControllerBase
 
         JwtSecurityToken tokenOptions = new(
             issuer: Environment.GetEnvironmentVariable("Jwt__Issuer"),
-            audience: Environment.GetEnvironmentVariable("Jwt__SecretKey"),
+            audience: Environment.GetEnvironmentVariable("Jwt__IssuerSigningKey"),
             claims: claims,
             expires: DateTime.Now.AddMinutes(5),
             signingCredentials: signingCredentials

@@ -23,7 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include=".env">
+    <!--Don not change the name of this file, it is used to load environment variables in the application.-->
+    <None Include="../../.env">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

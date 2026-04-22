@@ -6,11 +6,8 @@
 
 using System.Text;
 
-using Core;
-
 using Domain.Entities;
 
-using Infrastructure;
 using Infrastructure.Data;
 using Infrastructure.Data.Persistent;
 
@@ -21,14 +18,19 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Api;
 
+
+/// <summary>
+/// Entry point and configuration for the API application.
+/// </summary>
+/// <remarks>
+/// Configures services, authentication, authorization, and middleware for the API.
+/// </remarks>
 public class Program
 {
     /// <summary>
-    /// Entry point and configuration for the API application.
+    /// Initializes and runs the API application.
     /// </summary>
-    /// <remarks>
-    /// Configures services, authentication, authorization, and middleware for the API.
-    /// </remarks>
+    /// <param name="args">An array of command-line arguments.</param>
     public static void Main(string[] args)
     {
         // Load environment variables from .env file
@@ -46,42 +48,32 @@ public class Program
             });
         });
 
-       
-
         // Replace the connection string params with the one from the environment variable
-
         ConfigurationManager conf = builder.Configuration;
         string connectionString = ConfigureDbContext(builder, conf);
         // Register both DbContext and DbContextFactory for DI
-
         _ = builder.Services.AddDbContext<AppDbContext>(options =>
         {
-             _ = options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-          
+            _ = options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
         });
 
         _ = builder.Services.AddAuthorization();
 
         _ = builder.Services.AddInfrastructureData();
-        _ = builder.Services.AddInfrastructure();
-        _ = builder.Services.AddCore();
 
         ConfigureIdentity(builder);
         ConfigureJwtAuthentication(builder);
-
 
         // Add services to the container.
         _ = builder.Services.AddControllers();
         _ = builder.Services.AddSwaggerGen();
 
-        _ = builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
-
+        //_ = builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
 
         // Dummy email sender for Identity (required by MapIdentityApi)
         _ = builder.Services.AddSingleton<IEmailSender<User>, DummyEmailSenderForUser>();
 
         WebApplication app = builder.Build();
-
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -106,7 +98,6 @@ public class Program
         _ = app.MapControllers();
 
         app.Run();
-
     }
 
     /// <summary>
@@ -126,7 +117,6 @@ public class Program
         })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
-
     }
 
     /// <summary>
@@ -263,5 +253,3 @@ public class DummyEmailSenderForUser : IEmailSender<User>
         return Task.CompletedTask;
     }
 }
-
-
