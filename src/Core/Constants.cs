@@ -3,15 +3,15 @@
 
 namespace Core;
 
-internal class Constants
+internal static class Constants
 {
     #region Error Messages
-    public const string EmailRequired = "Email is required.";
-    public const string InvalidEmailAddress = "Invalid email address.";
-    public const string PasswordRequired = "Password is required.";
-    public const string PasswordMinLength = "Password must be at least 6 characters long.";
-    public const string ConfirmPasswordRequired = "Confirm Password is required.";
-    public const string PasswordsDoNotMatch = "Passwords do not match.";
+    public const string EmailRequired = "Email er påkrævet.";
+    public const string InvalidEmailAddress = "Ugyldig e-mailadresse.";
+    public const string PasswordRequired = "Adgangskode er påkrævet.";
+    public const string PasswordMinLength = "Adgangskoden skal være mindst 6 tegn lang.";
+    public const string ConfirmPasswordRequired = "Bekræft adgangskode er påkrævet.";
+    public const string PasswordsDoNotMatch = "Adgangskoderne matcher ikke.";
     #endregion
 
     #region Messages

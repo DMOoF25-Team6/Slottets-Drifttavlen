@@ -52,8 +52,7 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
                 ErrorMessages = result.Errors.Select(e => e.Description)
             });
     }
-    // In-memory refresh token store for demonstration. Replace with persistent store for production.
-    private static readonly Dictionary<string, string> RefreshTokens = [];
+
 
     /// <summary>
     /// Authenticates a user and returns a JWT access token and refresh token.
@@ -65,41 +64,24 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        User? user = await userManager.FindByEmailAsync(request.Email);
-        if (user is null || !await userManager.CheckPasswordAsync(user, request.Password))
-        {
-            return Unauthorized(new LoginResponseDto
-            {
-                ErrorMessages = ["Invalid email or password."]
-            });
-        }
+        if (!IsValidRequest(ModelState, out IActionResult? errorResult))
+            return errorResult;
 
-        if (user.Email is null)
-        {
-            return Unauthorized(new LoginResponseDto
-            {
-                ErrorMessages = ["User email is not available."]
-            });
-        }
+        User? user = await FindValidUserAsync(request.Email, request.Password);
+        if (user == null)
+            return Unauthorized(new LoginResponseDto { ErrorMessages = ["Invalid email or password."] });
 
         string token = GenerateJwtToken();
-
-        // Generate a secure refresh token
-        string refreshTokenValue = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        string refreshTokenValue = GenerateRefreshToken();
         RefreshToken refreshToken = new()
         {
             Id = Guid.NewGuid(),
             UserId = user.Id,
             Token = refreshTokenValue,
             CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(7) // Set refresh token lifetime as needed
+            ExpiresAt = DateTime.UtcNow.AddDays(7)
         };
         await refreshTokenStore.SaveAsync(refreshToken);
-
 
         return Ok(new LoginResponseDto
         {
@@ -118,42 +100,28 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto request)
     {
-        if (!ModelState.IsValid || string.IsNullOrWhiteSpace(request.RefreshToken))
+        var validationError = ValidateRefreshRequest(request);
+        if (validationError != null)
+            return validationError;
+
+        RefreshToken? refreshToken = await GetValidRefreshTokenAsync(request.RefreshToken);
+        if (refreshToken == null)
         {
-            return BadRequest(new RefreshTokenResponseDto { ErrorMessages = ["Invalid refresh token request."] });
+            return Unauthorized(new RefreshTokenResponseDto { ErrorMessages = ["Invalid or expired refresh token."] });
         }
 
-        // Find user by refresh token
-        string? userEmail = RefreshTokens.FirstOrDefault(x => x.Value == request.RefreshToken).Key;
-        if (userEmail is null)
+        User? user = await GetValidUserByIdAsync(refreshToken.UserId);
+        if (user == null)
         {
-            return Unauthorized(new RefreshTokenResponseDto { ErrorMessages = ["Invalid refresh token."] });
-        }
-
-        User? user = await userManager.FindByEmailAsync(userEmail);
-        if (user is null)
-        {
-            return Unauthorized(new RefreshTokenResponseDto { ErrorMessages = ["User not found."] });
-        }
-
-        if (user.Email is null)
-        {
-            return Unauthorized(new RefreshTokenResponseDto { ErrorMessages = ["User email is not available."] });
+            return Unauthorized(new RefreshTokenResponseDto { ErrorMessages = ["User not found or email unavailable."] });
         }
 
         string token = GenerateJwtToken();
-
-        // Optionally, rotate refresh token
-        string newRefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-        lock (RefreshTokens)
-        {
-            RefreshTokens[user.Email] = newRefreshToken;
-        }
-
+        var newRefreshToken = await RotateAndSaveRefreshTokenAsync(user);
         return Ok(new RefreshTokenResponseDto
         {
             JwtToken = token,
-            RefreshToken = newRefreshToken
+            RefreshToken = newRefreshToken.Token
         });
     }
 
@@ -189,7 +157,7 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
     /// <exception cref="InvalidOperationException">IssuerSigningKey not found in environment variables.</exception>
     private static string GenerateJwtToken()
     {
-        string key = Environment.GetEnvironmentVariable("Jwt__IssuerSigningKeyy") ?? throw new InvalidOperationException("IssuerSigningKey not found in environment variables.");
+        string key = Environment.GetEnvironmentVariable("Jwt__IssuerSigningKey") ?? throw new InvalidOperationException("IssuerSigningKey not found in environment variables.");
         SymmetricSecurityKey secretKey = new(Encoding.UTF8.GetBytes(key));
         SigningCredentials signingCredentials = new(secretKey, SecurityAlgorithms.HmacSha256);
 
@@ -208,5 +176,74 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
 
         return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
     }
+
+    // Helper: Validate ModelState
+    private static bool IsValidRequest(Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary modelState, out IActionResult errorResult)
+    {
+        if (!modelState.IsValid)
+        {
+            errorResult = new BadRequestObjectResult(modelState);
+            return false;
+        }
+        errorResult = null!;
+        return true;
+    }
+
+    // Helper: Validate Refresh request and return error if invalid
+    private IActionResult? ValidateRefreshRequest(RefreshTokenRequestDto request)
+    {
+        if (!ModelState.IsValid || string.IsNullOrWhiteSpace(request.RefreshToken))
+        {
+            return BadRequest(new RefreshTokenResponseDto { ErrorMessages = ["Invalid refresh token request."] });
+        }
+        return null;
+    }
+
+    // Helper: Retrieve and validate refresh token
+    private async Task<RefreshToken?> GetValidRefreshTokenAsync(string? token)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+            return null;
+        var refreshToken = await refreshTokenStore.GetByTokenAsync(token);
+        if (refreshToken == null || refreshToken.ExpiresAt < DateTime.UtcNow)
+            return null;
+        return refreshToken;
+    }
+
+    // Helper: Retrieve and validate user by id
+    private async Task<User?> GetValidUserByIdAsync(Guid userId)
+    {
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        if (user == null || string.IsNullOrWhiteSpace(user.Email))
+            return null;
+        return user;
+    }
+
+    // Helper: Rotate and save refresh token
+    private async Task<RefreshToken> RotateAndSaveRefreshTokenAsync(User user)
+    {
+        string newRefreshTokenValue = GenerateRefreshToken();
+        RefreshToken newRefreshToken = new()
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            Token = newRefreshTokenValue,
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow.AddDays(7)
+        };
+        await refreshTokenStore.SaveAsync(newRefreshToken);
+        return newRefreshToken;
+    }
+
+    // Helper: Generate refresh token
+    private static string GenerateRefreshToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+
+    // Helper: Find user and check password
+    private async Task<User?> FindValidUserAsync(string email, string password)
+    {
+        User? user = await userManager.FindByEmailAsync(email);
+        return user == null || !await userManager.CheckPasswordAsync(user, password) || string.IsNullOrWhiteSpace(user.Email) ? null : user;
+    }
+
     #endregion
 }

@@ -3,6 +3,8 @@
 
 using System.ComponentModel.DataAnnotations;
 
+using static Core.Constants;
+
 namespace Core.DTOs.Identity;
 
 /// <summary>
@@ -19,7 +21,8 @@ public class LoginRequestDto
     /// <value>
     /// A string containing the user's email address.
     /// </value>
-    [EmailAddress(ErrorMessage = "Invalid email address.")]
+    [Required(ErrorMessage = EmailRequired)]
+    [EmailAddress(ErrorMessage = InvalidEmailAddress)]
     public required string Email { get; set; }
 
     /// <summary>
@@ -28,5 +31,6 @@ public class LoginRequestDto
     /// <value>
     /// A string containing the user's password.
     /// </value>
+    [Required(ErrorMessage = PasswordRequired)]
     public required string Password { get; set; }
 }

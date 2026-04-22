@@ -19,16 +19,16 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        Environment.SetEnvironmentVariable("Jwt__SecretKey", "TestSecretKey12345678901234567890");
+        Environment.SetEnvironmentVariable("Jwt__IssuerSigningKey", "TestSecretKey12345678901234567890");
 
         _ = builder.ConfigureAppConfiguration((context, config) =>
         {
-            config.AddInMemoryCollection(new Dictionary<string, string?>
+            _ = config.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["Jwt:Issuer"] = "http://localhost",
                 ["Jwt:Audience"] = "http://localhost",
-                ["Jwt:SecretKey"] = "TestSecretKey12345678901234567890",
-                ["Jwt__SecretKey"] = "TestSecretKey12345678901234567890"
+                ["Jwt:IssuerSigningKey"] = "TestSecretKey12345678901234567890",
+                ["Jwt__IssuerSigningKey"] = "TestSecretKey12345678901234567890"
             });
         });
 
@@ -43,9 +43,11 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 _ = services.Remove(descriptor);
             }
 
+            // Use a unique in-memory database name per test instance
+            string dbName = $"TestDb_{Guid.NewGuid()}";
             _ = services.AddDbContext<AppDbContext>(options =>
             {
-                _ = options.UseInMemoryDatabase("TestDb");
+                _ = options.UseInMemoryDatabase(dbName);
             });
 
             ServiceProvider sp = services.BuildServiceProvider();
