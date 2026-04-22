@@ -19,16 +19,16 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        Environment.SetEnvironmentVariable("Jwt__IssuerSigningKey", "TestSecretKey12345678901234567890");
+        Environment.SetEnvironmentVariable("TokenValidationParameters__IssuerSigningKey", "TestSecretKey12345678901234567890");
 
         _ = builder.ConfigureAppConfiguration((context, config) =>
         {
             _ = config.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Jwt:Issuer"] = "http://localhost",
-                ["Jwt:Audience"] = "http://localhost",
-                ["Jwt:IssuerSigningKey"] = "TestSecretKey12345678901234567890",
-                ["Jwt__IssuerSigningKey"] = "TestSecretKey12345678901234567890"
+                ["TokenValidationParameters:Issuer"] = "http://localhost",
+                ["TokenValidationParameters:Audience"] = "http://localhost",
+                ["TokenValidationParameters:IssuerSigningKey"] = "TestSecretKey12345678901234567890",
+                ["TokenValidationParameters__IssuerSigningKey"] = "TestSecretKey12345678901234567890"
             });
         });
 

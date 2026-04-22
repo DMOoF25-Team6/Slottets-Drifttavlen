@@ -100,7 +100,7 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto request)
     {
-        var validationError = ValidateRefreshRequest(request);
+        IActionResult? validationError = ValidateRefreshRequest(request);
         if (validationError != null)
             return validationError;
 
@@ -117,7 +117,7 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
         }
 
         string token = GenerateJwtToken();
-        var newRefreshToken = await RotateAndSaveRefreshTokenAsync(user);
+        RefreshToken newRefreshToken = await RotateAndSaveRefreshTokenAsync(user);
         return Ok(new RefreshTokenResponseDto
         {
             JwtToken = token,
@@ -157,7 +157,7 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
     /// <exception cref="InvalidOperationException">IssuerSigningKey not found in environment variables.</exception>
     private static string GenerateJwtToken()
     {
-        string key = Environment.GetEnvironmentVariable("Jwt__IssuerSigningKey") ?? throw new InvalidOperationException("IssuerSigningKey not found in environment variables.");
+        string key = Environment.GetEnvironmentVariable("TokenValidationParameters__IssuerSigningKey") ?? throw new InvalidOperationException("IssuerSigningKey not found in environment variables.");
         SymmetricSecurityKey secretKey = new(Encoding.UTF8.GetBytes(key));
         SigningCredentials signingCredentials = new(secretKey, SecurityAlgorithms.HmacSha256);
 
@@ -167,8 +167,8 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
         ];
 
         JwtSecurityToken tokenOptions = new(
-            issuer: Environment.GetEnvironmentVariable("Jwt__Issuer"),
-            audience: Environment.GetEnvironmentVariable("Jwt__IssuerSigningKey"),
+            issuer: Environment.GetEnvironmentVariable("TokenValidationParameters__Issuer"),
+            audience: Environment.GetEnvironmentVariable("TokenValidationParameters__Audience"),
             claims: claims,
             expires: DateTime.Now.AddMinutes(5),
             signingCredentials: signingCredentials
@@ -192,11 +192,9 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
     // Helper: Validate Refresh request and return error if invalid
     private IActionResult? ValidateRefreshRequest(RefreshTokenRequestDto request)
     {
-        if (!ModelState.IsValid || string.IsNullOrWhiteSpace(request.RefreshToken))
-        {
-            return BadRequest(new RefreshTokenResponseDto { ErrorMessages = ["Invalid refresh token request."] });
-        }
-        return null;
+        return !ModelState.IsValid || string.IsNullOrWhiteSpace(request.RefreshToken)
+            ? BadRequest(new RefreshTokenResponseDto { ErrorMessages = ["Invalid refresh token request."] })
+            : (IActionResult?)null;
     }
 
     // Helper: Retrieve and validate refresh token
@@ -204,19 +202,15 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
     {
         if (string.IsNullOrWhiteSpace(token))
             return null;
-        var refreshToken = await refreshTokenStore.GetByTokenAsync(token);
-        if (refreshToken == null || refreshToken.ExpiresAt < DateTime.UtcNow)
-            return null;
-        return refreshToken;
+        RefreshToken? refreshToken = await refreshTokenStore.GetByTokenAsync(token);
+        return refreshToken == null || refreshToken.ExpiresAt < DateTime.UtcNow ? null : refreshToken;
     }
 
     // Helper: Retrieve and validate user by id
     private async Task<User?> GetValidUserByIdAsync(Guid userId)
     {
-        var user = await userManager.FindByIdAsync(userId.ToString());
-        if (user == null || string.IsNullOrWhiteSpace(user.Email))
-            return null;
-        return user;
+        User? user = await userManager.FindByIdAsync(userId.ToString());
+        return user == null || string.IsNullOrWhiteSpace(user.Email) ? null : user;
     }
 
     // Helper: Rotate and save refresh token
