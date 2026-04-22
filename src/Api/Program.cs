@@ -8,6 +8,7 @@ using System.Text;
 
 using Domain.Entities;
 
+using Infrastructure;
 using Infrastructure.Data;
 using Infrastructure.Data.Persistent;
 
@@ -60,6 +61,7 @@ public class Program
         _ = builder.Services.AddAuthorization();
 
         _ = builder.Services.AddInfrastructureData();
+        _ = builder.Services.AddInfrastructure();
 
         ConfigureIdentity(builder);
         ConfigureJwtAuthentication(builder);
