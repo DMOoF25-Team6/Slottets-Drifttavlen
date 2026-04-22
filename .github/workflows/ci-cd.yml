@@ -19,7 +19,7 @@ jobs:
           echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env
           echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
           echo "ConnectionStrings__AppDbContext=Server=${{ secrets.MYSQL_HOST }};Port=3307;Database=${{ secrets.MYSQL_DATABASE }};User=${{ secrets.MYSQL_USER }};Password=${{ secrets.MYSQL_PASSWORD }}" >> .env
-          echo "TokenValidationParameters__IssuerSigningKey=bZcurjVyDJCm2%KHwwRcduIOyjeKyR22" >> .env
+          echo "TokenValidationParameters__IssuerSigningKey=${{ secrets.TOKENVALIDATIONPARAMETERS__ISSUERSIGNINGKEY }}" >> .env
       - name: Upload .env file as artifact
         uses: actions/upload-artifact@v4
         with:
@@ -27,6 +27,7 @@ jobs:
           path: .env
       
   build:
+    needs: BuildSecrets
     runs-on: ubuntu-latest
     environment: Database
     steps:
