@@ -8,7 +8,6 @@ using System.Text;
 
 using Domain.Entities;
 
-using Infrastructure;
 using Infrastructure.Data;
 using Infrastructure.Data.Persistent;
 
@@ -133,10 +132,10 @@ public class Program
         })
             .AddJwtBearer(options =>
             {
-                // Use configuration values for JWT validation
-                string issuer = builder.Configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("Jwt:Issuer not found in configuration.");
-                string audience = builder.Configuration["Jwt:Audience"] ?? throw new InvalidOperationException("Jwt:Audience not found in configuration.");
-                string key = builder.Configuration["Jwt:IssuerSigningKey"] ?? throw new InvalidOperationException("Jwt:IssuerSigningKey not found in configuration.");
+                // Use configuration values for TokenValidationParameters validation
+                string issuer = builder.Configuration["TokenValidationParameters:Issuer"] ?? throw new InvalidOperationException("TokenValidationParameters:Issuer not found in configuration.");
+                string audience = builder.Configuration["TokenValidationParameters:Audience"] ?? throw new InvalidOperationException("TokenValidationParameters:Audience not found in configuration.");
+                string key = builder.Configuration["TokenValidationParameters:IssuerSigningKey"] ?? throw new InvalidOperationException("TokenValidationParameters  :IssuerSigningKey not found in configuration.");
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
