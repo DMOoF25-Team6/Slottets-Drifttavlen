@@ -23,25 +23,28 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/test")]
+
+/// <summary>
+/// Creates a test audit log entry to verify the audit logging system.
+/// </summary>
+/// <returns>An <see cref="IActionResult"/> indicating the result of the operation.</returns>
+/// 
+
 public class TestController(IAuditService auditService) : ControllerBase
 {
-    /// <summary>
-    /// Creates a test audit log entry to verify the audit logging system.
-    /// </summary>
-    /// <returns>An <see cref="IActionResult"/> indicating the result of the operation.</returns>
     [HttpPost("audit")]
-    public async Task<IActionResult> CreateAuditTest()
+     public async Task<IActionResult> CreateAuditTest()
     {
 
-        // Calls the audit service to create a test audit log entry
-        await auditService.LogAsync(
-            entityName: "User",
-            changeType: "Created",
-            changedBy: "test-user",
-            description: "Test audit log entry from controller"
-        );
+    // Calls the audit service to create a test audit log entry
+      await auditService.LogAsync(
+        entityName: "User",
+      changeType: "Created",
+      changedBy: "test-user",
+      description: "Test audit log entry from controller"
+      );
 
-        // Returns confirmation that the audit log was successfully created
-        return Ok("Audit log created successfully");
+    // Returns confirmation that the audit log was successfully created
+    return Ok("Audit log created successfully");
     }
 }
