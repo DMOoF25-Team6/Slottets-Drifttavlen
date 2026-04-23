@@ -10,16 +10,14 @@ jobs:
     environment: database
     steps:
       - uses: actions/checkout@v4
-      - name: Create .env file
+      - name: Check for ENV_FILE secret
         run: |
-          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
-          echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env
-          echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
-          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
-          echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env
-          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
-          echo "ConnectionStrings__AppDbContext=Server=${{ secrets.MYSQL_HOST }};Port=3307;Database=${{ secrets.MYSQL_DATABASE }};User=${{ secrets.MYSQL_USER }};Password=${{ secrets.MYSQL_PASSWORD }}" >> .env
-          echo "TokenValidationParameters__IssuerSigningKey=${{ secrets.TOKENVALIDATIONPARAMETERS__ISSUERSIGNINGKEY }}" >> .env
+          if [ -z "${{ secrets.ENV_FILE }}" ]; then
+            echo "Error: ENV_FILE secret is not set."
+            exit 1
+          fi
+      - name: Create .env file
+        run: echo "${{ secrets.ENV_FILE }}" > .env
       - name: Upload .env file as artifact
         uses: actions/upload-artifact@v4
         with:
@@ -36,8 +34,10 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-      - name: Create .env file
-        run: echo "${{ secrets.ENV_FILE }}" > .env
+      - name: Download .env file artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: env-file
       - name: Copy .env file to API project
         run: cp .env src/Api/.env
       - name: Load .env file
