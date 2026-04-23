@@ -16,13 +16,14 @@ jobs:
             exit 1
           fi
       - name: Create .env file
-        run: echo "${{ secrets.ENV_FILE }}" > .env
+        run: |
+          printf "%s" "${{ secrets.ENV_FILE }}" > .env
       - name: Upload .env file as artifact
         uses: actions/upload-artifact@v7
         with:
           name: env-file
           path: .env
-      
+
   build:
     needs: BuildSecrets
     runs-on: ubuntu-latest
