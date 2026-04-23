@@ -8,7 +8,7 @@ jobs:
   BuildSecrets:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Check for ENV_FILE secret
         run: |
           if [ -z "${{ secrets.ENV_FILE }}" ]; then
@@ -18,7 +18,7 @@ jobs:
       - name: Create .env file
         run: echo "${{ secrets.ENV_FILE }}" > .env
       - name: Upload .env file as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: env-file
           path: .env
