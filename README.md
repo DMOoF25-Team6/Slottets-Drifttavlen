@@ -120,17 +120,21 @@ cd DMOoF25-Team6.Slottets-Drifttavlen
 Opret en `.env`-fil i projektroden med følgende indhold:
 ```sh
 MYSQL_ROOT_PASSWORD=rootpassword
----
-
 MYSQL_DATABASE=slottetsdb
 MYSQL_USER=appuser
 MYSQL_PASSWORD=apppassword
-MYSQL_HOST=localhost
-ConnectionStrings__AppDbContext=Server={DB_HOST};Port=3307;Database={DB_NAME};User={DB_USER};Password={DB_PASSWORD};
+MYSQL_HOST=slottets-sqlserver
+ConnectionStrings__AppDbContext=Server=slottets-sqlserver;Port=3306;Database=slottetsdb;User=appuser;Password=apppassword;
 TokenValidationParameters__IssuerSigningKey=YOUR_SECRET_KEY_HERE
-TokenValidationParameters__Issuer=slottets-drifttavlen
-TokenValidationParameters__Audience=slottets-drifttavlen
+TokenValidationParameters__Issuer=http://localhost
+TokenValidationParameters__Audience=http://localhost
+ExpireMinutes=60
 ```
+
+> ⚠️ **Påkrævede mapper:** Opret følgende mapper i projektroden før du kører `docker-compose up`, ellers fejler Docker Compose:
+> ```sh
+> mkdir -p Data DataProtection-Keys src/WebUI/WebUI/DataProtection-Keys
+> ```
 
 ### Docker database
 Ændrer værdierne i `.env`-filen i projektroden til dine ønskede databaseindstillinger:
