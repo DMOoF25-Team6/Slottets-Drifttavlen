@@ -154,9 +154,31 @@ docker-compose down slottets-sqlserver
 ```
 
 ### Kør applikationen
+
+> ⚠️ **VIGTIGT:** Projektet kører **udelukkende** via Docker Compose.
+> Brug **IKKE** `dotnet run` eller `launchSettings.json`.
+> `launchSettings.json` er IDE-specifik og giver forskellige porte og miljøvariable afhængigt af OS og IDE (Visual Studio, VS Code osv.).
+> Docker Compose sikrer at **alle teammedlemmer kører identisk miljø** med samme porte, netværk og konfiguration — og at MySQL, API og WebUI starter i korrekt rækkefølge.
+
 ```sh
 docker-compose up
 ```
+
+Sørg for at portene i `docker-compose.yml` er konfigureret korrekt:
+
+| Service | Port |
+|---------|------|
+| WebUI   | 5050 |
+| API     | 5051 |
+| MySQL   | 3307 |
+
+Når applikationen kører, er den tilgængelig på:
+
+| Service | URL |
+|---------|-----|
+| WebUI   | http://localhost:5050 |
+| API     | http://localhost:5051 |
+| MySQL   | localhost:3307 |
 
 Alternativt direkte med Docker:
 ```sh
