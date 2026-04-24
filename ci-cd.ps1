@@ -45,7 +45,7 @@ function Start-SqlServer {
       # The container is running
   } else {
       # The container is NOT running
-      docker-compose up --menu=false --build slottets-sqlserver
+      Start-Process "docker-compose" -ArgumentList "up --menu=false --build slottets-sqlserver"
   }
 }
 
