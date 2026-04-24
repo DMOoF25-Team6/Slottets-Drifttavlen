@@ -39,7 +39,7 @@ function Convert-LineEndingsToLF {
  #   Checks the status of the specified SQL Server container and starts it using Docker Compose if it
 #>
 function Start-SqlServer {
-  $containerName = "otherdmoof25-team6slottets-drifttavlen-slottets-sqlserver-1"
+  $containerName = "otherdmoof25-team6slottets-drifttavlen"
   $containerStatus = docker ps --filter "name=$containerName" --filter "status=running" --format "{{.Names}}"
   if ($containerStatus -eq $containerName) {
       # The container is running
