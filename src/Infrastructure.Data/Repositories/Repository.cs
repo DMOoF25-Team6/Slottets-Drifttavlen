@@ -3,6 +3,7 @@
 
 using Core.Interfaces.Repositories;
 
+using Core.Interfaces;
 using Domain.Interfaces;
 
 using Infrastructure.Data.Persistent;

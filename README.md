@@ -124,7 +124,9 @@ MYSQL_USER=appuser
 MYSQL_PASSWORD=apppassword
 MYSQL_HOST=localhost
 ConnectionStrings__AppDbContext=Server={DB_HOST};Port=3307;Database={DB_NAME};User={DB_USER};Password={DB_PASSWORD};
-TokenValidationParameters__IssuerSigningKey=bZcurjVyDJCm2%KHwwRcduIOyjeKyR22
+TokenValidationParameters__IssuerSigningKey=YOUR_SECRET_KEY_HERE
+TokenValidationParameters__Issuer=slottets-drifttavlen
+TokenValidationParameters__Audience=slottets-drifttavlen
 ```
 
 ### Docker database
