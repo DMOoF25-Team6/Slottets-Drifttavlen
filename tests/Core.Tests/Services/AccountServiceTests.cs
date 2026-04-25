@@ -10,13 +10,13 @@ namespace Core.Tests.Services;
 
 public class AccountServiceTests
 {
-    private readonly Mock<IAccountManager> _accountManagerMock;
+    private readonly Mock<IAccountManager> _AccountManagerMock;
     private readonly AccountService _service;
 
     public AccountServiceTests()
     {
-        _accountManagerMock = new Mock<IAccountManager>();
-        _service = new AccountService(_accountManagerMock.Object);
+        _AccountManagerMock = new Mock<IAccountManager>();
+        _service = new AccountService(_AccountManagerMock.Object);
     }
 
     [Fact]
@@ -29,7 +29,7 @@ public class AccountServiceTests
             Password = "Password123!"
         };
         RegistrationResponseDto expectedResponse = new();
-        _ = _accountManagerMock
+        _ = _AccountManagerMock
             .Setup(m => m.CreateAccountAsync(request))
             .ReturnsAsync(expectedResponse);
 
@@ -38,7 +38,7 @@ public class AccountServiceTests
 
         // Assert
         Assert.Equal(expectedResponse, result);
-        _accountManagerMock.Verify(m => m.CreateAccountAsync(request), Times.Once);
+        _AccountManagerMock.Verify(m => m.CreateAccountAsync(request), Times.Once);
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class AccountServiceTests
         // Arrange
         LogoutRequestDto request = new() { JwtToken = "test-jwt-token" };
         LogoutResponseDto expectedResponse = new();
-        _ = _accountManagerMock
+        _ = _AccountManagerMock
             .Setup(m => m.LogoutAsync(request))
             .ReturnsAsync(expectedResponse);
 
@@ -56,7 +56,7 @@ public class AccountServiceTests
 
         // Assert
         Assert.Equal(expectedResponse, result);
-        _accountManagerMock.Verify(m => m.LogoutAsync(request), Times.Once);
+        _AccountManagerMock.Verify(m => m.LogoutAsync(request), Times.Once);
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class AccountServiceTests
         // Arrange
         RefreshTokenRequestDto request = new();
         RefreshTokenResponseDto expectedResponse = new();
-        _ = _accountManagerMock
+        _ = _AccountManagerMock
             .Setup(m => m.RefreshTokenAsync(request))
             .ReturnsAsync(expectedResponse);
 
@@ -74,7 +74,7 @@ public class AccountServiceTests
 
         // Assert
         Assert.Equal(expectedResponse, result);
-        _accountManagerMock.Verify(m => m.RefreshTokenAsync(request), Times.Once);
+        _AccountManagerMock.Verify(m => m.RefreshTokenAsync(request), Times.Once);
     }
 
     [Theory]
@@ -85,7 +85,7 @@ public class AccountServiceTests
         // Arrange
         LoginRequestDto request = new() { Email = username, Password = password };
         LoginResponseDto expectedResponse = new();
-        _ = _accountManagerMock
+        _ = _AccountManagerMock
             .Setup(m => m.LoginAsync(request))
             .ReturnsAsync(expectedResponse);
 
@@ -94,6 +94,6 @@ public class AccountServiceTests
 
         // Assert
         Assert.Equal(expectedResponse, result);
-        _accountManagerMock.Verify(m => m.LoginAsync(request), Times.Once);
+        _AccountManagerMock.Verify(m => m.LoginAsync(request), Times.Once);
     }
 }

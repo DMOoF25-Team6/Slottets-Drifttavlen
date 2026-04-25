@@ -3,6 +3,8 @@
 
 using Domain.Entities;
 
+using Infrastructure.Data.Persistent.Configurations;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +22,6 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
 
     // Identity-related DbSet for refresh tokens
     public DbSet<RefreshToken> RefreshTokens { get; set; }
-
     public DbSet<AuditLog> AuditLogs { get; set; }
 
     // Why do we have these views as DbSet? They are not entities!
@@ -49,7 +50,9 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
             .HasNoKey()
             .ToView("painkillerstatusview");
 
-        // Seed Identity roles and claims
-        IdentityRoleClaimSeed.Seed(modelBuilder);
+        // RolesClaimSeed Identity roles and claims
+        IdentitySeed.UserSeed(modelBuilder);
+        IdentitySeed.RolesClaimSeed(modelBuilder);
+
     }
 }

@@ -11,7 +11,7 @@ namespace Core.Mappers.Accounts;
 /// Maps registration DTOs to domain user entities.
 /// </summary>
 /// <remarks>
-/// Used to transform <see cref="RegisterRequestDto"/> into <see cref="User"/> for account creation workflows.
+/// Used to transform <see cref="RegisterRequestDto"/> into <see cref="User"/> for Account creation workflows.
 /// </remarks>
 public static class RegistrationMapper
 {

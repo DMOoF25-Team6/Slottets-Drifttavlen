@@ -16,7 +16,7 @@ namespace WebUI.Client;
 public class AuthService(
     TokenStorageService tokenStorageService,
     AuthenticationStateProvider authenticationStateProvider,
-    AccountService accountService
+    AccountService AccountService
     )
 {
 
@@ -26,7 +26,7 @@ public class AuthService(
     public async Task<bool> LoginAsync(string username, string password)
     {
         LoginRequestDto userLogin = new() { Email = username, Password = password };
-        LoginResponseDto result = await accountService.LoginAsync(userLogin);
+        LoginResponseDto result = await AccountService.LoginAsync(userLogin);
         if (result.JwtToken is not null)
         {
             await tokenStorageService.SetTokenAsync(result.JwtToken);

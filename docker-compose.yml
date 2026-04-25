@@ -3,11 +3,8 @@ services:
   slottets-sqlserver:
     image: mysql
     restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    env_file:
+      - .env
     ports:
       - "3307:3306"
     volumes:
@@ -76,11 +73,11 @@ services:
         condition: service_completed_successfully
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://0.0.0.0:5025
+      - ASPNETCORE_URLS=http://0.0.0.0:5051
     ports:
-      - "5025:5025"
+      - "5051:5051"
     expose:
-      - 5025
+      - 5051
     networks:
       vlan-web:
           ipv4_address: 10.29.30.11
@@ -98,9 +95,9 @@ services:
         condition: service_completed_successfully
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_URLS=http://0.0.0.0:5035
+      - ASPNETCORE_URLS=http://0.0.0.0:5050
     ports:
-      - "5035:5035"
+      - "5050:5050"
     volumes:
       - ./src/WebUI/WebUI/DataProtection-Keys:/app/DataProtection-Keys
     networks:
@@ -110,6 +107,11 @@ services:
 
 volumes:
   mysql_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./Data
+      o: bind
 
 networks:
   vlan-db:

@@ -8,7 +8,7 @@ namespace Core.DTOs.Identity;
 
 
 /// <summary>
-/// Represents the request data required to register a new user account.
+/// Represents the request data required to register a new user Account.
 /// </summary>
 /// <remarks>
 /// Contains the email address, password, and confirmation password for registration. Validation attributes ensure the data meets requirements.
@@ -16,7 +16,7 @@ namespace Core.DTOs.Identity;
 public class RegisterRequestDto
 {
     /// <summary>
-    /// Gets or sets the email address for the new user account.
+    /// Gets or sets the email address for the new user Account.
     /// </summary>
     /// <value>
     /// An email address string that uniquely identifies the user.
@@ -26,7 +26,7 @@ public class RegisterRequestDto
     public required string Email { get; set; }
 
     /// <summary>
-    /// Gets or sets the password for the new user account.
+    /// Gets or sets the password for the new user Account.
     /// </summary>
     /// <value>
     /// A password string that meets the minimum length requirement.

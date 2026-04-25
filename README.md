@@ -20,6 +20,7 @@
 - [Forbedringsforslag](#forbedringsforslag)
 - [Folder Structure & Responsibilities](#folder-structure--responsibilities)
 - [Opsætningsvejledning](#opsætningsvejledning)
+- [CI/CD-script (`ci-cd.ps1`)](#cicd-script-ci-cdps1)
 
 <a name="dokumentationsoversigt"></a>
 ## Dokumentationsoversigt
@@ -119,12 +120,16 @@ cd DMOoF25-Team6.Slottets-Drifttavlen
 Opret en `.env`-fil i projektroden med følgende indhold:
 ```sh
 MYSQL_ROOT_PASSWORD=rootpassword
+---
+
 MYSQL_DATABASE=slottetsdb
 MYSQL_USER=appuser
 MYSQL_PASSWORD=apppassword
 MYSQL_HOST=localhost
 ConnectionStrings__AppDbContext=Server={DB_HOST};Port=3307;Database={DB_NAME};User={DB_USER};Password={DB_PASSWORD};
-TokenValidationParameters__IssuerSigningKey=bZcurjVyDJCm2%KHwwRcduIOyjeKyR22
+TokenValidationParameters__IssuerSigningKey=YOUR_SECRET_KEY_HERE
+TokenValidationParameters__Issuer=slottets-drifttavlen
+TokenValidationParameters__Audience=slottets-drifttavlen
 ```
 
 ### Docker database
@@ -261,6 +266,18 @@ Create dcd for use case 003
 
 ##### Note
 - Trigger words are create / update `[dm,sd,oc,ssd,dcd,uc]` for "Use Case Name"
+
+---
+
+## CI/CD-script (`ci-cd.ps1`)
+
+Scriptet `ci-cd.ps1` automatiserer bygge-, test- og deploy-processen for projektet. Det udfører følgende:
+
+- Sikrer at alle tekstfiler i repositoryet konverteres til UTF-8 uden BOM og bruger LF (Unix) linjeskift.
+- Kører `dotnet test` (via Docker Compose) for at sikre, at alle tests gennemføres.
+- Afslutter med at lave et `git push`, så ændringer skubbes til fjernlageret.
+
+Scriptet hjælper med at sikre ensartede filformater og en stabil CI/CD-proces.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [contributors-shield]: https://img.shields.io/github/contributors/DMOoF25-Team6/Slottets-Drifttavlen.svg?style=for-the-badge

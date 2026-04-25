@@ -8,23 +8,23 @@ using Core.Interfaces.Services;
 namespace Core.Services;
 
 /// <summary>
-/// Provides account-related operations such as registration, login, logout, and token refresh.
+/// Provides Account-related operations such as registration, login, logout, and token refresh.
 /// </summary>
 /// <remarks>
-/// This service delegates account management operations to the <see cref="IAccountManager"/> implementation.
+/// This service delegates Account management operations to the <see cref="IAccountManager"/> implementation.
 /// </remarks>
-public class AccountService(IAccountManager accountManager) : IAccountService
+public class AccountService(IAccountManager AccountManager) : IAccountService
 {
-    private readonly IAccountManager _accountManager = accountManager;
+    private readonly IAccountManager _AccountManager = AccountManager;
 
     /// <summary>
-    /// Creates a new user account.
+    /// Creates a new user Account.
     /// </summary>
     /// <param name="registrationRequestDto">A registration request DTO containing user details.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="RegistrationResponseDto"/>.</returns>
     public Task<RegistrationResponseDto> CreateAccountAsync(RegisterRequestDto registrationRequestDto)
     {
-        return _accountManager.CreateAccountAsync(registrationRequestDto);
+        return _AccountManager.CreateAccountAsync(registrationRequestDto);
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ public class AccountService(IAccountManager accountManager) : IAccountService
     /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="LoginResponseDto"/>.</returns>
     public Task<LoginResponseDto> LoginAsync(LoginRequestDto loginRequestDto)
     {
-        return _accountManager.LoginAsync(loginRequestDto);
+        return _AccountManager.LoginAsync(loginRequestDto);
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ public class AccountService(IAccountManager accountManager) : IAccountService
     /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="LogoutResponseDto"/>.</returns>
     public Task<LogoutResponseDto> LogoutAsync(LogoutRequestDto logoutRequestDto)
     {
-        return _accountManager.LogoutAsync(logoutRequestDto);
+        return _AccountManager.LogoutAsync(logoutRequestDto);
     }
 
     /// <summary>
@@ -54,6 +54,6 @@ public class AccountService(IAccountManager accountManager) : IAccountService
     /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="RefreshTokenResponseDto"/>.</returns>
     public Task<RefreshTokenResponseDto> RefreshTokenAsync(RefreshTokenRequestDto refreshTokenRequestDto)
     {
-        return _accountManager.RefreshTokenAsync(refreshTokenRequestDto);
+        return _AccountManager.RefreshTokenAsync(refreshTokenRequestDto);
     }
 }

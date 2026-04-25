@@ -6,12 +6,12 @@ using Core.DTOs.Identity;
 namespace Core.Interfaces.Managers;
 
 /// <summary>
-/// Provides account management operations such as registration, login, logout, and token refresh.
+/// Provides Account management operations such as registration, login, logout, and token refresh.
 /// </summary>
 public interface IAccountManager
 {
     /// <summary>
-    /// Creates a new user account based on the provided registration information.
+    /// Creates a new user Account based on the provided registration information.
     /// </summary>
     /// <param name="registrationRequestDto">An object containing the registration details.</param>
     /// <returns>A response object containing the result of the registration operation.</returns>

@@ -25,11 +25,6 @@
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
   </ItemGroup>
 
-  <!-- Exclude Migrations folder from IntelliSense and compilation -->
-  <ItemGroup>
-    <Compile Remove="Migrations\**" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />

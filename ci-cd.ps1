@@ -23,8 +23,8 @@ function Convert-LineEndingsToLF {
     foreach ($relativePath in $gitFiles) {
         $fullPath = Join-Path -Path (Get-Location) -ChildPath $relativePath
         if (Test-Path $fullPath) {
-            $content = Get-Content $fullPath -Raw
-            $lfContent = $content -replace "\r\n", "\n" -replace "\r", "\n"
+            $lines = Get-Content $fullPath
+            $lfContent = ($lines -join "`n") + "`n"
             $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
             [System.IO.File]::WriteAllText($fullPath, $lfContent, $utf8NoBom)
         }
@@ -45,32 +45,85 @@ function Start-SqlServer {
       # The container is running
   } else {
       # The container is NOT running
-      docker-compose up --menu=false --build slottets-sqlserver
+      Start-Process "docker-compose" -ArgumentList "up --menu=false --build slottets-sqlserver"
   }
 }
 
+<#
+ # .SYNOPSIS
+ #   Ensures that the CI/CD pipeline is not running on the main branch.
+ # .DESCRIPTION
+ #   Checks the current Git branch and exits with an error if it is "main" to prevent unintended deployments.
+ #>
+function Ensure-NotOnMainBranch {
+    $branch = git rev-parse --abbrev-ref HEAD
+    if ($branch -eq "main") {
+        Write-Host "CI/CD should not run on the main branch. Exiting."
+        exit 1
+    }
+}
+
+<#
+ # .SYNOPSIS
+ #   Ensures there are no uncommitted changes in the repository.
+ # .DESCRIPTION
+ #   Checks for uncommitted changes and exits with an error if any are found.
+ #>
+function Ensure-NoUncommittedChanges {
+    $gitStatus = git status --porcelain
+    if ($gitStatus) {
+        Write-Host "There are uncommitted changes. Please commit or stash them before running CI/CD."
+        exit 1
+    }
+}
+
+<#
+ # .SYNOPSIS
+ #   Commits line ending fixes if there are any changes after conversion.
+ # .DESCRIPTION
+ #   Checks for changes and commits them with a standard message if present.
+ #>
+function Commit-LineEndingFixIfNeeded {
+    $gitStatus = git status --porcelain
+    if ($gitStatus) {
+        git add .
+        git commit -m "fix line endings"
+    }
+}
+
+<#
+ # .SYNOPSIS
+ #   Runs the build stage using Docker Compose and handles errors.
+ # .DESCRIPTION
+ #   Executes the build-stage target and exits if the build fails.
+ #>
+function Run-BuildStage {
+    docker-compose up --menu=false --build build-stage
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Build failed with exit code $LASTEXITCODE"
+        exit $LASTEXITCODE
+    }
+}
+
+<#
+ # .SYNOPSIS
+ #   Runs the tests stage using Docker Compose and handles errors.
+ # .DESCRIPTION
+ #   Executes the tests-stage target and exits if the tests fail.
+ #>
+function Run-TestsStage {
+    docker-compose up --menu=false --build tests-stage
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Tests failed with exit code $LASTEXITCODE"
+        exit $LASTEXITCODE
+    }
+}
+
+Ensure-NotOnMainBranch
+Ensure-NoUncommittedChanges
 Convert-LineEndingsToLF
 Start-SqlServer
-
-# Check if the SQL Server container is running
-docker-compose up --menu=false --build build-stage
-if ($LASTEXITCODE -ne 0) {
-    # Not success: add your error handling commands here
-    Write-Host "Build failed failed with exit code $LASTEXITCODE"
-    exit $LASTEXITCODE
-}
-
-docker-compose up --menu=false --build tests-stage
-if ($LASTEXITCODE -ne 0) {
-    # Not success: add your error handling commands here
-    Write-Host "Tests failed with exit code $LASTEXITCODE"
-    exit $LASTEXITCODE
-}
-
-# If git is not in main branch, try to push; if on main, pull latest changes
-$branch = git rev-parse --abbrev-ref HEAD
-if ($branch -ne "main") {
-    git push
-} else {
-    Write-Host "Are in main branch and can not push."
-}
+Commit-LineEndingFixIfNeeded
+Run-BuildStage
+Run-TestsStage
+git push

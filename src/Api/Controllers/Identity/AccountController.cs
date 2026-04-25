@@ -19,7 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace Api.Controllers.Identity;
 
 /// <summary>
-/// Provides endpoints for user account registration, authentication, token refresh, and logout.
+/// Provides endpoints for user Account registration, authentication, token refresh, and logout.
 /// </summary>
 /// <remarks>
 /// This controller manages user identity operations such as registration, login, refresh token exchange, and logout.
@@ -29,7 +29,7 @@ namespace Api.Controllers.Identity;
 public class AccountController(UserManager<User> userManager, IRefreshTokenStore refreshTokenStore) : ControllerBase
 {
     /// <summary>
-    /// Registers a new user account.
+    /// Registers a new user Account.
     /// </summary>
     /// <param name="request">A registration request containing user details and password.</param>
     /// <returns>An <see cref="IActionResult"/> indicating the result of the registration operation.</returns>
@@ -65,11 +65,15 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
     {
         if (!IsValidRequest(ModelState, out IActionResult? errorResult))
+        {
             return errorResult;
+        }
 
         User? user = await FindValidUserAsync(request.Email, request.Password);
         if (user == null)
+        {
             return Unauthorized(new LoginResponseDto { ErrorMessages = ["Invalid email or password."] });
+        }
 
         string token = GenerateJwtToken();
         string refreshTokenValue = GenerateRefreshToken();
@@ -102,7 +106,9 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
     {
         IActionResult? validationError = ValidateRefreshRequest(request);
         if (validationError != null)
+        {
             return validationError;
+        }
 
         RefreshToken? refreshToken = await GetValidRefreshTokenAsync(request.RefreshToken);
         if (refreshToken == null)
@@ -190,18 +196,21 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
     }
 
     // Helper: Validate Refresh request and return error if invalid
-    private IActionResult? ValidateRefreshRequest(RefreshTokenRequestDto request)
+    private BadRequestObjectResult? ValidateRefreshRequest(RefreshTokenRequestDto request)
     {
         return !ModelState.IsValid || string.IsNullOrWhiteSpace(request.RefreshToken)
             ? BadRequest(new RefreshTokenResponseDto { ErrorMessages = ["Invalid refresh token request."] })
-            : (IActionResult?)null;
+            : null;
     }
 
     // Helper: Retrieve and validate refresh token
     private async Task<RefreshToken?> GetValidRefreshTokenAsync(string? token)
     {
         if (string.IsNullOrWhiteSpace(token))
+        {
             return null;
+        }
+
         RefreshToken? refreshToken = await refreshTokenStore.GetByTokenAsync(token);
         return refreshToken == null || refreshToken.ExpiresAt < DateTime.UtcNow ? null : refreshToken;
     }

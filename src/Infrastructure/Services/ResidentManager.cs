@@ -17,9 +17,16 @@ namespace Infrastructure.Services;
 /// <remarks>
 /// Implements <see cref="IResidentManager"/> for retrieving and manipulating resident data.
 /// </remarks>
-public class ResidentManager(HttpClient httpClient) : IResidentManager
+public class ResidentManager : IResidentManager
 {
-    private readonly HttpClient _httpClient = httpClient;
+    private readonly HttpClient _httpClient;
+    private readonly IHttpClientFactory? _httpClientFactory;
+
+    public ResidentManager(IHttpClientFactory httpClientFactory)
+    {
+        _httpClientFactory = httpClientFactory;
+        _httpClient = _httpClientFactory.CreateClient("SlottetApi") ?? throw new InvalidOperationException("Failed to create HttpClient.");
+    }
 
     /// <summary>
     /// Gets a resident by their unique identifier.

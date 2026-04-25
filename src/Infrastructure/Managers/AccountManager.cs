@@ -9,17 +9,24 @@ using Core.Interfaces.Managers;
 namespace Infrastructure.Managers;
 
 /// <summary>
-/// Provides account management operations by communicating with the backend API over HTTP.
+/// Provides Account management operations by communicating with the backend API over HTTP.
 /// </summary>
 /// <remarks>
 /// Implements <see cref="IAccountManager" /> for registration, login, logout, and token refresh.
 /// </remarks>
-public class AccountManager(HttpClient httpClient) : IAccountManager
+public class AccountManager : IAccountManager
 {
-    private readonly HttpClient _httpClient = httpClient;
+    private readonly HttpClient _httpClient;
+    private readonly IHttpClientFactory? _httpClientFactory;
+
+    public AccountManager(IHttpClientFactory httpClientFactory)
+    {
+        _httpClientFactory = httpClientFactory;
+        _httpClient = _httpClientFactory.CreateClient("SlottetApi") ?? throw new InvalidOperationException("Failed to create HttpClient.");
+    }
 
     /// <summary>
-    /// Creates a new user account by sending registration data to the backend API.
+    /// Creates a new user Account by sending registration data to the backend API.
     /// </summary>
     /// <param name="registrationRequestDto">An object containing the registration details.</param>
     /// <returns>A response object containing the result of the registration operation.</returns>
@@ -28,7 +35,7 @@ public class AccountManager(HttpClient httpClient) : IAccountManager
     /// </remarks>
     public async Task<RegistrationResponseDto> Register(RegisterRequestDto registrationRequestDto)
     {
-        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/accounts/register", registrationRequestDto);
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/Account/register", registrationRequestDto);
         try
         {
             return response.Content.ReadFromJsonAsync<RegistrationResponseDto>().GetAwaiter().GetResult() is RegistrationResponseDto registrationResponseDto
@@ -59,7 +66,7 @@ public class AccountManager(HttpClient httpClient) : IAccountManager
     /// </remarks>
     public async Task<LoginResponseDto> LoginAsync(LoginRequestDto loginRequestDto)
     {
-        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/accounts/login", loginRequestDto);
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/Account/login", loginRequestDto);
         try
         {
             return await response.Content.ReadFromJsonAsync<LoginResponseDto>() is LoginResponseDto loginResponseDto
@@ -92,7 +99,7 @@ public class AccountManager(HttpClient httpClient) : IAccountManager
     /// </remarks>
     public async Task<LogoutResponseDto> LogoutAsync(LogoutRequestDto logoutRequestDto)
     {
-        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/accounts/logout", logoutRequestDto);
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/Account/logout", logoutRequestDto);
         try
         {
             LogoutResponseDto? logoutResponseDto = await response.Content.ReadFromJsonAsync<LogoutResponseDto>();
@@ -122,7 +129,7 @@ public class AccountManager(HttpClient httpClient) : IAccountManager
     /// </remarks>
     public async Task<RefreshTokenResponseDto> RefreshTokenAsync(RefreshTokenRequestDto refreshTokenRequestDto)
     {
-        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/accounts/refresh-token", refreshTokenRequestDto);
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/Account/refresh-token", refreshTokenRequestDto);
         try
         {
             RefreshTokenResponseDto? refreshTokenResponseDto = await response.Content.ReadFromJsonAsync<RefreshTokenResponseDto>();

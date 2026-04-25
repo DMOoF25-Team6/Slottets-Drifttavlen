@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using Microsoft.Extensions.Configuration;
 
 using Core.Interfaces.Managers;
 using Core.Services;
@@ -33,6 +34,8 @@ public class Program
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+        _ = builder.Configuration.AddEnvironmentVariables(); // Ensure environment variables are available in configuration
+
         // Add services to the container.
         _ = builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents()
@@ -42,11 +45,8 @@ public class Program
         _ = builder.Services.AddDataProtection()
             .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysDir));
 
-        _ = builder.Services.AddHttpClient();
+        _ = builder.Services.AddInfrastructure(builder.Configuration);
 
-        _ = builder.Services.AddInfrastructure();
-
-        _ = builder.Services.AddScoped<AccountService>();
         // And for the interface, e.g.:
         _ = builder.Services.AddScoped<IAccountManager, AccountManager>();
 
@@ -54,6 +54,7 @@ public class Program
         _ = builder.Services.AddScoped<AuthService>();
         _ = builder.Services.AddAuthorizationCore();
         _ = builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
+        _ = builder.Services.AddScoped<AccountService>();
 
         WebApplication app = builder.Build();
 

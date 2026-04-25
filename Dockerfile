@@ -7,6 +7,7 @@ WORKDIR /app
 #EXPOSE 8080
 #EXPOSE 8081
 RUN ["dotnet", "tool", "install", "--global", "dotnet-ef"]
+RUN ["dotnet", "dev-certs", "https", "--trust"]
 ENV PATH="$PATH:/root/.dotnet/tools"
 
 ################################################################################

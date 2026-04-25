@@ -6,10 +6,10 @@ using Core.DTOs.Identity;
 namespace Core.Interfaces.Services;
 
 /// <summary>
-/// Provides account-related operations such as registration, login, token refresh, and logout.
+/// Provides Account-related operations such as registration, login, token refresh, and logout.
 /// </summary>
 /// <remarks>
-/// This service encapsulates authentication and authorization logic for user accounts.
+/// This service encapsulates authentication and authorization logic for user Accounts.
 /// </remarks>
 /// <seealso cref="RegisterRequestDto"/>
 /// <seealso cref="LoginRequestDto"/>
@@ -18,14 +18,14 @@ namespace Core.Interfaces.Services;
 public interface IAccountService
 {
     /// <summary>
-    /// Creates a new user account based on the provided registration information.
+    /// Creates a new user Account based on the provided registration information.
     /// </summary>
     /// <param name="registrationRequestDto">A registration request containing user details.</param>
     /// <returns>A response containing registration result details.</returns>
     /// <example>
     /// <code language="csharp">
     /// var request = new RegisterRequestDto { Email = "user@example.com", Password = "P@ssw0rd!" };
-    /// var response = await accountService.CreateAccountAsync(request);
+    /// var response = await AccountService.CreateAccountAsync(request);
     /// </code>
     /// </example>
     Task<RegistrationResponseDto> CreateAccountAsync(RegisterRequestDto registrationRequestDto);

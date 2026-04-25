@@ -1,5 +1,5 @@
 @page "/login"
-@rendermode InteractiveAuto
+@rendermode InteractiveServer
 @using Microsoft.AspNetCore.Components.Authorization
 
 
@@ -7,7 +7,7 @@
     <div class="card shadow" style="min-width: 350px; max-width: 400px; width: 100%;">
         <div class="card-body">
             <h3 class="card-title text-center mb-4">Log ind</h3>
-            <EditForm Model="loginModel" OnValidSubmit="HandleLogin" Context="editFormContext">
+            <EditForm Model="loginModel" OnValidSubmit="HandleLogin" Context="editFormContext" FormName="LoginFormName">
                 <DataAnnotationsValidator />
                 <ValidationSummary class="mb-3" />
                 <div class="mb-3">

@@ -1,12 +1,12 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-using System.ComponentModel.DataAnnotations;
-
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace WebUI.Client.Components.Pages;
+using WebUI.Client;
+
+namespace WebUI.Components.Pages;
 
 public partial class Login
 {
@@ -25,7 +25,7 @@ public partial class Login
     private async Task HandleLogin()
     {
         errorMessage = "Ugyldigt brugernavn eller adgangskode.";
-        bool success = await AuthService.LoginAsync(loginModel.Username, loginModel.Password);
+        bool success = await AuthService.LoginAsync(loginModel.Username ?? string.Empty, loginModel.Password ?? string.Empty);
         if (!success)
         {
             errorMessage = "Ugyldigt brugernavn eller adgangskode.";
@@ -45,9 +45,10 @@ public partial class Login
 
     public class LoginModel
     {
-        [Required(ErrorMessage = "Brugernavn er påkrævet.")]
-        public string Username { get; set; } = string.Empty;
-        [Required(ErrorMessage = "Adgangskode er påkrævet.")]
-        public string Password { get; set; } = string.Empty;
+        //[Required(ErrorMessage = "Brugernavn er påkrævet.")]
+        //[EmailAddress(ErrorMessage = "Brugernavn skal være en gyldig e-mailadresse.")]
+        public string? Username { get; set; }
+        //[Required(ErrorMessage = "Adgangskode er påkrævet.")]
+        public string? Password { get; set; }
     }
 }

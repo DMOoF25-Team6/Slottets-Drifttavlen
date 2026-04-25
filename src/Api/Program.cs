@@ -182,7 +182,7 @@ public class Program
     //private static IEndpointConventionBuilder AddEndpointIdentityApi(WebApplication app)
     //{
     //    // Suppress the default /register endpoint so only custom registration is allowed
-    //    IEndpointConventionBuilder identityApis = app.MapGroup("/account").MapIdentityApi<User>();
+    //    IEndpointConventionBuilder identityApis = app.MapGroup("/Account").MapIdentityApi<User>();
 
     //    _ = identityApis.AddEndpointFilter(async (context, next) =>
     //    {

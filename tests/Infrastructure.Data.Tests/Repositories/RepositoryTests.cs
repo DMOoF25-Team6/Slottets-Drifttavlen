@@ -18,6 +18,17 @@ public class RepositoryTests
         public string Name { get; set; } = string.Empty;
     }
 
+    private static AppDbContext CreateInMemoryContext
+    {
+        get
+        {
+            DbContextOptions<AppDbContext> options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            return new TestDbContext(options);
+        }
+    }
+
     private class TestUserRepository : Repository<TestUser>
     {
         public TestUserRepository(AppDbContext context) : base(context) { }
@@ -33,14 +44,6 @@ public class RepositoryTests
         }
     }
 
-    private AppDbContext CreateInMemoryContext()
-    {
-        DbContextOptions<AppDbContext> options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
-        return new TestDbContext(options);
-    }
-
     #region Functionality
 
     [Fact]
@@ -48,7 +51,7 @@ public class RepositoryTests
     public async Task AddAsync_AddsEntityToDatabase()
     {
         // Arrange
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
         TestUser user = new() { Name = "Alice" };
 
@@ -67,9 +70,9 @@ public class RepositoryTests
     public async Task AddRangeAsync_AddsEntitiesToDatabase()
     {
         // Arrange
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
-        TestUser[] users = new[] { new TestUser { Name = "A" }, new TestUser { Name = "B" } };
+        TestUser[] users = [new TestUser { Name = "A" }, new TestUser { Name = "B" }];
 
         // Act
         IEnumerable<TestUser> result = await repo.AddRangeAsync(users, TestContext.Current.CancellationToken);
@@ -84,7 +87,7 @@ public class RepositoryTests
     public async Task GetByIdAsync_ReturnsEntity_WhenExists()
     {
         // Arrange
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
         TestUser user = new() { Name = "Bob" };
         _ = context.Set<TestUser>().Add(user);
@@ -103,7 +106,7 @@ public class RepositoryTests
     public async Task GetByIdAsync_ReturnsNull_WhenNotExists()
     {
         // Arrange
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
 
         // Act
@@ -118,9 +121,9 @@ public class RepositoryTests
     public async Task GetAllAsync_ReturnsAllEntities()
     {
         // Arrange
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
-        TestUser[] users = new[] { new TestUser { Name = "A" }, new TestUser { Name = "B" } };
+        TestUser[] users = [new TestUser { Name = "A" }, new TestUser { Name = "B" }];
         context.Set<TestUser>().AddRange(users);
         _ = await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -136,7 +139,7 @@ public class RepositoryTests
     public async Task UpdateAsync_UpdatesEntity()
     {
         // Arrange
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
         TestUser user = new() { Name = "Old" };
         _ = context.Set<TestUser>().Add(user);
@@ -147,7 +150,7 @@ public class RepositoryTests
         await repo.UpdateAsync(user, TestContext.Current.CancellationToken);
 
         // Assert
-        TestUser? updated = await context.Set<TestUser>().FindAsync(new object?[] { user.Id }, TestContext.Current.CancellationToken);
+        TestUser? updated = await context.Set<TestUser>().FindAsync([user.Id], TestContext.Current.CancellationToken);
         Assert.Equal("New", updated!.Name);
     }
 
@@ -156,9 +159,9 @@ public class RepositoryTests
     public async Task UpdateRangeAsync_UpdatesEntities()
     {
         // Arrange
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
-        TestUser[] users = new[] { new TestUser { Name = "A" }, new TestUser { Name = "B" } };
+        TestUser[] users = [new TestUser { Name = "A" }, new TestUser { Name = "B" }];
         context.Set<TestUser>().AddRange(users);
         _ = await context.SaveChangesAsync(TestContext.Current.CancellationToken);
         foreach (TestUser? u in users)
@@ -170,7 +173,7 @@ public class RepositoryTests
         await repo.UpdateRangeAsync(users, TestContext.Current.CancellationToken);
 
         // Assert
-        List<TestUser> all = context.Set<TestUser>().ToList();
+        List<TestUser> all = [.. context.Set<TestUser>()];
         Assert.All(all, u => Assert.EndsWith("_updated", u.Name));
     }
 
@@ -179,7 +182,7 @@ public class RepositoryTests
     public async Task DeleteAsync_RemovesEntity()
     {
         // Arrange
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
         TestUser user = new() { Name = "ToDelete" };
         _ = context.Set<TestUser>().Add(user);
@@ -197,9 +200,9 @@ public class RepositoryTests
     public async Task DeleteRangeAsync_RemovesEntities()
     {
         // Arrange
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
-        TestUser[] users = new[] { new TestUser { Name = "A" }, new TestUser { Name = "B" } };
+        TestUser[] users = [new TestUser { Name = "A" }, new TestUser { Name = "B" }];
         context.Set<TestUser>().AddRange(users);
         _ = await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -218,7 +221,7 @@ public class RepositoryTests
     [Trait("Category", "EdgeCase")]
     public async Task AddAsync_ThrowsOperationCanceledException_WhenCancelled()
     {
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
         TestUser user = new() { Name = "Alice" };
         using CancellationTokenSource cts = new();
@@ -230,7 +233,7 @@ public class RepositoryTests
     [Trait("Category", "EdgeCase")]
     public async Task UpdateAsync_DoesNotThrow_WhenEntityDoesNotExist()
     {
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
         TestUser user = new() { Name = "Ghost" };
         _ = await Assert.ThrowsAsync<DbUpdateConcurrencyException>(() => repo.UpdateAsync(user, TestContext.Current.CancellationToken));
@@ -240,7 +243,7 @@ public class RepositoryTests
     [Trait("Category", "EdgeCase")]
     public async Task DeleteAsync_DoesNotThrow_WhenEntityDoesNotExist()
     {
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
         TestUser user = new() { Name = "Ghost" };
         //await repo.DeleteAsync(user, TestContext.Current.CancellationToken);
@@ -253,9 +256,9 @@ public class RepositoryTests
     [Trait("Category", "EdgeCase")]
     public async Task AddRangeAsync_AllowsEmptyCollection()
     {
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
-        IEnumerable<TestUser> result = await repo.AddRangeAsync(Array.Empty<TestUser>(), TestContext.Current.CancellationToken);
+        IEnumerable<TestUser> result = await repo.AddRangeAsync([], TestContext.Current.CancellationToken);
         Assert.Empty(result);
         Assert.Empty(context.Set<TestUser>());
     }
@@ -264,9 +267,9 @@ public class RepositoryTests
     [Trait("Category", "EdgeCase")]
     public async Task UpdateRangeAsync_AllowsEmptyCollection()
     {
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
-        await repo.UpdateRangeAsync(Array.Empty<TestUser>(), TestContext.Current.CancellationToken);
+        await repo.UpdateRangeAsync([], TestContext.Current.CancellationToken);
         Assert.Empty(context.Set<TestUser>());
     }
 
@@ -274,9 +277,9 @@ public class RepositoryTests
     [Trait("Category", "EdgeCase")]
     public async Task DeleteRangeAsync_AllowsEmptyCollection()
     {
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
-        await repo.DeleteRangeAsync(Array.Empty<TestUser>(), TestContext.Current.CancellationToken);
+        await repo.DeleteRangeAsync([], TestContext.Current.CancellationToken);
         Assert.Empty(context.Set<TestUser>());
     }
 
@@ -284,7 +287,7 @@ public class RepositoryTests
     [Trait("Category", "EdgeCase")]
     public async Task AddAsync_ThrowsArgumentNullException_WhenEntityIsNull()
     {
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
         _ = await Assert.ThrowsAsync<ArgumentNullException>(() => repo.AddAsync(null!, TestContext.Current.CancellationToken));
     }
@@ -293,7 +296,7 @@ public class RepositoryTests
     [Trait("Category", "EdgeCase")]
     public async Task AddRangeAsync_ThrowsArgumentNullException_WhenEntitiesIsNull()
     {
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
         _ = await Assert.ThrowsAsync<ArgumentNullException>(() => repo.AddRangeAsync(null!, TestContext.Current.CancellationToken));
     }
@@ -302,7 +305,7 @@ public class RepositoryTests
     [Trait("Category", "EdgeCase")]
     public async Task UpdateAsync_ThrowsArgumentNullException_WhenEntityIsNull()
     {
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
         _ = await Assert.ThrowsAsync<ArgumentNullException>(() => repo.UpdateAsync(null!, TestContext.Current.CancellationToken));
     }
@@ -311,7 +314,7 @@ public class RepositoryTests
     [Trait("Category", "EdgeCase")]
     public async Task UpdateRangeAsync_ThrowsArgumentNullException_WhenEntitiesIsNull()
     {
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
         _ = await Assert.ThrowsAsync<ArgumentNullException>(() => repo.UpdateRangeAsync(null!, TestContext.Current.CancellationToken));
     }
@@ -320,7 +323,7 @@ public class RepositoryTests
     [Trait("Category", "EdgeCase")]
     public async Task DeleteAsync_ThrowsArgumentNullException_WhenEntityIsNull()
     {
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
         _ = await Assert.ThrowsAsync<ArgumentNullException>(() => repo.DeleteAsync(null!, TestContext.Current.CancellationToken));
     }
@@ -329,7 +332,7 @@ public class RepositoryTests
     [Trait("Category", "EdgeCase")]
     public async Task DeleteRangeAsync_ThrowsArgumentNullException_WhenEntitiesIsNull()
     {
-        await using AppDbContext context = CreateInMemoryContext();
+        await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
         _ = await Assert.ThrowsAsync<ArgumentNullException>(() => repo.DeleteRangeAsync(null!, TestContext.Current.CancellationToken));
     }
