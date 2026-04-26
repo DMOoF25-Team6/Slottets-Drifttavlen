@@ -1,9 +1,15 @@
-﻿---\nname: csharp-async\ndescription: 'Get best practices for C# async programming'\n---
+﻿---
+name: csharp-async
+description: 'Get best practices for C# async programming'
+---
 
-# C# Async Programming Best Practices\n\nYour goal is to help me follow best practices for asynchronous programming in C#.
+# C# Async Programming Best Practices
+
+Your goal is to help me follow best practices for asynchronous programming in C#.
 
 ## Naming Conventions
-\nIn C#, while the Task-based Asynchronous Pattern (TAP) generally recommends suffixing asynchronous methods with Async, there are specific scenarios where you should omit it.
+
+In C#, while the Task-based Asynchronous Pattern (TAP) generally recommends suffixing asynchronous methods with Async, there are specific scenarios where you should omit it.
 
 - Non-Awaitable Return Types: If a method initiates an asynchronous operation but does not return an awaitable type (like Task or ValueTask), you should not use the Async suffix. Instead, use prefixes like Begin or Start.
 - Event Handlers: Standard event handlers, such as OnButtonClick, should not be renamed even if they contain asynchronous code.
