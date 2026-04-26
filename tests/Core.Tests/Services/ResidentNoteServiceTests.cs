@@ -50,6 +50,7 @@ public class ResidentNoteServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(2, result.Count());
+        _mockManager.Verify(m => m.GetAllByResidentIdAsync(residentId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

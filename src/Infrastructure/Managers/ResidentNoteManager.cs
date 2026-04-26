@@ -34,10 +34,13 @@ public class ResidentNoteManager : IResidentNoteManager
     /// <summary>
     /// Initializes a new instance of the <see cref="ResidentNoteManager"/> class.
     /// </summary>
-    /// <param name="httpClientFactory">The factory used to create the named <see cref="HttpClient"/> for the API.</param>
+    /// <param name="httpClientFactory">A factory used to create the named <see cref="HttpClient"/> for the API.</param>
+    /// <exception cref="ArgumentNullException">The <paramref name="httpClientFactory"/> parameter is <see langword="null"/>.</exception>
     /// <exception cref="InvalidOperationException">The named HttpClient 'SlottetApi' could not be created.</exception>
     public ResidentNoteManager(IHttpClientFactory httpClientFactory)
     {
+        ArgumentNullException.ThrowIfNull(httpClientFactory);
+
         // Named client ensures correct BaseAddress and shared configuration across managers
         _httpClient = httpClientFactory.CreateClient("SlottetApi")
             ?? throw new InvalidOperationException("Failed to create HttpClient.");

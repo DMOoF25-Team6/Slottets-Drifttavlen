@@ -14,6 +14,12 @@ namespace Core.Mappers;
 /// Keeps mapping logic centralised in Core so neither the service nor the manager
 /// needs to know how fields are translated — follows Single Responsibility Principle.
 /// </remarks>
+/// <example>
+/// <code language="csharp">
+/// ResidentNoteDto dto = ResidentNoteMapper.ToDto(entity);
+/// ResidentNote entity = ResidentNoteMapper.ToNewEntity(residentId, "Note text");
+/// </code>
+/// </example>
 public static class ResidentNoteMapper
 {
     #region Methods
@@ -56,8 +62,11 @@ public static class ResidentNoteMapper
     /// <param name="residentId">A unique identifier for the resident.</param>
     /// <param name="noteText">A string containing the note text.</param>
     /// <returns>A new <see cref="ResidentNote"/> entity ready for persistence.</returns>
+    /// <exception cref="ArgumentNullException">The <paramref name="noteText"/> parameter is <see langword="null"/>.</exception>
     public static ResidentNote ToNewEntity(Guid residentId, string noteText)
     {
+        ArgumentNullException.ThrowIfNull(noteText);
+
         return new ResidentNote
         {
             Id = Guid.NewGuid(),
