@@ -2,33 +2,24 @@
 //  No warranty, explicit or implicit, provided.
 
 using Core.DTOs;
-using Core.Interfaces.Managers;
-using Core.Interfaces.Services;
 
-namespace Core.Services;
+namespace Core.Interfaces.Managers;
 
 /// <summary>
-/// Provides business logic operations for managing resident notes.
+/// Defines a contract for communicating with the ResidentNote API endpoints over HTTP.
 /// </summary>
 /// <remarks>
-/// Delegates all data access to <see cref="IResidentNoteManager"/> in Infrastructure,
-/// ensuring Core never depends on Infrastructure or data access concerns directly —
-/// following Clean Architecture and the Dependency Inversion Principle.
+/// Implemented in Infrastructure. Separates HTTP communication concerns from business logic in Core,
+/// following Clean Architecture — Core defines the contract, Infrastructure fulfils it.
 /// </remarks>
 /// <example>
 /// <code>
-/// // Registered in Core DependencyInjection:
-/// services.AddScoped&lt;IResidentNoteService, ResidentNoteService&gt;();
+/// // Registered in Infrastructure DependencyInjection:
+/// services.AddScoped&lt;IResidentNoteManager, ResidentNoteManager&gt;();
 /// </code>
 /// </example>
-public class ResidentNoteService(IResidentNoteManager residentNoteManager) : IResidentNoteService
+public interface IResidentNoteManager
 {
-    #region Fields
-
-    private readonly IResidentNoteManager _residentNoteManager = residentNoteManager;
-
-    #endregion
-
     #region Methods
 
     /// <summary>
@@ -37,10 +28,7 @@ public class ResidentNoteService(IResidentNoteManager residentNoteManager) : IRe
     /// <param name="residentId">A unique identifier for the resident.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>An enumerable collection of <see cref="ResidentNoteDto"/> for the specified resident.</returns>
-    public async Task<IEnumerable<ResidentNoteDto>> GetAllByResidentIdAsync(Guid residentId, CancellationToken cancellationToken = default)
-    {
-        return await _residentNoteManager.GetAllByResidentIdAsync(residentId, cancellationToken);
-    }
+    Task<IEnumerable<ResidentNoteDto>> GetAllByResidentIdAsync(Guid residentId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Adds a new note for a resident.
@@ -49,10 +37,7 @@ public class ResidentNoteService(IResidentNoteManager residentNoteManager) : IRe
     /// <param name="noteText">A string containing the note text.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns><see langword="true"/> if the note was added successfully; otherwise, <see langword="false"/>.</returns>
-    public async Task<bool> AddAsync(Guid residentId, string noteText, CancellationToken cancellationToken = default)
-    {
-        return await _residentNoteManager.AddAsync(residentId, noteText, cancellationToken);
-    }
+    Task<bool> AddAsync(Guid residentId, string noteText, CancellationToken cancellationToken);
 
     /// <summary>
     /// Updates the text of an existing note.
@@ -61,10 +46,7 @@ public class ResidentNoteService(IResidentNoteManager residentNoteManager) : IRe
     /// <param name="newText">A string containing the new note text.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns><see langword="true"/> if the note was updated successfully; otherwise, <see langword="false"/>.</returns>
-    public async Task<bool> UpdateAsync(Guid noteId, string newText, CancellationToken cancellationToken = default)
-    {
-        return await _residentNoteManager.UpdateAsync(noteId, newText, cancellationToken);
-    }
+    Task<bool> UpdateAsync(Guid noteId, string newText, CancellationToken cancellationToken);
 
     /// <summary>
     /// Deletes a note by its unique identifier.
@@ -72,10 +54,7 @@ public class ResidentNoteService(IResidentNoteManager residentNoteManager) : IRe
     /// <param name="noteId">A unique identifier for the note to delete.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns><see langword="true"/> if the note was deleted successfully; otherwise, <see langword="false"/>.</returns>
-    public async Task<bool> DeleteAsync(Guid noteId, CancellationToken cancellationToken = default)
-    {
-        return await _residentNoteManager.DeleteAsync(noteId, cancellationToken);
-    }
+    Task<bool> DeleteAsync(Guid noteId, CancellationToken cancellationToken);
 
     #endregion
 }
