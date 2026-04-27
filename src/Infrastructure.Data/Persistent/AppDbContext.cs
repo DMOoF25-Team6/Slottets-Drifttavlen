@@ -38,6 +38,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
     {
         base.OnModelCreating(modelBuilder);
         _ = modelBuilder.ApplyConfiguration(new Configurations.ResidentConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new Configurations.RefreshTokenConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.ResidentNoteConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.MedicineRecordConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.PainkillerRecordConfiguration());

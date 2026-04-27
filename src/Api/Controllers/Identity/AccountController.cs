@@ -77,13 +77,15 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
 
         string token = GenerateJwtToken();
         string refreshTokenValue = GenerateRefreshToken();
+        string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
         RefreshToken refreshToken = new()
         {
             Id = Guid.NewGuid(),
             UserId = user.Id,
             Token = refreshTokenValue,
             CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(7)
+            ExpiresAt = DateTime.UtcNow.AddDays(7),
+            CreatedByIp = ipAddress
         };
         await refreshTokenStore.SaveAsync(refreshToken);
 
@@ -116,6 +118,11 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
             return Unauthorized(new RefreshTokenResponseDto { ErrorMessages = ["Invalid or expired refresh token."] });
         }
 
+        // Revoke the old refresh token
+        refreshToken.RevokedAt = DateTime.UtcNow;
+        refreshToken.RevokedReason = "Rotated by refresh endpoint";
+        await refreshTokenStore.SaveAsync(refreshToken);
+
         User? user = await GetValidUserByIdAsync(refreshToken.UserId);
         if (user == null)
         {
@@ -123,7 +130,18 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
         }
 
         string token = GenerateJwtToken();
-        RefreshToken newRefreshToken = await RotateAndSaveRefreshTokenAsync(user);
+        string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        RefreshToken newRefreshToken = new()
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            Token = GenerateRefreshToken(),
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow.AddDays(7),
+            CreatedByIp = ipAddress
+        };
+        await refreshTokenStore.SaveAsync(newRefreshToken);
+
         return Ok(new RefreshTokenResponseDto
         {
             JwtToken = token,
@@ -137,14 +155,32 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
     /// <returns>An <see cref="IActionResult"/> indicating the result of the logout operation.</returns>
     /// <response code="200">Logout succeeded.</response>
     [HttpPost("logout")]
-    public IActionResult Logout()
+    public async Task<IActionResult> LogoutAsync()
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-        // Here you would typically handle the logout logic, such as invalidating a JWT token or clearing a session
-        // Clear the user's authentication cookie or token if applicable
+
+        // Expect refresh token in request header or body for revocation
+        string? refreshToken = Request.Headers["X-Refresh-Token"].FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(refreshToken))
+        {
+            return BadRequest(new LogoutResponseDto
+            {
+                IsSuccessful = false,
+                ErrorMessages = ["Refresh token required for logout."]
+            });
+        }
+
+        // Revoke the refresh token
+        RefreshToken? tokenEntity = await refreshTokenStore.GetByTokenAsync(refreshToken);
+        if (tokenEntity is not null)
+        {
+            tokenEntity.RevokedAt = DateTime.UtcNow;
+            tokenEntity.RevokedReason = "User logout";
+            await refreshTokenStore.SaveAsync(tokenEntity);
+        }
 
         return Ok(new LogoutResponseDto
         {
@@ -212,7 +248,11 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
         }
 
         RefreshToken? refreshToken = await refreshTokenStore.GetByTokenAsync(token);
-        return refreshToken == null || refreshToken.ExpiresAt < DateTime.UtcNow ? null : refreshToken;
+        if (refreshToken == null || refreshToken.ExpiresAt < DateTime.UtcNow || refreshToken.RevokedAt != null)
+        {
+            return null;
+        }
+        return refreshToken;
     }
 
     // Helper: Retrieve and validate user by id

@@ -29,9 +29,8 @@ public class RepositoryTests
         }
     }
 
-    private class TestUserRepository : Repository<TestUser>
+    private class TestUserRepository(AppDbContext context) : Repository<TestUser>(context)
     {
-        public TestUserRepository(AppDbContext context) : base(context) { }
     }
 
     private class TestDbContext(DbContextOptions<AppDbContext> options) : AppDbContext(options)

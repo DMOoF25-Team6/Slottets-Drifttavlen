@@ -21,27 +21,20 @@ namespace Infrastructure.Managers;
 /// services.AddScoped&lt;IResidentNoteManager, ResidentNoteManager&gt;();
 /// </code>
 /// </example>
-public class ResidentNoteManager : IResidentNoteManager
+/// <remarks>
+/// Initializes a new instance of the <see cref="ResidentNoteManager"/> class.
+/// </remarks>
+/// <param name="httpClientFactory">The factory used to create the named <see cref="HttpClient"/> for the API.</param>
+/// <exception cref="InvalidOperationException">The named HttpClient 'SlottetApi' could not be created.</exception>
+public class ResidentNoteManager(IHttpClientFactory httpClientFactory) : IResidentNoteManager
 {
     #region Fields
 
-    private readonly HttpClient _httpClient;
+    private readonly HttpClient _httpClient = httpClientFactory.CreateClient("SlottetApi")
+            ?? throw new InvalidOperationException("Failed to create HttpClient.");
 
     #endregion
-
     #region Constructors
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ResidentNoteManager"/> class.
-    /// </summary>
-    /// <param name="httpClientFactory">The factory used to create the named <see cref="HttpClient"/> for the API.</param>
-    /// <exception cref="InvalidOperationException">The named HttpClient 'SlottetApi' could not be created.</exception>
-    public ResidentNoteManager(IHttpClientFactory httpClientFactory)
-    {
-        // Named client ensures correct BaseAddress and shared configuration across managers
-        _httpClient = httpClientFactory.CreateClient("SlottetApi")
-            ?? throw new InvalidOperationException("Failed to create HttpClient.");
-    }
 
     #endregion
 

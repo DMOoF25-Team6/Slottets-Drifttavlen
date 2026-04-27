@@ -33,10 +33,21 @@ public class RefreshToken
     /// </summary>
     public DateTime CreatedAt { get; set; }
 
+
     /// <summary>
     /// The date and time when the token was revoked, if any.
     /// </summary>
     public DateTime? RevokedAt { get; set; }
+
+    /// <summary>
+    /// The IP address that created the token.
+    /// </summary>
+    public string? CreatedByIp { get; set; }
+
+    /// <summary>
+    /// The reason for revocation, if any.
+    /// </summary>
+    public string? RevokedReason { get; set; }
 
     /// <summary>
     /// Navigation property to the user.

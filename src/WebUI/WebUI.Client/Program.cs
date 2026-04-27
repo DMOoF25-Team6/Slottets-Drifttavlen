@@ -19,6 +19,7 @@ internal class Program
         _ = builder.Services.AddScoped<TokenStorageService>();
         _ = builder.Services.AddScoped<AuthService>();
         _ = builder.Services.AddAuthorizationCore();
+        _ = builder.Services.AddCascadingAuthenticationState();
         _ = builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
 
         await builder.Build().RunAsync();

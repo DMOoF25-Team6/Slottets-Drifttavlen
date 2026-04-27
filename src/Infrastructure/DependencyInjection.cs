@@ -1,8 +1,6 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-using Microsoft.Extensions.Configuration;
-
 using Core;
 using Core.Interfaces.Managers;
 using Core.Interfaces.Services;
@@ -10,6 +8,7 @@ using Core.Interfaces.Services;
 using Infrastructure.Managers;
 using Infrastructure.Services;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure;
@@ -32,7 +31,7 @@ public static class DependencyInjection
         }
         _ = services.AddHttpClient("SlottetApi", client =>
         {
-            client.BaseAddress = new Uri(apiBaseUrl.EndsWith("/") ? apiBaseUrl : apiBaseUrl + "/");
+            client.BaseAddress = new Uri(apiBaseUrl.EndsWith('/') ? apiBaseUrl : apiBaseUrl + "/");
         });
 
         _ = services.AddScoped<IResidentManager, ResidentManager>();
