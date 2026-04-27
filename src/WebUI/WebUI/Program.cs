@@ -1,8 +1,6 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-using Microsoft.Extensions.Configuration;
-
 using Core.Interfaces.Managers;
 using Core.Services;
 
@@ -36,16 +34,18 @@ public class Program
 
         _ = builder.Configuration.AddEnvironmentVariables(); // Ensure environment variables are available in configuration
 
+        _ = builder.Services.AddInfrastructure(builder.Configuration);
+
         // Add services to the container.
         _ = builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents()
             .AddInteractiveWebAssemblyComponents();
 
+        _ = builder.Services.AddCascadingAuthenticationState();
+
         // Persist Data Protection keys to a directory for antiforgery token decryption across restarts/containers
         _ = builder.Services.AddDataProtection()
             .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysDir));
-
-        _ = builder.Services.AddInfrastructure(builder.Configuration);
 
         // And for the interface, e.g.:
         _ = builder.Services.AddScoped<IAccountManager, AccountManager>();
@@ -70,10 +70,13 @@ public class Program
             //_ = app.UseHsts();
         }
 
-        _ = app.UseHttpsRedirection();
+        //_ = app.UseHttpsRedirection();
 
         _ = app.UseStaticFiles();
         _ = app.UseAntiforgery();
+
+        // Register JwtRefreshMiddleware before endpoints
+        //app.UseMiddleware<WebUI.Middleware.JwtRefreshMiddleware>();
 
         _ = app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode()

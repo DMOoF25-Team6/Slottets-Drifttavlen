@@ -1,0 +1,30 @@
+@page "/login"
+@rendermode InteractiveAuto
+@using Microsoft.AspNetCore.Components.Authorization
+
+
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow" style="min-width: 350px; max-width: 400px; width: 100%;">
+        <div class="card-body">
+            <h3 class="card-title text-center mb-4">Log ind</h3>
+            <EditForm Model="loginModel" OnValidSubmit="HandleLogin" Context="editFormContext" FormName="LoginFormName">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="mb-3" />
+                <div class="mb-3">
+                    <label class="form-label">Brugernavn:</label>
+                    <InputText @bind-Value="loginModel.Username" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Adgangskode:</label>
+                    <InputText @bind-Value="loginModel.Password" type="password" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Log ind</button>
+            </EditForm>
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="text-danger mt-3">@errorMessage</div>
+            }
+        </div>
+    </div>
+</div>
+

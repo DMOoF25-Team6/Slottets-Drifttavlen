@@ -1,4 +1,4 @@
-﻿---
+---
 skill: xunit-test
 summary: "Best practices and skills for writing effective xUnit tests in .NET projects."
 ---

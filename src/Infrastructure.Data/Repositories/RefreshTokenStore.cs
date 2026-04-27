@@ -20,14 +20,24 @@ public class RefreshTokenStore(AppDbContext dbContext) : IRefreshTokenStore
 
     public async Task SaveAsync(RefreshToken token, CancellationToken cancellationToken = default)
     {
-        // Remove existing tokens for the user (optional, for one active token per user)
+        // Try to find existing token by Id (primary key) or Token value
         RefreshToken? existing = await dbContext.RefreshTokens
-            .FirstOrDefaultAsync(rt => rt.UserId == token.UserId, cancellationToken);
+            .FirstOrDefaultAsync(rt => rt.Id == token.Id || rt.Token == token.Token, cancellationToken);
         if (existing is not null)
         {
-            _ = dbContext.RefreshTokens.Remove(existing);
+            // Update properties
+            existing.RevokedAt = token.RevokedAt;
+            existing.RevokedReason = token.RevokedReason;
+            existing.ExpiresAt = token.ExpiresAt;
+            existing.CreatedAt = token.CreatedAt;
+            existing.CreatedByIp = token.CreatedByIp;
+            // ...add any other fields that may change
+            dbContext.RefreshTokens.Update(existing);
         }
-        _ = await dbContext.RefreshTokens.AddAsync(token, cancellationToken);
+        else
+        {
+            _ = await dbContext.RefreshTokens.AddAsync(token, cancellationToken);
+        }
         _ = await dbContext.SaveChangesAsync(cancellationToken);
     }
 

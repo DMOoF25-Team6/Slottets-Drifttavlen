@@ -6,7 +6,7 @@ using Microsoft.JSInterop;
 
 using WebUI.Client;
 
-namespace WebUI.Components.Pages;
+namespace WebUI.Components.Pages.Account;
 
 public partial class Login
 {

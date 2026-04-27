@@ -94,6 +94,7 @@ public partial class PhoneList : ComponentBase, IDisposable
     public void Dispose()
     {
         _refreshTimer?.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     #endregion

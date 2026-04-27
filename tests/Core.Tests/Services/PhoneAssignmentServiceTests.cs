@@ -44,7 +44,7 @@ public class PhoneAssignmentServiceTests
             .ReturnsAsync([]);
 
         // Act
-        _ = await _service.GetCurrentPhoneAssignmentsForActiveShift(cancellationToken);
+        _ = await _service.GetCurrentPhoneAssignmentsForActiveShiftAsync(cancellationToken);
 
         // Assert
         _phoneAssignmentManagerMock.Verify(
@@ -70,7 +70,7 @@ public class PhoneAssignmentServiceTests
 
         // Act
         IEnumerable<PhoneAssignmentDto> result =
-            await _service.GetCurrentPhoneAssignmentsForActiveShift(cancellationToken);
+            await _service.GetCurrentPhoneAssignmentsForActiveShiftAsync(cancellationToken);
 
         // Assert
         Assert.Equal(expected, result);
@@ -88,7 +88,7 @@ public class PhoneAssignmentServiceTests
 
         // Act
         IEnumerable<PhoneAssignmentDto> result =
-            await _service.GetCurrentPhoneAssignmentsForActiveShift(cancellationToken);
+            await _service.GetCurrentPhoneAssignmentsForActiveShiftAsync(cancellationToken);
 
         // Assert
         Assert.Empty(result);
@@ -98,15 +98,15 @@ public class PhoneAssignmentServiceTests
     public async Task GetCurrentPhoneAssignmentsForActiveShift_CancellationRequested_PropagatesCancellationToken()
     {
         // Arrange
-        CancellationToken cancellationToken = new CancellationToken(canceled: true);
+        CancellationToken cancellationToken = new(canceled: true);
 
         _ = _phoneAssignmentManagerMock
             .Setup(m => m.GetCurrentPhoneAssignmentsForActiveShift(cancellationToken))
             .ThrowsAsync(new OperationCanceledException(cancellationToken));
 
         // Act & Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(
-            () => _service.GetCurrentPhoneAssignmentsForActiveShift(cancellationToken));
+        _ = await Assert.ThrowsAsync<OperationCanceledException>(
+            () => _service.GetCurrentPhoneAssignmentsForActiveShiftAsync(cancellationToken));
     }
 
     #endregion

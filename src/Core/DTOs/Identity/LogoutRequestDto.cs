@@ -18,5 +18,5 @@ public class LogoutRequestDto
     /// <value>
     /// A JWT token string that identifies the session.
     /// </value>
-    public required string JwtToken { get; set; }
+    public required string RefreshToken { get; set; }
 }
