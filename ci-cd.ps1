@@ -98,7 +98,7 @@ function Invoke-CommitLineEndingFixIfNeeded {
  #   Executes the tests-stage target and exits if the tests fail.
  #>
 function Invoke-TestsStage {
-    docker-compose --profile test up --menu=false
+    docker-compose --profile test up --menu=false --build --exit-code-from tests-stage
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Tests failed with exit code $LASTEXITCODE"
         exit $LASTEXITCODE

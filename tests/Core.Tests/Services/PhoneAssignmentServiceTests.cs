@@ -106,7 +106,7 @@ public class PhoneAssignmentServiceTests
 
         // Act & Assert
         _ = await Assert.ThrowsAsync<OperationCanceledException>(
-            () => _service.GetCurrentPhoneAssignmentsForActiveShift(cancellationToken));
+            () => _service.GetCurrentPhoneAssignmentsForActiveShiftAsync(cancellationToken));
     }
 
     #endregion

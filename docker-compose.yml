@@ -39,10 +39,13 @@ services:
         condition: service_started
       build-stage:
         condition: service_completed_successfully
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - MYSQL_HOST=slottets-sqlserver
       - MYSQL_PORT=3306
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
       - DOTNET_RUNNING_IN_CONTAINER=true
       - DOTNET_CLI_TELEMETRY_OPTOUT=1
       - DOCKER_DOTNET_TEST=true  
