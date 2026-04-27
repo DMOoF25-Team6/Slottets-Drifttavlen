@@ -34,6 +34,7 @@ SHELL ["/bin/bash"]
 WORKDIR /workspace
 COPY --from=build-stage /src/ ./
 COPY .runsettings ./.runsettings
+COPY .env ./.env
 COPY tools/docker/run_tests.sh /run_tests.sh
 RUN ["dotnet", "tool", "install", "--global", "dotnet-reportgenerator-globaltool"]
 RUN ["chmod", "+x", "/run_tests.sh"]

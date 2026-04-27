@@ -33,7 +33,7 @@ public partial class Login
         else
         {
             errorMessage = null;
-            Navigation.NavigateTo(Navigation.Uri, new NavigationOptions { ForceLoad = true }); // Refresh UI
+            Navigation.NavigateTo("/"); // Redirect to main page
         }
     }
 

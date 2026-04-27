@@ -55,7 +55,7 @@ function Start-SqlServer {
  # .DESCRIPTION
  #   Checks the current Git branch and exits with an error if it is "main" to prevent unintended deployments.
  #>
-function Ensure-NotOnMainBranch {
+function Test-NotOnMainBranch {
     $branch = git rev-parse --abbrev-ref HEAD
     if ($branch -eq "main") {
         Write-Host "CI/CD should not run on the main branch. Exiting."
@@ -69,7 +69,7 @@ function Ensure-NotOnMainBranch {
  # .DESCRIPTION
  #   Checks for uncommitted changes and exits with an error if any are found.
  #>
-function Ensure-NoUncommittedChanges {
+function Test-NoUncommittedChanges {
     $gitStatus = git status --porcelain
     if ($gitStatus) {
         Write-Host "There are uncommitted changes. Please commit or stash them before running CI/CD."
@@ -83,7 +83,7 @@ function Ensure-NoUncommittedChanges {
  # .DESCRIPTION
  #   Checks for changes and commits them with a standard message if present.
  #>
-function Commit-LineEndingFixIfNeeded {
+function Invoke-CommitLineEndingFixIfNeeded {
     $gitStatus = git status --porcelain
     if ($gitStatus) {
         git add .
@@ -93,37 +93,22 @@ function Commit-LineEndingFixIfNeeded {
 
 <#
  # .SYNOPSIS
- #   Runs the build stage using Docker Compose and handles errors.
- # .DESCRIPTION
- #   Executes the build-stage target and exits if the build fails.
- #>
-function Run-BuildStage {
-    docker-compose up --menu=false --build build-stage
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "Build failed with exit code $LASTEXITCODE"
-        exit $LASTEXITCODE
-    }
-}
-
-<#
- # .SYNOPSIS
  #   Runs the tests stage using Docker Compose and handles errors.
  # .DESCRIPTION
  #   Executes the tests-stage target and exits if the tests fail.
  #>
-function Run-TestsStage {
-    docker-compose up --menu=false --build tests-stage
+function Invoke-TestsStage {
+    docker-compose --profile test up --menu=false
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Tests failed with exit code $LASTEXITCODE"
         exit $LASTEXITCODE
     }
 }
 
-Ensure-NotOnMainBranch
-Ensure-NoUncommittedChanges
+# Test-NotOnMainBranch
+# Test-NoUncommittedChanges
 Convert-LineEndingsToLF
 Start-SqlServer
-Commit-LineEndingFixIfNeeded
-Run-BuildStage
-Run-TestsStage
-git push
+#Invoke-CommitLineEndingFixIfNeeded
+Invoke-TestsStage
+# git push

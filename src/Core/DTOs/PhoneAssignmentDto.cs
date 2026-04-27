@@ -1,5 +1,5 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
-//  No warranty, explicit or implicit, provided.
+// Copyright (c) 2026 Team6. All rights reserved.
+// No warranty, explicit or implicit, provided.
 
 namespace Core.DTOs;
 
@@ -17,4 +17,10 @@ public class PhoneAssignmentDto
     /// Gets or sets the shift type for this phone assignment (Day, Evening, Night).
     /// </summary>
     public string ShiftType { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the name of the staff member assigned to this phone number for the active shift.
+    /// An empty string indicates the phone is unassigned.
+    /// </summary>
+    public string AssignedStaffName { get; set; } = string.Empty;
 }
