@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260424153854_Initial")]
+    [Migration("20260427150525_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -206,20 +206,32 @@ namespace Infrastructure.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("CreatedByIp")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("RevokedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("RevokedReason")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
                     b.Property<string>("Token")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(512)
+                        .HasColumnType("varchar(512)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -504,73 +516,91 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = new Guid("3a21f8e1-885b-4394-abf0-ed0baeea239b"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2ae048a5-4089-4866-bbae-6b8c896c568d",
-                            EmailConfirmed = false,
+                            ConcurrencyStamp = "fd8e4e86-24e0-4370-8b2a-14ee454895ba",
+                            Email = "PederRasmussen@example.com",
+                            EmailConfirmed = true,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEPv7fDpIcsRnM6bthNy3PlXT6/eu/Zc/B+pK1pyj2n9gAvJAmFUsxd0+A8n4rWH9xQ==",
+                            NormalizedEmail = "PEDERRASMUSSEN@EXAMPLE.COM",
+                            NormalizedUserName = "PEDERRASMUSSEN@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAutYpQDOVYhG4UBgpIRrzDEXYsrXbyUb2SIVvMibjkcoEQcMap4658Pj6eMgMxv/Q==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
-                            UserName = "PederRasmussen@example.com"
+                            UserName = "pederrasmussen@example.com"
                         },
                         new
                         {
                             Id = new Guid("4711a300-711e-4132-86d4-cafd3f11deec"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "32b0c2e2-470b-4d0f-b5a6-d0271c2444ee",
-                            EmailConfirmed = false,
+                            ConcurrencyStamp = "1744bc8e-e309-4168-b7ab-658bd6097b7f",
+                            Email = "SanneJohansen@example.com",
+                            EmailConfirmed = true,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEGkPcN3VXl5xHTsw4G9O5Vvoair18f7sZPblfmC+JWhtSAT+2GjngREVj8xriQbPkg==",
+                            NormalizedEmail = "SANNEJOHANSEN@EXAMPLE.COM",
+                            NormalizedUserName = "SANNEJOHANSEN@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEIwODEqVfXAUy9S5JCq/n2czH5QhDhLNo+p0Ns1xXYxgRUDJYH7oYQd0lQ8a0HyDTA==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
-                            UserName = "SanneJohansen@example.com"
+                            UserName = "sannejohansen@example.com"
                         },
                         new
                         {
                             Id = new Guid("30cffcf9-5784-4fa9-9c10-c013ef3faf16"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9d3eb372-ebbf-4653-ad27-ef3b2bb5d5e2",
-                            EmailConfirmed = false,
+                            ConcurrencyStamp = "d673d5fa-2510-4309-a83b-bd8d7c7ae901",
+                            Email = "ThorDanrsøn@example.com",
+                            EmailConfirmed = true,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEAd/f6+5eN0uVCGpBRC+5j3MU91QvTDU9bmTi+Lh4BM5ZSKZ35qFoRlirgF1WwqtOw==",
+                            NormalizedEmail = "THORDANRSØN@EXAMPLE.COM",
+                            NormalizedUserName = "THORDANRSØN@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAENCFEsdm62Th/ALwAnsygJAMqRGKcgGaXr5Uu6EiKxCEsVVUvswncSpD2TPC7g3h/g==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
-                            UserName = "ThorDanrsøn@example.com"
+                            UserName = "thordanrsøn@example.com"
                         },
                         new
                         {
                             Id = new Guid("37155b80-7111-422a-aba6-89d7070f1644"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a5f685cd-3112-4cab-8cc6-b6cb1e7cd7f3",
-                            EmailConfirmed = false,
+                            ConcurrencyStamp = "7909355b-8002-4518-b35b-efbd22e0d770",
+                            Email = "PerNielsen@example.com",
+                            EmailConfirmed = true,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEPdAn31wb7U9oip2KpO0wrf9cJWrUcsr1PtbQm/4HklurbRpekszyskdTrvz8+LihQ==",
+                            NormalizedEmail = "PERNIELSEN@EXAMPLE.COM",
+                            NormalizedUserName = "PERNIELSEN@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEATpfHdrqE+y2JgwFgJRrDP7gouGjLuLojPwrR4ZX701EnEWveWm7/epWRAZ/pVFFQ==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
-                            UserName = "PerNielsen@example.com"
+                            UserName = "pernielsen@example.com"
                         },
                         new
                         {
                             Id = new Guid("b836e975-e775-48bc-8b84-5d2bdd5bd87a"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "945eb95d-c8bd-4d39-a411-f1bd22e7f277",
-                            EmailConfirmed = false,
+                            ConcurrencyStamp = "6bc3b61d-534d-4281-b265-d63ced233cf0",
+                            Email = "AndersJensen@example.com",
+                            EmailConfirmed = true,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEFuNtO1kqWfYlBwnfS3txjCnOLOLAiHxm8dPgoi59P3pV8e399ZF9ewyG3lzSK9Y+w==",
+                            NormalizedEmail = "ANDERSJENSEN@EXAMPLE.COM",
+                            NormalizedUserName = "ANDERSJENSEN@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKkkur+eelQ0AbQg30ZNM/hwOKAX7QMvuP5d+iEBL1I47Ypp8DttMIOCj6BqmNQ5VA==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
-                            UserName = "AndersJensen@example.com"
+                            UserName = "andersjensen@example.com"
                         },
                         new
                         {
                             Id = new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f2462914-7aad-4573-a602-fd91b3a744f4",
-                            EmailConfirmed = false,
+                            ConcurrencyStamp = "034d08c2-264f-4505-8529-4f2097401b58",
+                            Email = "KasperHolm@example.com",
+                            EmailConfirmed = true,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEGuWtXoi0OnUgP9pB/AthQf4BsOn8LLU1TA8xvyiMKvX4eMIBGlysDDMkKvyjylUvQ==",
+                            NormalizedEmail = "KASPERHOLM@EXAMPLE.COM",
+                            NormalizedUserName = "KASPERHOLM@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOaYCzxaHaQGqGMYQSNxQ7f1yPkXfwQhh309Wd6aHp9Fv44S6oI7i65jLjyCPyL8BQ==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
-                            UserName = "KasperHolm@example.com"
+                            UserName = "kasperholm@example.com"
                         });
                 });
 

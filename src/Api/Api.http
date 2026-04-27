@@ -1,4 +1,4 @@
-@Api_HostAddress = http://localhost:5151
+@Api_HostAddress = http://localhost:5051
 
 ### Identity Register user
 POST {{Api_HostAddress}}/Account/register

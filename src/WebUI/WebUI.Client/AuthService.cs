@@ -2,7 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 using Core.DTOs.Identity;
-using Core.Services;
+using Core.Interfaces.Services;
 
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -16,7 +16,7 @@ namespace WebUI.Client;
 public class AuthService(
     TokenStorageService tokenStorageService,
     AuthenticationStateProvider authenticationStateProvider,
-    AccountService AccountService
+    IAccountService accountService
     )
 {
 
@@ -26,7 +26,7 @@ public class AuthService(
     public async Task<bool> LoginAsync(string username, string password)
     {
         LoginRequestDto userLogin = new() { Email = username, Password = password };
-        LoginResponseDto result = await AccountService.LoginAsync(userLogin);
+        LoginResponseDto result = await accountService.LoginAsync(userLogin);
         if (result.JwtToken is not null)
         {
             await tokenStorageService.SetTokenAsync(result.JwtToken);
@@ -41,6 +41,8 @@ public class AuthService(
     /// </summary>
     public async Task LogoutAsync()
     {
+        LogoutRequestDto logoutRequest = new() { RefreshToken = await tokenStorageService.GetTokenAsync() ?? string.Empty };
+        _ = await accountService.LogoutAsync(logoutRequest);
         await tokenStorageService.RemoveTokenAsync();
         (authenticationStateProvider as JwtAuthenticationStateProvider)?.NotifyAuthenticationStateChanged();
     }

@@ -15,20 +15,14 @@ namespace WebApi.Tests.Controllers.Medicine;
 /// Integration tests for MedicineController.
 /// These tests verify that the API endpoints behave correctly when called over HTTP.
 /// </summary>
+/// <remarks>
+/// Creates an HttpClient using the test server provided by CustomWebApplicationFactory.
+/// This allows us to call the API as if it was running.
+/// </remarks>
 
-public class MedicineControllerTests : IClassFixture<CustomWebApplicationFactory<Api.Program>>
+public class MedicineControllerTests(CustomWebApplicationFactory<Api.Program> factory) : IClassFixture<CustomWebApplicationFactory<Api.Program>>
 {
-    private readonly HttpClient _client;
-
-    /// <summary>
-    /// Creates an HttpClient using the test server provided by CustomWebApplicationFactory.
-    /// This allows us to call the API as if it was running.
-    /// </summary>
-
-    public MedicineControllerTests(CustomWebApplicationFactory<Api.Program> factory)
-    {
-        _client = factory.CreateClient();
-    }
+    private readonly HttpClient _client = factory.CreateClient();
 
     [Fact]
     public async Task GetMedicineStatus_ValidResidentId_ReturnsOk()

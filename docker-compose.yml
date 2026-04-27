@@ -1,4 +1,3 @@
-
 services:
   slottets-sqlserver:
     image: mysql
@@ -10,12 +9,12 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      vlan-db:
-        ipv4_address: 10.29.10.10
-
-      # vlan-app:
+      vlan-web:
+        ipv4_address: 10.29.30.99
 
   build-stage:
+    profiles:
+      - test  
     build:
       context: .
       dockerfile: Dockerfile
@@ -29,6 +28,8 @@ services:
       # vlan-app:
 
   tests-stage:
+    profiles:
+      - test
     build:
       context: .
       dockerfile: Dockerfile
@@ -38,20 +39,27 @@ services:
         condition: service_started
       build-stage:
         condition: service_completed_successfully
+    env_file:
+      - .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - MYSQL_HOST=slottets-sqlserver
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - DOTNET_CLI_TELEMETRY_OPTOUT=1
+      - DOCKER_DOTNET_TEST=true  
     working_dir: /workspace
     volumes:
       - ./TestResults:/artifacts/TestResults
     networks:
       vlan-db:
       # vlan-app:
-    environment:
-      - DOTNET_RUNNING_IN_CONTAINER=true
-      - DOTNET_CLI_TELEMETRY_OPTOUT=1
-      - ASPNETCORE_ENVIRONMENT=Production
-      - DOCKER_DOTNET_TEST=true
     restart: "no"
 
   publish-stage:
+    profiles:
+      - test  
     build:
       context: .
       dockerfile: Dockerfile
@@ -64,21 +72,28 @@ services:
     restart: no
 
   webapi-final-stage:
+    profiles:
+      - prod
     build:
       context: .
       dockerfile: Dockerfile
       target: webapi-final-stage
     depends_on:
-      publish-stage:
-        condition: service_completed_successfully
+      slottets-sqlserver:
+        condition: service_started
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:5051
+      - MYSQL_HOST=10.29.30.99
+      - MYSQL_PORT=3306
     ports:
       - "5051:5051"
     expose:
       - 5051
     networks:
+      vlan-db:
       vlan-web:
           ipv4_address: 10.29.30.11
     volumes:
@@ -86,13 +101,17 @@ services:
     restart: "always"
 
   webui-final-stage:
+    profiles:
+      - prod  
     build:
       context: .
       dockerfile: Dockerfile
       target: webui-final-stage
     depends_on:
-      publish-stage:
-        condition: service_completed_successfully
+      slottets-sqlserver:
+        condition: service_started
+      webapi-final-stage:
+        condition: service_started
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:5050

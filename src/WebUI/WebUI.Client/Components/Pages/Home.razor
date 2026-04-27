@@ -1,0 +1,83 @@
+@page "/"
+
+@rendermode InteractiveAuto
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject WebUI.Client.AuthService AuthService
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+<AuthorizeView>
+  <Authorizing>
+    <p>Checking authentication status...</p>
+  </Authorizing>
+  <Authorized>
+    @if (user?.Identity?.IsAuthenticated == true)
+    {
+      <p>You are logged in.</p>
+      <p><b>User:</b> @user.Identity?.Name</p>
+      <ul>
+        @foreach (var claim in user.Claims)
+        {
+          <li>@claim.Type: @claim.Value</li>
+        }
+      </ul>
+
+      <button @onclick="Logout">Logout</button>
+    }
+    else
+    {
+      <p>You are not logged in.</p>
+      @if (isInteractive)
+      {
+        <button @onclick="Login">Login</button>
+      }
+    }
+  </Authorized>
+  <NotAuthorized>
+    @if (isInteractive)
+    {
+      <button @onclick="Login">Login</button>
+    }
+    else
+    {
+      <span>Loading...</span>
+    }
+  </NotAuthorized>
+</AuthorizeView>
+
+@code {
+  private bool isInteractive = false;
+  private System.Security.Claims.ClaimsPrincipal? user;
+  private string? currentUrl;
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      isInteractive = true;
+      currentUrl = Navigation.Uri;
+      var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+      user = authState.User;
+      StateHasChanged();
+    }
+  }
+
+  private void Login()
+  {
+    if (isInteractive)
+    {
+      Navigation.NavigateTo("/login");
+    }
+  }
+
+  private async Task Logout()
+  {
+    await AuthService.LogoutAsync();
+    Navigation.NavigateTo("/");
+  }
+
+}

@@ -63,7 +63,14 @@ Your goal is to help me write effective unit tests with XUnit, covering both sta
 ## Test Organization
 
 - Group tests by feature or component
-- Use `[Trait("Category", "CategoryName")]` for categorization
+- Use traits for categorization and filtering in test runners
+  - Use `[Trait("Category", "Functionality")]` for functionality tests
+  - Use `[Trait("Category", "EdgeCase")]` for edge cases
+  - Use `[Trait("Category", "Concurrency")]` for concurrency tests
+  - Use `[Trait("Category", "Integration")]` for integration tests
+    - Use `[Trait("Category", "Performance")]` for performance tests
+    - Use `[Trait("Priority", "High")]` for priority levels
+- For sorting by trait Category and put it into `#regions category`
 - Use collection fixtures to group tests with shared dependencies
 - Consider output helpers (`ITestOutputHelper`) for test diagnostics
 - Skip tests conditionally with `Skip = "reason"` in fact/theory attributes

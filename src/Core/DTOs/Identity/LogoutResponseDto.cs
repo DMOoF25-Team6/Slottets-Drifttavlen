@@ -27,4 +27,6 @@ public class LogoutResponseDto
     /// A collection of error messages, or <see langword="null" /> if no errors occurred.
     /// </value>
     public IEnumerable<string>? ErrorMessages { get; set; }
+
+    public string? RefreshToken { get; set; } = null;
 }

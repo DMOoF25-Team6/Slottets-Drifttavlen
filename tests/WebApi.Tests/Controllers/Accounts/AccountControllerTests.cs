@@ -8,14 +8,9 @@ using Core.DTOs.Identity;
 
 namespace WebApi.Tests.Controllers.Accounts;
 
-public class AccountControllerTests : IClassFixture<CustomWebApplicationFactory<Api.Program>>
+public class AccountControllerTests(CustomWebApplicationFactory<Api.Program> factory) : IClassFixture<CustomWebApplicationFactory<Api.Program>>
 {
-    private readonly HttpClient _client;
-
-    public AccountControllerTests(CustomWebApplicationFactory<Api.Program> factory)
-    {
-        _client = factory.CreateClient();
-    }
+    private readonly HttpClient _client = factory.CreateClient();
 
     #region Functionality Tests
 
@@ -39,16 +34,27 @@ public class AccountControllerTests : IClassFixture<CustomWebApplicationFactory<
     [Trait("Endpoint", "Logout")]
     public async Task Logout_ReturnsOk()
     {
-        // Arrange: Register a user first to ensure a valid authentication context
+        // Arrange: Register a user
         RegisterRequestDto request = new() { Email = "testlogout@example.com", Password = "Password123!" };
         HttpResponseMessage registerResponse = await _client.PostAsJsonAsync("/Account/register", request, cancellationToken: TestContext.Current.CancellationToken);
         _ = registerResponse.EnsureSuccessStatusCode();
 
-        // Act: Login to get authentication cookie or token if required by your API
-        // (If your API uses cookies, you may need to handle authentication here)
+        // Login to get refresh token
+        LoginRequestDto loginRequest = new() { Email = request.Email, Password = request.Password };
+        HttpResponseMessage loginResponse = await _client.PostAsJsonAsync("/Account/login", loginRequest, cancellationToken: TestContext.Current.CancellationToken);
+        _ = loginResponse.EnsureSuccessStatusCode();
+        LoginResponseDto? loginContent = await loginResponse.Content.ReadFromJsonAsync<LoginResponseDto>(cancellationToken: TestContext.Current.CancellationToken);
+        Assert.NotNull(loginContent);
+        Assert.False(string.IsNullOrWhiteSpace(loginContent.RefreshToken));
 
-        // Act: Call logout endpoint
-        HttpResponseMessage response = await _client.PostAsync("/Account/logout", null, TestContext.Current.CancellationToken);
+        // Act: Call logout endpoint with refresh token header and body
+        var logoutRequest = new LogoutRequestDto { RefreshToken = loginContent.RefreshToken };
+        HttpRequestMessage requestMessage = new(HttpMethod.Post, "/Account/logout")
+        {
+            Content = JsonContent.Create(logoutRequest)
+        };
+        requestMessage.Headers.Add("X-Refresh-Token", loginContent.RefreshToken!);
+        HttpResponseMessage response = await _client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
 
         // Assert
         _ = response.EnsureSuccessStatusCode();
@@ -106,6 +112,61 @@ public class AccountControllerTests : IClassFixture<CustomWebApplicationFactory<
         Assert.NotNull(refreshContent);
         Assert.False(string.IsNullOrWhiteSpace(refreshContent.JwtToken));
         Assert.False(string.IsNullOrWhiteSpace(refreshContent.RefreshToken));
+    }
+
+    [Fact]
+    [Trait("Category", "Functionality")]
+    [Trait("Endpoint", "Refresh")]
+    public async Task Refresh_RotatesToken_TokenChangesOnRefresh()
+    {
+        // Register and login to get a refresh token
+        string email = $"refreshrot_{Guid.NewGuid()}@example.com";
+        RegisterRequestDto register = new() { Email = email, Password = "Password123!" };
+        HttpResponseMessage regResp = await _client.PostAsJsonAsync("/Account/register", register, cancellationToken: TestContext.Current.CancellationToken);
+        _ = regResp.EnsureSuccessStatusCode();
+        LoginRequestDto login = new() { Email = email, Password = "Password123!" };
+        HttpResponseMessage loginResp = await _client.PostAsJsonAsync("/Account/login", login, cancellationToken: TestContext.Current.CancellationToken);
+        _ = loginResp.EnsureSuccessStatusCode();
+        LoginResponseDto? loginContent = await loginResp.Content.ReadFromJsonAsync<LoginResponseDto>(cancellationToken: TestContext.Current.CancellationToken);
+        Assert.NotNull(loginContent);
+        string? oldRefreshToken = loginContent.RefreshToken;
+        // Refresh
+        RefreshTokenRequestDto refreshReq = new() { RefreshToken = oldRefreshToken! };
+        HttpResponseMessage refreshResp = await _client.PostAsJsonAsync("/Account/refresh", refreshReq, cancellationToken: TestContext.Current.CancellationToken);
+        _ = refreshResp.EnsureSuccessStatusCode();
+        RefreshTokenResponseDto? refreshContent = await refreshResp.Content.ReadFromJsonAsync<RefreshTokenResponseDto>(cancellationToken: TestContext.Current.CancellationToken);
+        Assert.NotNull(refreshContent);
+        Assert.NotEqual(oldRefreshToken, refreshContent.RefreshToken);
+    }
+
+    [Fact]
+    [Trait("Category", "Functionality")]
+    [Trait("Endpoint", "Logout")]
+    public async Task Logout_RevokesRefreshToken_CannotRefreshAfterLogout()
+    {
+        // Register and login to get a refresh token
+        string email = $"logoutrevoke_{Guid.NewGuid()}@example.com";
+        RegisterRequestDto register = new() { Email = email, Password = "Password123!" };
+        HttpResponseMessage regResp = await _client.PostAsJsonAsync("/Account/register", register, cancellationToken: TestContext.Current.CancellationToken);
+        _ = regResp.EnsureSuccessStatusCode();
+        LoginRequestDto login = new() { Email = email, Password = "Password123!" };
+        HttpResponseMessage loginResp = await _client.PostAsJsonAsync("/Account/login", login, cancellationToken: TestContext.Current.CancellationToken);
+        _ = loginResp.EnsureSuccessStatusCode();
+        LoginResponseDto? loginContent = await loginResp.Content.ReadFromJsonAsync<LoginResponseDto>(cancellationToken: TestContext.Current.CancellationToken);
+        Assert.NotNull(loginContent);
+        string? refreshToken = loginContent.RefreshToken;
+        Assert.NotNull(refreshToken);
+        // Logout with refresh token in header
+        HttpRequestMessage logoutReq = new(HttpMethod.Post, "/Account/logout");
+        logoutReq.Headers.Add("X-Refresh-Token", refreshToken);
+        var logoutDto = new LogoutRequestDto { RefreshToken = refreshToken };
+        logoutReq.Content = JsonContent.Create(logoutDto);
+        HttpResponseMessage logoutResp = await _client.SendAsync(logoutReq, TestContext.Current.CancellationToken);
+        _ = logoutResp.EnsureSuccessStatusCode();
+        // Try to refresh with the same token (should fail)
+        RefreshTokenRequestDto refreshReq = new() { RefreshToken = refreshToken! };
+        HttpResponseMessage refreshResp = await _client.PostAsJsonAsync("/Account/refresh", refreshReq, cancellationToken: TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.Unauthorized, refreshResp.StatusCode);
     }
 
     #endregion

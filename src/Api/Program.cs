@@ -33,8 +33,12 @@ public class Program
     /// <param name="args">An array of command-line arguments.</param>
     public static void Main(string[] args)
     {
+
+#if DEBUG
         // Load environment variables from .env file
+        // Docker load .env and make overwriting, why this only can be loaded in debug mode
         _ = DotNetEnv.Env.Load(AppContext.BaseDirectory);
+#endif
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -50,7 +54,8 @@ public class Program
 
         // Replace the connection string params with the one from the environment variable
         ConfigurationManager conf = builder.Configuration;
-        string connectionString = ConfigureDbContext(builder, conf);
+        string connectionString = ConfigureDbContext(builder, conf)
+            ?? throw new InvalidOperationException("DB_CONNECTION_STRING environment variable is not set.");
         // Register both DbContext and DbContextFactory for DI
         _ = builder.Services.AddDbContext<AppDbContext>(options =>
         {
@@ -76,16 +81,16 @@ public class Program
         WebApplication app = builder.Build();
 
         // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
+        //if (app.Environment.IsDevelopment())
+        //{
+        _ = app.UseSwagger();
+        _ = app.UseSwaggerUI(options =>
         {
-            _ = app.UseSwagger();
-            _ = app.UseSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-            });
-        }
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+        });
+        //}
 
-        _ = app.UseHttpsRedirection();
+        //_ = app.UseHttpsRedirection();
 
         _ = app.UseCors("EnableCORS");
 
@@ -161,15 +166,30 @@ public class Program
         string? connStr = conf.GetConnectionString("AppDbContext");
         if (!string.IsNullOrEmpty(connStr))
         {
-            string dbUser = Environment.GetEnvironmentVariable("MYSQL_USER") ?? throw new InvalidOperationException("MYSQL_USER environment variable not found.");
-            string dbPass = Environment.GetEnvironmentVariable("MYSQL_PASSWORD") ?? throw new InvalidOperationException("MYSQL_PASSWORD environment variable not found.");
-            string dbHost = Environment.GetEnvironmentVariable("MYSQL_HOST") ?? throw new InvalidOperationException("MYSQL_HOST environment variable not found.");
-            string dbName = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? throw new InvalidOperationException("MYSQL_DATABASE environment variable not found.");
-            connStr = connStr.Replace("{DB_USER}", dbUser)
-                             .Replace("{DB_PASSWORD}", dbPass)
-                             .Replace("{DB_HOST}", dbHost)
-                             .Replace("{DB_NAME}", dbName);
+            // find all placeholders in the connection string and replace them with environment variable values
+            string[] allPlaceholders = ["{MYSQL_HOST}", "{MYSQL_DATABASE}", "{MYSQL_USER}", "{MYSQL_PASSWORD}", "{MYSQL_PORT}"];
+            foreach (string placeholder in allPlaceholders)
+            {
+                Console.WriteLine("[DEBUG] Checking for placeholder: " + placeholder);
+                if (connStr.Contains(placeholder))
+                {
+                    Console.WriteLine($"[DEBUG] Found placeholder {placeholder} in connection string. Attempting to replace it with environment variable value.");
+                    connStr = connStr.Replace(placeholder, Environment.GetEnvironmentVariable(placeholder.Trim('{', '}'))
+                        ?? throw new InvalidOperationException($"Environment variable for {placeholder} not found in configuration."));
+                }
+            }
+
             builder.Configuration["ConnectionStrings:AppDbContext"] = connStr;
+
+            // After building connStr in ConfigureDbContext
+            string? dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
+            string safeConnStr = connStr;
+            if (!string.IsNullOrEmpty(dbPassword))
+            {
+                safeConnStr = connStr.Replace(dbPassword, "****");
+            }
+            Console.WriteLine($"\n\n[DEBUG] Final DB connection string: {safeConnStr}\n\n");
+            Console.WriteLine("[DEBUG] MYSQL_HOST at startup: " + Environment.GetEnvironmentVariable("MYSQL_HOST"));
             return connStr;
         }
         throw new InvalidOperationException("Connection string for AppDbContext not found in environment variables.");

@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Team6. All rights reserved.
 // No warranty, explicit or implicit, provided.
 
-using Core.Interfaces.Managers;
+using Core.Interfaces.Services;
 
 using Infrastructure.Data.Persistent;
 
@@ -34,7 +34,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
         _ = builder.ConfigureServices(services =>
         {
-            _ = services.AddScoped<IPhoneAssignmentManager, MockPhoneAssignmentManager>();
+            _ = services.AddScoped<IPhoneAssignmentService, MockPhoneAssignmentService>();
 
             ServiceDescriptor? descriptor = services.SingleOrDefault(
                 d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));

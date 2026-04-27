@@ -1,3 +1,5 @@
+
+<a name="forside"></a>
 # Slottets Drifttavlen
 
 [![Contributors][contributors-shield]][contributors-url]
@@ -6,21 +8,26 @@
 [![Repo Size][repo-size-shield]][repo-size-url]
 [![Issues][issues-shield]][issues-url]
 
+
+
+<a name="indholdsfortegnelse"></a>
 ## 📚 Indholdsfortegnelse
 
 - [Dokumentationsoversigt](#dokumentationsoversigt)
-- [Virksomhedsprofil](#virksomhedsprofil)
-- [Arbejdsgang](#arbejdsgang)
+- [Om projektet](#om-projektet)
 - [Problemstilling](#problemstilling)
-- [Systemdesign og Funktionalitet](#systemdesign-og-funktionalitet)
-- [Teknologi og Arkitektur](#teknologi-og-arkitektur)
+- [Funktionalitet](#funktionalitet)
+- [Arkitektur & Teknologi](#arkitektur--teknologi)
 - [Udvidelsesmuligheder](#udvidelsesmuligheder)
-- [Diagrammer & Dokumentation](#diagrammer--dokumentation)
-- [Sikkerhedsovervejelser](#sikkerhedsovervejelser)
-- [Forbedringsforslag](#forbedringsforslag)
-- [Folder Structure & Responsibilities](#folder-structure--responsibilities)
-- [Opsætningsvejledning](#opsætningsvejledning)
-- [CI/CD-script (`ci-cd.ps1`)](#cicd-script-ci-cdps1)
+- [Dokumentation](#dokumentation)
+- [Sikkerhed](#sikkerhed)
+- [Kom i gang](#kom-i-gang)
+- [Adgang](#adgang)
+- [Vigtigt](#vigtigt)
+- [Database migration](#database-migration)
+- [For udviklere](#for-udviklere)
+- [Copilot Agent (valgfrit)](#copilot-agent-valgfrit)
+- [CI/CD](#cicd)
 
 <a name="dokumentationsoversigt"></a>
 ## Dokumentationsoversigt
@@ -33,277 +40,203 @@
 - [Risikoanalyse](docs/risk-analysis.md)
 - [Milepæleplan / Leverancer](docs/milestones.md)
 
-<a name="virksomhedsprofil"></a>
-## Virksomhedsprofil
-Slottet er et døgnbemandet bosted, der yder omsorg og pleje til borgere med særlige behov.
-Personalet arbejder i dag-, aften- og nattevagter og sikrer kontinuerlig støtte og pleje.
-Teamet samarbejder dagligt om at levere høj kvalitet og sikre borgernes trivsel og sikkerhed.
+<a name="om-projektet"></a>
+## 🧭 Om projektet
+**Slottets Drifttavle** er et digitalt system til håndtering af vagtskifte i et døgnbemandet bosted.
 
-<a name="arbejdsgang"></a>
-## Arbejdsgang
-Ved vagtskifte udveksler afgående og tilgående vagthold kritisk information om borgernes tilstand, medicinhåndtering og opgaver. Overlapsskemaet indeholder:
-- Borgerens aktuelle tilstand (trafiklysmodel)
-- Medicinstatus og udlevering
-- Personale tilknyttet borgeren
-- Opgaver og beskeder til næste vagthold
-- Særlige hændelser
-
+Systemet erstatter et papirbaseret overlapsskema og forbedrer:
+- Overblik
+- Datasikkerhed
+- Kommunikation mellem vagthold
+- Sporbarhed og historik
+ 
 <a name="problemstilling"></a>
-## Problemstilling
-Slottet anvender i dag et papirbaseret overlapsskema, hvilket medfører risiko for fejl, manglende historik og tidskrævende håndtering.
-Projektet har til formål at udvikle et digitalt IT-system, der erstatter det papirbaserede skema og understøtter personalets daglige arbejde mere effektivt og sikkert.
+## 🚨 Problemstilling
+Den nuværende papirbaserede løsning medfører:
+- Risiko for fejl og manglende information
+- Ingen historik
+- Tidskrævende arbejdsgange
 
-<a name="systemdesign-og-funktionalitet"></a>
-## Systemdesign og Funktionalitet
-- **Vagtvalg:** Personalet vælger vagttype ved login.
-- **Borgeroversigt:** Individuelle felter for hver borger med trafiklysmodel, medicinstatus, personale, opgaver og hændelser.
-- **Fælles rubrikker:** Arbejdstelefoner og ansvarsområder kan tildeles medarbejdere.
-- **Brugerstyring:** Rollebaseret adgangskontrol (plejepersonale, vagtansvarlige, admin).
-- **UI/UX:** Intuitivt, responsivt design med klart visuelt overblik.
-- **Datasikkerhed:** Adgangslogning, GDPR-compliance, historik for sporbarhed.
+👉 Løsningen er et digitalt system med struktureret data og real-time adgang.
 
-<a name="teknologi-og-arkitektur"></a>
-## Teknologi og Arkitektur
-- **Backend:** ASP.NET Core
-- **Frontend:** Blazor
-- **Database:** Microsoft SQL Server eller MySQL via Entity Framework
-- **Containerisering:** Docker
-- **API:** Eksponering af funktioner til integration
-- **Cloud-ready:** Kan køre standalone, client/server eller cloud-baseret (Azure, AWS)
-- **Skalering:** Horisontal skalering, central konfiguration, load balancing
-
-<a name="udvidelsesmuligheder"></a>
-## Udvidelsesmuligheder
-- Integration med FMK (Fælles Medicinkort)
-- Notifikationer og påmindelser
-- Rapportering af historik og hændelser
-
-<a name="diagrammer--dokumentation"></a>
-## Diagrammer & Dokumentation
-Se `docs/` for:
-- Klassediagram
-- ER-diagram
-- Sekvensdiagram
-- Deployment-diagram
-- Aktivitetsdiagram
-- Sikkerhedsovervejelser
-
-<a name="sikkerhedsovervejelser"></a>
-## Sikkerhedsovervejelser
-- Kryptering af følsomme data
-- GDPR og håndtering af personoplysninger
-- Adgangskontrol og autentificering
-- Logning af brugeraktivitet
-
-<a name="forbedringsforslag"></a>
-## Forbedringsforslag
-- Automatisk integration med FMK
-- Notifikationer for opgaver og medicin
-- Udvidet rapportering og analyse
 
 ---
 
-<a name="opsætningsvejledning"></a>
-## Opsætningsvejledning
+<a name="funktionalitet"></a>
+## ⚙️ Funktionalitet
+- **Vagtvalg ved login**
+- **Borgeroversigt med trafiklysstatus**
+- **Medicin- og opgavestyring**
+- **Hændelsesregistrering**
+- **Fælles ressourcer (telefoner, ansvar)**
+- **Rollebaseret adgang (RBAC)**
+- **Audit log & historik**
+
+---
+
+<a name="arkitektur--teknologi"></a>
+## 🏗️ Arkitektur & Teknologi
+- **Backend:** ASP.NET Core
+- **Frontend:** Blazor
+- **Database:** MySQL / SQL Server (EF Core)
+- **Container:** Docker
+- **Arkitektur:** Clean Architecture
+- **Deployment:** Cloud-ready (Azure / AWS)
+
+---
+
+<a name="udvidelsesmuligheder"></a>
+## 📈 Udvidelsesmuligheder
+- Integration til FMK
+- Notifikationer (medicin/opgaver)
+- Rapportering & analyse
+
+---
+
+<a name="dokumentation"></a>
+## 📚 Dokumentation
+Findes i `docs/`:
+
+- Business Case  
+- FURPS+  
+- KPI  
+- Domænemodel  
+- Risikoanalyse  
+- Milepæle  
+
+---
+
+<a name="sikkerhed"></a>
+## 🔐 Sikkerhed
+- GDPR-compliant databehandling  
+- Kryptering af følsomme data  
+- Rollebaseret adgangskontrol  
+- Logging og sporbarhed  
+
+---
+
+<a name="kom-i-gang"></a>
+## 🚀 Kom i gang
 
 ### Krav
-- .NET 8 SDK
-- Docker
+- .NET 8 SDK  
+- Docker  
 
-### Klon Repository
+---
+
+### 1. Klon projektet
 ```sh
-git@github.com:DMOoF25-Team6/Slottets-Drifttavlen.git
-cd DMOoF25-Team6.Slottets-Drifttavlen
+git clone git@github.com:DMOoF25-Team6/Slottets-Drifttavlen.git
+cd Slottets-Drifttavlen
 ```
 
-### Opret env-filer
-Opret en `.env`-fil i projektroden med følgende indhold:
-```sh
+### 2. Opret .env fil
+```plain
 MYSQL_ROOT_PASSWORD=rootpassword
 MYSQL_DATABASE=slottetsdb
 MYSQL_USER=appuser
 MYSQL_PASSWORD=apppassword
 MYSQL_HOST=slottets-sqlserver
-ConnectionStrings__AppDbContext=Server=slottets-sqlserver;Port=3306;Database=slottetsdb;User=appuser;Password=apppassword;
-TokenValidationParameters__IssuerSigningKey=YOUR_SECRET_KEY_HERE
+
+TokenValidationParameters__IssuerSigningKey=YOUR_SECRET
 TokenValidationParameters__Issuer=http://localhost
 TokenValidationParameters__Audience=http://localhost
+
 ExpireMinutes=60
 ```
 
-> ⚠️ **Påkrævede mapper:** Opret følgende mapper i projektroden før du kører `docker-compose up`, ellers fejler Docker Compose:
-> ```sh
-> mkdir -p Data DataProtection-Keys src/WebUI/WebUI/DataProtection-Keys
-> ```
-
-### Docker database
-Ændrer værdierne i `.env`-filen i projektroden til dine ønskede databaseindstillinger:
-```
-MYSQL_ROOT_PASSWORD=your_root_password
-MYSQL_DATABASE=your_database_name
-MYSQL_USER=your_username
-MYSQL_PASSWORD=your_user_password
-MYSQL_HOST=localhost
-ConnectionStrings__AppDbContext=Server={DB_HOST};Port=3307;Database={DB_NAME};User={DB_USER};Password={DB_PASSWORD};
-```
-
-#### Kør SQL-server:
+### 3. Opret nødvendige mapper
 ```sh
-docker-compose up slottets-sqlserver
+mkdir -p Data DataProtection-Keys src/WebUI/WebUI/DataProtection-Keys
 ```
 
-#### Fjern containeren:
+### 4. Start systemet
 ```sh
-docker-compose down slottets-sqlserver
-```
-
-### Kør applikationen
-
-> ⚠️ **VIGTIGT:** Projektet kører **udelukkende** via Docker Compose.
-> Brug **IKKE** `dotnet run` eller `launchSettings.json`.
-> `launchSettings.json` er IDE-specifik og giver forskellige porte og miljøvariable afhængigt af OS og IDE (Visual Studio, VS Code osv.).
-> Docker Compose sikrer at **alle teammedlemmer kører identisk miljø** med samme porte, netværk og konfiguration — og at MySQL, API og WebUI starter i korrekt rækkefølge.
-
-```sh
-docker-compose up
-```
-
-Sørg for at portene i `docker-compose.yml` er konfigureret korrekt:
-
-| Service | Port |
-|---------|------|
-| WebUI   | 5050 |
-| API     | 5051 |
-| MySQL   | 3307 |
-
-Når applikationen kører, er den tilgængelig på:
-
-| Service | URL |
-|---------|-----|
-| WebUI   | http://localhost:5050 |
-| API     | http://localhost:5051 |
-| MySQL   | localhost:3307 |
-
-Alternativt direkte med Docker:
-```sh
-docker run --name slottets-sqlserver -e MYSQL_ROOT_PASSWORD=your_root_password -e MYSQL_DATABASE=your_database_name -e MYSQL_USER=your_username -e MYSQL_PASSWORD=your_user_password -p 3307:3306 -d mysql
-```
-
-Migrere og opdatere databasen:
-```sh
-dotnet ef migrations add IdentityFramework --project src/Infrastructure.Data --startup-project src/Api
-dotnet ef database update --project src/Infrastructure.Data --startup-project src/Api
+docker-compose --profile prod up
 ```
 
 ---
+
+<a name="adgang"></a>
+## 🔗 Adgang
+
+| Service | URL                                            |
+| ------- | ---------------------------------------------- |
+| WebUI   | [http://localhost:5050](http://localhost:5050) |
+| API     | [http://localhost:5051](http://localhost:5051) |
+| DB      | localhost:3307                                 |
+
+---
+
+<a name="vigtigt"></a>
+## ⚠️ Vigtigt
+
+Projektet kører kun via Docker Compose
+
+❌ Brug ikke:
+
+```sh
+dotnet run
+```
+
+✔ Docker sikrer ens miljø for hele teamet
+
+---
+
+<a name="database-migration"></a>
+## 🧪 Database migration
+
+dotnet ef migrations add <name> --project src/Infrastructure.Data --startup-project src/Api
+dotnet ef database update --project src/Infrastructure.Data --startup-project src/Api
 
 <a name="for-udviklere"></a>
-## For developers
-To ensure consistency and quality in the code, follow these guidelines:
+## 👨‍💻 For udviklere
 
-### Folder Structure & Responsibilities
+Struktur (Clean Architecture)
+src/
+ ├── Core/
+ ├── Domain/
+ ├── Infrastructure/
+ └── WebUI/
+tests/
+docs/
 
-The solution follows Clean Architecture principles and is organized as follows:
+### Ansvar
+Core → Use cases & interfaces
+Domain → Forretningslogik
+Infrastructure → Database & eksterne services
+WebUI → Frontend
 
-```
-├── src/                          # All production code
-│   ├── Core/                     # Core business logic (use cases, interfaces)
-│   │   ├── DTOs                  # Data Transfer Objects for use cases
-│   │   ├── Handlers              # Use case handlers implementing business logic
-│   │   ├── Helpers               # Utility classes and functions
-│   │   ├── Interfaces            # Interfaces for services and repositories
-│   │   ├── Managers              # Service classes that implement interfaces and contain business logic
-│   │   ├── Mappers               # Mapping logic between domain models and DTOs
-│   │   └── Services              # Application services that orchestrate use cases
-│   ├── Domain/                   # Domain models and business entities
-│   │   ├── Attributes/           # Custom attributes for domain models
-│   │   ├── Entities/             # Core domain entities
-│   │   ├── Enums/                # Enumerations used in the domain
-│   │   └── Interfaces/           # Domain interfaces
-│   ├── Infrastructure/           # Infrastructure (data access, external services)
-│   │   ├── Persistents           # Database context and repositories
-│   │   │   └── Configurations    # Database configurations and migrations
-│   │   └── Repositories          # Repository implementations for data access
-│   └── WebUI/                    # Blazor frontend (UI and client logic)
-├── tests/                        # All test projects, mirrors src/ structure
-├── docs/                         # Documentation (architecture, use cases, analysis)
-├── LocalNuget/                   # Local NuGet packages
-├── .github/                      # GitHub workflows and Copilot instructions
-├── docker-compose.yml            # Docker Compose configuration
-├── Directory.Build.props/targets # Solution-wide MSBuild settings
-├── Slottet.CareManagement.slnx   # Solution file
-└── global.json                   # .NET SDK version management
-```
-
-### Folder Responsibilities
-- **src/Core/**: Contains core business logic, application services, and interfaces. No dependencies on other layers.
-- **src/Domain/**: Contains domain entities, value objects, and domain logic. Pure business rules.
-- **src/Infrastructure/**: Implements interfaces from Core, handles data access (e.g., MySQL) and external integrations.
-- **src/WebUI/**: Blazor frontend project for user interface and client logic.
-- **tests/**: Contains test projects for each main layer, follows the same structure as `src/`.
-- **docs/**: Markdown documentation for architecture, use cases, and analysis.
-- **LocalNuget/**: Local NuGet package repository.
-- **.github/**: CI/CD workflows and Copilot instructions.
-
-For more details, see the documentation in `docs/` and `.github/copilot-instructions.md`.
-
-### Copilot Agent Instructions
-Visual Studio Coplit Agent can help automate tasks and generate code based on your instructions.
-BC should be placed in docs/bc.md for Copilot Agent to use it as a reference to generate relevant code in the relevant language and context.
-To get the most out of Copilot Agent, follow these guidelines:
-
-#### Create Use Cases (Coming soon)
-```plaintext
-#uc-artifact.agent.md
-Create use case for "Vagtvalg og Borgeroversigt"
-```
-
-#### Create Domain Models
-
-```plaintext
-#dm-artifact.agent.md
-Update dm for usecase 003
-```
-
-#### Create SSD
-```plaintext
-#ssd-artifact.agent.md
-Create ssd for use case 003
-```
-
-#### Create OC
-```plaintext
-#oc-artifact.agent.md
-Create oc for use case 003
-```
-
-#### Create SD
-```plaintext
-#sd-artifact.agent.md
-Create sd for use case 003
-We are using webapi for data access
-```
-
-#### Create DCD / Code (Coming soon)
-```plaintext
-#dcd-artifact.agent.md
-Create dcd for use case 003
-```
-
-##### Note
-- Trigger words are create / update `[dm,sd,oc,ssd,dcd,uc]` for "Use Case Name"
 
 ---
 
-## CI/CD-script (`ci-cd.ps1`)
+<a name="copilot-agent-valgfrit"></a>
+## 🤖 Copilot Agent (valgfrit)
 
-Scriptet `ci-cd.ps1` automatiserer bygge-, test- og deploy-processen for projektet. Det udfører følgende:
+Eksempler:
 
-- Sikrer at alle tekstfiler i repositoryet konverteres til UTF-8 uden BOM og bruger LF (Unix) linjeskift.
-- Kører `dotnet test` (via Docker Compose) for at sikre, at alle tests gennemføres.
-- Afslutter med at lave et `git push`, så ændringer skubbes til fjernlageret.
+```sh
+#uc-artifact.agent.md
+Create use case for "Vagtvalg"
+```
 
-Scriptet hjælper med at sikre ensartede filformater og en stabil CI/CD-proces.
+```sh
+#dm-artifact.agent.md
+Update domain model for use case 003
+```
+
+---
+
+<a name="cicd"></a>
+## 🔄 CI/CD
+
+Script: `ci-cd.ps1`
+
+Automatiserer:
+
+- Encoding (UTF-8 + LF)
+- Tests via Docker
+- Git push
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [contributors-shield]: https://img.shields.io/github/contributors/DMOoF25-Team6/Slottets-Drifttavlen.svg?style=for-the-badge

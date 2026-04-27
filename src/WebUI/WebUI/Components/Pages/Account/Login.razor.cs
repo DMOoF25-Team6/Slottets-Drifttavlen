@@ -6,7 +6,7 @@ using Microsoft.JSInterop;
 
 using WebUI.Client;
 
-namespace WebUI.Components.Pages;
+namespace WebUI.Components.Pages.Account;
 
 public partial class Login
 {
@@ -33,7 +33,7 @@ public partial class Login
         else
         {
             errorMessage = null;
-            Navigation.NavigateTo(Navigation.Uri, new NavigationOptions { ForceLoad = true }); // Refresh UI
+            Navigation.NavigateTo("/"); // Redirect to main page
         }
     }
 

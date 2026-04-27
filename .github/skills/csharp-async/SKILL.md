@@ -1,4 +1,4 @@
-﻿---
+---
 name: csharp-async
 description: 'Get best practices for C# async programming'
 ---

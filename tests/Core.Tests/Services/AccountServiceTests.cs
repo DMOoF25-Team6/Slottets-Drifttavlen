@@ -45,7 +45,7 @@ public class AccountServiceTests
     public async Task LogoutAsync_ValidRequest_CallsManager()
     {
         // Arrange
-        LogoutRequestDto request = new() { JwtToken = "test-jwt-token" };
+        LogoutRequestDto request = new() { RefreshToken = "test-jwt-token" };
         LogoutResponseDto expectedResponse = new();
         _ = _AccountManagerMock
             .Setup(m => m.LogoutAsync(request))
