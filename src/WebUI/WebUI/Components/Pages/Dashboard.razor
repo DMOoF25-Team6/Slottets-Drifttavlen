@@ -11,18 +11,20 @@
 <PageTitle>Dashboard</PageTitle>
 
 <main>
-  <h1 class="mb-4">Slottets Dashboard</h1>
-  <section aria-label="Resident Overview">
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-        @foreach (var resident in _residents)
-        {
-          
-            <div class="col">
-                    @* Korrekt *@
+
+    <section aria-label="Resident Overview" class="dashboard-grid container-fluid min-vh-100 d-flex align-items-center">
+        <div class="row g-3 row-cols-1 row-cols-md-4">
+
+            @foreach (var resident in _residents)
+            {
+
+                <div class="col">
+                    @*@ Korrekt *@
                     <ResidentCard Resident="resident" />
                 </div>
 
-               }
+            }
+
         </div>
     </section>
 </main>

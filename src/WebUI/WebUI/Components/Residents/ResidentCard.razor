@@ -5,123 +5,121 @@
 @using Domain.Entities
 @using Domain.Enums
 
-<section class="dashboard-grid container-fluid min-vh-100 d-flex align-items-center">
-  <div class="row g-3 row-cols-1 row-cols-md-4">
 
-    <div class="col">
 
-      <article class="card h-100">
-        <header class="card-header @GetTrafficLightClass(Resident.TrafficLightStatus) flex-fill">
-          <h5 class="card-title">@Resident.Initials</h5>
-          <span class="badge bg-success position-absolute top-0 end-0 m-0 px-4 col-auto">PN-Tid: 02:34:16</span>
-        </header>
-        <section class="card-body">
+<article class="card h-100">
+    <header class="card-header @GetTrafficLightClass(Resident.TrafficLightStatus) flex-fill">
+        <h5 class="card-title">@Resident.Initials</h5>
+        <span class="badge bg-success position-absolute top-0 end-0 m-0 px-4 col-auto">PN-Tid: 02:34:16</span>
+    </header>
+    <section class="card-body">
 
-          <div class="col">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th scope="col">aktivitet </th>
-                  <th scope="col">personer</th>
-                  <th scope="col">beløb</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr scope="row">
-                  <td>Handle</td>
-                  <td>👤</td>
-                  <td>300kr</td>
-                </tr>
-                <tr>
-                  <th scope="row">Info</th>
-                  <td colspan="2">Eget kort</td>
-                </tr>
-              </tbody>
+        <div class="col">
+            <table class="table table-xs mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">aktivitet </th>
+                        <th scope="col">personer</th>
+                        <th scope="col">beløb</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr scope="row">
+                        <td>Handle</td>
+                        <td>👤</td>
+                        <td>300kr</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Info</th>
+                        <td colspan="2">Eget kort</td>
+                    </tr>
+                </tbody>
             </table>
-          </div>
+        </div>
 
-          @* UC002 - Notes section *@
-          <div class="row mt-2">
+        @* UC002 - Notes section *@
+        <div class="row mt-2">
             <div class="d-flex justify-content-between align-items-center mb-1">
-              <strong class="small">Noter</strong>
-              <button class="btn btn-sm btn-outline-primary" @onclick="ToggleAddForm">+ Tilføj</button>
+                <strong class="small">Noter</strong>
+                <button class="btn btn-sm btn-outline-primary" @onclick="ToggleAddForm">+ Tilføj</button>
             </div>
 
             @* Feedback message *@
             @if (!string.IsNullOrEmpty(_feedbackMessage))
             {
-              <div class="alert @_feedbackClass py-1 px-2 small mb-1" role="alert">
-                @_feedbackMessage
-              </div>
+                <div class="alert @_feedbackClass py-1 px-2 small mb-1" role="alert">
+                    @_feedbackMessage
+                </div>
             }
 
             @* Add note form *@
             @if (_showAddForm)
             {
-              <div class="mb-2">
-                <textarea class="form-control form-control-sm mb-1" rows="2" placeholder="Skriv note her..."
-                          @bind="_newNoteText"></textarea>
-                <div class="d-flex gap-1">
-                  <button class="btn btn-sm btn-primary" @onclick="AddNote">Gem</button>
-                  <button class="btn btn-sm btn-secondary" @onclick="ToggleAddForm">Annullér</button>
+                <div class="mb-2">
+                    <textarea class="form-control form-control-sm mb-1" rows="2" placeholder="Skriv note her..."
+                              @bind="_newNoteText"></textarea>
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-sm btn-primary" @onclick="AddNote">Gem</button>
+                        <button class="btn btn-sm btn-secondary" @onclick="ToggleAddForm">Annullér</button>
+                    </div>
                 </div>
-              </div>
             }
 
             @* Notes list *@
             @if (!Resident.Notes.Any())
             {
-              <p class="small fst-italic text-muted">Ingen noter endnu</p>
+                <p class="small fst-italic text-muted">Ingen noter endnu</p>
             }
             else
             {
-              <ul class="list-group list-group-flush">
-                @foreach (ResidentNote note in Resident.Notes.OrderByDescending(n => n.EditedAt))
-                {
-                  <li class="list-group-item px-0 py-1">
-                    @if (_editingNoteId == note.Id)
+                <ul class="list-group list-group-flush">
+                    @foreach (ResidentNote note in Resident.Notes.OrderByDescending(n => n.EditedAt))
                     {
-                      <textarea class="form-control form-control-sm mb-1" rows="2" @bind="_editNoteText"></textarea>
-                      <div class="d-flex gap-1">
-                        <button class="btn btn-sm btn-primary" @onclick="() => SaveEdit(note.Id)">Gem</button>
-                        <button class="btn btn-sm btn-secondary" @onclick="CancelEdit">Annullér</button>
-                      </div>
+                        <li class="list-group-item px-0 py-1">
+                            @if (_editingNoteId == note.Id)
+                            {
+                                <textarea class="form-control form-control-sm mb-1" rows="2" @bind="_editNoteText"></textarea>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-sm btn-primary" @onclick="() => SaveEdit(note.Id)">Gem</button>
+                                    <button class="btn btn-sm btn-secondary" @onclick="CancelEdit">Annullér</button>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="mb-0 small">@note.Note</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">@note.EditedAt.ToString("HH:mm dd-MM-yyyy")</small>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-outline-secondary py-0"
+                                                @onclick="() => StartEdit(note)">
+                                            Rediger
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger py-0"
+                                                @onclick="() => ConfirmDelete(note.Id)">
+                                            Slet
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </li>
                     }
-                    else
-                    {
-                      <p class="mb-0 small">@note.Note</p>
-                      <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">@note.EditedAt.ToString("HH:mm dd-MM-yyyy")</small>
-                        <div class="d-flex gap-1">
-                          <button class="btn btn-sm btn-outline-secondary py-0"
-                                  @onclick="() => StartEdit(note)">Rediger</button>
-                          <button class="btn btn-sm btn-outline-danger py-0"
-                                  @onclick="() => ConfirmDelete(note.Id)">Slet</button>
-                        </div>
-                      </div>
-                    }
-                  </li>
-                }
-              </ul>
+                </ul>
             }
 
             @* Delete confirmation *@
             @if (_confirmDeleteId.HasValue)
             {
-              <div class="alert alert-warning py-1 px-2 mt-2 small">
-                <p class="mb-1">Er du sikker på du vil slette denne note?</p>
-                <div class="d-flex gap-1">
-                  <button class="btn btn-sm btn-danger" @onclick="DeleteNote">Slet</button>
-                  <button class="btn btn-sm btn-secondary" @onclick="CancelDelete">Annullér</button>
+                <div class="alert alert-warning py-1 px-2 mt-2 small">
+                    <p class="mb-1">Er du sikker på du vil slette denne note?</p>
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-sm btn-danger" @onclick="DeleteNote">Slet</button>
+                        <button class="btn btn-sm btn-secondary" @onclick="CancelDelete">Annullér</button>
+                    </div>
                 </div>
-              </div>
             }
-          </div>
+        </div>
 
-        </section>
-      </article>
-    </div>
+    </section>
+</article>
 
-  </div>
-</section>
 @* Code moved to ResidentCard.razor.cs (partial class) *@
