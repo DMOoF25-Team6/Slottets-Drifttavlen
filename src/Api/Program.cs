@@ -56,7 +56,14 @@ public class Program
         // Register both DbContext and DbContextFactory for DI
         _ = builder.Services.AddDbContext<AppDbContext>(options =>
         {
-            _ = options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            try
+            {
+                _ = options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            }
+            catch
+            {
+                // Change DatabaseHealth state
+            }
         });
 
         _ = builder.Services.AddAuthorization();

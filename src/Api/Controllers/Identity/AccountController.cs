@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
+using Core.DTOs;
 using Core.DTOs.Identity;
 using Core.Interfaces.Services;
 using Core.Mappers.Accounts;
@@ -32,27 +33,27 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
 {
     private readonly JwtSettings _jwtSettings = jwtSettings;
 
-    [HttpPost("toekn")]
-    public IActionResult GenerateToken()
-    {
-        _ = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, "testuser"),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+    //    [HttpPost("token")]
+    //    public IActionResult GenerateToken()
+    //    {
+    //        _ = new[]
+    //        {
+    //            new Claim(JwtRegisteredClaimNames.Sub, "testuser"),
+    //            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    //        };
 
-        SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(_jwtSettings.IssuerSigningKey));
-        _ = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        JwtSecurityToken tokenOptions = new(
-            issuer: _jwtSettings.Issuer,
-            audience: _jwtSettings.Audience,
-            claims: null,
-            expires: DateTime.Now.AddMinutes(int.Parse(Environment.GetEnvironmentVariable("TokenValidationParameters__ExpireMinutes") ?? throw new InvalidOperationException("ExpireMinutes not found in environment variables."))),
-            signingCredentials: null
-        );
+    //        SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(_jwtSettings.IssuerSigningKey));
+    //        _ = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+    //        JwtSecurityToken tokenOptions = new(
+    //            issuer: _jwtSettings.Issuer,
+    //            audience: _jwtSettings.Audience,
+    //            claims: null,
+    //            expires: DateTime.Now.AddMinutes(int.Parse(Environment.GetEnvironmentVariable("TokenValidationParameters__ExpireMinutes") ?? throw new InvalidOperationException("ExpireMinutes not found in environment variables."))),
+    //            signingCredentials: null
+    //        );
 
-        return Ok(new JwtSecurityTokenHandler().WriteToken(tokenOptions));
-    }
+    //        return Ok(new JwtSecurityTokenHandler().WriteToken(tokenOptions));
+    //    }
 
 
     /// <summary>
@@ -216,6 +217,25 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
         });
     }
 
+    // Delete user
+    [HttpDelete("delete")]
+    public async Task<IActionResult> DeleteUserAsync([FromBody] DeleteUserRequestDto request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        User? user = await GetValidUserByIdAsync(request.UserId);
+        if (user == null)
+        {
+            return NotFound(new DeleteUserResponseDto { ErrorMessages = ["User not found."] });
+        }
+
+        _ = await userManager.DeleteAsync(user);
+        return Ok(new DeleteUserResponseDto { IsSuccessful = true });
+    }
+
     #region Helper Methods
     /// <summary>
     /// Generates a new JWT access token.
@@ -228,7 +248,7 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
     private static string GenerateJwtToken(User user)
     {
         _ = new[]
-{
+    {
             new Claim(JwtRegisteredClaimNames.Sub, user.Email ?? "Ukendt"),
             new Claim(JwtRegisteredClaimNames.Jti, user.Id.ToString())
         };

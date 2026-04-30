@@ -29,3 +29,17 @@ Content-Type: application/json
     "accessToken": "PASTE_ACCESS_TOKEN_HERE",
     "refreshToken": "PASTE_REFRESH_TOKEN_HERE"
 }
+
+### Identity Logout
+POST {{Api_HostAddress}}/Account/logout
+Accept: application/json
+Authorization: Bearer PASTE_ACCESS_TOKEN_HERE
+
+### Identity delete user
+DELETE {{Api_HostAddress}}/Account/delete
+Accept: application/json
+Authorization: Bearer PASTE_ACCESS_TOKEN_HERE
+
+### Database is connected
+GET {{Api_HostAddress}}/DatabaseHealthCheck/IsDbConnected
+Accept: application/json
