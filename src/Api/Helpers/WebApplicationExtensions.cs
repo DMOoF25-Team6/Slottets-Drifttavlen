@@ -28,7 +28,7 @@ public static class WebApplicationExtensions
             {
                 ClaimsPrincipal user = context.HttpContext.User;
 
-                // Check if the user is authenticated and has the specific claim
+                // IsConnected if the user is authenticated and has the specific claim
                 if (!user.Identity?.IsAuthenticated == true ||
                     !user.HasClaim(c => c.Type == "CanManageUsers"))
                 {

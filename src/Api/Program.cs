@@ -7,6 +7,8 @@
 using System.Security.Claims;
 using System.Text;
 
+using Core.Providers;
+
 using Domain.Entities;
 
 using Infrastructure;
@@ -79,15 +81,16 @@ public class Program
 
         // Dummy email sender for Identity (required by MapIdentityApi)
         _ = builder.Services.AddSingleton<IEmailSender<User>, DummyEmailSenderForUser>();
+        builder.Services.AddSingleton<DatabaseConnectionStateProvider>();
 
         WebApplication app = builder.Build();
 
         // Apply any pending migrations at startup
         //using IServiceScope scope = app.Services.CreateScope();
         //AppDbContext ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        //if (ctx.Database.IsRelational())
+        //if (ctx.DatabaseController.IsRelational())
         //{
-        //    ctx.Database.Migrate();
+        //    ctx.DatabaseController.Migrate();
         //}
 
         // Configure the HTTP request pipeline.

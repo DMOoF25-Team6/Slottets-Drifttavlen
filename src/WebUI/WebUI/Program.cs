@@ -2,6 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 using Core.Interfaces.Managers;
+using Core.Providers;
 using Core.Services;
 
 using Infrastructure;
@@ -55,6 +56,7 @@ public class Program
         _ = builder.Services.AddAuthorizationCore();
         _ = builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
         _ = builder.Services.AddScoped<AccountService>();
+        _ = builder.Services.AddSingleton<DatabaseConnectionStateProvider>();
 
         WebApplication app = builder.Build();
 

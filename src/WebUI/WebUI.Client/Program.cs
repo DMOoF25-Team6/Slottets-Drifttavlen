@@ -1,6 +1,8 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using Core.Providers;
+
 using Infrastructure;
 
 using Microsoft.AspNetCore.Components.Authorization;
@@ -21,6 +23,7 @@ internal class Program
         _ = builder.Services.AddAuthorizationCore();
         _ = builder.Services.AddCascadingAuthenticationState();
         _ = builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
+        _ = builder.Services.AddSingleton<DatabaseConnectionStateProvider>();
 
         await builder.Build().RunAsync();
     }

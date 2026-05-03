@@ -4,10 +4,10 @@
 using Core;
 using Core.Interfaces.Managers;
 using Core.Interfaces.Services;
+using Core.Services;
 
 using Infrastructure.Managers;
 using Infrastructure.Services;
-using Core.Services;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,6 +48,8 @@ public static class DependencyInjection
 
         // CreateAccountAsync TokenService for ITokenService
         _ = services.AddScoped<ITokenService, TokenService>();
+
+        _ = services.AddScoped<IDatabaseConnectionManager, DatabaseConnectionManager>();
 
         return services;
     }
