@@ -2,6 +2,9 @@ services:
   slottets-sqlserver:
     image: mysql
     restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: luluogmanse
+      MYSQL_DATABASE: caremanagement
     ports:
       - "3307:3306"
     volumes:
