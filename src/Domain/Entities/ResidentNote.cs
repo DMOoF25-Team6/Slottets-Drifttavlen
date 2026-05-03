@@ -1,4 +1,4 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 
 using System.ComponentModel.DataAnnotations;
@@ -12,8 +12,12 @@ public class ResidentNote : IEntity
 {
     [Key]
     public Guid Id { get; set; }
+
     [Required]
     public string Note { get; set; } = string.Empty;
+
+    [Required]
+    public DateTime CreatedAt { get; set; }
 
     [Required]
     public DateTime EditedAt { get; set; }
