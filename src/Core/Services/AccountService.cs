@@ -2,6 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 using Core.DTOs.Identity;
+using Core.Interfaces.Dto.Identity;
 using Core.Interfaces.Managers;
 using Core.Interfaces.Services;
 
@@ -22,29 +23,9 @@ public class AccountService(IAccountManager AccountManager) : IAccountService
     /// </summary>
     /// <param name="registrationRequestDto">A registration request DTO containing user details.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="RegistrationResponseDto"/>.</returns>
-    public Task<RegistrationResponseDto> CreateAccountAsync(RegisterRequestDto registrationRequestDto)
+    public async Task<RegistrationResponseDto> CreateAccountAsync(RegisterRequestDto registrationRequestDto)
     {
-        return _AccountManager.CreateAccountAsync(registrationRequestDto);
-    }
-
-    /// <summary>
-    /// Authenticates a user and returns a login response.
-    /// </summary>
-    /// <param name="loginRequestDto">A login request DTO containing user credentials.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="LoginResponseDto"/>.</returns>
-    public Task<LoginResponseDto> LoginAsync(LoginRequestDto loginRequestDto)
-    {
-        return _AccountManager.LoginAsync(loginRequestDto);
-    }
-
-    /// <summary>
-    /// Logs out a user and invalidates their session.
-    /// </summary>
-    /// <param name="logoutRequestDto">A logout request DTO containing user information.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="LogoutResponseDto"/>.</returns>
-    public Task<LogoutResponseDto> LogoutAsync(LogoutRequestDto logoutRequestDto)
-    {
-        return _AccountManager.LogoutAsync(logoutRequestDto);
+        return await _AccountManager.CreateAccountAsync(registrationRequestDto);
     }
 
     /// <summary>
@@ -52,8 +33,38 @@ public class AccountService(IAccountManager AccountManager) : IAccountService
     /// </summary>
     /// <param name="refreshTokenRequestDto">A refresh token request DTO containing the refresh token.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="RefreshTokenResponseDto"/>.</returns>
-    public Task<RefreshTokenResponseDto> RefreshTokenAsync(RefreshTokenRequestDto refreshTokenRequestDto)
+    public async Task<RefreshTokenResponseDto> RefreshTokenAsync(RefreshTokenRequestDto refreshTokenRequestDto)
     {
-        return _AccountManager.RefreshTokenAsync(refreshTokenRequestDto);
+        return await _AccountManager.RefreshTokenAsync(refreshTokenRequestDto);
+    }
+
+    public async Task<ILoginResult> LoginAsync(LoginRequestDto loginRequestDto)
+    {
+        ILoginResult result = await _AccountManager.LoginAsync(loginRequestDto);
+        if (result is LoginResponseDto loginResponse)
+        {
+            return loginResponse;
+        }
+        // If result is an error, map to LoginResponseDto with empty/null tokens and error info if needed
+        return new ErrorDto
+        {
+            ErrorMessages = ["Login failed"]
+            // You can include additional error details here if needed
+        };
+    }
+
+    public async Task<ILogoutResult> LogoutAsync(LogoutRequestDto logoutRequestDto)
+    {
+        ILogoutResult result = await _AccountManager.LogoutAsync(logoutRequestDto);
+        if (result is LogoutResponseDto logoutResponse)
+        {
+            return (ILogoutResult)logoutResponse;
+        }
+        // If result is an error, map to LogoutResponseDto with empty/null tokens and error info if needed
+        return new ErrorDto
+        {
+            ErrorMessages = ["Logout failed"]
+            // You can include additional error details here if needed
+        };
     }
 }

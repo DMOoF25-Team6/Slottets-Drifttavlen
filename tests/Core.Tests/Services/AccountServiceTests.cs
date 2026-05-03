@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 using Core.DTOs.Identity;
+using Core.Interfaces.Dto.Identity;
 using Core.Interfaces.Managers;
 using Core.Services;
 
@@ -46,16 +47,18 @@ public class AccountServiceTests
     {
         // Arrange
         LogoutRequestDto request = new() { RefreshToken = "test-jwt-token" };
-        LogoutResponseDto expectedResponse = new();
+        ILogoutResult expectedResponse = new LogoutResponseDto();
         _ = _AccountManagerMock
             .Setup(m => m.LogoutAsync(request))
             .ReturnsAsync(expectedResponse);
 
         // Act
-        LogoutResponseDto result = await _service.LogoutAsync(request);
+        ILogoutResult result = await _service.LogoutAsync(request);
+        LogoutResponseDto logoutResponse = Assert.IsType<LogoutResponseDto>(result);
 
         // Assert
-        Assert.Equal(expectedResponse, result);
+        _ = Assert.IsType<LogoutResponseDto>(logoutResponse);
+        Assert.Equal(((LogoutResponseDto)expectedResponse).IsSuccessful, logoutResponse.IsSuccessful);
         _AccountManagerMock.Verify(m => m.LogoutAsync(request), Times.Once);
     }
 
@@ -84,16 +87,24 @@ public class AccountServiceTests
     {
         // Arrange
         LoginRequestDto request = new() { Email = username, Password = password };
-        LoginResponseDto expectedResponse = new();
+        LoginResponseDto expectedResponse = new()
+        {
+            Token = "test-token",
+            Email = username,
+            ExpiresAt = DateTime.UtcNow.AddHours(1)
+        };
         _ = _AccountManagerMock
             .Setup(m => m.LoginAsync(request))
             .ReturnsAsync(expectedResponse);
 
         // Act
-        LoginResponseDto result = await _service.LoginAsync(request);
+        ILoginResult result = await _service.LoginAsync(request);
+        LoginResponseDto loginResponse = Assert.IsType<LoginResponseDto>(result);
 
         // Assert
-        Assert.Equal(expectedResponse, result);
+        Assert.Equal(expectedResponse.Token, loginResponse.Token);
+        Assert.Equal(expectedResponse.Email, loginResponse.Email);
+        Assert.Equal(expectedResponse.ExpiresAt, loginResponse.ExpiresAt);
         _AccountManagerMock.Verify(m => m.LoginAsync(request), Times.Once);
     }
 }

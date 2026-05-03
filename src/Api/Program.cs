@@ -4,10 +4,12 @@
 
 // For SwaggerGen extension methods
 
+using System.Security.Claims;
 using System.Text;
 
 using Domain.Entities;
 
+using Infrastructure;
 using Infrastructure.Data;
 using Infrastructure.Data.Persistent;
 
@@ -16,6 +18,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
+using MySqlConnector;
 namespace Api;
 
 
@@ -56,7 +59,20 @@ public class Program
         ConfigurationManager conf = builder.Configuration;
         string connectionString = ConfigureDbContext(builder, conf)
             ?? throw new InvalidOperationException("DB_CONNECTION_STRING environment variable is not set.");
-        // Register both DbContext and DbContextFactory for DI
+        try
+        {
+            Console.WriteLine("[DEBUG] Attempting to connect to the database with the following connection string: " + connectionString);
+            using MySqlConnection testConnection = new(connectionString);
+            testConnection.Open();
+            Console.WriteLine("[DEBUG] Successfully connected to the database.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[ERROR] Failed to connect to the database. Exception: " + ex.Message);
+        }
+
+        // The rest of the pipeline configuration remains unchanged
+        // CreateAccountAsync both DbContext and DbContextFactory for DI
         _ = builder.Services.AddDbContext<AppDbContext>(options =>
         {
             _ = options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
@@ -64,6 +80,7 @@ public class Program
 
         _ = builder.Services.AddAuthorization();
 
+        _ = builder.Services.AddInfrastructure(builder.Configuration);
         _ = builder.Services.AddInfrastructureData();
 
         ConfigureIdentity(builder);
@@ -79,6 +96,14 @@ public class Program
         _ = builder.Services.AddSingleton<IEmailSender<User>, DummyEmailSenderForUser>();
 
         WebApplication app = builder.Build();
+
+        // Apply any pending migrations at startup
+        //using IServiceScope scope = app.Services.CreateScope();
+        //AppDbContext ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        //if (ctx.DatabaseController.IsRelational())
+        //{
+        //    ctx.DatabaseController.Migrate();
+        //}
 
         // Configure the HTTP request pipeline.
         //if (app.Environment.IsDevelopment())
@@ -119,7 +144,13 @@ public class Program
             opt.Password.RequireUppercase = true;
             opt.Password.RequireNonAlphanumeric = true;
             opt.Password.RequiredLength = 7;
+
+            opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            opt.Lockout.MaxFailedAccessAttempts = 5;
+
+            opt.User.RequireUniqueEmail = true;
         })
+            .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
     }
@@ -149,7 +180,9 @@ public class Program
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = issuer,
                     ValidAudience = audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                    RoleClaimType = ClaimTypes.Role,
+                    ClockSkew = TimeSpan.Zero
                 };
             });
     }
@@ -195,81 +228,53 @@ public class Program
         throw new InvalidOperationException("Connection string for AppDbContext not found in environment variables.");
     }
 
+
     /// <summary>
-    /// Adds the Identity API endpoints with custom registration authorization.
+    /// Dummy email sender implementation for development and testing.
     /// </summary>
-    /// <param name="app">The WebApplication instance.</param>
-    //private static IEndpointConventionBuilder AddEndpointIdentityApi(WebApplication app)
-    //{
-    //    // Suppress the default /register endpoint so only custom registration is allowed
-    //    IEndpointConventionBuilder identityApis = app.MapGroup("/Account").MapIdentityApi<User>();
-
-    //    _ = identityApis.AddEndpointFilter(async (context, next) =>
-    //    {
-    //        if (context.HttpContext.Request.Path.StartsWithSegments("/register", StringComparison.OrdinalIgnoreCase))
-    //        {
-    //            ClaimsPrincipal user = context.HttpContext.User;
-
-    //            // Check if the user is authenticated and has the specific claim
-    //            if (!user.Identity?.IsAuthenticated == true ||
-    //                !user.HasClaim(c => c.Type == "CanManageUsers"))
-    //            {
-    //                return Results.Forbid();
-    //            }
-    //        }
-    //        return await next(context);
-    //    });
-    //    return identityApis;
-    //}
-}
-
-
-
-
-/// <summary>
-/// Dummy email sender implementation for development and testing.
-/// </summary>
-/// <remarks>
-/// This class is used to satisfy the <see cref="IEmailSender{TUser}"/> dependency for Identity without sending real emails.
-/// </remarks>
-public class DummyEmailSenderForUser : IEmailSender<User>
-{
-    /// <summary>
-    /// Simulates sending a confirmation link email.
-    /// </summary>
-    /// <param name="user">A user entity.</param>
-    /// <param name="email">An email address.</param>
-    /// <param name="confirmationLink">A confirmation link.</param>
-    /// <returns>A completed task.</returns>
-    public Task SendConfirmationLinkAsync(User user, string email, string confirmationLink)
+    /// <remarks>
+    /// This class is used to satisfy the <see cref="IEmailSender{TUser}"/> dependency for Identity without sending real emails.
+    /// </remarks>
+    public class DummyEmailSenderForUser : IEmailSender<User>
     {
-        // Log or ignore in development
-        return Task.CompletedTask;
+        /// <summary>
+        /// Simulates sending a confirmation link email.
+        /// </summary>
+        /// <param name="user">A user entity.</param>
+        /// <param name="email">An email address.</param>
+        /// <param name="confirmationLink">A confirmation link.</param>
+        /// <returns>A completed task.</returns>
+        public Task SendConfirmationLinkAsync(User user, string email, string confirmationLink)
+        {
+            // Log or ignore in development
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Simulates sending a password reset link email.
+        /// </summary>
+        /// <param name="user">A user entity.</param>
+        /// <param name="email">An email address.</param>
+        /// <param name="resetLink">A password reset link.</param>
+        /// <returns>A completed task.</returns>
+        public Task SendPasswordResetLinkAsync(User user, string email, string resetLink)
+        {
+            // Log or ignore in development
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Simulates sending a password reset code email.
+        /// </summary>
+        /// <param name="user">A user entity.</param>
+        /// <param name="email">An email address.</param>
+        /// <param name="resetCode">A password reset code.</param>
+        /// <returns>A completed task.</returns>
+        public Task SendPasswordResetCodeAsync(User user, string email, string resetCode)
+        {
+            // Log or ignore in development
+            return Task.CompletedTask;
+        }
     }
 
-    /// <summary>
-    /// Simulates sending a password reset link email.
-    /// </summary>
-    /// <param name="user">A user entity.</param>
-    /// <param name="email">An email address.</param>
-    /// <param name="resetLink">A password reset link.</param>
-    /// <returns>A completed task.</returns>
-    public Task SendPasswordResetLinkAsync(User user, string email, string resetLink)
-    {
-        // Log or ignore in development
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Simulates sending a password reset code email.
-    /// </summary>
-    /// <param name="user">A user entity.</param>
-    /// <param name="email">An email address.</param>
-    /// <param name="resetCode">A password reset code.</param>
-    /// <returns>A completed task.</returns>
-    public Task SendPasswordResetCodeAsync(User user, string email, string resetCode)
-    {
-        // Log or ignore in development
-        return Task.CompletedTask;
-    }
 }

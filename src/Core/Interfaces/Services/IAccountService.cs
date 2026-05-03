@@ -2,6 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 using Core.DTOs.Identity;
+using Core.Interfaces.Dto.Identity;
 
 namespace Core.Interfaces.Services;
 
@@ -35,7 +36,7 @@ public interface IAccountService
     /// </summary>
     /// <param name="loginRequestDto">A login request containing user credentials.</param>
     /// <returns>A response containing authentication tokens and user information.</returns>
-    Task<LoginResponseDto> LoginAsync(LoginRequestDto loginRequestDto);
+    Task<ILoginResult> LoginAsync(LoginRequestDto loginRequestDto);
 
     /// <summary>
     /// Refreshes authentication tokens using a valid refresh token.
@@ -49,5 +50,5 @@ public interface IAccountService
     /// </summary>
     /// <param name="logoutRequestDto">A logout request containing session or token information.</param>
     /// <returns>A response indicating the result of the logout operation.</returns>
-    Task<LogoutResponseDto> LogoutAsync(LogoutRequestDto logoutRequestDto);
+    Task<ILogoutResult> LogoutAsync(LogoutRequestDto logoutRequestDto);
 }

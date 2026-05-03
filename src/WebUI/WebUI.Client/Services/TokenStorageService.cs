@@ -10,7 +10,7 @@ namespace WebUI.Client.Services;
 /// </summary>
 public class TokenStorageService(IJSRuntime jsRuntime)
 {
-    private const string TokenKey = "jwt_token";
+    private const string TokenKey = "token";
 
     public ValueTask SetTokenAsync(string token)
         => jsRuntime.InvokeVoidAsync("localStorage.setItem", TokenKey, token);

@@ -1,0 +1,41 @@
+@using Domain.Entities
+
+<ul class="list-group list-group-flush">
+    @if (Notes == null || !Notes.Any())
+    {
+        <p class="small fst-italic text-muted">Ingen noter endnu</p>
+    }
+    else
+    {
+        @foreach (var note in Notes.OrderByDescending(n => n.EditedAt))
+        {
+            <li class="list-group-item px-0 py-1">
+                @if (EditingNoteId == note.Id)
+                {
+                    <textarea class="form-control form-control-sm mb-1" rows="2" @bind="EditNoteText"></textarea>
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-sm btn-primary" @onclick="() => OnSaveEdit.InvokeAsync(note.Id)">Gem</button>
+                        <button class="btn btn-sm btn-secondary" @onclick="OnCancelEdit">Annullér</button>
+                    </div>
+                }
+                else
+                {
+                    <p class="mb-0 small">@note.Note</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">@note.EditedAt.ToString("HH:mm dd-MM-yyyy")</small>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-secondary py-0"
+                                    @onclick="() => OnStartEdit.InvokeAsync(note)">
+                                Rediger
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger py-0"
+                                    @onclick="() => OnConfirmDelete.InvokeAsync(note.Id)">
+                                Slet
+                            </button>
+                        </div>
+                    </div>
+                }
+            </li>
+        }
+    }
+</ul>

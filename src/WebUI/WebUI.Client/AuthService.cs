@@ -2,6 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 using Core.DTOs.Identity;
+using Core.Interfaces.Dto.Identity;
 using Core.Interfaces.Services;
 
 using Microsoft.AspNetCore.Components.Authorization;
@@ -26,10 +27,10 @@ public class AuthService(
     public async Task<bool> LoginAsync(string username, string password)
     {
         LoginRequestDto userLogin = new() { Email = username, Password = password };
-        LoginResponseDto result = await accountService.LoginAsync(userLogin);
-        if (result.JwtToken is not null)
+        ILoginResult result = await accountService.LoginAsync(userLogin);
+        if (result is LoginResponseDto loginResponse && loginResponse.Token is not null)
         {
-            await tokenStorageService.SetTokenAsync(result.JwtToken);
+            await tokenStorageService.SetTokenAsync(loginResponse.Token);
             (authenticationStateProvider as JwtAuthenticationStateProvider)?.NotifyAuthenticationStateChanged();
             return true;
         }

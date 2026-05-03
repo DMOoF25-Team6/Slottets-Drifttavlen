@@ -1,0 +1,33 @@
+@rendermode InteractiveAuto
+
+@using System
+
+<div class="d-flex justify-content-between align-items-center mb-1 mt-2">
+    <strong class="small">Smertestillende</strong>
+</div>
+
+@if (Status is null)
+{
+    <p class="small fst-italic text-muted">Indlæser smertestillende status...</p>
+}
+else
+{
+    <p class="small mb-1">
+        Næste tilladte tidspunkt:
+        @Status.NextAllowedTime.ToString("HH:mm dd-MM-yyyy")
+    </p>
+
+    @if (Status.Types?.Any() == true)
+    {
+        <ul class="list-group list-group-flush">
+            @foreach (string type in Status.Types)
+            {
+                <li class="list-group-item px-0 py-1 small">@type</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p class="small fst-italic text-muted">Ingen smertestillende registreret</p>
+    }
+}

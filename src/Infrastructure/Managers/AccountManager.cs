@@ -4,6 +4,7 @@
 using System.Net.Http.Json;
 
 using Core.DTOs.Identity;
+using Core.Interfaces.Dto.Identity;
 using Core.Interfaces.Managers;
 
 namespace Infrastructure.Managers;
@@ -16,15 +17,17 @@ namespace Infrastructure.Managers;
 /// </remarks>
 public class AccountManager : IAccountManager
 {
+    #region Fields
     private readonly HttpClient _httpClient;
     private readonly IHttpClientFactory? _httpClientFactory;
-
+    #endregion
     public AccountManager(IHttpClientFactory httpClientFactory)
     {
         _httpClientFactory = httpClientFactory;
         _httpClient = _httpClientFactory.CreateClient("SlottetApi") ?? throw new InvalidOperationException("Failed to create HttpClient.");
     }
 
+    #region Methods
     /// <summary>
     /// Creates a new user Account by sending registration data to the backend API.
     /// </summary>
@@ -33,7 +36,7 @@ public class AccountManager : IAccountManager
     /// <remarks>
     /// Returns a failed response if the backend response cannot be parsed.
     /// </remarks>
-    public async Task<RegistrationResponseDto> Register(RegisterRequestDto registrationRequestDto)
+    public async Task<RegistrationResponseDto> CreateAccountAsync(RegisterRequestDto registrationRequestDto)
     {
         HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/Account/register", registrationRequestDto);
         try
@@ -64,26 +67,22 @@ public class AccountManager : IAccountManager
     /// <remarks>
     /// Returns a failed response if the backend response cannot be parsed.
     /// </remarks>
-    public async Task<LoginResponseDto> LoginAsync(LoginRequestDto loginRequestDto)
+    public async Task<ILoginResult> LoginAsync(LoginRequestDto loginRequestDto)
     {
         HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/Account/login", loginRequestDto);
         try
         {
             return await response.Content.ReadFromJsonAsync<LoginResponseDto>() is LoginResponseDto loginResponseDto
                 ? loginResponseDto
-                : new LoginResponseDto
+                : new ErrorDto
                 {
-                    JwtToken = null,
-                    RefreshToken = null,
                     ErrorMessages = ["Failed to parse login response."]
                 };
         }
         catch (System.Text.Json.JsonException)
         {
-            return new LoginResponseDto
+            return new ErrorDto
             {
-                JwtToken = null,
-                RefreshToken = null,
                 ErrorMessages = ["Failed to parse login response."]
             };
         }
@@ -97,23 +96,21 @@ public class AccountManager : IAccountManager
     /// <remarks>
     /// Returns a failed response if the backend response cannot be parsed.
     /// </remarks>
-    public async Task<LogoutResponseDto> LogoutAsync(LogoutRequestDto logoutRequestDto)
+    public async Task<ILogoutResult> LogoutAsync(LogoutRequestDto logoutRequestDto)
     {
         HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/Account/logout", logoutRequestDto);
         try
         {
-            LogoutResponseDto? logoutResponseDto = await response.Content.ReadFromJsonAsync<LogoutResponseDto>();
-            return logoutResponseDto ?? new LogoutResponseDto
+            ILogoutResult? logoutResponseDto = await response.Content.ReadFromJsonAsync<LogoutResponseDto>();
+            return logoutResponseDto ?? new ErrorDto
             {
-                IsSuccessful = false,
                 ErrorMessages = ["Failed to parse logout response."]
             };
         }
         catch (System.Text.Json.JsonException)
         {
-            return new LogoutResponseDto
+            return new ErrorDto
             {
-                IsSuccessful = false,
                 ErrorMessages = ["Failed to parse logout response."]
             };
         }
@@ -149,9 +146,5 @@ public class AccountManager : IAccountManager
             ErrorMessages = ["Failed to parse refresh token response."]
         };
     }
-
-    public Task<RegistrationResponseDto> CreateAccountAsync(RegisterRequestDto registrationRequestDto)
-    {
-        throw new NotImplementedException();
-    }
+    #endregion
 }

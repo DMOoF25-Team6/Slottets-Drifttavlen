@@ -75,7 +75,7 @@ public class Program
         _ = app.UseStaticFiles();
         _ = app.UseAntiforgery();
 
-        // Register JwtRefreshMiddleware before endpoints
+        // CreateAccountAsync JwtRefreshMiddleware before endpoints
         //app.UseMiddleware<WebUI.Middleware.JwtRefreshMiddleware>();
 
         _ = app.MapRazorComponents<App>()

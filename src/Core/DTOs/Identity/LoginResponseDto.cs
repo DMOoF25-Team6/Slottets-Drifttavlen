@@ -1,6 +1,8 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using Core.Interfaces.Dto.Identity;
+
 namespace Core.DTOs.Identity;
 
 /// <summary>
@@ -9,7 +11,7 @@ namespace Core.DTOs.Identity;
 /// <remarks>
 /// Contains authentication tokens and error messages returned from the authentication service.
 /// </remarks>
-public class LoginResponseDto
+public class LoginResponseDto : ILoginResult
 {
     /// <summary>
     /// Gets or sets the JSON Web Token (JWT) issued upon successful authentication.
@@ -17,7 +19,10 @@ public class LoginResponseDto
     /// <value>
     /// A string containing the JWT token. The value can be <see langword="null"/> if authentication failed.
     /// </value>
-    public string? JwtToken { get; set; }
+    public required string Token { get; set; }
+
+    public required string Email { get; set; }
+    public required DateTime ExpiresAt { get; set; }
 
     /// <summary>
     /// Gets or sets the refresh token issued for obtaining new access tokens.
@@ -26,12 +31,4 @@ public class LoginResponseDto
     /// A string containing the refresh token. The value can be <see langword="null"/> if authentication failed.
     /// </value>
     public string? RefreshToken { get; set; }
-
-    /// <summary>
-    /// Gets or sets the collection of error messages returned from the authentication service.
-    /// </summary>
-    /// <value>
-    /// A collection of error messages. The value can be <see langword="null"/> if there are no errors.
-    /// </value>
-    public IEnumerable<string>? ErrorMessages { get; set; }
 }

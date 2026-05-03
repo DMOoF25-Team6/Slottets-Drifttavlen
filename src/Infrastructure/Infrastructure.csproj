@@ -9,8 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
 
-    <ProjectReference Include="..\Domain\Domain.csproj" />
-
 
     <Content Include="Migrations\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -19,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-  
+    <Folder Include="Helpers\" />
   </ItemGroup>  
   
   <ItemGroup>

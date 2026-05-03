@@ -1,0 +1,64 @@
+@*UC001 - Resident card shown for a quick status overview - stick to GDPR rules!*@
+@*UC001 Task - Low Fi prototype for first iteration of resident card*@
+@*UC002 - Full notes management added*@
+@* UC003 - Medicine and painkiller status overview added *@
+
+@using Domain.Entities
+@using Domain.Enums
+
+<section class="dashboard-grid container-fluid min-vh-100 d-flex align-items-center">
+    <div class="row g-3 row-cols-1 row-cols-md-4">
+
+        <div class="col">
+
+            <article class="card h-100">
+                <header class="card-header @GetTrafficLightClass(Resident.TrafficLightStatus) flex-fill">
+                    <h5 class="card-title">@Resident.Initials</h5>
+                    <span class="badge bg-success position-absolute top-0 end-0 m-0 px-4 col-auto">PN-Tid: 02:34:16</span>
+                </header>
+                <section class="card-body">
+
+                    <div class="col">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">aktivitet </th>
+                                    <th scope="col">personer</th>
+                                    <th scope="col">beløb</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr scope="row">
+                                    <td>Handle</td>
+                                    <td>👤</td>
+                                    <td>300kr</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Info</th>
+                                    <td colspan="2">Eget kort</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @* UC003 - Medicine and painkiller status section *@
+                    <div class="row mt-2">
+
+                        @* Medicine Section *@
+                        <MedicineStatus MedicineStatusData="_medicineStatus" />
+
+                        @* Painkiller Section *@
+                        <PainkillerStatus Status="_painkillerStatus" />
+                    </div>
+
+                    @* UC002 - Notes section *@
+                    <div class="row mt-2">
+                        <NotesSection Resident="Resident" Notes="Resident.Notes.ToList()" />
+                    </div>
+
+                </section>
+            </article>
+        </div>
+
+    </div>
+</section>

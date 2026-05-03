@@ -3,47 +3,25 @@
 
 @layout DashboardLayout
 @page "/dashboard"
-@rendermode InteractiveServer
+@rendermode InteractiveAuto
 @using Domain.Enums
 @using Domain.Entities
-@using WebUI.Components.Layout
-@using WebUI.Components.Residents
+@using WebUI.Client.Components.Layout
+@using WebUI.Client.Components.Residents
 @inject Core.Interfaces.Services.IResidentService ResidentService
 
 <PageTitle>Dashboard</PageTitle>
 
 <main>
-
     <section aria-label="Resident Overview" class="dashboard-grid container-fluid min-vh-100 d-flex align-items-center">
         <div class="row g-3 row-cols-1 row-cols-md-4">
 
             @foreach (var resident in _residents)
             {
-
                 <div class="col">
-                    @*@ Korrekt *@
                     <ResidentCard Resident="resident" />
                 </div>
-
             }
-
         </div>
     </section>
 </main>
-
-
-
-
-
-@code 
-{
-    private List<Resident> _residents = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        _residents = (await ResidentService.GetAllAsync()).ToList();
-    }
-   
-    //TODO: Replace with real timestamp in LastUpdated and update it when traffic light changes
-
-}

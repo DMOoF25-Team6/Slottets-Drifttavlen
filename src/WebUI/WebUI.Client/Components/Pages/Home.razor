@@ -1,10 +1,6 @@
 @page "/"
 
 @rendermode InteractiveAuto
-@using Microsoft.AspNetCore.Components.Authorization
-@inject NavigationManager Navigation
-@inject AuthenticationStateProvider AuthenticationStateProvider
-@inject WebUI.Client.AuthService AuthService
 
 <PageTitle>Home</PageTitle>
 
@@ -42,36 +38,3 @@
     }
   </NotAuthorized>
 </AuthorizeView>
-
-@code {
-  private bool isInteractive = false;
-  private System.Security.Claims.ClaimsPrincipal? user;
-  private string? currentUrl;
-
-  protected override async Task OnAfterRenderAsync(bool firstRender)
-  {
-    if (firstRender)
-    {
-      isInteractive = true;
-      currentUrl = Navigation.Uri;
-      var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-      user = authState.User;
-      StateHasChanged();
-    }
-  }
-
-  private void Login()
-  {
-    if (isInteractive)
-    {
-      Navigation.NavigateTo("/login");
-    }
-  }
-
-  private async Task Logout()
-  {
-    await AuthService.LogoutAsync();
-    Navigation.NavigateTo("/");
-  }
-
-}

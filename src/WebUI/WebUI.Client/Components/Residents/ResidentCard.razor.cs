@@ -1,8 +1,6 @@
 // Copyright (c) 2026 Team6. All rights reserved.
 // No warranty, explicit or implicit, provided.
 
-using System.Net.Http.Json;
-
 using Core.DTOs;
 using Core.Interfaces.Services;
 
@@ -12,7 +10,7 @@ using Domain.Enums;
 
 using Microsoft.AspNetCore.Components;
 
-namespace WebUI.Components.Residents;
+namespace WebUI.Client.Components.Residents;
 
 public partial class ResidentCard : ComponentBase
 {
@@ -47,6 +45,8 @@ public partial class ResidentCard : ComponentBase
     private MedicineStatusDto? _medicineStatus;
     private PainkillerStatusDto? _painkillerStatus;
 
+    private string _notesErrorMessage = string.Empty;
+
     #endregion
 
     #region Lifecycle
@@ -63,16 +63,26 @@ public partial class ResidentCard : ComponentBase
 
     private async Task LoadNotes()
     {
-        IEnumerable<Core.DTOs.ResidentNoteDto> notes = await ResidentNoteService
-            .GetAllByResidentIdAsync(Resident.Id, CancellationToken.None);
-
-        Resident.Notes = [.. notes.Select(n => new ResidentNote
+        try
         {
-            Id = n.Id,
-            Note = n.Note,
-            EditedAt = n.Timestamp,
-            ResidentId = Resident.Id
-        })];
+            IEnumerable<Core.DTOs.ResidentNoteDto> notes = await ResidentNoteService
+                .GetAllByResidentIdAsync(Resident.Id, CancellationToken.None);
+
+            Resident.Notes = [.. notes.Select(n => new ResidentNote
+            {
+                Id = n.Id,
+                Note = n.Note,
+                EditedAt = n.Timestamp,
+                ResidentId = Resident.Id
+            })];
+        }
+        catch (HttpRequestException ex)
+        {
+            // Log the error (use your logging framework or Console)
+            Console.Error.WriteLine($"Failed to load notes: {ex.Message}");
+            // Optionally, set a user-friendly error message for the UI
+            _notesErrorMessage = "Kunne ikke hente noter. Prøv igen senere.";
+        }
     }
 
     private void ToggleAddForm()
@@ -201,6 +211,15 @@ public partial class ResidentCard : ComponentBase
     {
         _medicineStatus = await MedicineStatusService.GetMedicineStatusAsync(Resident.Id);
         _painkillerStatus = await MedicineStatusService.GetPainkillerStatusAsync(Resident.Id);
+
+        if (_painkillerStatus is not null)
+        {
+            _painkillerStatus = new PainkillerStatusDto
+            {
+                NextAllowedTime = _painkillerStatus.NextAllowedTime,
+                Types = _painkillerStatus.Types
+            };
+        }
     }
 
     #endregion

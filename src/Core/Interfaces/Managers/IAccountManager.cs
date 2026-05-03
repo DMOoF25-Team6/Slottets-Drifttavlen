@@ -2,6 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 using Core.DTOs.Identity;
+using Core.Interfaces.Dto.Identity;
 
 namespace Core.Interfaces.Managers;
 
@@ -22,14 +23,14 @@ public interface IAccountManager
     /// </summary>
     /// <param name="loginRequestDto">An object containing the login credentials.</param>
     /// <returns>A response object containing the result of the login operation.</returns>
-    Task<LoginResponseDto> LoginAsync(LoginRequestDto loginRequestDto);
+    Task<ILoginResult> LoginAsync(LoginRequestDto loginRequestDto);
 
     /// <summary>
     /// Logs out a user and invalidates the current session or token.
     /// </summary>
     /// <param name="logoutRequestDto">An object containing the logout request details.</param>
     /// <returns>A response object containing the result of the logout operation.</returns>
-    Task<LogoutResponseDto> LogoutAsync(LogoutRequestDto logoutRequestDto);
+    Task<ILogoutResult> LogoutAsync(LogoutRequestDto logoutRequestDto);
 
     /// <summary>
     /// Refreshes the authentication token for a user session.

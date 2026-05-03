@@ -1,0 +1,37 @@
+@* MedicineStatus.razor: Displays medicine status for a resident *@
+
+@rendermode InteractiveAuto
+
+<div class="d-flex justify-content-between align-items-center mb-1">
+    <strong class="small">Medicinstatus</strong>
+</div>
+@if (MedicineStatusData is null)
+{
+    <p class="small fst-italic text-muted">Indlæser medicinstatus...</p>
+}
+else if (!(MedicineStatusData.Medicine is Array arr && arr.Length > 0))
+{
+    <p class="small fst-italic text-muted">Ingen medicinregistreringer de sidste 24 timer</p>
+}
+else
+{
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th scope="col">Medicin</th>
+                <th scope="col">Givet</th>
+                <th scope="col">Tidspunkt</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < MedicineStatusData.Medicine.Length; i++)
+            {
+                <tr>
+                    <td>@MedicineStatusData.Medicine[i]</td>
+                    <td>@(MedicineStatusData.Given[i] ? "Ja" : "Nej")</td>
+                    <td>@MedicineStatusData.Timestamps[i].ToString("HH:mm dd-MM-yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

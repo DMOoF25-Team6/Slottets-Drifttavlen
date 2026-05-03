@@ -21,7 +21,7 @@ public class LoginRequestDto
     /// <value>
     /// A string containing the user's email address.
     /// </value>
-    [Required(ErrorMessage = EmailRequired)]
+    [Required(AllowEmptyStrings = false, ErrorMessage = EmailRequired)]
     [EmailAddress(ErrorMessage = InvalidEmailAddress)]
     public required string Email { get; set; }
 
@@ -31,6 +31,6 @@ public class LoginRequestDto
     /// <value>
     /// A string containing the user's password.
     /// </value>
-    [Required(ErrorMessage = PasswordRequired)]
+    [Required(AllowEmptyStrings = false, ErrorMessage = PasswordRequired)]
     public required string Password { get; set; }
 }

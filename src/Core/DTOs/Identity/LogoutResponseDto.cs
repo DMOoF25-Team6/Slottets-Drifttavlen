@@ -1,6 +1,8 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using Core.Interfaces.Dto.Identity;
+
 namespace Core.DTOs.Identity;
 
 
@@ -10,7 +12,7 @@ namespace Core.DTOs.Identity;
 /// <remarks>
 /// Contains information about the success of the logout and any error messages encountered.
 /// </remarks>
-public class LogoutResponseDto
+public class LogoutResponseDto : ILogoutResult
 {
     /// <summary>
     /// Gets or sets a value that indicates whether the logout operation was successful.
@@ -18,15 +20,5 @@ public class LogoutResponseDto
     /// <value>
     /// <see langword="true" /> if the logout was successful; otherwise, <see langword="false" />.
     /// </value>
-    public bool IsSuccessful { get; set; }
-
-    /// <summary>
-    /// Gets or sets the collection of error messages encountered during logout.
-    /// </summary>
-    /// <value>
-    /// A collection of error messages, or <see langword="null" /> if no errors occurred.
-    /// </value>
-    public IEnumerable<string>? ErrorMessages { get; set; }
-
-    public string? RefreshToken { get; set; } = null;
+    public bool IsSuccessful { get; set; } = true;
 }

@@ -5,6 +5,11 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - "${MYSQL_PORT}:3306"
     volumes:
@@ -79,7 +84,7 @@ services:
       target: webapi-final-stage
     depends_on:
       slottets-sqlserver:
-        condition: service_started
+        condition: service_healthy
     env_file:
       - .env
     environment:
@@ -89,8 +94,8 @@ services:
       - MYSQL_PORT=3306
     ports:
       - "5051:5051"
-    expose:
-      - 5051
+#    expose:
+#      - 5051
     networks:
       vlan-db:
       vlan-web:
@@ -108,7 +113,7 @@ services:
       target: webui-final-stage
     depends_on:
       slottets-sqlserver:
-        condition: service_started
+        condition: service_healthy
       webapi-final-stage:
         condition: service_started
     environment:

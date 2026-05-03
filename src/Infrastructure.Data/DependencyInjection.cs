@@ -28,6 +28,9 @@ public static class DependencyInjection
         // Identity services
         _ = services.AddScoped<IRefreshTokenStore, RefreshTokenStore>();
 
+        // Database connectivity service
+        _ = services.AddScoped<IDatabaseService, Services.DatabaseService>();
+
         return services;
     }
 }

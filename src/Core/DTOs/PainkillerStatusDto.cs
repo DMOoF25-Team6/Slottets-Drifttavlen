@@ -25,7 +25,7 @@ public class PainkillerStatusDto
     /// <value>
     /// An array of painkiller type names. The default is an empty array.
     /// </value>
-    public string[] Types { get; set; } = [];
+    public IEnumerable<string> Types { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the next allowed time for painkiller administration.

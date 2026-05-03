@@ -1,9 +1,21 @@
 @Api_HostAddress = http://localhost:5051
 
-### Identity Register user
+### Login with admin credentials to obtain access token
+POST {{Api_HostAddress}}/Account/login
+Accept: application/json
+Content-Type: application/json
+
+{
+    "email": "PederRasmussen@example.com",
+    "password": "Password123!"
+}
+
+
+### Identity Register user (Admin role is assigned by default)
 POST {{Api_HostAddress}}/Account/register
 Accept: application/json
 Content-Type: application/json
+Authorization: Bearer {{admin_accessToken}}
 
 {
     "email": "testuser@example.com",
@@ -41,5 +53,11 @@ Accept: application/json
 Authorization: Bearer PASTE_ACCESS_TOKEN_HERE
 
 ### Database is connected
-GET {{Api_HostAddress}}/DatabaseHealthCheck/IsDbConnected
+
+GET {{Api_HostAddress}}/Database/IsDbConnected
 Accept: application/json
+
+###
+
+
+

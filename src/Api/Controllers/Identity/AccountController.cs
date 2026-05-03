@@ -1,20 +1,18 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
 
 using Core.DTOs.Identity;
+using Core.Interfaces.Dto.Identity;
 using Core.Interfaces.Services;
 using Core.Mappers.Accounts;
 
 using Domain.Entities;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Controllers.Identity;
 
@@ -26,23 +24,47 @@ namespace Api.Controllers.Identity;
 /// </remarks>
 [Route("[controller]")]
 [ApiController]
-public class AccountController(UserManager<User> userManager, IRefreshTokenStore refreshTokenStore) : ControllerBase
+public class AccountController(
+    UserManager<User> userManager,
+    IRefreshTokenStore refreshTokenStore,
+    //SignInManager<User> signInManager,
+    ITokenService tokenService,
+    IConfiguration config) : ControllerBase
 {
+
     /// <summary>
     /// Registers a new user Account.
     /// </summary>
     /// <param name="request">A registration request containing user details and password.</param>
     /// <returns>An <see cref="IActionResult"/> indicating the result of the registration operation.</returns>
+    /// <remarks>
+    /// Only users with the <c>admin</c> or <c>superuser</c> role are authorized to access this endpoint.
+    /// </remarks>
     /// <response code="200">Registration succeeded.</response>
     /// <response code="400">Registration failed due to validation errors or duplicate user.</response>
-    [HttpPost("register")]
+    /// <response code="401">The user is not authorized to perform this action.</response>
+        [HttpPost("register")]
+        [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
+
+        User? existing = await userManager.FindByEmailAsync(request.Email);
+        if (existing != null)
+        {
+            return BadRequest(new RegistrationResponseDto
+            {
+                IsSuccessful = false,
+                ErrorMessages = ["Email er allerede i brug."]
+            });
+        }
+
+        // Map the registration request to a User entity
         User user = RegistrationMapper.ToUserEntity(request);
+
         IdentityResult result = await userManager.CreateAsync(user, request.Password);
         return result.Succeeded
             ? Ok(new RegistrationResponseDto { IsSuccessful = true })
@@ -51,6 +73,50 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
                 IsSuccessful = false,
                 ErrorMessages = result.Errors.Select(e => e.Description)
             });
+    }
+
+    /// <summary>
+    /// Deletes a user account by user ID.
+    /// </summary>
+    /// <param name="request">A request containing the user ID to delete.</param>
+    /// <returns>An <see cref="IActionResult"/> indicating the result of the delete operation.</returns>
+    /// <remarks>
+    /// Only users with the <c>admin</c> or <c>superuser</c> role are authorized to access this endpoint. This endpoint is intended for testing purposes and should be protected or removed in production environments.
+    /// </remarks>
+    /// <response code="200">User deletion succeeded.</response>
+    /// <response code="400">Request failed due to validation errors.</response>
+    /// <response code="401">The user is not authorized to perform this action.</response>
+    /// <response code="404">User not found.</response>
+    [HttpDelete("delete/{userId}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteUserAsync(string userId)
+    {
+        if (!Guid.TryParse(userId, out Guid parsedUserId))
+        {
+            return BadRequest(new ErrorDto { ErrorMessages = ["Invalid user ID format."] });
+        }
+
+        User? user = await GetValidUserByIdAsync(parsedUserId);
+        if (user == null)
+        {
+            return NotFound(new ErrorDto { ErrorMessages = ["User not found."] });
+        }
+
+        _ = await userManager.DeleteAsync(user);
+        return Ok(new DeleteUserResponseDto { IsSuccessful = true });
+    }
+
+    [HttpPost("get-id-by-email")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetUserIdByEmailAsync([FromBody] GetUserIdByEmailRequestDto content)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        User? result = await userManager.FindByEmailAsync(content.Email);
+        return result == null ? NotFound(new ErrorDto { ErrorMessages = ["User not found."] }) : Ok(new { UserId = result.Id });
     }
 
 
@@ -68,33 +134,40 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
         {
             return errorResult;
         }
+        // Explicitly check for empty or null password
+        if (string.IsNullOrWhiteSpace(request.Password))
+        {
+            return BadRequest(new ErrorDto { ErrorMessages = ["Password is required."] });
+        }
 
         User? user = await FindValidUserAsync(request.Email, request.Password);
         if (user == null)
         {
-            return Unauthorized(new LoginResponseDto { ErrorMessages = ["Invalid email or password."] });
+            return Unauthorized(new ErrorDto { ErrorMessages = ["Ugyldig e-mail eller adgangskode."] });
         }
 
-        string token = GenerateJwtToken();
-        string refreshTokenValue = GenerateRefreshToken();
-        string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-        RefreshToken refreshToken = new()
+        ILoginResult loginResult = await GenerateJwtTokenAsync(user);
+        if (loginResult is ErrorDto errorDto)
         {
-            Id = Guid.NewGuid(),
-            UserId = user.Id,
-            Token = refreshTokenValue,
-            CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(7),
-            CreatedByIp = ipAddress
-        };
+            return Unauthorized(errorDto);
+        }
 
-        await refreshTokenStore.SaveAsync(refreshToken);
+        //string token = ((LoginResponseDto)loginResult).Token;
+        //string refreshTokenValue = GenerateRefreshToken();
+        //string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        //RefreshToken refreshToken = new()
+        //{
+        //    Id = Guid.NewGuid(),
+        //    UserId = user.Id,
+        //    Token = refreshTokenValue,
+        //    CreatedAt = DateTime.UtcNow,
+        //    ExpiresAt = DateTime.UtcNow.AddH(7),
+        //    CreatedByIp = ipAddress
+        //};
 
-        return Ok(new LoginResponseDto
-        {
-            JwtToken = token,
-            RefreshToken = refreshTokenValue
-        });
+        //await refreshTokenStore.SaveAsync(refreshToken);
+
+        return Ok(loginResult);
     }
 
     /// <summary>
@@ -130,7 +203,13 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
             return Unauthorized(new RefreshTokenResponseDto { ErrorMessages = ["User not found or email unavailable."] });
         }
 
-        string token = GenerateJwtToken();
+        ILoginResult loginResult = await GenerateJwtTokenAsync(user);
+        if (loginResult is ErrorDto errorDto)
+        {
+            return Unauthorized(errorDto);
+        }
+
+        _ = ((LoginResponseDto)loginResult).Token;
         string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
         RefreshToken newRefreshToken = new()
         {
@@ -143,11 +222,9 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
         };
         await refreshTokenStore.SaveAsync(newRefreshToken);
 
-        return Ok(new RefreshTokenResponseDto
-        {
-            JwtToken = token,
-            RefreshToken = newRefreshToken.Token
-        });
+        LoginResponseDto loginResponse = (LoginResponseDto)loginResult;
+        loginResponse.RefreshToken = newRefreshToken.Token;
+        return Ok(loginResponse);
     }
 
     /// <summary>
@@ -167,9 +244,8 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
         string? refreshToken = Request.Headers["X-Refresh-Token"].FirstOrDefault() ?? request.RefreshToken;
         if (string.IsNullOrWhiteSpace(refreshToken))
         {
-            return BadRequest(new LogoutResponseDto
+            return BadRequest(new ErrorDto
             {
-                IsSuccessful = false,
                 ErrorMessages = ["Refresh token required for logout."]
             });
         }
@@ -198,26 +274,68 @@ public class AccountController(UserManager<User> userManager, IRefreshTokenStore
     /// </remarks>
     /// <returns>A JWT access token as a string.</returns>
     /// <exception cref="InvalidOperationException">IssuerSigningKey not found in environment variables.</exception>
-    private static string GenerateJwtToken()
+    private async Task<ILoginResult> GenerateJwtTokenAsync(User user)
     {
-        string key = Environment.GetEnvironmentVariable("TokenValidationParameters__IssuerSigningKey") ?? throw new InvalidOperationException("IssuerSigningKey not found in environment variables.");
-        SymmetricSecurityKey secretKey = new(Encoding.UTF8.GetBytes(key));
-        SigningCredentials signingCredentials = new(secretKey, SecurityAlgorithms.HmacSha256);
+        bool error = false;
+        IEnumerable<string> errorMsg = [];
+        IList<string> roles = await userManager.GetRolesAsync(user);
+        string token = tokenService.GenerateToken(user, roles);
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            error = true;
+            errorMsg = ["Failed to generate JWT token."];
+        }
+        int minuttesToExpire = int.Parse(config["TokenValidationParameters:TokenExpirationMinutes"] ?? "5");
 
-        Claim[] claims =
-        [
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        ];
+        if (error)
+        {
+            return new ErrorDto
+            {
+                ErrorMessages = errorMsg
+            };
+        }
 
-        JwtSecurityToken tokenOptions = new(
-            issuer: Environment.GetEnvironmentVariable("TokenValidationParameters__Issuer"),
-            audience: Environment.GetEnvironmentVariable("TokenValidationParameters__Audience"),
-            claims: claims,
-            expires: DateTime.Now.AddMinutes(5),
-            signingCredentials: signingCredentials
-        );
+        // Generate a refresh token
+        string refreshTokenValue = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        RefreshToken refreshToken = new()
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            Token = refreshTokenValue,
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow.AddDays(7),
+            CreatedByIp = ipAddress
+        };
 
-        return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+        await refreshTokenStore.SaveAsync(refreshToken);
+
+        LoginResponseDto loginResponse = new()
+        {
+            Token = token,
+            Email = user.Email ?? string.Empty,
+            ExpiresAt = DateTime.UtcNow.AddMinutes(minuttesToExpire),
+            RefreshToken = refreshTokenValue
+        };
+        return loginResponse;
+        //string key = Environment.GetEnvironmentVariable("TokenValidationParameters__IssuerSigningKey") ?? throw new InvalidOperationException("IssuerSigningKey not found in environment variables.");
+        //SymmetricSecurityKey secretKey = new(Encoding.UTF8.GetBytes(key));
+        //SigningCredentials signingCredentials = new(secretKey, SecurityAlgorithms.HmacSha256);
+
+        //Claim[] claims =
+        //[
+        //    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        //];
+
+        //JwtSecurityToken tokenOptions = new(
+        //    issuer: Environment.GetEnvironmentVariable("TokenValidationParameters__Issuer"),
+        //    audience: Environment.GetEnvironmentVariable("TokenValidationParameters__Audience"),
+        //    claims: claims,
+        //    expires: DateTime.Now.AddMinutes(5),
+        //    signingCredentials: signingCredentials
+        //);
+
+        //return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
     }
 
     // Helper: Validate ModelState

@@ -19,7 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Moq;
 
-using ResidentCardComponent = WebUI.Components.Residents.ResidentCard;
+using ResidentCardComponent = WebUI.Client.Components.Residents.ResidentCard;
 
 using Xunit;
 
@@ -81,7 +81,6 @@ public class ResidentCardTests : Bunit.TestContext
     }
 
     #endregion
-
 
     #region Render Tests
 
@@ -276,11 +275,3 @@ public class ResidentCardTests : Bunit.TestContext
 
     #endregion
 }
-
-
-    
-
-
-
-
-
