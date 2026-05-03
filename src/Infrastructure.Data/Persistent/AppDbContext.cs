@@ -39,7 +39,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
         _ = modelBuilder.ApplyConfiguration(new Configurations.ResidentNoteConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.MedicineRecordConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.PainkillerRecordConfiguration());
-        _ = modelBuilder.ApplyConfiguration(new Configurations.AuditLogConfiguration());
+        //_ = modelBuilder.ApplyConfiguration(new Configurations.AuditLogConfiguration());
 
 
         _ = modelBuilder.Entity<MedicineStatusView>()
@@ -50,9 +50,10 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
             .HasNoKey()
             .ToView("painkillerstatusview");
 
-        _ = modelBuilder.Entity<ResidentNoteView>()
-            .HasNoKey()
-            .ToView("vwResidentNote");
+        //_ = modelBuilder.Entity<ResidentNoteView>()
+        //    .HasNoKey()
+        //    .ToView("vwResidentNote");
+
         _ = modelBuilder.Entity<PhoneAssignmentView>()
             .HasNoKey()
             .ToView("vwPhoneAssignment");
