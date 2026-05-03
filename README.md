@@ -7,7 +7,8 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Repo Size][repo-size-shield]][repo-size-url]
 [![Issues][issues-shield]][issues-url]
-
+[![Coverage][Coverage-shield]][Coverage-url]
+[![GitHub Pages][GithubPages-shield]][GithubPages-url]
 
 
 <a name="indholdsfortegnelse"></a>
@@ -252,3 +253,5 @@ Automatiserer:
 
 [Coverage-shield]: https://img.shields.io/codecov/c/github/DMOoF25-Team6/Slottets-Drifttavlen.svg?style=for-the-badge
 [Coverage-url]: https://codecov.io/gh/DMOoF25-Team6/Slottets-Drifttavlen
+[GithubPages-shield]: https://img.shields.io/badge/GitHub%20Pages-Online-brightgreen?style=for-the-badge
+[GithubPages-url]: https://dmoof25-team6.github.io/Slottets-Drifttavlen/
