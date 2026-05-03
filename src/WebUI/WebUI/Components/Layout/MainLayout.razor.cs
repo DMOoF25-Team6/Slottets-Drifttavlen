@@ -1,42 +1,69 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-using Core.Interfaces.Managers;
-using Core.Providers;
+using Core.Interfaces.Providers;
+using Core.Interfaces.Services;
 
 using Microsoft.AspNetCore.Components;
 
 namespace WebUI.Components.Layout;
 
-public partial class MainLayout
+public partial class MainLayout : IDisposable
 {
+
+    [Inject]
+    private IDatabaseConnectionStateProvider DbConnectionStateProvider { get; set; } = default!;
+
+    [Inject]
+    private IDatabaseConnectionService DbConnectionService { get; set; } = default!;
+
     private System.Threading.Timer? _timer;
 
-    [Inject]
-    private IDatabaseConnectionManager DbConnectionManager { get; set; } = default!;
+    // Dotnet 8 issue
+#pragma warning disable IDE0032 // Use auto property
+    private bool _isDbConnected;
+#pragma warning restore IDE0032 // Use auto property
 
-    [Inject]
-    private DatabaseConnectionStateProvider DbStateProvider { get; set; } = default!;
+    private bool IsDbConnected
+    {
+        get => _isDbConnected;
+        set
+        {
+            if (_isDbConnected != value)
+            {
+                _isDbConnected = value;
+                StateHasChanged();
+            }
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        DbStateProvider.StateChanged += OnDbStateChanged;
-        await DbConnectionManager.CheckAndUpdateConnectionStateAsync();
+        DbConnectionStateProvider.StateChanged += OnDbConnectionStateChanged;
+        await FetchDbConnectionStateAsync();
         // Poll every 30 seconds (adjust as needed)
         _timer = new System.Threading.Timer(async _ =>
         {
-            await InvokeAsync(() => DbConnectionManager.CheckAndUpdateConnectionStateAsync());
+            await InvokeAsync(FetchDbConnectionStateAsync);
         }, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
     }
 
-    private void OnDbStateChanged()
+    private async Task FetchDbConnectionStateAsync()
     {
-        _ = InvokeAsync(StateHasChanged);
+        await DbConnectionService.CheckDatabaseConnectionAsync();
+        IsDbConnected = DbConnectionStateProvider.IsConnected;
     }
 
-    public void Dispose()
+    private void OnDbConnectionStateChanged()
     {
-        DbStateProvider.StateChanged -= OnDbStateChanged;
+        IsDbConnected = DbConnectionStateProvider.IsConnected;
+    }
+
+    void IDisposable.Dispose()
+    {
+        DbConnectionStateProvider.StateChanged -= OnDbConnectionStateChanged;
         _timer?.Dispose();
+        // Suppress finalization to avoid unnecessary GC overhead
+        GC.SuppressFinalize(this);
     }
 }

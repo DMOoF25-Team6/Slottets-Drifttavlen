@@ -13,18 +13,12 @@ namespace Infrastructure.Data.Services;
 /// <remarks>
 /// This service uses <see cref="AppDbContext"/> to check the database connection status.
 /// </remarks>
-public class DatabaseService : IDatabaseService
+/// <remarks>
+/// Initializes a new instance of the <see cref="DatabaseService"/> class.
+/// </remarks>
+/// <param name="dbContext">An instance of the application's database context.</param>
+public class DatabaseService(AppDbContext dbContext) : IDatabaseService
 {
-    private readonly AppDbContext _dbContext;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DatabaseService"/> class.
-    /// </summary>
-    /// <param name="dbContext">An instance of the application's database context.</param>
-    public DatabaseService(AppDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
 
     /// <summary>
     /// Determines whether the application can connect to the configured database.
@@ -39,7 +33,7 @@ public class DatabaseService : IDatabaseService
     {
         try
         {
-            return _dbContext.Database.CanConnect();
+            return dbContext.Database.CanConnect();
         }
         catch
         {

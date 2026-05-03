@@ -45,7 +45,10 @@ public partial class NotesSection
     private async Task AddNote()
     {
         if (string.IsNullOrWhiteSpace(_newNoteText))
+        {
             return;
+        }
+
         bool success = await ResidentNoteService.AddAsync(Resident.Id, _newNoteText, CancellationToken.None);
         if (success)
         {
@@ -76,7 +79,10 @@ public partial class NotesSection
     private async Task SaveEdit(Guid noteId)
     {
         if (string.IsNullOrWhiteSpace(_editNoteText))
+        {
             return;
+        }
+
         bool success = await ResidentNoteService.UpdateAsync(noteId, _editNoteText, CancellationToken.None);
         if (success)
         {
@@ -105,7 +111,10 @@ public partial class NotesSection
     private async Task DeleteNote()
     {
         if (_confirmDeleteId is null)
+        {
             return;
+        }
+
         bool success = await ResidentNoteService.DeleteAsync(_confirmDeleteId.Value, CancellationToken.None);
         if (success)
         {

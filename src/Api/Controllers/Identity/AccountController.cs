@@ -43,8 +43,8 @@ public class AccountController(
     /// <response code="200">Registration succeeded.</response>
     /// <response code="400">Registration failed due to validation errors or duplicate user.</response>
     /// <response code="401">The user is not authorized to perform this action.</response>
-    [HttpPost("register")]
-    [Authorize(Roles = "admin")]
+        [HttpPost("register")]
+        [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
     {
         if (!ModelState.IsValid)
@@ -88,7 +88,7 @@ public class AccountController(
     /// <response code="401">The user is not authorized to perform this action.</response>
     /// <response code="404">User not found.</response>
     [HttpDelete("delete/{userId}")]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteUserAsync(string userId)
     {
         if (!Guid.TryParse(userId, out Guid parsedUserId))
@@ -107,7 +107,7 @@ public class AccountController(
     }
 
     [HttpPost("get-id-by-email")]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetUserIdByEmailAsync([FromBody] GetUserIdByEmailRequestDto content)
     {
         if (!ModelState.IsValid)

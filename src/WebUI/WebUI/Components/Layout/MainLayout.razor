@@ -30,7 +30,7 @@
     <div class="d-flex justify-content-between align-items-center w-100 px-3">
       <span title="Database forbindelse" class="fw-bold border-end">
         <span>🗄</span>
-        @if (DbStateProvider.IsConnected)
+        @if (IsDbConnected)
         {
             <span style="color:green;font-size:1.2em;vertical-align:middle;">&#x1F7E2;</span>
         }

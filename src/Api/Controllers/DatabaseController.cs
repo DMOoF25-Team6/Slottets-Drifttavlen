@@ -9,14 +9,8 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class DatabaseController : ControllerBase
+public class DatabaseController(IDatabaseService databaseService) : ControllerBase
 {
-    private readonly IDatabaseService _databaseService;
-
-    public DatabaseController(IDatabaseService databaseService)
-    {
-        _databaseService = databaseService;
-    }
 
     /// <summary>
     /// Checks if the database connection is available.
@@ -25,6 +19,6 @@ public class DatabaseController : ControllerBase
     [HttpGet("isconnected")]
     public ActionResult<bool> IsConnected()
     {
-        return Ok(_databaseService.IsConnected());
+        return Ok(databaseService.IsConnected());
     }
 }
