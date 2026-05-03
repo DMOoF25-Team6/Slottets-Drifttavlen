@@ -11,21 +11,15 @@ namespace Infrastructure.Managers;
 /// <summary>
 /// Manages database connection state by calling the API and updating the state provider.
 /// </summary>
-public class DatabaseConnectionManager : IDatabaseConnectionManager
+/// <remarks>
+/// Initializes a new instance of the <see cref="DatabaseConnectionManager"/> class.
+/// </remarks>
+/// <param name="httpClient">The HTTP client for API calls.</param>
+/// <param name="stateProvider">The state provider to update.</param>
+public class DatabaseConnectionManager(HttpClient httpClient, DatabaseConnectionStateProvider stateProvider) : IDatabaseConnectionManager
 {
-    private readonly HttpClient _httpClient;
-    private readonly DatabaseConnectionStateProvider _stateProvider;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DatabaseConnectionManager"/> class.
-    /// </summary>
-    /// <param name="httpClient">The HTTP client for API calls.</param>
-    /// <param name="stateProvider">The state provider to update.</param>
-    public DatabaseConnectionManager(HttpClient httpClient, DatabaseConnectionStateProvider stateProvider)
-    {
-        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-        _stateProvider = stateProvider ?? throw new ArgumentNullException(nameof(stateProvider));
-    }
+    private readonly HttpClient _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+    private readonly DatabaseConnectionStateProvider _stateProvider = stateProvider ?? throw new ArgumentNullException(nameof(stateProvider));
 
     /// <summary>
     /// Calls the API to check if the database is connected and updates the state provider.
@@ -35,7 +29,7 @@ public class DatabaseConnectionManager : IDatabaseConnectionManager
         try
         {
             // Adjust the endpoint as needed
-            bool isConnected = await _httpClient.GetFromJsonAsync<bool>("api/database/isconnected");
+            bool isConnected = await _httpClient.GetFromJsonAsync<bool>("database/isconnected");
             _stateProvider.SetConnectionState(isConnected);
         }
         catch

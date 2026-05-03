@@ -7,6 +7,7 @@ public class DatabaseConnectionStateProvider
 {
     public event Action? StateChanged;
 
+    // Do not use autoproperty to avoid unnecessary event invocations
     private bool _isConnected;
 
     public bool IsConnected
