@@ -19,14 +19,19 @@ public partial class MainLayout : IDisposable
 
     private System.Threading.Timer? _timer;
 
+    // Dotnet 8 issue
+#pragma warning disable IDE0032 // Use auto property
+    private bool _isDbConnected;
+#pragma warning restore IDE0032 // Use auto property
+
     private bool IsDbConnected
     {
-        get;
+        get => _isDbConnected;
         set
         {
-            if (field != value)
+            if (_isDbConnected != value)
             {
-                field = value;
+                _isDbConnected = value;
                 StateHasChanged();
             }
         }
