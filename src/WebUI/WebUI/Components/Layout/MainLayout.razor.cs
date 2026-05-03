@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace WebUI.Components.Layout;
 
-public partial class MainLayout
+public partial class MainLayout : IDisposable
 {
     private System.Threading.Timer? _timer;
 
@@ -34,9 +34,11 @@ public partial class MainLayout
         _ = InvokeAsync(StateHasChanged);
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         DbStateProvider.StateChanged -= OnDbStateChanged;
         _timer?.Dispose();
+        // Suppress finalization to avoid unnecessary GC overhead
+        GC.SuppressFinalize(this);
     }
 }

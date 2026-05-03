@@ -33,11 +33,9 @@ public class AccountManagerTests
         };
     }
 
-    private class FakeHttpClientFactory : IHttpClientFactory
+    private class FakeHttpClientFactory(HttpClient client) : IHttpClientFactory
     {
-        private readonly HttpClient _client;
-        public FakeHttpClientFactory(HttpClient client) => _client = client;
-        public HttpClient CreateClient(string name) => _client;
+        public HttpClient CreateClient(string name) => client;
     }
 
     [Fact]

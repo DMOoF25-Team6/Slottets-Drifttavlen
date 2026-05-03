@@ -18,21 +18,13 @@ namespace Core.Services;
 /// <summary>
 /// Service for generating JWT tokens for users.
 /// </summary>
-public class TokenService : ITokenService
+/// <remarks>
+/// Initializes a new instance of the <see cref="TokenService"/> class.
+/// </remarks>
+/// <param name="configuration">The application configuration.</param>
+/// <param name="logger">The logger instance.</param>
+public class TokenService(IConfiguration configuration, ILogger<TokenService> logger) : ITokenService
 {
-    private readonly IConfiguration _config;
-    private readonly ILogger<TokenService> _logger;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TokenService"/> class.
-    /// </summary>
-    /// <param name="configuration">The application configuration.</param>
-    /// <param name="logger">The logger instance.</param>
-    public TokenService(IConfiguration configuration, ILogger<TokenService> logger)
-    {
-        _config = configuration;
-        _logger = logger;
-    }
 
     /// <summary>
     /// Generates a JWT token for the specified user and roles.
@@ -53,15 +45,15 @@ public class TokenService : ITokenService
         ];
 
         // Log the roles for debugging
-        _logger.LogInformation("Generating token for user {UserId} with roles: {Roles}", user.Id, string.Join(",", roles));
+        logger.LogInformation("Generating token for user {UserId} with roles: {Roles}", user.Id, string.Join(",", roles));
 
-        SymmetricSecurityKey signingKey = new(Encoding.UTF8.GetBytes(_config["TokenValidationParameters:IssuerSigningKey"]!));
+        SymmetricSecurityKey signingKey = new(Encoding.UTF8.GetBytes(configuration["TokenValidationParameters:IssuerSigningKey"]!));
         SigningCredentials credentials = new(signingKey, SecurityAlgorithms.HmacSha256);
-        int minutes = int.Parse(_config["TokenValidationParameters:ExpireMinutes"] ?? "60");
+        int minutes = int.Parse(configuration["TokenValidationParameters:ExpireMinutes"] ?? "60");
 
         JwtSecurityToken token = new(
-            issuer: _config["TokenValidationParameters:Issuer"],
-            audience: _config["TokenValidationParameters:Audience"],
+            issuer: configuration["TokenValidationParameters:Issuer"],
+            audience: configuration["TokenValidationParameters:Audience"],
             claims: claims,
             expires: DateTime.UtcNow.AddMinutes(minutes),
             signingCredentials: credentials

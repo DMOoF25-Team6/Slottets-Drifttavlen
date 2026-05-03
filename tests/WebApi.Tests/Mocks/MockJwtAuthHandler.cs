@@ -13,28 +13,27 @@ namespace WebApi.Tests.Mocks;
 /// <summary>
 /// Authentication handler that accepts the test token and sets admin identity for integration tests.
 /// </summary>
-public class MockJwtAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+[method: Obsolete("This constructor is obsolete. Use newer dotnet and timeprovider")]
+/// <summary>
+/// Authentication handler that accepts the test token and sets admin identity for integration tests.
+/// </summary>
+public class MockJwtAuthHandler(
+    IOptionsMonitor<AuthenticationSchemeOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder,
+    TimeProvider timeProvider) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder, (ISystemClock)timeProvider)
 {
-#pragma warning disable CS0618 // Use of obsolete ISystemClock for test compatibility
-    public MockJwtAuthHandler(
-        IOptionsMonitor<AuthenticationSchemeOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder,
-        ISystemClock clock)
-        : base(options, logger, encoder, clock) { }
-#pragma warning restore CS0618
-
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         // Accept the test token as valid and set admin claims
-        string authHeader = Request.Headers["Authorization"].ToString();
+        string authHeader = Request.Headers.Authorization.ToString();
         if (authHeader == "Bearer test-jwt-token")
         {
-            Claim[] claims = new[]
-            {
+            Claim[] claims =
+            [
                 new Claim(ClaimTypes.Name, "admin@example.com"),
                 new Claim(ClaimTypes.Role, "admin")
-            };
+            ];
             ClaimsIdentity identity = new(claims, Scheme.Name);
             ClaimsPrincipal principal = new(identity);
             AuthenticationTicket ticket = new(principal, Scheme.Name);

@@ -7,15 +7,14 @@ public class DatabaseConnectionStateProvider
 {
     public event Action? StateChanged;
 
-    // Do not use autoproperty to avoid unnecessary event invocations
+    // Do not use auto property to avoid unnecessary event invocations
+#pragma warning disable IDE0032 // Use auto property
     private bool _isConnected;
+#pragma warning restore IDE0032 // Use auto property
 
     public bool IsConnected
     {
-        get
-        {
-            return _isConnected;
-        }
+        get => _isConnected;
         private set
         {
             if (_isConnected != value)

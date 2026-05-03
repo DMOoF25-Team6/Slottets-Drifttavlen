@@ -15,7 +15,7 @@ public class MockTokenService : ITokenService
     public string GenerateToken(User user, IList<string> roles)
         => "test-jwt-token";
 
-    public string GenerateRefreshToken()
+    public static string GenerateRefreshToken()
         => "test-refresh-token";
 
     public static bool ValidateToken(string token, out string? userId)
