@@ -85,9 +85,9 @@ public class Program
         // Apply any pending migrations at startup
         //using IServiceScope scope = app.Services.CreateScope();
         //AppDbContext ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        //if (ctx.Database.IsRelational())
+        //if (ctx.DatabaseController.IsRelational())
         //{
-        //    ctx.Database.Migrate();
+        //    ctx.DatabaseController.Migrate();
         //}
 
         // Configure the HTTP request pipeline.

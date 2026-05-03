@@ -54,7 +54,7 @@ Authorization: Bearer PASTE_ACCESS_TOKEN_HERE
 
 ### Database is connected
 
-GET {{Api_HostAddress}}/DatabaseHealthCheck/IsDbConnected
+GET {{Api_HostAddress}}/Database/IsDbConnected
 Accept: application/json
 
 ###
