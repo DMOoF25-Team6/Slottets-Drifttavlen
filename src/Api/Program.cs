@@ -7,6 +7,8 @@
 using System.Security.Claims;
 using System.Text;
 
+using Core.Providers;
+
 using Domain.Entities;
 
 using Infrastructure;
@@ -79,6 +81,7 @@ public class Program
 
         // Dummy email sender for Identity (required by MapIdentityApi)
         _ = builder.Services.AddSingleton<IEmailSender<User>, DummyEmailSenderForUser>();
+        builder.Services.AddSingleton<DatabaseConnectionStateProvider>();
 
         WebApplication app = builder.Build();
 
