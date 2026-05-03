@@ -4,7 +4,7 @@
 using System.Net.Http.Json;
 
 using Core.Interfaces.Managers;
-using Core.Providers;
+using Core.Interfaces.Providers;
 
 namespace Infrastructure.Managers;
 
@@ -15,11 +15,24 @@ namespace Infrastructure.Managers;
 /// Initializes a new instance of the <see cref="DatabaseConnectionManager"/> class.
 /// </remarks>
 /// <param name="httpClient">The HTTP client for API calls.</param>
-/// <param name="stateProvider">The state provider to update.</param>
-public class DatabaseConnectionManager(HttpClient httpClient, DatabaseConnectionStateProvider stateProvider) : IDatabaseConnectionManager
+/// <param name="dbStateProvider">The state provider to update.</param>
+public class DatabaseConnectionManager : IDatabaseConnectionManager
 {
-    private readonly HttpClient _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-    private readonly DatabaseConnectionStateProvider _stateProvider = stateProvider ?? throw new ArgumentNullException(nameof(stateProvider));
+    #region Fields
+    private readonly HttpClient _httpClient;
+    private readonly IHttpClientFactory? _httpClientFactory;
+
+    private readonly IDatabaseConnectionStateProvider _stateProvider;
+    #endregion
+    public DatabaseConnectionManager(
+        IHttpClientFactory httpClientFactory,
+        IDatabaseConnectionStateProvider stateProvider
+        )
+    {
+        _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+        _httpClient = _httpClientFactory.CreateClient("SlottetApi") ?? throw new InvalidOperationException("Failed to create HttpClient.");
+        _stateProvider = stateProvider ?? throw new ArgumentNullException(nameof(stateProvider));
+    }
 
     /// <summary>
     /// Calls the API to check if the database is connected and updates the state provider.

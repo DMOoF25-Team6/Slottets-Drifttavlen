@@ -7,8 +7,6 @@
 using System.Security.Claims;
 using System.Text;
 
-using Core.Providers;
-
 using Domain.Entities;
 
 using Infrastructure;
@@ -19,6 +17,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+
+using MySqlConnector;
 namespace Api;
 
 
@@ -59,6 +59,19 @@ public class Program
         ConfigurationManager conf = builder.Configuration;
         string connectionString = ConfigureDbContext(builder, conf)
             ?? throw new InvalidOperationException("DB_CONNECTION_STRING environment variable is not set.");
+        try
+        {
+            Console.WriteLine("[DEBUG] Attempting to connect to the database with the following connection string: " + connectionString);
+            using MySqlConnection testConnection = new(connectionString);
+            testConnection.Open();
+            Console.WriteLine("[DEBUG] Successfully connected to the database.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[ERROR] Failed to connect to the database. Exception: " + ex.Message);
+        }
+
+        // The rest of the pipeline configuration remains unchanged
         // CreateAccountAsync both DbContext and DbContextFactory for DI
         _ = builder.Services.AddDbContext<AppDbContext>(options =>
         {
@@ -81,7 +94,6 @@ public class Program
 
         // Dummy email sender for Identity (required by MapIdentityApi)
         _ = builder.Services.AddSingleton<IEmailSender<User>, DummyEmailSenderForUser>();
-        builder.Services.AddSingleton<DatabaseConnectionStateProvider>();
 
         WebApplication app = builder.Build();
 

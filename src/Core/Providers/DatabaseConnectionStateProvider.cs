@@ -1,9 +1,14 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using Core.Interfaces.Providers;
+
 namespace Core.Providers;
 
-public class DatabaseConnectionStateProvider
+/// <summary>
+/// Provides the state of the database connection.
+/// </summary>
+public class DatabaseConnectionStateProvider : IDatabaseConnectionStateProvider
 {
     public event Action? StateChanged;
 
@@ -28,16 +33,5 @@ public class DatabaseConnectionStateProvider
     public void SetConnectionState(bool isConnected)
     {
         IsConnected = isConnected;
-    }
-
-    // Optionally, add async polling or update logic here
-    public async Task PollConnectionStateAsync(Func<Task<bool>> checkConnection, CancellationToken token)
-    {
-        while (!token.IsCancellationRequested)
-        {
-            bool state = await checkConnection();
-            SetConnectionState(state);
-            await Task.Delay(TimeSpan.FromSeconds(10), token);
-        }
     }
 }
