@@ -14,7 +14,7 @@ public class DatabaseConnectionStateProvider
     {
         get
         {
-            return StateChanged == null || _isConnected;
+            return _isConnected;
         }
         private set
         {

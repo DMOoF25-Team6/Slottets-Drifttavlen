@@ -12,7 +12,7 @@ using Infrastructure.Managers;
 using Moq;
 using Moq.Protected;
 
-namespace Infrastructure.Tests;
+namespace Infrastructure.Tests.Managers;
 
 public class AccountManagerTests
 {
