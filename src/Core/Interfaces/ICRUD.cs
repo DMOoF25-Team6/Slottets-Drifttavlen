@@ -25,10 +25,10 @@ public interface ICRUD<TEntity> where TEntity : IEntity
     /// <example>
     /// <code language="csharp">
     /// var resident = new Resident { Name = "John Doe" };
-    /// var added = await residentManager.AddAsync(resident);
+    /// var added = await residentManager.CreateAsync(resident);
     /// </code>
     /// </example>
-    Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task<TEntity> CreateAsync(TEntity entity, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Adds multiple entities to the repository.
@@ -36,7 +36,7 @@ public interface ICRUD<TEntity> where TEntity : IEntity
     /// <param name="entities">The entities to add.</param>
     /// <param name="cancellationToken">Optional cancellation token.</param>
     /// <returns>The added entities.</returns>
-    Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
+    Task<IEnumerable<TEntity>> CreateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
     #endregion
 
     #region Read operations

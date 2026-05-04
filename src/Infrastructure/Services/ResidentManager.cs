@@ -70,7 +70,7 @@ public class ResidentManager : IResidentManager
     /// <exception cref="NotImplementedException">
     /// Always thrown as this method is not implemented.
     /// </exception>
-    public Task<Resident> AddAsync(Resident entity, CancellationToken cancellationToken = default)
+    public Task<Resident> CreateAsync(Resident entity, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
@@ -151,6 +151,11 @@ public class ResidentManager : IResidentManager
     /// Always thrown as this method is not implemented.
     /// </exception>
     public Task DeleteRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IEnumerable<Resident>> CreateRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

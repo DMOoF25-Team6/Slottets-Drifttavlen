@@ -69,10 +69,9 @@ public class ResidentService(IResidentManager residentManager) : IResidentServic
     /// <returns>
     /// A <see cref="Task"/> containing the added <see cref="Resident"/> entity.
     /// </returns>
-    public Task<Resident> AddAsync(Resident resident, CancellationToken cancellationToken = default)
+    public Task<Resident> CreateAsync(Resident resident, CancellationToken cancellationToken = default)
     {
-        // return _residentRepository.AddAsync(resident, cancellationToken);
-        throw new NotImplementedException();
+        return _residentManager.CreateAsync(resident, cancellationToken);
     }
 
     /// <summary>
@@ -83,8 +82,7 @@ public class ResidentService(IResidentManager residentManager) : IResidentServic
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public Task UpdateAsync(Resident resident, CancellationToken cancellationToken = default)
     {
-        //return _residentRepository.UpdateAsync(resident, cancellationToken);
-        throw new NotImplementedException();
+        return _residentManager.UpdateAsync(resident, cancellationToken);
     }
 
     /// <summary>
@@ -95,22 +93,21 @@ public class ResidentService(IResidentManager residentManager) : IResidentServic
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public Task DeleteAsync(Resident resident, CancellationToken cancellationToken = default)
     {
-        //return _residentRepository.DeleteAsync(resident, cancellationToken);
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<Resident>> AddRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
+        return _residentManager.DeleteAsync(resident, cancellationToken);
     }
 
     public Task UpdateRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return _residentManager.UpdateRangeAsync(entities, cancellationToken);
     }
 
     public Task DeleteRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return _residentManager.DeleteRangeAsync(entities, cancellationToken);
+    }
+
+    public Task<IEnumerable<Resident>> CreateRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
+    {
+        return _residentManager.CreateRangeAsync(entities, cancellationToken);
     }
 }

@@ -3,12 +3,13 @@
 
 
 using Core.DTOs;
+using Core.DTOs.Identity;
+using Core.Interfaces.Dto;
 using Core.Interfaces.Repositories;
 
 using Domain.Entities;
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers;
 
@@ -51,6 +52,46 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
     }
 
     /// <summary>
+    /// Creates a new resident.
+    /// </summary>
+    /// <param name="dto">The resident creation data transfer object.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>An <see cref="ActionResult{T}"/> containing the created <see cref="IResidentResult"/> and location header.</returns>
+    [HttpPost("Create")]
+    public async Task<IActionResult> Create([FromBody] ResidentCreateDto dto, CancellationToken cancellationToken)
+    {
+        if (dto is null)
+        {
+            ErrorDto Error = new()
+            {
+                ErrorMessages = ["Request body cannot be null."]
+            };
+            return BadRequest(Error);
+        }
+
+        Resident resident = new()
+        {
+            Id = Guid.NewGuid(),
+            Initials = dto.Initials,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            TrafficLightStatus = dto.TrafficLightStatus
+        };
+
+        Resident created = await _residentRepository.CreateAsync(resident, cancellationToken);
+
+        ResidentResponseDto response = new()
+        {
+            Id = created.Id,
+            Initials = created.Initials,
+            TrafficLightStatus = created.TrafficLightStatus.HasValue ? (int)created.TrafficLightStatus.Value : null,
+            Notes = []
+        };
+
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Retrieves a resident by unique identifier, including their notes.
     /// </summary>
     /// <param name="id">A unique identifier for the resident.</param>
@@ -79,9 +120,4 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
         };
         return Ok(result);
     }
-   
-  }
-
-
-// Debug endpoint removed because it used AppDbContext directly
-// and broke clean architecture. Use repository instead if needed.
+}

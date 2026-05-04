@@ -31,14 +31,14 @@ public class MockJwtAuthHandler : AuthenticationHandler<AuthenticationSchemeOpti
         string authHeader = Request.Headers.Authorization.ToString();
         if (authHeader == "Bearer test-jwt-token")
         {
-            Claim[] claims = new[]
-            {
+            Claim[] claims =
+            [
                 new Claim(ClaimTypes.Name, "admin@example.com"),
-                new Claim(ClaimTypes.Role, "Admin")
-            };
-            var identity = new ClaimsIdentity(claims, Scheme.Name);
-            var principal = new ClaimsPrincipal(identity);
-            var ticket = new AuthenticationTicket(principal, Scheme.Name);
+                new Claim(ClaimTypes.Role, "admin")
+            ];
+            ClaimsIdentity identity = new(claims, Scheme.Name);
+            ClaimsPrincipal principal = new(identity);
+            AuthenticationTicket ticket = new(principal, Scheme.Name);
             return Task.FromResult(AuthenticateResult.Success(ticket));
         }
         return Task.FromResult(AuthenticateResult.Fail("Invalid token"));

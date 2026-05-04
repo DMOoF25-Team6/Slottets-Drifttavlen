@@ -7,7 +7,6 @@ using Domain.Entities;
 
 using Infrastructure.Data.Persistent;
 
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -39,11 +38,11 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         _ = builder.ConfigureServices(services =>
         {
             _ = services.AddScoped<IPhoneAssignmentService, MockPhoneAssignmentService>();
-                // CreateAccountAsync MockTokenService for ITokenService
-                _ = services.AddScoped<ITokenService, WebApi.Tests.Mocks.MockTokenService>();
+            // CreateAccountAsync MockTokenService for ITokenService
+            _ = services.AddScoped<ITokenService, WebApi.Tests.Mocks.MockTokenService>();
 
             // Override authentication for integration tests
-            services.AddAuthentication(options =>
+            _ = services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = "TestScheme";
                 options.DefaultChallengeScheme = "TestScheme";
@@ -67,8 +66,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             EnsureAdminUserExists(userManager, adminRole);
         });
     }
-
-
 
     #region Helpers
 
