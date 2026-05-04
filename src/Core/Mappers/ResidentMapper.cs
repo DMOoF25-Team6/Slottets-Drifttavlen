@@ -1,16 +1,10 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Core.DTOs;
 
-using Domain.Enums;
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Core.Mappers;
 
@@ -22,6 +16,23 @@ namespace Core.Mappers;
 /// </remarks>
 public class ResidentMapper
 {
+    /// <summary>
+    /// Maps a <see cref="ResidentCreateDto"/> to a <see cref="Resident"/> domain entity.
+    /// </summary>
+    /// <param name="dto">A data transfer object for creating a resident.</param>
+    /// <returns>A <see cref="Resident"/> domain entity mapped from the DTO.</returns>
+    public static Resident ToResident(ResidentCreateDto dto)
+    {
+        return new Resident
+        {
+            Id = Guid.NewGuid(),
+            Initials = dto.Initials,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            TrafficLightStatus = dto.TrafficLightStatus
+        };
+    }
+
     /// <summary>
     /// Maps a <see cref="ResidentResponseDto"/> to a <see cref="Resident"/> domain entity.
     /// </summary>

@@ -69,9 +69,9 @@ public class ResidentService(IResidentManager residentManager) : IResidentServic
     /// <returns>
     /// A <see cref="Task"/> containing the added <see cref="Resident"/> entity.
     /// </returns>
-    public Task<Resident> AddAsync(Resident resident, CancellationToken cancellationToken = default)
+    public Task<Resident> CreateAsync(Resident resident, CancellationToken cancellationToken = default)
     {
-        // return _residentRepository.AddAsync(resident, cancellationToken);
+        // return _residentRepository.CreateAsync(resident, cancellationToken);
         throw new NotImplementedException();
     }
 

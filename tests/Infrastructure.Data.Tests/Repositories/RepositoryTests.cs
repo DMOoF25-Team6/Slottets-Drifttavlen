@@ -55,7 +55,7 @@ public class RepositoryTests
         TestUser user = new() { Name = "Alice" };
 
         // Act
-        TestUser result = await repo.AddAsync(user, TestContext.Current.CancellationToken);
+        TestUser result = await repo.CreateAsync(user, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -225,7 +225,7 @@ public class RepositoryTests
         TestUser user = new() { Name = "Alice" };
         using CancellationTokenSource cts = new();
         cts.Cancel();
-        _ = await Assert.ThrowsAnyAsync<OperationCanceledException>(() => repo.AddAsync(user, cts.Token));
+        _ = await Assert.ThrowsAnyAsync<OperationCanceledException>(() => repo.CreateAsync(user, cts.Token));
     }
 
     [Fact]
@@ -288,7 +288,7 @@ public class RepositoryTests
     {
         await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
-        _ = await Assert.ThrowsAsync<ArgumentNullException>(() => repo.AddAsync(null!, TestContext.Current.CancellationToken));
+        _ = await Assert.ThrowsAsync<ArgumentNullException>(() => repo.CreateAsync(null!, TestContext.Current.CancellationToken));
     }
 
     [Fact]

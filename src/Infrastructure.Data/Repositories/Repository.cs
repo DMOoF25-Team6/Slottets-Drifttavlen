@@ -54,7 +54,7 @@ public abstract class Repository<TEntity> : IRepository<TEntity>
     }
 
     /// <inheritdoc/>
-    public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async Task<TEntity> CreateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         _ = await _dbSet.AddAsync(entity, cancellationToken);
         _ = await _context.SaveChangesAsync(cancellationToken);
