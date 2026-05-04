@@ -10,6 +10,7 @@
 |---------|------------|--------------------------|------------|
 | 0001    | 2026-03-07 | Initial                  | Team 6     |
 | 0002    | 2026-03-31 | Tilføjet Medarbejder og TelefonTildeling (UC-004, UC-005) | Team 6 |
+| 0003    | 2026-04-29 | Opdateret diagram og noter for at reflektere ændringer i UC-014 (Citizen Administration) | Team 6     |  
 
 ## Diagram
 ```mermaid
@@ -22,6 +23,8 @@ classDiagram
     }
     class Beboer {
         Initialer
+        Fornavn %% GDPR: Personoplysning
+        Efternavn %% GDPR: Personoplysning
     }
     class Notat {
         Note
@@ -44,7 +47,8 @@ classDiagram
 - Beboer repræsenterer en person, der modtager pleje.
 - Beboer har en trafiklysstatus (Trafiklys), der angiver aktuel tilstand (Grøn, Gul, Rød).
 - Beboer kan have flere noter (Notat), hver med tekst, tidsstempel og reference til medarbejder.
-- Initialer bruges til identifikation af beboer for at sikre GDPR-overholdelse.
+
+- Initialer, Fornavn og Efternavn bruges til identifikation af beboer. Fornavn og Efternavn er personoplysninger (GDPR).
 
 - Medarbejder repræsenterer en medarbejder (introduceret i UC-004).
 - TelefonTildeling repræsenterer tildeling af et fast telefonnummer til en vagt (introduceret i UC-005). Telefonnummer er én af: 41522, 41523, 41524, 41525, 41526, 41527, 41529. Vagttype er én af: Dag, Aften, Nat.
