@@ -6,6 +6,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 using Domain.Interfaces;
 
+using Microsoft.AspNetCore.Identity;
+
 namespace Domain.Entities;
 
 public class ResidentNote : IEntity
@@ -14,6 +16,7 @@ public class ResidentNote : IEntity
     public Guid Id { get; set; }
 
     [Required]
+    [ProtectedPersonalData]
     public string Note { get; set; } = string.Empty;
 
     [Required]

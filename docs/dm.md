@@ -11,6 +11,7 @@
 |---------|------------|--------------------------|------------|
 | 0001    | 2026-03-07 | Initial                  | Team 6     |
 | 0002    | 2026-03-31 | Added Caregiver and PhoneAssignment (UC-004, UC-005) | Team 6     |
+| 0003    | 2026-04-29 | Updated diagram and notes to reflect changes in UC-014 (Citizen Administration) | Team 6     |
 
 ## Diagram
 ```mermaid
@@ -23,6 +24,8 @@ classDiagram
     }
     class Resident {
         Initials
+        FirstName %% GDPR: Personal Data
+        LastName %% GDPR: Personal Data
     }
     class ResidentNote {
         Note
@@ -54,12 +57,13 @@ classDiagram
 
 ## Notes
 
+
 - Resident represents a person receiving care (Beboer).
 - Resident has a traffic light status (TrafficLight) indicating current condition (Green, Yellow, Red).
 - Resident can have multiple notes (ResidentNote), each with text, timestamp, and caretaker reference.
 - Resident can have multiple medicine administration records (MedicineAdministration) with timestamp and status (WasGiven).
 - Resident can have multiple painkiller administration records (PainkillerAdministration) with painkiller type, timestamp, was given at timestamp, and next allowed timespan.
-- Initials are used for resident identification to ensure GDPR compliance.
+- Initials, FirstName, and LastName are used for resident identification. FirstName and LastName are considered GDPR personal data.
 
 - Caregiver represents a staff member (introduced in UC-004).
 - PhoneAssignment represents assignment of a fixed phone number to a shift (introduced in UC-005). PhoneNumber is one of: 41522, 41523, 41524, 41525, 41526, 41527, 41529. ShiftType is one of: Day, Evening, Night.

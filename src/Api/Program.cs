@@ -4,6 +4,7 @@
 
 // For SwaggerGen extension methods
 
+using System.Diagnostics;
 using System.Security.Claims;
 using System.Text;
 
@@ -61,14 +62,12 @@ public class Program
             ?? throw new InvalidOperationException("DB_CONNECTION_STRING environment variable is not set.");
         try
         {
-            Console.WriteLine("[DEBUG] Attempting to connect to the database with the following connection string: " + connectionString);
             using MySqlConnection testConnection = new(connectionString);
             testConnection.Open();
-            Console.WriteLine("[DEBUG] Successfully connected to the database.");
         }
         catch (Exception ex)
         {
-            Console.WriteLine("[ERROR] Failed to connect to the database. Exception: " + ex.Message);
+            Debug.WriteLine("[ERROR] Failed to connect to the database. Exception: " + ex.Message);
         }
 
         // The rest of the pipeline configuration remains unchanged
@@ -203,10 +202,8 @@ public class Program
             string[] allPlaceholders = ["{MYSQL_HOST}", "{MYSQL_DATABASE}", "{MYSQL_USER}", "{MYSQL_PASSWORD}", "{MYSQL_PORT}"];
             foreach (string placeholder in allPlaceholders)
             {
-                Console.WriteLine("[DEBUG] Checking for placeholder: " + placeholder);
                 if (connStr.Contains(placeholder))
                 {
-                    Console.WriteLine($"[DEBUG] Found placeholder {placeholder} in connection string. Attempting to replace it with environment variable value.");
                     connStr = connStr.Replace(placeholder, Environment.GetEnvironmentVariable(placeholder.Trim('{', '}'))
                         ?? throw new InvalidOperationException($"Environment variable for {placeholder} not found in configuration."));
                 }
@@ -219,10 +216,8 @@ public class Program
             string safeConnStr = connStr;
             if (!string.IsNullOrEmpty(dbPassword))
             {
-                safeConnStr = connStr.Replace(dbPassword, "****");
+                _ = connStr.Replace(dbPassword, "****");
             }
-            Console.WriteLine($"\n\n[DEBUG] Final DB connection string: {safeConnStr}\n\n");
-            Console.WriteLine("[DEBUG] MYSQL_HOST at startup: " + Environment.GetEnvironmentVariable("MYSQL_HOST"));
             return connStr;
         }
         throw new InvalidOperationException("Connection string for AppDbContext not found in environment variables.");

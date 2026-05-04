@@ -26,7 +26,6 @@ public static class DependencyInjection
     {
         _ = services.AddCore();
         string? apiBaseUrl = configuration["WebApiHostAddress"];
-        Console.WriteLine("[DEBUG] WebApiHostAddress: " + apiBaseUrl);
         if (string.IsNullOrWhiteSpace(apiBaseUrl))
         {
             throw new InvalidOperationException("WebApiHostAddress is not configured.");
