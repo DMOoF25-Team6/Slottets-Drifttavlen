@@ -213,7 +213,7 @@ public class Program
 
             // After building connStr in ConfigureDbContext
             string? dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
-            string safeConnStr = connStr;
+            //string safeConnStr = connStr;
             if (!string.IsNullOrEmpty(dbPassword))
             {
                 _ = connStr.Replace(dbPassword, "****");

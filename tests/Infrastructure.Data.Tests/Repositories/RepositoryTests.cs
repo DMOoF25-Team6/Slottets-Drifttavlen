@@ -74,7 +74,7 @@ public class RepositoryTests
         TestUser[] users = [new TestUser { Name = "A" }, new TestUser { Name = "B" }];
 
         // Act
-        IEnumerable<TestUser> result = await repo.AddRangeAsync(users, TestContext.Current.CancellationToken);
+        IEnumerable<TestUser> result = await repo.CreateRangeAsync(users, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(2, context.Set<TestUser>().Count());
@@ -257,7 +257,7 @@ public class RepositoryTests
     {
         await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
-        IEnumerable<TestUser> result = await repo.AddRangeAsync([], TestContext.Current.CancellationToken);
+        IEnumerable<TestUser> result = await repo.CreateRangeAsync([], TestContext.Current.CancellationToken);
         Assert.Empty(result);
         Assert.Empty(context.Set<TestUser>());
     }
@@ -297,7 +297,7 @@ public class RepositoryTests
     {
         await using AppDbContext context = CreateInMemoryContext;
         TestUserRepository repo = new(context);
-        _ = await Assert.ThrowsAsync<ArgumentNullException>(() => repo.AddRangeAsync(null!, TestContext.Current.CancellationToken));
+        _ = await Assert.ThrowsAsync<ArgumentNullException>(() => repo.CreateRangeAsync(null!, TestContext.Current.CancellationToken));
     }
 
     [Fact]

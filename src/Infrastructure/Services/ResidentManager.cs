@@ -154,4 +154,9 @@ public class ResidentManager : IResidentManager
     {
         throw new NotImplementedException();
     }
+
+    public Task<IEnumerable<Resident>> CreateRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
 }

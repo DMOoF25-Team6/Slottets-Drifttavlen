@@ -3,7 +3,6 @@
 
 using Core.Interfaces.Repositories;
 
-using Core.Interfaces;
 using Domain.Interfaces;
 
 using Infrastructure.Data.Persistent;
@@ -64,7 +63,7 @@ public abstract class Repository<TEntity> : IRepository<TEntity>
     }
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<TEntity>> CreateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(entities);
         await _dbSet.AddRangeAsync(entities, cancellationToken);
