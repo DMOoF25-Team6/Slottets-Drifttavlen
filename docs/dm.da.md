@@ -10,7 +10,7 @@
 |---------|------------|--------------------------|------------|
 | 0001    | 2026-03-07 | Initial                  | Team 6     |
 | 0002    | 2026-03-31 | Tilføjet Medarbejder og TelefonTildeling (UC-004, UC-005) | Team 6 |
-| 0003    | 2026-04-29 | Opdateret diagram og noter for at reflektere ændringer i UC-014 (Citizen Administration) | Team 6     |  
+| 0003    | 2026-04-29 | Opdateret diagram og noter for at reflektere ændringer i UC-014 (Resident Administration) | Team 6     |  
 
 ## Diagram
 ```mermaid

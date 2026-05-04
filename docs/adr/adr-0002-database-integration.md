@@ -18,14 +18,14 @@ superseded_by: ""
 
 ## Context
 
-The Dashboard System requires persistent storage for citizens and related data. The system must efficiently store and retrieve citizen information and other relevant entities. Built with ASP.NET Core in Visual Studio, a relational database is necessary to manage entity relationships, ensure data integrity, and support business requirements for real-time dashboard updates.
+The Dashboard System requires persistent storage for Residents and related data. The system must efficiently store and retrieve Resident information and other relevant entities. Built with ASP.NET Core in Visual Studio, a relational database is necessary to manage entity relationships, ensure data integrity, and support business requirements for real-time dashboard updates.
 
 
 ---
 
 ## Decision
 
-The system will use **MySQL** as the primary database. Data access will be managed via **Entity Framework Core** with a custom `ApplicationDbContext` class. This approach enables efficient storage and retrieval of citizen data, maintains code-database synchronization, and leverages the team's familiarity with MySQL and EF Core.
+The system will use **MySQL** as the primary database. Data access will be managed via **Entity Framework Core** with a custom `ApplicationDbContext` class. This approach enables efficient storage and retrieval of Resident data, maintains code-database synchronization, and leverages the team's familiarity with MySQL and EF Core.
 
 
 ---
@@ -34,7 +34,7 @@ The system will use **MySQL** as the primary database. Data access will be manag
 
 ### Positive
 
-- **ADR-0002-POS-001**: Enables efficient, scalable storage and retrieval of citizen and related data
+- **ADR-0002-POS-001**: Enables efficient, scalable storage and retrieval of Resident and related data
 - **ADR-0002-POS-002**: Supports maintainability and code-database synchronization via EF Core migrations
 - **ADR-0002-POS-003**: Aligns with Clean Architecture and leverages team expertise
 
