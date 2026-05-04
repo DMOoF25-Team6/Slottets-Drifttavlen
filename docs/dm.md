@@ -11,7 +11,7 @@
 |---------|------------|--------------------------|------------|
 | 0001    | 2026-03-07 | Initial                  | Team 6     |
 | 0002    | 2026-03-31 | Added Caregiver and PhoneAssignment (UC-004, UC-005) | Team 6     |
-| 0003    | 2026-04-29 | Updated diagram and notes to reflect changes in UC-014 (Citizen Administration) | Team 6     |
+| 0003    | 2026-04-29 | Updated diagram and notes to reflect changes in UC-014 (Resident Administration) | Team 6     |
 
 ## Diagram
 ```mermaid

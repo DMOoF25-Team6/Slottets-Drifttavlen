@@ -19,7 +19,7 @@ The acronym stands for Functionality, Usability, Reliability, Performance, and S
 ## FURPS+ for Slottet – Digital Handover System
 
 ### Functionality
-- [REQ-F-001] Digital handover form with citizen fields, traffic light model, medication status, tasks, and messages.
+- [REQ-F-001] Digital handover form with Resident fields, traffic light model, medication status, tasks, and messages.
 - [REQ-F-002] Support for both Skoven and Slottet departments with the option for separate and combined views.
 - [REQ-F-003] User roles: care staff, shift managers, leaders/coordinators, admin.
 - [REQ-F-004] Differentiated user permissions (regular staff vs. leaders/coordinators).
@@ -31,7 +31,7 @@ The acronym stands for Functionality, Usability, Reliability, Performance, and S
 
 ### Usability
 - [REQ-U-001] Intuitive user interface adapted for busy shift changes and all employee types (including temps and new hires).
-- [REQ-U-002] Clear visual overview of citizen status and tasks.
+- [REQ-U-002] Clear visual overview of Resident status and tasks.
 - [REQ-U-003] Responsive design for tablets, PCs, and work phones (mobile devices).
 - [REQ-U-004] Fast navigation and easy reading of critical information.
 - [REQ-U-005] Quick and easy login process.
@@ -44,7 +44,7 @@ The acronym stands for Functionality, Usability, Reliability, Performance, and S
 - [REQ-R-004] Robust handling of network and power outages.
 
 ### Performance
-- [REQ-P-001] Fast loading and updating of citizen data.
+- [REQ-P-001] Fast loading and updating of Resident data.
 - [REQ-P-002] Scalable solution (horizontal scaling, multiple instances).
 - [REQ-P-003] Efficient handling of concurrent users during shift changes.
 

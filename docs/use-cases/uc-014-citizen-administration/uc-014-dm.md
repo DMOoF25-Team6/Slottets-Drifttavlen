@@ -4,7 +4,7 @@
 |----------------|-----------------------------------------|
 | Id             | DM-UC-014                               |
 | crossReference | UC-014, BC, Gateway 11                  |
-| Title          | Resident Entity for Citizen Management   |
+| Title          | Resident Entity for Resident Management   |
 | Author         | Team 6                                  |
 
 ## Version Log
@@ -13,15 +13,15 @@
 | 0001    | 2026-05-03 | Initial DM for UC-014 | Team 6 |
 
 ## Domain Model Description
-The Resident entity represents a citizen in the system. It is used for citizen administration, assignment, and management. The entity includes personal identification, status, and related records.
+The Resident entity represents a Resident in the system. It is used for Resident administration, assignment, and management. The entity includes personal identification, status, and related records.
 
 ### Attributes
 - **Id**: Unique identifier (GUID)
-- **Initials**: Short initials for the citizen (max 2 characters)
-- **FirstName**: Citizen's first name (max 50 characters) _(GDPR: Personal Data)_
-- **LastName**: Citizen's last name (max 50 characters) _(GDPR: Personal Data)_
+- **Initials**: Short initials for the Resident (max 2 characters)
+- **FirstName**: Resident's first name (max 50 characters) _(GDPR: Personal Data)_
+- **LastName**: Resident's last name (max 50 characters) _(GDPR: Personal Data)_
 - **TrafficLightStatus**: Current status (e.g., green/yellow/red)
-- **Notes**: Collection of notes related to the citizen
+- **Notes**: Collection of notes related to the Resident
 - **Medicines**: Collection of medicine records
 - **Painkillers**: Collection of painkiller records
 
@@ -49,7 +49,7 @@ classDiagram
 ```
 
 ### Use Case Traceability
-- **UC-014**: Create Citizen (Administration)
-- **Gateway 11**: Citizen Administration Management
+- **UC-014**: Create Resident (Administration)
+- **Gateway 11**: Resident Administration Management
 
 ---
