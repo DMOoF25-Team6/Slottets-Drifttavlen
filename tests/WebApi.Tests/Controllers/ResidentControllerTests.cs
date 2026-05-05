@@ -4,6 +4,7 @@
 using Api.Controllers;
 
 using Core.DTOs;
+using Core.Interfaces.Dto;
 using Core.Interfaces.Repositories;
 
 using Domain.Entities;
@@ -76,10 +77,10 @@ public class ResidentControllerTests
         _ = _mockRepo.Setup(r => r.CreateAsync(It.IsAny<Resident>(), It.IsAny<CancellationToken>())).ReturnsAsync(created);
 
         // Act
-        IActionResult result = await _controller.Create(dto, CancellationToken.None);
+        ActionResult<IResidentResult> result = await _controller.Create(dto, CancellationToken.None);
 
         // Assert
-        OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
+        OkObjectResult okResult = Assert.IsType<OkObjectResult>(result.Result);
         ResidentResponseDto value = Assert.IsType<ResidentResponseDto>(okResult.Value);
         Assert.Equal(created.Id, value.Id);
         Assert.Equal(dto.Initials, value.Initials);
@@ -108,10 +109,10 @@ public class ResidentControllerTests
     {
         // Act
         ResidentCreateDto? nullDto = null;
-        IActionResult result = await _controller.Create(nullDto!, CancellationToken.None);
+        ActionResult<IResidentResult> result = await _controller.Create(nullDto!, CancellationToken.None);
 
         // Assert
-        BadRequestObjectResult badRequest = Assert.IsType<BadRequestObjectResult>(result);
+        BadRequestObjectResult badRequest = Assert.IsType<BadRequestObjectResult>(result.Result);
         ErrorDto error = Assert.IsType<ErrorDto>(badRequest.Value);
         Assert.NotNull(error.ErrorMessages);
         Assert.Contains("Request body cannot be null.", error.ErrorMessages!);
