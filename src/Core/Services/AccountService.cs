@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using Core.DTOs;
 using Core.DTOs.Identity;
 using Core.Interfaces.Dto.Identity;
 using Core.Interfaces.Managers;
@@ -58,7 +59,7 @@ public class AccountService(IAccountManager AccountManager) : IAccountService
         ILogoutResult result = await _AccountManager.LogoutAsync(logoutRequestDto);
         if (result is LogoutResponseDto logoutResponse)
         {
-            return (ILogoutResult)logoutResponse;
+            return logoutResponse;
         }
         // If result is an error, map to LogoutResponseDto with empty/null tokens and error info if needed
         return new ErrorDto

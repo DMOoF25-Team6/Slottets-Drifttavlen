@@ -4,7 +4,6 @@
 using Api.Controllers;
 
 using Core.DTOs;
-using Core.DTOs.Identity;
 using Core.Interfaces.Repositories;
 
 using Domain.Entities;
