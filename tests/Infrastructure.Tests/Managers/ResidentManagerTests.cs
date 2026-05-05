@@ -57,7 +57,7 @@ public class ResidentManagerTests
             TrafficLightStatus = null,
             Notes = []
         };
-        HttpResponseMessage response = new(HttpStatusCode.OK)
+        using HttpResponseMessage response = new(HttpStatusCode.OK)
         {
             Content = JsonContent.Create(dto)
         };
@@ -94,7 +94,7 @@ public class ResidentManagerTests
             LastName = "Doe",
             TrafficLightStatus = null
         };
-        HttpResponseMessage response = new(HttpStatusCode.OK)
+        using HttpResponseMessage response = new(HttpStatusCode.OK)
         {
             Content = JsonContent.Create<ResidentResponseDto?>(null)
         };
