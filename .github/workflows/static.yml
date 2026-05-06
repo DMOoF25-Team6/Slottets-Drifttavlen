@@ -49,11 +49,18 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: doxygen-html
-          path: ./docs/doxygen/html
+          path: ./doxygen-tmp
+      - name: Prepare GitHub Pages output
+        run: |
+          mkdir -p ./github-pages/doxygen-html
+          mkdir -p ./github-pages/coverage-html
+          cp tools/github-pages/index.html ./github-pages/index.html
+          mv ./doxygen-tmp/* ./github-pages/doxygen-html/
+          mv ./coverage-tmp/* ./github-pages/coverage-html/ || true
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './docs/doxygen/html'
+          path: './github-pages'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
