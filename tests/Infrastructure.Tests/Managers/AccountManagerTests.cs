@@ -4,6 +4,7 @@
 using System.Net;
 using System.Net.Http.Json;
 
+using Core.DTOs;
 using Core.DTOs.Identity;
 using Core.Interfaces.Dto.Identity;
 

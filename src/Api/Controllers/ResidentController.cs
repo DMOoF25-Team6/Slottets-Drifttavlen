@@ -3,7 +3,6 @@
 
 
 using Core.DTOs;
-using Core.DTOs.Identity;
 using Core.Interfaces.Dto;
 using Core.Interfaces.Repositories;
 
@@ -58,7 +57,7 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>An <see cref="ActionResult{T}"/> containing the created <see cref="IResidentResult"/> and location header.</returns>
     [HttpPost("Create")]
-    public async Task<IActionResult> Create([FromBody] ResidentCreateDto dto, CancellationToken cancellationToken)
+    public async Task<ActionResult<IResidentResult>> Create([FromBody] ResidentCreateDto dto, CancellationToken cancellationToken)
     {
         if (dto is null)
         {
