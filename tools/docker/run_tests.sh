@@ -49,7 +49,8 @@ run_tests() {
     exit 1
   fi
   #dotnet test Slottet.CareManagement.slnx -c Release --no-build --logger \"trx;LogFileName=test_results.trx\" || exit_code=$?
-  dotnet test -c Release --results-directory "${resultDir}" --collect:"XPlat Code Coverage" --logger "trx" --settings .runsettingss
+  dotnet test -c Release --results-directory "${resultDir}" --collect:"XPlat Code Coverage" --logger "trx" || exit_code=$?
+  #dotnet test --results-directory "${resultDir}" --collect:"XPlat Code Coverage" --logger "trx" --settings .runsettings || exit_code=$?
   if [[ $exit_code -ne 0 ]]; then
     echo "Some tests failed with exit code $exit_code"
     exit $exit_code
