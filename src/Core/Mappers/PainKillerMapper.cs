@@ -29,7 +29,7 @@ public static class PainKillerMapper
         {
             ResidentId = residentId,
             Types = [.. records.Select(p => p.Type)],
-            NextAllowedTime = records.Any() ? records.Max(p => p.NextAllowedTime).AddHours(4) : DateTime.UtcNow
+            NextAllowedTime = records.Any() ? records.Max(p => p.NextAllowedTime) : DateTime.UtcNow
         };
     }
 }
