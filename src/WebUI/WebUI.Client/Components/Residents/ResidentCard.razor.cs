@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace WebUI.Client.Components.Residents;
 
-public partial class ResidentCard : ComponentBase
+public partial class ResidentCard : ComponentBase, IDisposable
 {
     #region Parameters
 
@@ -44,6 +44,7 @@ public partial class ResidentCard : ComponentBase
 
     private MedicineStatusDto? _medicineStatus;
     private PainkillerStatusDto? _painkillerStatus;
+    private Timer? _countdownTimer;
 
     private string _notesErrorMessage = string.Empty;
 
@@ -53,6 +54,12 @@ public partial class ResidentCard : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        _countdownTimer = new Timer(_ =>
+        { 
+            InvokeAsync(StateHasChanged); 
+        }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+
+
         await LoadNotes();
         await LoadMedicineStatus();
     }
@@ -220,6 +227,52 @@ public partial class ResidentCard : ComponentBase
                 Types = _painkillerStatus.Types
             };
         }
+    }
+
+    private string GetPainkillerCountdownText()
+    {
+        if (_painkillerStatus is null)
+        {
+            return "ingen information";
+        }
+
+        TimeSpan remaining = _painkillerStatus.NextAllowedTime - DateTime.UtcNow;
+
+        if (remaining <= TimeSpan.Zero)
+        {
+            return "Tilladt nu";
+        }
+
+        if (remaining.TotalHours >= 24)
+        {
+            return $"{(int)remaining.TotalDays}d {remaining.Hours:D2}:{remaining.Minutes:D2}:{remaining.Seconds:D2}";
+        }
+
+        return $"{(int)remaining.TotalHours:D2}:{remaining.Minutes:D2}:{remaining.Seconds:D2}";
+    }
+
+    private string GetPainKillerBadgeClass()
+    {
+        if (_painkillerStatus is null)
+        {
+            return "badge-secondary";
+        }
+        TimeSpan remaining = _painkillerStatus.NextAllowedTime - DateTime.UtcNow;
+        if (remaining <= TimeSpan.Zero)
+        {
+            return "badge-Warning";
+        }
+        else if (remaining.TotalMinutes <= 30)
+        {
+            return "badge-warning";
+        }
+
+            return "badge-secondary";
+    }
+
+    public void Dispose()
+    {
+            _countdownTimer?.Dispose();
     }
 
     #endregion
