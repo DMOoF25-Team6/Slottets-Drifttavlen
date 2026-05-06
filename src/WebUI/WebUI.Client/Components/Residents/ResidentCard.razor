@@ -6,25 +6,24 @@
 @using Domain.Entities
 @using Domain.Enums
 
-<section class="dashboard-grid container-fluid min-vh-100 d-flex align-items-center">
-    <div class="row g-3 row-cols-1 row-cols-md-4">
 
-        <div class="col">
 
-            <article class="card h-100">
+
+
+            <article class="card h-100 w-100 resident-card">
                 <header class="card-header @GetTrafficLightClass(Resident.TrafficLightStatus) flex-fill">
                     <h5 class="card-title">@Resident.Initials</h5>
-                    <span class="badge bg-success position-absolute top-0 end-0 m-0 px-4 col-auto">PN-Tid: 02:34:16</span>
+            <span class="badge bg-success position-absolute top-0 end-0 m-0 px-4 col-auto">PN-Tid: @GetPainkillerCountdownText()</span>
                 </header>
                 <section class="card-body">
 
                     <div class="col">
-                        <table class="table">
+                        <table class="table table-sm resident-table mb-1">
                             <thead>
                                 <tr>
-                                    <th scope="col">aktivitet </th>
-                                    <th scope="col">personer</th>
-                                    <th scope="col">beløb</th>
+                                    <th scope="col">Aktivitet </th>
+                                    <th scope="col">Ledsager</th>
+                                    <th scope="col">Beløb</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -42,23 +41,22 @@
                     </div>
 
                     @* UC003 - Medicine and painkiller status section *@
-                    <div class="row mt-2">
+                    <div class="row">
 
                         @* Medicine Section *@
                         <MedicineStatus MedicineStatusData="_medicineStatus" />
 
                         @* Painkiller Section *@
-                        <PainkillerStatus Status="_painkillerStatus" />
+                        
                     </div>
 
                     @* UC002 - Notes section *@
-                    <div class="row mt-2">
+                    <div class="row">
                         <NotesSection Resident="Resident" Notes="Resident.Notes.ToList()" />
                     </div>
 
                 </section>
             </article>
-        </div>
 
-    </div>
-</section>
+
+
