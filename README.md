@@ -184,11 +184,32 @@ dotnet run
 
 ---
 
-<a name="database-migration"></a>
-## 🧪 Database migration
+<a name="forslag-til-systemforbedringer-og-automatisering"></a>
+## Forslag til systemforbedringer og automatisering
 
-dotnet ef migrations add <name> --project src/Infrastructure.Data --startup-project src/Api
-dotnet ef database update --project src/Infrastructure.Data --startup-project src/Api
+- Tynd klient til dedikeret Dashboard
+  - Automatiseret opstart af Dashboard ved login 
+- Tynd klient til Webserser / API / Database
+  - Nginx som reverse proxy for WebUI
+  - Nginx som reverse proxy for API
+  - Mysql server
+  - Cronjobs for backup og vedligeholdelse
+
+<a name="automatic-dashboard-start"></a>
+### Cronjob for automatisk start af Dashboard på skærm nummer to (valgfrit)
+
+I folder `tools/` findes eksempel på et script `start-dashboard.bat` som kan bruges til at starte Dashboardet på skærm nummer to ved opstart af computeren.
+
+1. Placer `start-dashboard.bat` i din opstartsmappe (Windows: `shell:startup`)
+1. Åbn Opgaveplanlægger: Tryk på Win+R, skriv taskschd.msc, og tryk på Enter.
+1. Opret opgave: Klik på Opret opgave, angiv et navn, og klik på Ny i fanen Handlinger for at køre launch_browser.bat.
+1. Planlæg: Klik på Ny i fanen Udløsere for at indstille tidspunktet (f.eks. ved login)
+
+**Problemstilling**: Dashboardet skal starte automatisk på skærm nummer to ved opstart af computeren og autologin til systemet for at sikre, at det altid er tilgængeligt for personalet uden behov for manuel indgriben.
+
+**Alternativt**: Man kan investere i en tynd klient eller mini-pc, der er dedikeret til at køre Dashboardet, og konfigurere den til at starte Dashboardet ved opstart. Isoleret netværk og begrænset adgang for at øge sikkerheden.
+
+---
 
 <a name="for-udviklere"></a>
 ## 👨‍💻 For udviklere
@@ -238,6 +259,13 @@ Automatiserer:
 - Encoding (UTF-8 + LF)
 - Tests via Docker
 - Git push
+
+<a name="database-migration"></a>
+## 🧪 Database migration
+
+dotnet ef migrations add <name> --project src/Infrastructure.Data --startup-project src/Api
+dotnet ef database update --project src/Infrastructure.Data --startup-project src/Api
+
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [contributors-shield]: https://img.shields.io/github/contributors/DMOoF25-Team6/Slottets-Drifttavlen.svg?style=for-the-badge

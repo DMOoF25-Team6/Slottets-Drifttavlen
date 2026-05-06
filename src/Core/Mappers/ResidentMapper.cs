@@ -44,6 +44,8 @@ public class ResidentMapper
         {
             Id = dto.Id,
             Initials = dto.Initials,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
             TrafficLightStatus = (TrafficLightStatus?)dto.TrafficLightStatus,
             Notes = dto.Notes?.Select(ToResidentNote).ToList() ?? []
         };

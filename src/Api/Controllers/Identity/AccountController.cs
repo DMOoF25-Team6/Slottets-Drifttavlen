@@ -3,6 +3,7 @@
 
 using System.Security.Cryptography;
 
+using Core.DTOs;
 using Core.DTOs.Identity;
 using Core.Interfaces.Dto.Identity;
 using Core.Interfaces.Services;

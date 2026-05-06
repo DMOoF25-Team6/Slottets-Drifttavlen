@@ -9,7 +9,7 @@ using Core.Mappers;
 
 using Domain.Entities;
 
-namespace Infrastructure.Services;
+namespace Infrastructure.Managers;
 
 /// <summary>
 /// Provides operations for managing residents by communicating with the backend API over HTTP.
@@ -19,14 +19,45 @@ namespace Infrastructure.Services;
 /// </remarks>
 public class ResidentManager : IResidentManager
 {
+    #region Fields
     private readonly HttpClient _httpClient;
     private readonly IHttpClientFactory? _httpClientFactory;
+    #endregion
 
     public ResidentManager(IHttpClientFactory httpClientFactory)
     {
         _httpClientFactory = httpClientFactory;
         _httpClient = _httpClientFactory.CreateClient("SlottetApi") ?? throw new InvalidOperationException("Failed to create HttpClient.");
     }
+
+    #region Methods create
+    /// <summary>
+    /// Adds a new resident.
+    /// </summary>
+    /// <param name="entity">A resident entity to add.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains the added resident.
+    /// </returns>
+    /// <exception cref="NotImplementedException">
+    /// Always thrown as this method is not implemented.
+    /// </exception>
+    public async Task<Resident> CreateAsync(Resident entity, CancellationToken cancellationToken = default)
+    {
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("residents/Create", entity, cancellationToken);
+        _ = response.EnsureSuccessStatusCode();
+        ResidentResponseDto? dto = await response.Content.ReadFromJsonAsync<ResidentResponseDto>(cancellationToken: cancellationToken);
+        return dto != null ? ResidentMapper.ToResident(dto) : throw new InvalidOperationException("Failed to create resident.");
+    }
+
+    public Task<IEnumerable<Resident>> CreateRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+    #endregion create
+
+    #region Methods read
+
 
     /// <summary>
     /// Gets a resident by their unique identifier.
@@ -58,39 +89,9 @@ public class ResidentManager : IResidentManager
                 "residents", ct);
         return dtos != null ? dtos.Select(ResidentMapper.ToResident) : [];
     }
+    #endregion
 
-    /// <summary>
-    /// Adds a new resident.
-    /// </summary>
-    /// <param name="entity">A resident entity to add.</param>
-    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
-    /// <returns>
-    /// A task that represents the asynchronous operation. The task result contains the added resident.
-    /// </returns>
-    /// <exception cref="NotImplementedException">
-    /// Always thrown as this method is not implemented.
-    /// </exception>
-    public Task<Resident> CreateAsync(Resident entity, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <summary>
-    /// Adds a range of residents.
-    /// </summary>
-    /// <param name="entities">A collection of resident entities to add.</param>
-    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
-    /// <returns>
-    /// A task that represents the asynchronous operation. The task result contains the added residents.
-    /// </returns>
-    /// <exception cref="NotImplementedException">
-    /// Always thrown as this method is not implemented.
-    /// </exception>
-    public Task<IEnumerable<Resident>> AddRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
+    #region Methods update
     /// <summary>
     /// Updates a resident.
     /// </summary>
@@ -155,8 +156,6 @@ public class ResidentManager : IResidentManager
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<Resident>> CreateRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
+
+    #endregion
 }
