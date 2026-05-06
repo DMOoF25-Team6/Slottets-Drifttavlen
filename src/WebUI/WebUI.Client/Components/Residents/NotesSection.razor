@@ -1,54 +1,33 @@
 @* NotesSection.razor: Handles resident notes add/edit/delete/feedback UI and logic *@
 @using Domain.Entities
 
-<div class="row mt-2">
+<div class="row">
     <div class="d-flex justify-content-between align-items-center mb-1">
         <strong class="small">Noter</strong>
-        <button class="btn btn-sm btn-outline-primary" @onclick="ToggleAddForm">+ Tilføj</button>
+        
     </div>
 
-    @* Feedback message *@
-    @if (!string.IsNullOrEmpty(_feedbackMessage))
+    @{
+        ResidentNote? latestNote = Notes?
+            .OrderByDescending(n => n.EditedAt)
+            .FirstOrDefault();
+    }
+
+    @if (latestNote is null)
     {
-        <div class="alert @_feedbackClass py-1 px-2 small mb-1" role="alert">
-            @_feedbackMessage
+        
+            <p class="mb-0 mb-0"> Ingen noter</p>
+    }
+    else
+    {
+        <div class="row">
+            <p class ="mb-0 mb-0">@latestNote.Note</p>
+        </div>
+        <div class="row">
+            <p class="text-muted text-end">@latestNote.EditedAt.ToString("HH:mm dd-MM-yyyy")</p>
         </div>
     }
 
-    @* Add note form *@
-    @if (_showAddForm)
-    {
-        <div class="mb-2">
-            <textarea class="form-control form-control-sm mb-1" rows="2" placeholder="Skriv note her..."
-                      @bind="_newNoteText"></textarea>
-            <div class="d-flex gap-1">
-                <button class="btn btn-sm btn-primary" @onclick="AddNote">Gem</button>
-                <button class="btn btn-sm btn-secondary" @onclick="ToggleAddForm">Annullér</button>
-            </div>
-        </div>
-    }
-
-    @* Notes list *@
-    <ResidentNotesList 
-        Notes="Notes" 
-        EditingNoteId="_editingNoteId" 
-        EditNoteText="_editNoteText"
-        OnSaveEdit="@((Guid id) => SaveEdit(id))"
-        OnCancelEdit="CancelEdit"
-        OnStartEdit="StartEdit"
-        OnConfirmDelete="@((Guid id) => ConfirmDelete(id))" />
-
-    @* Delete confirmation *@
-    @if (_confirmDeleteId.HasValue)
-    {
-        <div class="alert alert-warning py-1 px-2 mt-2 small">
-            <p class="mb-1">Er du sikker på du vil slette denne note?</p>
-            <div class="d-flex gap-1">
-                <button class="btn btn-sm btn-danger" @onclick="DeleteNote">Slet</button>
-                <button class="btn btn-sm btn-secondary" @onclick="CancelDelete">Annullér</button>
-            </div>
-        </div>
-    }
 </div>
 
 
