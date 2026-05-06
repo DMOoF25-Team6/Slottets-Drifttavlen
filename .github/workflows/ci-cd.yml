@@ -56,7 +56,7 @@ jobs:
       - name: Test with coverage (excluding WebUI.Tests)
         run: |
           dotnet tool install --global dotnet-reportgenerator-globaltool
-          dotnet test -c Release --results-directory ./TestResults --collect:"XPlat Code Coverage" --logger "trx"
+          dotnet test Slottets-Drifttavlen.sln -c Release --results-directory ./TestResults --collect:"XPlat Code Coverage" --logger "trx"
           # Execute WebUI.Tests.dll directly if it exists
           if [ -f ./tests/WebUI.Tests/bin/Debug/net8.0/WebUI.Tests.dll ]; then
             dotnet ./tests/WebUI.Tests/bin/Debug/net8.0/WebUI.Tests.dll || true
