@@ -121,6 +121,8 @@ public class Program
         _ = app.UseAuthentication();
         _ = app.UseAuthorization();
 
+        app.UseMiddleware<Api.Middleware.CurrentUserMiddleware>();
+
         // Add Identity API endpoints with custom registration authorization
         //_ = AddEndpointIdentityApi(app);
 

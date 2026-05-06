@@ -1,6 +1,8 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using System.ComponentModel.DataAnnotations;
+
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -43,10 +45,10 @@ public partial class Login
 
     public class LoginModel
     {
-        //[Required(ErrorMessage = "Brugernavn er påkrævet.")]
-        //[EmailAddress(ErrorMessage = "Brugernavn skal være en gyldig e-mailadresse.")]
+        [Required(ErrorMessage = "Brugernavn er påkrævet.")]
+        [EmailAddress(ErrorMessage = "Brugernavn skal være en gyldig e-mailadresse.")]
         public string? Username { get; set; }
-        //[Required(ErrorMessage = "Adgangskode er påkrævet.")]
+        [Required(ErrorMessage = "Adgangskode er påkrævet.")]
         public string? Password { get; set; }
     }
 }

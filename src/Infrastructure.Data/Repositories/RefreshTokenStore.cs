@@ -32,7 +32,7 @@ public class RefreshTokenStore(AppDbContext dbContext) : IRefreshTokenStore
             existing.CreatedAt = token.CreatedAt;
             existing.CreatedByIp = token.CreatedByIp;
             // ...add any other fields that may change
-            dbContext.RefreshTokens.Update(existing);
+            _ = dbContext.RefreshTokens.Update(existing);
         }
         else
         {
