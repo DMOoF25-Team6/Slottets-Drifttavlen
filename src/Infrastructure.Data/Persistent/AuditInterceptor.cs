@@ -28,7 +28,7 @@ public class AuditInterceptor : SaveChangesInterceptor
 
         DateTime startTime = DateTime.UtcNow;
 
-        IEnumerable<AuditEntry> auditEntries = eventData.Context.ChangeTracker
+        var auditEntries = eventData.Context.ChangeTracker
             .Entries()
             .Where(e => (
                 e.Entity is not AuditEntry
@@ -41,7 +41,8 @@ public class AuditInterceptor : SaveChangesInterceptor
                 StartTimeUtc = startTime,
                 Metadata = $"{e.Entity.GetType().Name} - {e.State}",
                 UserId = GetUserIdFromToken(eventData.Context), // Get user from token
-            });
+            })
+            .ToList();
 
         if (!auditEntries.Any())
         {
@@ -71,12 +72,8 @@ public class AuditInterceptor : SaveChangesInterceptor
             entry.Succeeded = true;
         }
 
-        if (_auditEntries!.Any())
-        {
-            await eventData.Context.Set<AuditEntry>().AddRangeAsync(_auditEntries!, cancellationToken);
-            _auditEntries = null; // Clear the audit entries after saving
-            _ = await eventData.Context.SaveChangesAsync(cancellationToken);
-        }
+        // Removed duplicate AddRangeAsync and SaveChangesAsync to prevent duplicate key exception
+        _auditEntries = null;
 
         // After saving changes, you can perform additional actions if needed
         return await base.SavedChangesAsync(eventData, result, cancellationToken);
