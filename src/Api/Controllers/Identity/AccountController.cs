@@ -186,8 +186,8 @@ public class AccountController(
             return validationError;
         }
 
-        RefreshToken? refreshToken = await GetValidRefreshTokenAsync(request.RefreshToken);
-        if (refreshToken == null)
+        RefreshToken? refreshToken = await refreshTokenStore.GetByTokenAsync(request.RefreshToken!);
+        if (refreshToken is null || refreshToken.RevokedAt is not null || refreshToken.ExpiresAt < DateTime.UtcNow)
         {
             return Unauthorized(new RefreshTokenResponseDto { ErrorMessages = ["Invalid or expired refresh token."] });
         }
@@ -198,7 +198,7 @@ public class AccountController(
         await refreshTokenStore.SaveAsync(refreshToken);
 
         User? user = await GetValidUserByIdAsync(refreshToken.UserId);
-        if (user == null)
+        if (user is null)
         {
             return Unauthorized(new RefreshTokenResponseDto { ErrorMessages = ["User not found or email unavailable."] });
         }
@@ -209,21 +209,21 @@ public class AccountController(
             return Unauthorized(errorDto);
         }
 
-        _ = ((LoginResponseDto)loginResult).Token;
+        string newPlainToken = GenerateRefreshToken();
         string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
         RefreshToken newRefreshToken = new()
         {
             Id = Guid.NewGuid(),
             UserId = user.Id,
-            Token = GenerateRefreshToken(),
             CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddDays(7),
             CreatedByIp = ipAddress
         };
+        newRefreshToken.SetTokenFromPlaintext(newPlainToken);
         await refreshTokenStore.SaveAsync(newRefreshToken);
 
         LoginResponseDto loginResponse = (LoginResponseDto)loginResult;
-        loginResponse.RefreshToken = newRefreshToken.Token;
+        loginResponse.RefreshToken = newPlainToken;
         return Ok(loginResponse);
     }
 
@@ -295,19 +295,18 @@ public class AccountController(
             };
         }
 
-        // Generate a refresh token
+        // Generate a refresh token (plaintext for client, hash for storage)
         string refreshTokenValue = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
         string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
         RefreshToken refreshToken = new()
         {
             Id = Guid.NewGuid(),
             UserId = user.Id,
-            Token = refreshTokenValue,
             CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddDays(7),
             CreatedByIp = ipAddress
         };
-
+        refreshToken.SetTokenFromPlaintext(refreshTokenValue);
         await refreshTokenStore.SaveAsync(refreshToken);
 
         LoginResponseDto loginResponse = new()
@@ -385,10 +384,10 @@ public class AccountController(
         {
             Id = Guid.NewGuid(),
             UserId = user.Id,
-            Token = newRefreshTokenValue,
             CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddDays(7)
         };
+        newRefreshToken.SetTokenFromPlaintext(newRefreshTokenValue);
         await refreshTokenStore.SaveAsync(newRefreshToken);
         return newRefreshToken;
     }
