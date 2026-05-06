@@ -29,7 +29,8 @@ public partial class PhoneList : ComponentBase, IDisposable
     private DateTime _lastUpdated = DateTime.Now;
     private bool _isLoading = true;
     private bool _hasError;
-    private Timer? _refreshTimer;
+    private PeriodicTimer? _periodicTimer;
+    private CancellationTokenSource? _cts;
 
     #endregion
 
@@ -38,13 +39,22 @@ public partial class PhoneList : ComponentBase, IDisposable
     protected override async Task OnInitializedAsync()
     {
         await LoadPhoneAssignments();
+        _cts = new CancellationTokenSource();
+        _ = StartRefreshLoopAsync(_cts.Token);
+    }
 
-        // Auto-refresh every 60 seconds driven by system time event
-        _refreshTimer = new Timer(async _ =>
+    private async Task StartRefreshLoopAsync(CancellationToken ct)
+    {
+        _periodicTimer = new PeriodicTimer(TimeSpan.FromSeconds(60));
+        try
         {
-            await LoadPhoneAssignments();
-            await InvokeAsync(StateHasChanged);
-        }, null, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(60));
+            while (await _periodicTimer.WaitForNextTickAsync(ct))
+            {
+                await LoadPhoneAssignments();
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException) { /* expected on dispose */ }
     }
 
     #endregion
@@ -93,7 +103,9 @@ public partial class PhoneList : ComponentBase, IDisposable
 
     public void Dispose()
     {
-        _refreshTimer?.Dispose();
+        _cts?.Cancel();
+        _periodicTimer?.Dispose();
+        _cts?.Dispose();
         GC.SuppressFinalize(this);
     }
 
