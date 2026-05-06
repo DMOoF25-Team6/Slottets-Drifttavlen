@@ -18,7 +18,7 @@ public interface IPhoneAssignmentRepository : IRepository<PhoneAssignment>
     /// <param name="shiftType">The shift type (Day, Evening, Night).</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A collection of phone assignments for the given shift.</returns>
-    Task<IEnumerable<PhoneAssignment>> GetByShiftTypeAsync(string shiftType, CancellationToken cancellationToken);
+    Task<IEnumerable<PhoneAssignment>> GetByShiftTypeAsync(Domain.Enums.ShiftType shiftType, CancellationToken cancellationToken);
 
     /// <summary>
     /// Retrieves phone assignments with caregiver name from the view for the given shift.
@@ -26,5 +26,5 @@ public interface IPhoneAssignmentRepository : IRepository<PhoneAssignment>
     /// <param name="shiftType">The shift type (Day, Evening, Night).</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A collection of phone assignment DTOs including caregiver name.</returns>
-    Task<IEnumerable<PhoneAssignmentDto>> GetDtoByShiftTypeAsync(string shiftType, CancellationToken cancellationToken);
+    Task<IEnumerable<PhoneAssignmentDto>> GetDtoByShiftTypeAsync(Domain.Enums.ShiftType shiftType, CancellationToken cancellationToken);
 }

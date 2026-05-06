@@ -17,6 +17,20 @@ public class PhoneAssignmentDto
     /// Gets or sets the shift type for this phone assignment (Day, Evening, Night).
     /// </summary>
     public string ShiftType { get; set; } = string.Empty;
+    /// <summary>
+    /// Enum representation of the shift type (Day, Evening, Night).
+    /// </summary>
+    public Domain.Enums.ShiftType ShiftTypeEnum
+    {
+        get => ShiftType switch
+        {
+            "Dag" => Domain.Enums.ShiftType.Day,
+            "Aften" => Domain.Enums.ShiftType.Evening,
+            "Nat" => Domain.Enums.ShiftType.Night,
+            _ => Domain.Enums.ShiftType.Day
+        };
+        set => ShiftType = value.ToString();
+    }
 
     /// <summary>
     /// Gets or sets the name of the staff member assigned to this phone number for the active shift.

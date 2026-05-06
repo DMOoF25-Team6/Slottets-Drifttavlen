@@ -1,8 +1,11 @@
 // Copyright (c) 2026 Team6. All rights reserved.
 // No warranty, explicit or implicit, provided.
 
+
 using Core.DTOs;
 using Core.Interfaces.Managers;
+
+using Domain.Enums;
 
 using Microsoft.AspNetCore.Components;
 
@@ -25,7 +28,7 @@ public partial class PhoneList : ComponentBase, IDisposable
     #region Fields
 
     private IEnumerable<PhoneAssignmentDto> _assignments = [];
-    private string _activeShift = string.Empty;
+    private ShiftType _activeShift;
     private DateTime _lastUpdated = DateTime.Now;
     private bool _isLoading = true;
     private bool _hasError;
@@ -89,15 +92,14 @@ public partial class PhoneList : ComponentBase, IDisposable
     /// Resolves the active shift label based on current system time.
     /// Day (D): 07:00-14:59, Evening (A): 15:00-22:59, Night (N): 23:00-06:59.
     /// </summary>
-    private static string ResolveActiveShift()
+    private static ShiftType ResolveActiveShift()
     {
         int hour = DateTime.Now.Hour;
-
         return hour switch
         {
-            >= 7 and < 15 => "D",
-            >= 15 and < 23 => "A",
-            _ => "N"
+            >= 7 and < 15 => ShiftType.Day,
+            >= 15 and < 23 => ShiftType.Evening,
+            _ => ShiftType.Night
         };
     }
 

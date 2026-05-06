@@ -1,11 +1,11 @@
-@*UC005 - PhoneList section on Dashboard - shows fixed work phone assignments per shift*@
-
 @using Core.DTOs
+@using Domain.Enums
+@*UC005 - PhoneList section on Dashboard - shows fixed work phone assignments per shift*@
 
 <div class="card h-100">
     <div class="card-header d-flex justify-content-between align-items-center">
         <strong>Telefonnummer</strong>
-        <span class="badge bg-secondary">Vagt: @_activeShift</span>
+        <span class="badge bg-secondary">Vagt: @_activeShift.ToDanishString()</span>
     </div>
 
     <div class="card-body p-0">
