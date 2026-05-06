@@ -108,10 +108,16 @@ public class ResidentCardTests : Bunit.TestContext
             .Setup(s => s.GetMedicineStatusAsync(residentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new MedicineStatusDto
             {
-                ResidentId = residentId.ToString(),
-                Medicine = ["Paracetamol"],
-                Given = [true],
-                Timestamps = [new DateTime(2026, 04, 24, 10, 00, 00)]
+                ResidentId = residentId,
+                Entries = new List<MedicineEntryDto>
+                {
+                    new MedicineEntryDto
+                    {
+                        Name = "Paracetamol",
+                        Given = true,
+                        Timestamp = new DateTime(2026, 04, 24, 10, 00, 00)
+                    }
+                }
             });
 
         _ = _medicineStatusServiceMock

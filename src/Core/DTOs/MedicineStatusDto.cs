@@ -9,37 +9,25 @@ namespace Core.DTOs;
 /// <remarks>
 /// This DTO is used to transfer medicine administration data for a specific resident, including which medicines were given and when.
 /// </remarks>
+public class MedicineEntryDto
+{
+    public string Name { get; set; } = string.Empty;
+    public DateTime Timestamp { get; set; }
+    public bool Given { get; set; }
+}
+
+/// <summary>
+/// Represents the medicine administration status for a resident, including medicine entries.
+/// </summary>
 public class MedicineStatusDto
 {
     /// <summary>
     /// Gets or sets the unique identifier of the resident.
     /// </summary>
-    /// <value>
-    /// A string that uniquely identifies the resident. The default is <see cref="string.Empty"/>.
-    /// </value>
-    public string ResidentId { get; set; } = string.Empty;
+    public Guid ResidentId { get; set; }
 
     /// <summary>
-    /// Gets or sets the list of medicine names associated with the resident.
+    /// Gets or sets the medicine entries for the resident.
     /// </summary>
-    /// <value>
-    /// An array of medicine names. The default is an empty array.
-    /// </value>
-    public string[] Medicine { get; set; } = [];
-
-    /// <summary>
-    /// Gets or sets the timestamps for each medicine administration event.
-    /// </summary>
-    /// <value>
-    /// An array of <see cref="DateTime"/> values representing when each medicine was administered. The default is an empty array.
-    /// </value>
-    public DateTime[] Timestamps { get; set; } = [];
-
-    /// <summary>
-    /// Gets or sets a value that indicates whether each medicine was given.
-    /// </summary>
-    /// <value>
-    /// An array of <see langword="true"/> or <see langword="false"/> values indicating if the medicine was given. The default is an empty array.
-    /// </value>
-    public bool[] Given { get; set; } = [];
+    public List<MedicineEntryDto> Entries { get; set; } = [];
 }

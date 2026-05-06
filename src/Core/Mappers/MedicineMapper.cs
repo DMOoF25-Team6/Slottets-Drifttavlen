@@ -23,10 +23,13 @@ public static class MedicineMapper
         ArgumentNullException.ThrowIfNull(records);
         return new MedicineStatusDto
         {
-            ResidentId = residentId.ToString(),
-            Medicine = [.. records.Select(m => m.MedicineName)],
-            Timestamps = [.. records.Select(m => m.Timestamp)],
-            Given = [.. records.Select(m => m.Given)]
+            ResidentId = residentId,
+            Entries = records.Select(m => new MedicineEntryDto
+            {
+                Name = m.MedicineName,
+                Timestamp = m.Timestamp,
+                Given = m.Given
+            }).ToList()
         };
     }
 }
