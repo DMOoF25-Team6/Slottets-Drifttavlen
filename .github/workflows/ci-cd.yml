@@ -53,5 +53,14 @@ jobs:
         run: dotnet restore Slottet.CareManagement.sln
       - name: Build
         run: dotnet build --no-restore Slottet.CareManagement.sln
-      - name: Test
-        run: dotnet test --no-build --verbosity normal --solution Slottet.CareManagement.sln
+      - name: Test with coverage
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults --solution Slottet.CareManagement.sln
+          reportgenerator -reports:./TestResults/**/coverage.cobertura.xml -targetdir:./TestResults/coverage-html -reporttypes:Html
+      - name: Upload coverage HTML results
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-html
+          path: ./TestResults/coverage-html
+

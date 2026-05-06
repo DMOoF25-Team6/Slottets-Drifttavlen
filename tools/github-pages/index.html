@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Documentation Portal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 80px auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 40px 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      margin: 24px 0;
+    }
+
+    a, .coming-soon {
+      display: block;
+      text-decoration: none;
+      font-size: 1.2em;
+      padding: 18px;
+      border-radius: 6px;
+      background: #e9ecef;
+      color: #0074d9;
+      text-align: center;
+      transition: background 0.2s;
+    }
+
+      a:hover {
+        background: #d0e6fa;
+      }
+
+    .coming-soon {
+      color: #888;
+      background: #f3f3f3;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Project Documentation</h1>
+    <ul>
+      <li><a href="doxygen-html/index.html">Doxygen HTML Documentation</a></li>
+      <li><span class="coming-soon">Doxygen HTML Analysis (coming soon)</span></li>
+      <li><a href="coverage-html/index.html">Coverage Report</a></li>
+    </ul>
+  </div>
+</body>
+</html>
