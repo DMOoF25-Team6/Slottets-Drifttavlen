@@ -20,4 +20,20 @@ public class PhoneAssignment : IEntity
 
     [Required]
     public string ShiftType { get; set; } = string.Empty;
+    /// <summary>
+    /// Enum representation of the shift type (Day, Evening, Night).
+    /// Not mapped to DB, for code use only.
+    /// </summary>
+    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+    public Enums.ShiftType ShiftTypeEnum
+    {
+        get => ShiftType switch
+        {
+            "Day" => Enums.ShiftType.Day,
+            "Evening" => Enums.ShiftType.Evening,
+            "Night" => Enums.ShiftType.Night,
+            _ => Enums.ShiftType.Day
+        };
+        set => ShiftType = value.ToString();
+    }
 }

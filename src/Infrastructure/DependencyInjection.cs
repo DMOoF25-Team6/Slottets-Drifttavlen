@@ -42,10 +42,6 @@ public static class DependencyInjection
         _ = services.AddScoped<IResidentNoteManager, ResidentNoteManager>();
         _ = services.AddScoped<IMedicineStatusManager, MedicineStatusManager>();
 
-        // Audit service for logging actions, errors, and important events to the database
-        _ = services.AddScoped<IAuditService, AuditService>();
-
-        // CreateAccountAsync TokenService for ITokenService
         _ = services.AddScoped<ITokenService, TokenService>();
 
         _ = services.AddScoped<IDatabaseConnectionManager, DatabaseConnectionManager>();

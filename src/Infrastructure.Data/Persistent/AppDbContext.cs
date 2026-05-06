@@ -14,6 +14,9 @@ namespace Infrastructure.Data.Persistent;
 
 public partial class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
 {
+    private readonly IEnumerable<AuditEntry> _auditEntries = [];
+    public Guid CurrentUserId { get; set; }
+
     // No need to redeclare DbSet<User> Users; it is inherited from IdentityDbContext<User, ...>
     public DbSet<Resident> Residents { get; set; }
     public DbSet<ResidentNote> ResidentNotes { get; set; }
@@ -23,10 +26,18 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
 
     // Identity-related DbSet for refresh tokens
     public DbSet<RefreshToken> RefreshTokens { get; set; }
-    public DbSet<AuditLog> AuditLogs { get; set; }
 
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        => base.SaveChangesAsync(cancellationToken);
+    public DbSet<AuditEntry> AuditEntries { get; set; }
+
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        _ = optionsBuilder.AddInterceptors(new AuditInterceptor(_auditEntries));
+        base.OnConfiguring(optionsBuilder);
+    }
+
+    //public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    //    => base.SaveChangesAsync(cancellationToken);
 
     /// <summary>
     /// Configures the model and seeds example Identity roles and claims.
@@ -39,7 +50,6 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
         _ = modelBuilder.ApplyConfiguration(new Configurations.ResidentNoteConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.MedicineRecordConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.PainkillerRecordConfiguration());
-        _ = modelBuilder.ApplyConfiguration(new Configurations.AuditLogConfiguration());
 
         _ = modelBuilder.Entity<MedicineStatusView>()
             .HasNoKey()
@@ -61,6 +71,5 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
         IdentitySeed.UserSeed(modelBuilder);
         IdentitySeed.RolesClaimSeed(modelBuilder);
         IdentitySeed.UserRoleSeed(modelBuilder);
-
     }
 }

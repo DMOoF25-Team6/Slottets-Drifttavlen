@@ -70,23 +70,22 @@ namespace Infrastructure.Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "AuditLogs",
+                name: "AuditEntries",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    EntityName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                    Metadata = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ChangeType = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ChangedBy = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Timestamp = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Description = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false)
+                    StartTimeUtc = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    EndTimeUtc = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Succeeded = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ErrorMessage = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AuditLogs", x => x.Id);
+                    table.PrimaryKey("PK_AuditEntries", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -253,7 +252,7 @@ namespace Infrastructure.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Token = table.Column<string>(type: "varchar(512)", maxLength: 512, nullable: false)
+                    TokenHash = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ExpiresAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -359,12 +358,12 @@ namespace Infrastructure.Data.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { new Guid("30cffcf9-5784-4fa9-9c10-c013ef3faf16"), 0, "8afb0c58-a696-41f3-a2c1-9c2fe1bd99ac", "ThorDanrsøn@example.com", true, false, null, "THORDANRSØN@EXAMPLE.COM", "THORDANRSØN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEIIzFJqgJNrjumuWjOgLnulSTi+e73nJFSZZYCwdruf1VEaXCe3ibXXeWvOuqaoCvA==", null, false, "b46625e8-be83-4946-8627-e0110b81b628", false, "thordanrsøn@example.com" },
-                    { new Guid("37155b80-7111-422a-aba6-89d7070f1644"), 0, "2b9f22d0-46cc-466b-be87-58326bc0316e", "PerNielsen@example.com", true, false, null, "PERNIELSEN@EXAMPLE.COM", "PERNIELSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEJ5YN/fzMw7nouwHBkV1JWuqBTFvPLLQCDBDXBD5NZhoxOFYBaodxzi8mcZhFwM+9w==", null, false, "ae95baa2-00b5-494b-8e70-67248046aae8", false, "pernielsen@example.com" },
-                    { new Guid("3a21f8e1-885b-4394-abf0-ed0baeea239b"), 0, "308f6599-7b53-4c6a-9351-24c4bac486d6", "PederRasmussen@example.com", true, false, null, "PEDERRASMUSSEN@EXAMPLE.COM", "PEDERRASMUSSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEFQtIzyHMJUTbXzdvve7SzNLxfOZtCbJL6KqeETyuhhO1Tykpx93i+EKNBDBaeTfOw==", null, false, "dd7c55e7-92e4-427c-9979-e27e9c3edf79", false, "pederrasmussen@example.com" },
-                    { new Guid("4711a300-711e-4132-86d4-cafd3f11deec"), 0, "592e7e87-3b40-4c16-b273-80e761220b74", "SanneJohansen@example.com", true, false, null, "SANNEJOHANSEN@EXAMPLE.COM", "SANNEJOHANSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEP4hQYYYdY78rx4NPLIZEDjVgVEEYTh4OsQUiYdtCsk0N0wj8ouCqmSVT7mJ+LucMA==", null, false, "abbfa943-9006-4836-ab90-1237ffc5def3", false, "sannejohansen@example.com" },
-                    { new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37"), 0, "046f902c-2e92-42c7-996f-01a453c1a391", "KasperHolm@example.com", true, false, null, "KASPERHOLM@EXAMPLE.COM", "KASPERHOLM@EXAMPLE.COM", "AQAAAAIAAYagAAAAEL+LJvqxDp+BG9x4LtkYAeAZbVL3u63od+w0JKRnVFCwpx1OINAl9QaItnmaX3I4DQ==", null, false, "6b80ae29-c350-47d7-91d3-52e8850e516f", false, "kasperholm@example.com" },
-                    { new Guid("b836e975-e775-48bc-8b84-5d2bdd5bd87a"), 0, "f086ccb0-6f68-45e4-8f5f-3ef283d5c53f", "AndersJensen@example.com", true, false, null, "ANDERSJENSEN@EXAMPLE.COM", "ANDERSJENSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEHJsaVzRLk4V3/sKXpd5bskZlVg5NEtmhfJa6d8Z6cgTO5T+8AgzIEAyfU5yaf4f1g==", null, false, "bc087b7e-f95c-4eaf-9c0b-6dd1ff11029b", false, "andersjensen@example.com" }
+                    { new Guid("30cffcf9-5784-4fa9-9c10-c013ef3faf16"), 0, "c8178e80-14a3-4d5e-aac7-2f61ec3f95d0", "ThorDanrsøn@example.com", true, false, null, "THORDANRSØN@EXAMPLE.COM", "THORDANRSØN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEAqpMy8xptCulkIfDl/e/BM6r9y9ACP4nl3HNoiHPpI4PTHM37gjFuG5yav3eWjEgQ==", null, false, "a1a893f4-fc1c-4ff7-8f01-dfe7fd50e64c", false, "thordanrsøn@example.com" },
+                    { new Guid("37155b80-7111-422a-aba6-89d7070f1644"), 0, "4e766dfc-fbf5-4cb5-8d41-4be95035207b", "PerNielsen@example.com", true, false, null, "PERNIELSEN@EXAMPLE.COM", "PERNIELSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEGOXqsxmahw0pubRYxwaKiSk9iMl3sRdEVqCnDAjlgTZ0Z2sUguu8ha/7Fr9mUsXXQ==", null, false, "2d23e29a-e6ea-4ae5-8169-9e5e5bcfdfdc", false, "pernielsen@example.com" },
+                    { new Guid("3a21f8e1-885b-4394-abf0-ed0baeea239b"), 0, "cefa6ccf-2a18-4886-8a0d-3a3c48a78e1e", "PederRasmussen@example.com", true, false, null, "PEDERRASMUSSEN@EXAMPLE.COM", "PEDERRASMUSSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEN3OHVxiFL7WdDKJ4uouLTSwxM62Y70n1BF5ls9apFWiAt2ZSDz2kjfE1Ds4Gngo/w==", null, false, "35fecfcc-3bb3-4cfa-b389-e29e2ede1e8a", false, "pederrasmussen@example.com" },
+                    { new Guid("4711a300-711e-4132-86d4-cafd3f11deec"), 0, "b56c7e7d-908a-400e-bc70-20b8348e054d", "SanneJohansen@example.com", true, false, null, "SANNEJOHANSEN@EXAMPLE.COM", "SANNEJOHANSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAENnW9Lqqioz4a7P5h+ftmTr1d7AcmhQWeqCafGfJkvlWhqhB0C2ywJramSuUSG6UxA==", null, false, "47043eed-c997-4bdb-be22-e9585e840f6c", false, "sannejohansen@example.com" },
+                    { new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37"), 0, "86b92d63-4845-4bda-b1f5-2748732cfeb6", "KasperHolm@example.com", true, false, null, "KASPERHOLM@EXAMPLE.COM", "KASPERHOLM@EXAMPLE.COM", "AQAAAAIAAYagAAAAEHhAcZDyk1KmEwRd+twNXJ6yHCWCDsw38jtX+MTpk/RmdUdt5WZAV46UZNdXvHsV+A==", null, false, "897045a9-a34e-42a1-9bee-97a94bb40c87", false, "kasperholm@example.com" },
+                    { new Guid("b836e975-e775-48bc-8b84-5d2bdd5bd87a"), 0, "21b6dc1f-dce9-48af-88ae-32f06dc435e4", "AndersJensen@example.com", true, false, null, "ANDERSJENSEN@EXAMPLE.COM", "ANDERSJENSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEEKKDiP8OUipbaXmWKmJuEX+pCCHblRGWpA57B4oK8j012tx1xrAvkBgDKCTU9t7mw==", null, false, "007a5b1f-95c7-4377-b0be-8f030591168b", false, "andersjensen@example.com" }
                 });
 
             migrationBuilder.InsertData(
@@ -470,21 +469,6 @@ namespace Infrastructure.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_AuditLogs_ChangedBy",
-                table: "AuditLogs",
-                column: "ChangedBy");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AuditLogs_EntityName",
-                table: "AuditLogs",
-                column: "EntityName");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AuditLogs_Timestamp",
-                table: "AuditLogs",
-                column: "Timestamp");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_MedicineRecord_ResidentId",
                 table: "MedicineRecord",
                 column: "ResidentId");
@@ -495,9 +479,9 @@ namespace Infrastructure.Data.Migrations
                 column: "ResidentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RefreshTokens_Token",
+                name: "IX_RefreshTokens_TokenHash",
                 table: "RefreshTokens",
-                column: "Token",
+                column: "TokenHash",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -530,7 +514,7 @@ namespace Infrastructure.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "AuditLogs");
+                name: "AuditEntries");
 
             migrationBuilder.DropTable(
                 name: "MedicineRecord");

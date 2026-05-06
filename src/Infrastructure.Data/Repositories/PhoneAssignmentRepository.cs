@@ -5,6 +5,7 @@ using Core.DTOs;
 using Core.Interfaces.Repositories;
 
 using Domain.Entities;
+using Domain.Enums;
 
 using Infrastructure.Data.Persistent;
 
@@ -22,32 +23,21 @@ public class PhoneAssignmentRepository(AppDbContext dbContext)
 
     /// <inheritdoc/>
     public async Task<IEnumerable<PhoneAssignment>> GetByShiftTypeAsync(
-        string shiftType, CancellationToken cancellationToken)
+        ShiftType shiftType, CancellationToken cancellationToken)
     {
+        string shiftTypeString = shiftType.ToString();
         return await _dbContext.PhoneAssignments
-            .Where(p => p.ShiftType == shiftType)
+            .Where(p => p.ShiftType == shiftTypeString)
             .ToListAsync(cancellationToken);
     }
 
     /// <inheritdoc/>
     public async Task<IEnumerable<PhoneAssignmentDto>> GetDtoByShiftTypeAsync(
-        string shiftType, CancellationToken cancellationToken)
+        ShiftType shiftType, CancellationToken cancellationToken)
     {
-        // Use the vwPhoneAssignment view to get phone assignments with caregiver name
-        //return await _dbContext.PhoneAssignmentView
-        //    .Where(p => p.ShiftType == shiftType)
-        //    .Select(p => new PhoneAssignmentDto
-        //    {
-        //        PhoneNumber = p.PhoneNumber,
-        //        ShiftType = p.ShiftType,
-        //        AssignedStaffName = p.CaregiverName
-        //    })
-        //    .ToListAsync(cancellationToken);
-
-
-        // Use DTO instead of view, join PhoneAssignments with Users to get caregiver name
+        string shiftTypeString = shiftType.ToString();
         return await _dbContext.PhoneAssignments
-            .Where(p => p.ShiftType == shiftType)
+            .Where(p => p.ShiftType == shiftTypeString)
             .Select(p => new PhoneAssignmentDto
             {
                 PhoneNumber = p.PhoneNumber,
