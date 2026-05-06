@@ -2,10 +2,10 @@
 //  No warranty, explicit or implicit, provided.
 
 
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 
 using Domain.Entities;
-
 
 
 namespace Infrastructure.Services;
@@ -18,22 +18,16 @@ namespace Infrastructure.Services;
 /// </summary>
 internal class AuditService : IAuditService
 {
+    private readonly IAuditRepository _repository;
 
-    //private readonly IAuditRepository? _repository;
-
-
-    // Api har repositories
-    //public AuditService(IAuditRepository repository)
-    //{
-    //    //_repository = repository;
-    //}
-
-
-
+    public AuditService(IAuditRepository repository)
+    {
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+    }
 
     public async Task LogAsync(string entityName, string changeType, string? changedBy, string description)
     {
-        _ = new AuditLog()
+        AuditLog log = new()
         {
             Id = Guid.NewGuid(),
             EntityName = entityName,
@@ -42,11 +36,6 @@ internal class AuditService : IAuditService
             Timestamp = DateTime.UtcNow,
             Description = description
         };
-
-        await Task.CompletedTask;
-
-        //await _repository.CreateAsync(log);
-
+        await _repository.AddAsync(log);
     }
 }
-

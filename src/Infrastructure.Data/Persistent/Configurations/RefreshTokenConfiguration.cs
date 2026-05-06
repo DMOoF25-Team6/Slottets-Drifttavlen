@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Team6. All rights reserved. 
+//  No warranty, explicit or implicit, provided.
+
 using Domain.Entities;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,29 +15,30 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
 {
     public void Configure(EntityTypeBuilder<RefreshToken> builder)
     {
-        builder.HasKey(rt => rt.Id);
+        _ = builder.HasKey(rt => rt.Id);
 
-        builder.Property(rt => rt.Token)
+        _ = builder.Property(rt => rt.TokenHash)
             .IsRequired()
-            .HasMaxLength(512);
+            .HasMaxLength(64) // SHA-256 hex string is 64 chars
+            .HasColumnName("TokenHash");
 
-        builder.Property(rt => rt.ExpiresAt)
+        _ = builder.Property(rt => rt.ExpiresAt)
             .IsRequired();
 
-        builder.Property(rt => rt.CreatedAt)
+        _ = builder.Property(rt => rt.CreatedAt)
             .IsRequired();
 
-        builder.Property(rt => rt.CreatedByIp)
+        _ = builder.Property(rt => rt.CreatedByIp)
             .HasMaxLength(64);
 
-        builder.Property(rt => rt.RevokedReason)
+        _ = builder.Property(rt => rt.RevokedReason)
             .HasMaxLength(256);
 
-        builder.HasOne(rt => rt.User)
+        _ = builder.HasOne(rt => rt.User)
             .WithMany()
             .HasForeignKey(rt => rt.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(rt => rt.Token).IsUnique();
+        _ = builder.HasIndex(rt => rt.TokenHash).IsUnique();
     }
 }

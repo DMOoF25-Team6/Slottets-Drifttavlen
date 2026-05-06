@@ -9,7 +9,7 @@
 {
     <p class="small fst-italic text-muted">Indlæser medicinstatus...</p>
 }
-else if (!(MedicineStatusData.Medicine is Array arr && arr.Length > 0))
+else if (MedicineStatusData.Entries is null || MedicineStatusData.Entries.Count == 0)
 {
     <p class="small fst-italic text-muted">Ingen medicinregistreringer de sidste 24 timer</p>
 }
@@ -24,12 +24,12 @@ else
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < MedicineStatusData.Medicine.Length; i++)
+            @foreach (var entry in MedicineStatusData.Entries)
             {
                 <tr>
-                    <td>@MedicineStatusData.Medicine[i]</td>
-                    <td>@(MedicineStatusData.Given[i] ? "Ja" : "Nej")</td>
-                    <td>@MedicineStatusData.Timestamps[i].ToString("HH:mm dd-MM-yyyy")</td>
+                    <td>@entry.Name</td>
+                    <td>@(entry.Given ? "Ja" : "Nej")</td>
+                    <td>@entry.Timestamp.ToString("HH:mm dd-MM-yyyy")</td>
                 </tr>
             }
         </tbody>

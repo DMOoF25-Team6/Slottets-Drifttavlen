@@ -9,6 +9,7 @@
     <Project Path="tests/Infrastructure.Data.Tests/Infrastructure.Data.Tests.csproj" Id="3b9df8f9-77de-4807-8876-cc3bba79fa8b" />
     <Project Path="tests/Infrastructure.Tests/Infrastructure.Tests.csproj" Id="af1c3c93-603c-45d7-a101-a125dca868cd" />
     <Project Path="tests/WebApi.Tests/WebApi.Tests.csproj" Id="882f8d58-94a3-4f42-a17e-bf965840d765" />
+    <Project Path="tests/WebUI.Tests/WebUI.Tests.csproj" />
   </Folder>
   <Project Path="src/Api/Api.csproj" Id="c9b169e2-70c1-420b-8ea5-4e8afaa5ca38" />
   <Project Path="src/Core/Core.csproj" Id="48c4fa7e-a726-452e-b00e-f0b162ce55e8" />

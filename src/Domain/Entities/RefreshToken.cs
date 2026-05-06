@@ -19,9 +19,9 @@ public class RefreshToken
     public Guid UserId { get; set; }
 
     /// <summary>
-    /// The refresh token value.
+    /// The SHA-256 hash of the refresh token value.
     /// </summary>
-    public string Token { get; set; } = string.Empty;
+    public string TokenHash { get; set; } = string.Empty;
 
     /// <summary>
     /// The date and time when the token expires.
@@ -53,4 +53,24 @@ public class RefreshToken
     /// Navigation property to the user.
     /// </summary>
     public virtual User? User { get; set; }
+    /// <summary>
+    /// Sets the TokenHash property from a plaintext token using SHA-256.
+    /// </summary>
+    /// <param name="token">The plaintext token.</param>
+    public void SetTokenFromPlaintext(string token)
+    {
+        TokenHash = ComputeSha256Hash(token);
+    }
+
+    /// <summary>
+    /// Computes the SHA-256 hash of a given string and returns it as a hex string.
+    /// </summary>
+    /// <param name="input">The input string to hash.</param>
+    /// <returns>Hex-encoded SHA-256 hash.</returns>
+    public static string ComputeSha256Hash(string input)
+    {
+        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(input);
+        byte[] hash = System.Security.Cryptography.SHA256.HashData(bytes);
+        return string.Concat(hash.Select(b => b.ToString("x2")));
+    }
 }

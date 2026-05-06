@@ -62,10 +62,8 @@ public class ResidentCardTests : Bunit.TestContext
             .Setup(s => s.GetMedicineStatusAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new MedicineStatusDto
             {
-                ResidentId = Guid.NewGuid().ToString(),
-                Medicine = [],
-                Given = [],
-                Timestamps = []
+                ResidentId = Guid.NewGuid(),
+                Entries = new List<MedicineEntryDto>()
             });
 
         _medicineStatusServiceMock
@@ -108,10 +106,16 @@ public class ResidentCardTests : Bunit.TestContext
             .Setup(s => s.GetMedicineStatusAsync(residentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new MedicineStatusDto
             {
-                ResidentId = residentId.ToString(),
-                Medicine = ["Paracetamol"],
-                Given = [true],
-                Timestamps = [new DateTime(2026, 04, 24, 10, 00, 00)]
+                ResidentId = residentId,
+                Entries = new List<MedicineEntryDto>
+                {
+                    new MedicineEntryDto
+                    {
+                        Name = "Paracetamol",
+                        Given = true,
+                        Timestamp = new DateTime(2026, 04, 24, 10, 00, 00)
+                    }
+                }
             });
 
         _ = _medicineStatusServiceMock
@@ -156,10 +160,16 @@ public class ResidentCardTests : Bunit.TestContext
             .Setup(s => s.GetMedicineStatusAsync(residentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new MedicineStatusDto
             {
-                ResidentId = residentId.ToString(),
-                Medicine = ["Paracetamol"],
-                Given = [true],
-                Timestamps = [new DateTime(2026, 04, 24, 10, 00, 00)]
+                ResidentId = residentId,
+                Entries = new List<MedicineEntryDto>
+                {
+                    new MedicineEntryDto
+                    {
+                        Name = "Paracetamol",
+                        Given = true,
+                        Timestamp = new DateTime(2026, 04, 24, 10, 00, 00)
+                    }
+                }
             });
 
         _ = _medicineStatusServiceMock
@@ -201,10 +211,8 @@ public class ResidentCardTests : Bunit.TestContext
             .Setup(s => s.GetMedicineStatusAsync(residentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new MedicineStatusDto
             {
-                ResidentId = residentId.ToString(),
-                Medicine = [],
-                Given = [],
-                Timestamps = []
+                ResidentId = residentId,
+                Entries = new List<MedicineEntryDto>()
             });
 
         _ = _medicineStatusServiceMock
@@ -250,10 +258,8 @@ public class ResidentCardTests : Bunit.TestContext
             .Setup(s => s.GetMedicineStatusAsync(residentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new MedicineStatusDto
             {
-                ResidentId = residentId.ToString(),
-                Medicine = [],
-                Given = [],
-                Timestamps = []
+                ResidentId = residentId,
+                Entries = new List<MedicineEntryDto>()
             });
 
         _ = _medicineStatusServiceMock

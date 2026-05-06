@@ -17,8 +17,8 @@ public class PainKillerRepository(AppDbContext context) : Repository<PainkillerR
     public Task<IEnumerable<PainkillerRecord>> GetPainkillerStatusLast24HoursAsync(Guid residentId, CancellationToken cancellationToken = default)
     {
         return _context.PainkillerRecord
-            .Where(m => m.ResidentId == residentId && m.NextAllowedTime >= DateTime.UtcNow.AddHours(-24))
-            .OrderByDescending(m => m.NextAllowedTime)
+            .Where(m => m.ResidentId == residentId && m.GivenAt >= DateTime.UtcNow.AddHours(-24))
+            .OrderByDescending(m => m.GivenAt)
             .ToListAsync(cancellationToken)
             .ContinueWith(t => (IEnumerable<PainkillerRecord>)t.Result, cancellationToken);
     }

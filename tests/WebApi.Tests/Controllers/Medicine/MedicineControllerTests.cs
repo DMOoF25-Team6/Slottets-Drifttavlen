@@ -52,7 +52,9 @@ public class MedicineControllerTests(CustomWebApplicationFactory<Api.Program> fa
 
         // Assert: confirm that a valid DTO is returned
         Assert.NotNull(result);
-        Assert.Equal(residentId.ToString(), result.ResidentId);
+        Assert.Equal(residentId, result.ResidentId);
+        // Optionally check Entries structure
+        Assert.NotNull(result.Entries);
     }
 
 
