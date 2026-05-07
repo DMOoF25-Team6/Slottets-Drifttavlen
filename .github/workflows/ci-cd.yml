@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: database
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
       - name: Create .env file
         run: |
           echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
@@ -18,11 +18,10 @@ jobs:
           echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
           echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
           echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env
-          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
           echo "ConnectionStrings__AppDbContext=Server=${{ secrets.MYSQL_HOST }};Port=3307;Database=${{ secrets.MYSQL_DATABASE }};User=${{ secrets.MYSQL_USER }};Password=${{ secrets.MYSQL_PASSWORD }}" >> .env
           echo "TokenValidationParameters__IssuerSigningKey=${{ secrets.TOKENVALIDATIONPARAMETERS__ISSUERSIGNINGKEY }}" >> .env
       - name: Upload .env file as artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: env-file
           path: .env
@@ -30,20 +29,19 @@ jobs:
           compression-level: 6
           overwrite: false
           include-hidden-files: true
-          archive: true
 
   build:
     needs: BuildSecrets
     runs-on: ubuntu-latest
     environment: database
     steps:
-      - uses: actions/checkout@v6
-      - name : Setup .NET
-        uses: actions/setup-dotnet@v5
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
       - name: Download .env file artifact
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: env-file
       - name: Copy .env file to API project
@@ -55,4 +53,10 @@ jobs:
       - name: Build
         run: dotnet build --no-restore Slottet.CareManagement.sln
       - name: Test
-        run: dotnet test --no-build --verbosity normal --solution Slottet.CareManagement.sln
+        run: dotnet test Slottet.CareManagement.sln --no-build --verbosity normal --collect:"XPlat Code Coverage"
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: "**/TestResults/**/coverage.cobertura.xml"
+          if-no-files-found: warn
