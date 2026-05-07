@@ -53,10 +53,4 @@ jobs:
       - name: Build
         run: dotnet build --no-restore Slottet.CareManagement.sln
       - name: Test
-        run: dotnet test --solution Slottet.CareManagement.sln --no-build --verbosity normal --collect:"XPlat Code Coverage"
-      - name: Upload coverage reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-reports
-          path: "**/TestResults/**/coverage.cobertura.xml"
-          if-no-files-found: warn
+        run: dotnet test --solution Slottet.CareManagement.sln --no-build --verbosity normal
