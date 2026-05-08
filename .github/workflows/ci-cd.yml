@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: database
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Create .env file
         run: |
           echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
