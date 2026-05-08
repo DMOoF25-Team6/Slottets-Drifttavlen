@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using System.Net.Http;
 using System.Net.Http.Json;
 
 using Core.DTOs;
@@ -11,9 +12,11 @@ namespace Infrastructure.Services;
 /// <summary>
 /// Provides operations for managing phone assignments by communicating with the backend API over HTTP.
 /// </summary>
-public class PhoneAssignmentManager(HttpClient httpClient) : IPhoneAssignmentManager
+public class PhoneAssignmentManager(IHttpClientFactory httpClientFactory) : IPhoneAssignmentManager
 {
-    private readonly HttpClient _httpClient = httpClient;
+    #region Fields
+    private readonly HttpClient _httpClient = httpClientFactory.CreateClient("SlottetApi")
+            ?? throw new InvalidOperationException("Failed to create HttpClient.");
 
     /// <summary>
     /// Gets the current phone assignments for the active shift.
