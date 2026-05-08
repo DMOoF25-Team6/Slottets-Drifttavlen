@@ -19,8 +19,13 @@ public partial class Login
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
+
     private readonly LoginModel loginModel = new();
     private string? errorMessage;
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    public string? ReturnUrl { get; set; }
+
 
     private async Task HandleLogin()
     {
@@ -33,7 +38,8 @@ public partial class Login
         else
         {
             errorMessage = null;
-            Navigation.NavigateTo("/"); // Redirect to main page
+            var redirectUrl = !string.IsNullOrWhiteSpace(ReturnUrl) ? ReturnUrl : "/";
+            Navigation.NavigateTo(redirectUrl!);
         }
     }
 

@@ -1,14 +1,19 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using System.Security.Claims;
+using System.Text;
+
 using Core.Interfaces.Managers;
 using Core.Services;
 
 using Infrastructure;
 using Infrastructure.Managers;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.IdentityModel.Tokens;
 
 using WebUI.Client;
 using WebUI.Client.Services;
@@ -55,6 +60,30 @@ public class Program
         _ = builder.Services.AddAuthorizationCore();
         _ = builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
         _ = builder.Services.AddScoped<AccountService>();
+        // Set the default authentication and challenge scheme to JwtBearer
+        _ = builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                // Use configuration values for TokenValidationParameters validation
+                string issuer = builder.Configuration["TokenValidationParameters:Issuer"] ?? throw new InvalidOperationException("TokenValidationParameters:Issuer not found in configuration.");
+                string audience = builder.Configuration["TokenValidationParameters:Audience"] ?? throw new InvalidOperationException("TokenValidationParameters:Audience not found in configuration.");
+                string key = builder.Configuration["TokenValidationParameters:IssuerSigningKey"] ?? throw new InvalidOperationException("TokenValidationParameters  :IssuerSigningKey not found in configuration.");
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                    RoleClaimType = ClaimTypes.Role,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
+
+        _ = builder.Services.AddAuthorization();
 
         WebApplication app = builder.Build();
 
@@ -74,6 +103,10 @@ public class Program
 
         _ = app.UseStaticFiles();
         _ = app.UseAntiforgery();
+
+        // Add authentication and authorization middleware
+        _ = app.UseAuthentication();
+        _ = app.UseAuthorization();
 
         // CreateAccountAsync JwtRefreshMiddleware before endpoints
         //app.UseMiddleware<WebUI.Middleware.JwtRefreshMiddleware>();
