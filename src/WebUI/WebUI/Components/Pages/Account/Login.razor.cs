@@ -22,28 +22,30 @@ public partial class Login
     private IJSRuntime JSRuntime { get; set; } = default!;
 
     private readonly LoginModel loginModel = new();
-    //private readonly string? errorMessage;
 
-    //private async Task HandleLogin()
-    //{
-    //    errorMessage = "Ugyldigt brugernavn eller adgangskode.";
-    //    bool success = await AuthService.LoginAsync(loginModel.Username ?? string.Empty, loginModel.Password ?? string.Empty);
-    //    if (!success)
-    //    {
-    //        errorMessage = "Ugyldigt brugernavn eller adgangskode.";
-    //    }
-    //    else
-    //    {
-    //        errorMessage = null;
-    //        Navigation.NavigateTo("/"); // Redirect to main page
-    //    }
-    //}
+    private async Task HandleLogin()
+    {
+        try
+        {
+            bool success = await AuthService.LoginAsync(loginModel.Username ?? string.Empty, loginModel.Password ?? string.Empty);
+            if (!success)
+            {
+            }
+            else
+            {
+                Navigation.NavigateTo("/"); // Redirect to main page
+            }
+        }
+        catch (Exception)
+        {
+        }
+    }
 
-    //private async Task Logout()
-    //{
-    //    await AuthService.LogoutAsync();
-    //    Navigation.NavigateTo(Navigation.Uri, new NavigationOptions { ForceLoad = true }); // Refresh UI
-    //}
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo(Navigation.Uri, new NavigationOptions { ForceLoad = true }); // Refresh UI
+    }
 
     public class LoginModel
     {
