@@ -1,4 +1,4 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 
 using Domain.Entities;
@@ -28,6 +28,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     public DbSet<AuditEntry> AuditEntries { get; set; }
+    public DbSet<ChangeDetail> ChangeDetails { get; set; }
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -50,6 +51,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
         _ = modelBuilder.ApplyConfiguration(new Configurations.ResidentNoteConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.MedicineRecordConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.PainkillerRecordConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new Configurations.ChangeDetailConfiguration());
 
         _ = modelBuilder.Entity<MedicineStatusView>()
             .HasNoKey()
