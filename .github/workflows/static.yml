@@ -27,6 +27,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.420
       - name: Install Doxygen
         run: sudo apt-get install -y doxygen graphviz
       - name: Generate Docs
@@ -37,9 +41,38 @@ jobs:
           name: doxygen-html
           path: ./docs/doxygen/html
 
+  build-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.420
+      - name: Restore dependencies
+        run: dotnet restore Slottet.CareManagement.sln
+      - name: Build
+        run: dotnet build --no-restore Slottet.CareManagement.sln
+      - name: Test with coverage
+        run: dotnet test ./Slottet.CareManagement.sln --no-build --collect:"XPlat Code Coverage"
+      - name: Install ReportGenerator
+        run: dotnet tool install -g dotnet-reportgenerator-globaltool
+      - name: Add .NET global tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+      - name: Generate HTML coverage report
+        run: reportgenerator -reports:**/TestResults/**/coverage.cobertura.xml -targetdir:coverage-html -reporttypes:Html
+      - name: Upload coverage HTML as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: coverage-html
+
   deploy-github-pages:
     runs-on: ubuntu-latest
-    needs: build-doxygen
+    needs: 
+      - build-doxygen
+      - build-coverage
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -50,6 +83,11 @@ jobs:
         with:
           name: doxygen-html
           path: ./doxygen-tmp
+      - name: Download coverage HTML artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: coverage-html
+          path: ./github-pages/coverage
       - name: Prepare GitHub Pages output
         run: |
           mkdir -p ./github-pages/doxygen-html
