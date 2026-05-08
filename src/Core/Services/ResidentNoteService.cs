@@ -51,7 +51,9 @@ public class ResidentNoteService(IResidentNoteManager residentNoteManager) : IRe
     /// <returns><see langword="true"/> if the note was added successfully; otherwise, <see langword="false"/>.</returns>
     public async Task<bool> AddAsync(Guid residentId, string noteText, CancellationToken cancellationToken = default)
     {
-        return await _residentNoteManager.AddAsync(residentId, noteText, cancellationToken);
+        return string.IsNullOrWhiteSpace(noteText)
+            ? throw new ArgumentException("Note tekst må ikke være tom eller kun indeholde mellemrum.", nameof(noteText))
+            : await _residentNoteManager.AddAsync(residentId, noteText, cancellationToken);
     }
 
     /// <summary>

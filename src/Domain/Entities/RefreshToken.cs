@@ -1,6 +1,9 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Domain.Entities;
 
 /// <summary>
@@ -11,11 +14,13 @@ public class RefreshToken
     /// <summary>
     /// Primary key for the refresh token.
     /// </summary>
+    [Key]
     public Guid Id { get; set; }
 
     /// <summary>
     /// The user identifier (foreign key).
     /// </summary>
+    [ForeignKey(nameof(User))]
     public Guid UserId { get; set; }
 
     /// <summary>

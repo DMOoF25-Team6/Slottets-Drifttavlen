@@ -16,5 +16,6 @@ public class PainkillerRecord : IEntity
     public Guid ResidentId { get; set; }
     public string Type { get; set; } = string.Empty;
     public DateTime GivenAt { get; set; }
+    // This property should not be here as it is a calculated value based on the type of painkiller and the time it was given. Tirsvad.
     public DateTime NextAllowedTime { get; set; }
 }
