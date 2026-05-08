@@ -16,6 +16,8 @@ public partial class ResidentNotesList : ComponentBase
     [Parameter]
     public string? EditNoteText { get; set; }
     [Parameter]
+    public EventCallback<string> EditNoteTextChanged { get; set; }
+    [Parameter]
     public EventCallback<Guid> OnSaveEdit { get; set; }
     [Parameter]
     public EventCallback OnCancelEdit { get; set; }
@@ -23,4 +25,8 @@ public partial class ResidentNotesList : ComponentBase
     public EventCallback<ResidentNote> OnStartEdit { get; set; }
     [Parameter]
     public EventCallback<Guid> OnConfirmDelete { get; set; }
+    private Task OnEditNoteTextChanged(ChangeEventArgs args)
+    {
+        throw new NotImplementedException();
+    }
 }
