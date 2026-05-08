@@ -16,6 +16,40 @@ namespace Core.Mappers;
 /// </remarks>
 public class ResidentMapper
 {
+    public static Resident ToResident(ResidentRequest dto)
+    {
+        return new Resident
+        {
+            Id = dto.Id,
+            Initials = dto.Initials,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            TrafficLightStatus = dto.TrafficLightStatus
+        };
+    }
+
+    public static ResidentResponseDto ToResidentResponseDto(Resident entity)
+    {
+        return new ResidentResponseDto
+        {
+            Id = entity.Id,
+            Initials = entity.Initials,
+            FirstName = entity.FirstName,
+            LastName = entity.LastName,
+            TrafficLightStatus = (int?)entity.TrafficLightStatus,
+            Notes = entity.Notes?.Select(ToResidentNoteDto).ToList() ?? []
+        };
+    }
+
+    public static ResidentNoteDto ToResidentNoteDto(ResidentNote note)
+    {
+        return new ResidentNoteDto
+        {
+            Id = note.Id,
+            Note = note.Note,
+            Timestamp = note.EditedAt
+        };
+    }
     /// <summary>
     /// Maps a <see cref="ResidentCreateDto"/> to a <see cref="Resident"/> domain entity.
     /// </summary>

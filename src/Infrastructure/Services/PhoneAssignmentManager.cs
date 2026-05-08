@@ -1,7 +1,6 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-using System.Net.Http;
 using System.Net.Http.Json;
 
 using Core.DTOs;
@@ -17,7 +16,7 @@ public class PhoneAssignmentManager(IHttpClientFactory httpClientFactory) : IPho
     #region Fields
     private readonly HttpClient _httpClient = httpClientFactory.CreateClient("SlottetApi")
             ?? throw new InvalidOperationException("Failed to create HttpClient.");
-
+    #endregion
     /// <summary>
     /// Gets the current phone assignments for the active shift.
     /// </summary>

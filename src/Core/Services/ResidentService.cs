@@ -3,8 +3,10 @@
 
 
 
+using Core.DTOs;
 using Core.Interfaces.Managers;
 using Core.Interfaces.Services;
+using Core.Mappers;
 
 using Domain.Entities;
 
@@ -20,94 +22,46 @@ using Domain.Entities;
 /// </remarks>
 namespace Core.Services;
 
-public class ResidentService(IResidentManager residentManager) : IResidentService
+public class ResidentService : IResidentService
 {
-    //private readonly IResidentRepository _residentRepository = residentRepository;
-    private readonly IResidentManager _residentManager = residentManager;
+    private readonly IResidentManager _residentManager;
 
-    /// <summary>
-    /// Retrieves a resident by their unique identifier by calling the external API.
-    /// </summary>
-    /// <param name="id">The unique identifier of the resident.</param>
-    /// <param name="cancellationToken">Optional cancellation token for the operation.</param>
-    /// <returns>
-    /// A <see cref="Task"/> containing the <see cref="Resident"/> if found; otherwise, <c>null</c>.
-    /// </returns>
-    /// <remarks>
-    /// This method is now refactored to use an API instead of directly accessing the repository.
-    /// </remarks>
-    public Task<Resident?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public ResidentService(IResidentManager residentManager)
     {
-        return _residentManager.GetByIdAsync(id, cancellationToken);
-
+        _residentManager = residentManager;
     }
 
-    /// <summary>
-    /// Retrieves all residents  by calling the API.
-    /// </summary>
-    /// <param name="cancellationToken">Optional cancellation token for the operation.</param>
-    /// <returns>
-    /// A <see cref="Task"/> containing an <see cref="IEnumerable{Resident}"/> of all residents.If no residents are returned from the API,
-    /// an empty collection is returned instead of null.
-    /// </returns>
-    /// <remarks>
-    /// This method is refactored to use an API instead of the repository.
-    /// The <see cref="HttpClient"/> sends a GET request to the endpoint "api/residents".
-    /// The JSON response from the API is automatically deserialized into a collection of
-    /// <see cref="Resident"/> objects.
-    /// </remarks>
-    public Task<IEnumerable<Resident>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<ResidentResponseDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return _residentManager.GetAllAsync(cancellationToken);
+        Resident? resident = await _residentManager.GetByIdAsync(id, cancellationToken);
+        return resident is null ? null : ResidentMapper.ToResidentResponseDto(resident);
     }
 
-    /// <summary>
-    /// Adds a new resident to the data store.
-    /// </summary>
-    /// <param name="resident">The resident entity to add.</param>
-    /// <param name="cancellationToken">Optional cancellation token for the operation.</param>
-    /// <returns>
-    /// A <see cref="Task"/> containing the added <see cref="Resident"/> entity.
-    /// </returns>
-    public Task<Resident> CreateAsync(Resident resident, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<ResidentResponseDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return _residentManager.CreateAsync(resident, cancellationToken);
+        IEnumerable<Resident> residents = await _residentManager.GetAllAsync(cancellationToken);
+        return residents.Select(ResidentMapper.ToResidentResponseDto);
     }
 
-    /// <summary>
-    /// Updates an existing resident in the data store.
-    /// </summary>
-    /// <param name="resident">The resident entity with updated values.</param>
-    /// <param name="cancellationToken">Optional cancellation token for the operation.</param>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task UpdateAsync(Resident resident, CancellationToken cancellationToken = default)
+    public async Task<ResidentResponseDto> CreateAsync(ResidentRequest dto, CancellationToken cancellationToken = default)
     {
-        return _residentManager.UpdateAsync(resident, cancellationToken);
+        var resident = ResidentMapper.ToResident(dto);
+        Resident created = await _residentManager.CreateAsync(resident, cancellationToken);
+        return ResidentMapper.ToResidentResponseDto(created);
     }
 
-    /// <summary>
-    /// Deletes a resident from the data store.
-    /// </summary>
-    /// <param name="resident">The resident entity to delete.</param>
-    /// <param name="cancellationToken">Optional cancellation token for the operation.</param>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    public Task DeleteAsync(Resident resident, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(ResidentRequest dto, CancellationToken cancellationToken = default)
     {
-        return _residentManager.DeleteAsync(resident, cancellationToken);
+        var resident = ResidentMapper.ToResident(dto);
+        await _residentManager.UpdateAsync(resident, cancellationToken);
     }
 
-    public Task UpdateRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return _residentManager.UpdateRangeAsync(entities, cancellationToken);
-    }
-
-    public Task DeleteRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
-    {
-        return _residentManager.DeleteRangeAsync(entities, cancellationToken);
-    }
-
-    public Task<IEnumerable<Resident>> CreateRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
-    {
-        return _residentManager.CreateRangeAsync(entities, cancellationToken);
+        Resident? resident = await _residentManager.GetByIdAsync(id, cancellationToken);
+        if (resident is not null)
+        {
+            await _residentManager.DeleteAsync(resident, cancellationToken);
+        }
     }
 }
