@@ -1,4 +1,3 @@
-
 name: Build and Test
 on:
   push:
@@ -31,15 +30,16 @@ jobs:
           include-hidden-files: true
 
   build:
+    name: Build and Test
     needs: BuildSecrets
     runs-on: ubuntu-latest
     environment: database
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 8.0.420
       - name: Download .env file artifact
         uses: actions/download-artifact@v4
         with:
@@ -53,4 +53,26 @@ jobs:
       - name: Build
         run: dotnet build --no-restore Slottet.CareManagement.sln
       - name: Test
-        run: dotnet test --solution Slottet.CareManagement.sln --no-build --verbosity normal
+        run: dotnet test ./Slottet.CareManagement.sln --no-build --verbosity normal --collect:"XPlat Code Coverage"
+      - name: Upload code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-results
+          path: "**/TestResults/**/coverage.cobertura.xml"
+          if-no-files-found: warn
+      - name: Notify committer on test failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = github.context.payload.pull_request;
+            if (pr) {
+              const committer = pr.user.login;
+              const message = `@${committer} :x: Tests failed for this pull request. Please check the logs and fix the issues.`;
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: message
+              });
+            }
