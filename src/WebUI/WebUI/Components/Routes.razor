@@ -1,27 +1,23 @@
-
 @using Microsoft.AspNetCore.Components.Routing
-@using Microsoft.AspNetCore.Components
 
-<Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly }">
+<CascadingAuthenticationState>
+  <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
-        @{
-            var path = ((Microsoft.AspNetCore.Components.RouteData)routeData)?.PageType?.GetCustomAttributes(typeof(Microsoft.AspNetCore.Components.RouteAttribute), true)
-                .OfType<Microsoft.AspNetCore.Components.RouteAttribute>()
-                .FirstOrDefault()?.Template?.ToLowerInvariant();
-        }
-        @if (path == "/" || path == "/dashboard" || path == "/login")
-        {
-            <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
-        }
-        else
-        {
-            <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
-                <NotAuthorized>
-                    <RedirectToLogin />
-                </NotAuthorized>
-            </AuthorizeRouteView>
-        }
-        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+      @* Renders the page that matches the URL *@
+      @* <FocusOnNavigate RouteData="routeData" Selector="h1" /> *@
+      <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
+        <NotAuthorized>
+          <RedirectToLogin />
+        </NotAuthorized>
+      </AuthorizeRouteView>
     </Found>
-</Router>
+    <NotFound>
+      @* Content shown if no component matches the URL *@
+      <PageTitle>Ikke fundet</PageTitle>
+      <LayoutView Layout="typeof(Layout.MainLayout)">
+        <p role="alert">Der er intet indhold på denne adresse.</p>
+      </LayoutView>
+    </NotFound>
+  </Router>
+</CascadingAuthenticationState>
 
