@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Initials : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -358,12 +358,12 @@ namespace Infrastructure.Data.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { new Guid("30cffcf9-5784-4fa9-9c10-c013ef3faf16"), 0, "c8178e80-14a3-4d5e-aac7-2f61ec3f95d0", "ThorDanrsøn@example.com", true, false, null, "THORDANRSØN@EXAMPLE.COM", "THORDANRSØN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEAqpMy8xptCulkIfDl/e/BM6r9y9ACP4nl3HNoiHPpI4PTHM37gjFuG5yav3eWjEgQ==", null, false, "a1a893f4-fc1c-4ff7-8f01-dfe7fd50e64c", false, "thordanrsøn@example.com" },
-                    { new Guid("37155b80-7111-422a-aba6-89d7070f1644"), 0, "4e766dfc-fbf5-4cb5-8d41-4be95035207b", "PerNielsen@example.com", true, false, null, "PERNIELSEN@EXAMPLE.COM", "PERNIELSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEGOXqsxmahw0pubRYxwaKiSk9iMl3sRdEVqCnDAjlgTZ0Z2sUguu8ha/7Fr9mUsXXQ==", null, false, "2d23e29a-e6ea-4ae5-8169-9e5e5bcfdfdc", false, "pernielsen@example.com" },
-                    { new Guid("3a21f8e1-885b-4394-abf0-ed0baeea239b"), 0, "cefa6ccf-2a18-4886-8a0d-3a3c48a78e1e", "PederRasmussen@example.com", true, false, null, "PEDERRASMUSSEN@EXAMPLE.COM", "PEDERRASMUSSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEN3OHVxiFL7WdDKJ4uouLTSwxM62Y70n1BF5ls9apFWiAt2ZSDz2kjfE1Ds4Gngo/w==", null, false, "35fecfcc-3bb3-4cfa-b389-e29e2ede1e8a", false, "pederrasmussen@example.com" },
-                    { new Guid("4711a300-711e-4132-86d4-cafd3f11deec"), 0, "b56c7e7d-908a-400e-bc70-20b8348e054d", "SanneJohansen@example.com", true, false, null, "SANNEJOHANSEN@EXAMPLE.COM", "SANNEJOHANSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAENnW9Lqqioz4a7P5h+ftmTr1d7AcmhQWeqCafGfJkvlWhqhB0C2ywJramSuUSG6UxA==", null, false, "47043eed-c997-4bdb-be22-e9585e840f6c", false, "sannejohansen@example.com" },
-                    { new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37"), 0, "86b92d63-4845-4bda-b1f5-2748732cfeb6", "KasperHolm@example.com", true, false, null, "KASPERHOLM@EXAMPLE.COM", "KASPERHOLM@EXAMPLE.COM", "AQAAAAIAAYagAAAAEHhAcZDyk1KmEwRd+twNXJ6yHCWCDsw38jtX+MTpk/RmdUdt5WZAV46UZNdXvHsV+A==", null, false, "897045a9-a34e-42a1-9bee-97a94bb40c87", false, "kasperholm@example.com" },
-                    { new Guid("b836e975-e775-48bc-8b84-5d2bdd5bd87a"), 0, "21b6dc1f-dce9-48af-88ae-32f06dc435e4", "AndersJensen@example.com", true, false, null, "ANDERSJENSEN@EXAMPLE.COM", "ANDERSJENSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEEKKDiP8OUipbaXmWKmJuEX+pCCHblRGWpA57B4oK8j012tx1xrAvkBgDKCTU9t7mw==", null, false, "007a5b1f-95c7-4377-b0be-8f030591168b", false, "andersjensen@example.com" }
+                    { new Guid("30cffcf9-5784-4fa9-9c10-c013ef3faf16"), 0, "f67063f6-8396-4fda-acb9-f8828704a5b8", "ThorDanrsøn@example.com", true, false, null, "THORDANRSØN@EXAMPLE.COM", "THORDANRSØN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEHhZqSVVwABEaci/cdKiZtNkgWYtLVqXbqFBCNZIV4dqfQDL16QCSrotswlj69SrUg==", null, false, "c3abc4c0-86fe-4ef7-b5e4-7ee983137035", false, "thordanrsøn@example.com" },
+                    { new Guid("37155b80-7111-422a-aba6-89d7070f1644"), 0, "db2dea37-cbf4-41c1-bc59-73caee8a4e19", "PerNielsen@example.com", true, false, null, "PERNIELSEN@EXAMPLE.COM", "PERNIELSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEBL8M5DmvJzuQHt9PpsMEkme+soEFK8FDtbeExPk01Mvs3RUnwJnGlsmfR3F9mMwWQ==", null, false, "8f471647-de42-45a4-a1e7-19d2a64d4fad", false, "pernielsen@example.com" },
+                    { new Guid("3a21f8e1-885b-4394-abf0-ed0baeea239b"), 0, "3f2de00f-6d2c-4f3d-a4e6-0c0a0b1fbd1c", "PederRasmussen@example.com", true, false, null, "PEDERRASMUSSEN@EXAMPLE.COM", "PEDERRASMUSSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAENTTirmPX3De5hmV/oT+Swwtap0kZ84qqwwOniU4UL53GHWkxgaySIGzevzhBBGmGw==", null, false, "d7cefa32-0e20-4ccc-b2e3-e092b6fa4d6b", false, "pederrasmussen@example.com" },
+                    { new Guid("4711a300-711e-4132-86d4-cafd3f11deec"), 0, "91ce28f7-0cde-4102-8822-410d6d51a011", "SanneJohansen@example.com", true, false, null, "SANNEJOHANSEN@EXAMPLE.COM", "SANNEJOHANSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAENF2JKDK/0VWrkQpjgbotpODUrbQnhHb9IStKVMqBGx0ddH1gxQcX0Kfbw0WZftMJg==", null, false, "91b36f1f-fc24-43df-9c27-541cca61aaed", false, "sannejohansen@example.com" },
+                    { new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37"), 0, "8b5cdde3-1a6b-41d9-94b0-692680149979", "KasperHolm@example.com", true, false, null, "KASPERHOLM@EXAMPLE.COM", "KASPERHOLM@EXAMPLE.COM", "AQAAAAIAAYagAAAAEMPle04qWx0hcDeIBXXKVes08Cj6PAWCOsMFEJrpw9jM4Qnp9AIMTNdf+NSyULPGgw==", null, false, "5e9a0fd8-e3f1-4d66-afe3-77e1e83a7446", false, "kasperholm@example.com" },
+                    { new Guid("b836e975-e775-48bc-8b84-5d2bdd5bd87a"), 0, "464bbb79-d13e-4334-947f-623592a9e3ab", "AndersJensen@example.com", true, false, null, "ANDERSJENSEN@EXAMPLE.COM", "ANDERSJENSEN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEDQ4ibv32SQaSnNOk25S6jkob7SqrXYx2X+SiwdNh7cGDwY+gAMdwjkYAGFs+jT1Ng==", null, false, "e60422b7-3153-4119-b618-1fb81cfcba64", false, "andersjensen@example.com" }
                 });
 
             migrationBuilder.InsertData(

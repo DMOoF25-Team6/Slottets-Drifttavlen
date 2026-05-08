@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260506142453_Initials")]
-    partial class Initials
+    [Migration("20260508033400_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -537,15 +537,15 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = new Guid("3a21f8e1-885b-4394-abf0-ed0baeea239b"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "cefa6ccf-2a18-4886-8a0d-3a3c48a78e1e",
+                            ConcurrencyStamp = "3f2de00f-6d2c-4f3d-a4e6-0c0a0b1fbd1c",
                             Email = "PederRasmussen@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "PEDERRASMUSSEN@EXAMPLE.COM",
                             NormalizedUserName = "PEDERRASMUSSEN@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEN3OHVxiFL7WdDKJ4uouLTSwxM62Y70n1BF5ls9apFWiAt2ZSDz2kjfE1Ds4Gngo/w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENTTirmPX3De5hmV/oT+Swwtap0kZ84qqwwOniU4UL53GHWkxgaySIGzevzhBBGmGw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "35fecfcc-3bb3-4cfa-b389-e29e2ede1e8a",
+                            SecurityStamp = "d7cefa32-0e20-4ccc-b2e3-e092b6fa4d6b",
                             TwoFactorEnabled = false,
                             UserName = "pederrasmussen@example.com"
                         },
@@ -553,15 +553,15 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = new Guid("4711a300-711e-4132-86d4-cafd3f11deec"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b56c7e7d-908a-400e-bc70-20b8348e054d",
+                            ConcurrencyStamp = "91ce28f7-0cde-4102-8822-410d6d51a011",
                             Email = "SanneJohansen@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "SANNEJOHANSEN@EXAMPLE.COM",
                             NormalizedUserName = "SANNEJOHANSEN@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENnW9Lqqioz4a7P5h+ftmTr1d7AcmhQWeqCafGfJkvlWhqhB0C2ywJramSuUSG6UxA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENF2JKDK/0VWrkQpjgbotpODUrbQnhHb9IStKVMqBGx0ddH1gxQcX0Kfbw0WZftMJg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "47043eed-c997-4bdb-be22-e9585e840f6c",
+                            SecurityStamp = "91b36f1f-fc24-43df-9c27-541cca61aaed",
                             TwoFactorEnabled = false,
                             UserName = "sannejohansen@example.com"
                         },
@@ -569,15 +569,15 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = new Guid("30cffcf9-5784-4fa9-9c10-c013ef3faf16"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c8178e80-14a3-4d5e-aac7-2f61ec3f95d0",
+                            ConcurrencyStamp = "f67063f6-8396-4fda-acb9-f8828704a5b8",
                             Email = "ThorDanrsøn@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "THORDANRSØN@EXAMPLE.COM",
                             NormalizedUserName = "THORDANRSØN@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAqpMy8xptCulkIfDl/e/BM6r9y9ACP4nl3HNoiHPpI4PTHM37gjFuG5yav3eWjEgQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHhZqSVVwABEaci/cdKiZtNkgWYtLVqXbqFBCNZIV4dqfQDL16QCSrotswlj69SrUg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a1a893f4-fc1c-4ff7-8f01-dfe7fd50e64c",
+                            SecurityStamp = "c3abc4c0-86fe-4ef7-b5e4-7ee983137035",
                             TwoFactorEnabled = false,
                             UserName = "thordanrsøn@example.com"
                         },
@@ -585,15 +585,15 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = new Guid("37155b80-7111-422a-aba6-89d7070f1644"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4e766dfc-fbf5-4cb5-8d41-4be95035207b",
+                            ConcurrencyStamp = "db2dea37-cbf4-41c1-bc59-73caee8a4e19",
                             Email = "PerNielsen@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "PERNIELSEN@EXAMPLE.COM",
                             NormalizedUserName = "PERNIELSEN@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGOXqsxmahw0pubRYxwaKiSk9iMl3sRdEVqCnDAjlgTZ0Z2sUguu8ha/7Fr9mUsXXQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBL8M5DmvJzuQHt9PpsMEkme+soEFK8FDtbeExPk01Mvs3RUnwJnGlsmfR3F9mMwWQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "2d23e29a-e6ea-4ae5-8169-9e5e5bcfdfdc",
+                            SecurityStamp = "8f471647-de42-45a4-a1e7-19d2a64d4fad",
                             TwoFactorEnabled = false,
                             UserName = "pernielsen@example.com"
                         },
@@ -601,15 +601,15 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = new Guid("b836e975-e775-48bc-8b84-5d2bdd5bd87a"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "21b6dc1f-dce9-48af-88ae-32f06dc435e4",
+                            ConcurrencyStamp = "464bbb79-d13e-4334-947f-623592a9e3ab",
                             Email = "AndersJensen@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ANDERSJENSEN@EXAMPLE.COM",
                             NormalizedUserName = "ANDERSJENSEN@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEKKDiP8OUipbaXmWKmJuEX+pCCHblRGWpA57B4oK8j012tx1xrAvkBgDKCTU9t7mw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDQ4ibv32SQaSnNOk25S6jkob7SqrXYx2X+SiwdNh7cGDwY+gAMdwjkYAGFs+jT1Ng==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "007a5b1f-95c7-4377-b0be-8f030591168b",
+                            SecurityStamp = "e60422b7-3153-4119-b618-1fb81cfcba64",
                             TwoFactorEnabled = false,
                             UserName = "andersjensen@example.com"
                         },
@@ -617,15 +617,15 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "86b92d63-4845-4bda-b1f5-2748732cfeb6",
+                            ConcurrencyStamp = "8b5cdde3-1a6b-41d9-94b0-692680149979",
                             Email = "KasperHolm@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "KASPERHOLM@EXAMPLE.COM",
                             NormalizedUserName = "KASPERHOLM@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHhAcZDyk1KmEwRd+twNXJ6yHCWCDsw38jtX+MTpk/RmdUdt5WZAV46UZNdXvHsV+A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMPle04qWx0hcDeIBXXKVes08Cj6PAWCOsMFEJrpw9jM4Qnp9AIMTNdf+NSyULPGgw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "897045a9-a34e-42a1-9bee-97a94bb40c87",
+                            SecurityStamp = "5e9a0fd8-e3f1-4d66-afe3-77e1e83a7446",
                             TwoFactorEnabled = false,
                             UserName = "kasperholm@example.com"
                         });

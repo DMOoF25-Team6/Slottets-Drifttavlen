@@ -16,17 +16,12 @@ namespace Infrastructure.Managers;
 /// <remarks>
 /// Implements <see cref="IAccountManager" /> for registration, login, logout, and token refresh.
 /// </remarks>
-public class AccountManager : IAccountManager
+public class AccountManager(IHttpClientFactory httpClientFactory) : IAccountManager
 {
     #region Fields
-    private readonly HttpClient _httpClient;
-    private readonly IHttpClientFactory? _httpClientFactory;
+    private readonly HttpClient _httpClient = httpClientFactory.CreateClient("SlottetApi")
+            ?? throw new InvalidOperationException("Failed to create HttpClient.");
     #endregion
-    public AccountManager(IHttpClientFactory httpClientFactory)
-    {
-        _httpClientFactory = httpClientFactory;
-        _httpClient = _httpClientFactory.CreateClient("SlottetApi") ?? throw new InvalidOperationException("Failed to create HttpClient.");
-    }
 
     #region Methods
     /// <summary>

@@ -6,8 +6,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 using Domain.Interfaces;
 
-using Microsoft.AspNetCore.Identity;
-
 namespace Domain.Entities;
 
 public class MedicineRecord : IEntity
@@ -18,7 +16,6 @@ public class MedicineRecord : IEntity
     public Guid ResidentId { get; set; }
     [Required]
     [MaxLength(100)]
-    [ProtectedPersonalData]
     public string MedicineName { get; set; } = string.Empty;
     [Required]
     public DateTime Timestamp { get; set; }
