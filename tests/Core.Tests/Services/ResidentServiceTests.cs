@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 
+using Core.DTOs;
 using Core.Interfaces.Managers;
 using Core.Services;
 
@@ -27,10 +28,10 @@ public class ResidentServiceTests
         // Arrange
         Guid id = Guid.NewGuid();
         Resident resident = new() { Id = id, Initials = "AB" };
-        _mockManager.Setup(a => a.GetByIdAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync(resident);
+        _ = _mockManager.Setup(a => a.GetByIdAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync(resident);
 
         // Act
-        Resident? result = await _service.GetByIdAsync(id, TestContext.Current.CancellationToken);
+        ResidentResponseDto? result = await _service.GetByIdAsync(id, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -43,13 +44,13 @@ public class ResidentServiceTests
     {
         // Arrange
         List<Resident> residents = [new Resident { Id = Guid.NewGuid(), Initials = "CD" }];
-        _mockManager.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(residents);
+        _ = _mockManager.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(residents);
 
         // Act
-        IEnumerable<Resident> result = await _service.GetAllAsync(TestContext.Current.CancellationToken);
+        IEnumerable<ResidentResponseDto> result = await _service.GetAllAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotNull(result);
-        Assert.Single(result);
+        _ = Assert.Single(result);
     }
 }

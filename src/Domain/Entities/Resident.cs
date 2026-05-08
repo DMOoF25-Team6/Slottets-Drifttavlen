@@ -6,8 +6,6 @@ using System.ComponentModel.DataAnnotations;
 using Domain.Enums;
 using Domain.Interfaces;
 
-using Microsoft.AspNetCore.Identity;
-
 namespace Domain.Entities;
 
 public class Resident : IEntity
@@ -19,11 +17,9 @@ public class Resident : IEntity
     public string Initials { get; set; } = string.Empty;
     [Required]
     [MaxLength(50)]
-    [PersonalData]
     public string FirstName { get; set; } = string.Empty;
     [Required]
     [MaxLength(50)]
-    [PersonalData]
     public string LastName { get; set; } = string.Empty;
     [Required]
     public TrafficLightStatus? TrafficLightStatus { get; set; }
