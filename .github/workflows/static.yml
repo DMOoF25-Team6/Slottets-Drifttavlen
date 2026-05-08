@@ -87,12 +87,13 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: coverage-html
-          path: ./github-pages/coverage
+          path: ./coverage-tmp
       - name: Prepare GitHub Pages output
         run: |
           mkdir -p ./github-pages/doxygen-html
           cp tools/github-pages/index.html ./github-pages/index.html
           mv ./doxygen-tmp/* ./github-pages/doxygen-html/
+          mv ./coverage-tmp/* ./github-pages/coverage-html/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

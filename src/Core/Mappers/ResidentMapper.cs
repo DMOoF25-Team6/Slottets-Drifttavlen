@@ -16,7 +16,7 @@ namespace Core.Mappers;
 /// </remarks>
 public class ResidentMapper
 {
-    public static Resident ToResident(ResidentRequest dto)
+    public static Resident ToResident(ResidentResponseDto dto)
     {
         return new Resident
         {
@@ -24,7 +24,7 @@ public class ResidentMapper
             Initials = dto.Initials,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
-            TrafficLightStatus = dto.TrafficLightStatus
+            TrafficLightStatus = (TrafficLightStatus?)dto.TrafficLightStatus
         };
     }
 
@@ -55,7 +55,7 @@ public class ResidentMapper
     /// </summary>
     /// <param name="dto">A data transfer object for creating a resident.</param>
     /// <returns>A <see cref="Resident"/> domain entity mapped from the DTO.</returns>
-    public static Resident ToResident(ResidentCreateDto dto)
+    public static Resident ToResident(ResidentCreateRequestDto dto)
     {
         return new Resident
         {
@@ -64,24 +64,6 @@ public class ResidentMapper
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             TrafficLightStatus = dto.TrafficLightStatus
-        };
-    }
-
-    /// <summary>
-    /// Maps a <see cref="ResidentResponseDto"/> to a <see cref="Resident"/> domain entity.
-    /// </summary>
-    /// <param name="dto">A data transfer object representing a resident.</param>
-    /// <returns>A <see cref="Resident"/> domain entity mapped from the DTO.</returns>
-    public static Resident ToResident(ResidentResponseDto dto)
-    {
-        return new Resident
-        {
-            Id = dto.Id,
-            Initials = dto.Initials,
-            FirstName = dto.FirstName,
-            LastName = dto.LastName,
-            TrafficLightStatus = (TrafficLightStatus?)dto.TrafficLightStatus,
-            Notes = dto.Notes?.Select(ToResidentNote).ToList() ?? []
         };
     }
 

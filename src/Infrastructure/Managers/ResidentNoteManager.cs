@@ -29,13 +29,8 @@ namespace Infrastructure.Managers;
 public class ResidentNoteManager(IHttpClientFactory httpClientFactory) : IResidentNoteManager
 {
     #region Fields
-
     private readonly HttpClient _httpClient = httpClientFactory.CreateClient("SlottetApi")
             ?? throw new InvalidOperationException("Failed to create HttpClient.");
-
-    #endregion
-    #region Constructors
-
     #endregion
 
     #region Methods

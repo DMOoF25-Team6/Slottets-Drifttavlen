@@ -5,7 +5,6 @@ using System.Net.Http.Json;
 
 using Core.DTOs;
 using Core.Interfaces.Managers;
-using Core.Mappers;
 
 using Domain.Entities;
 
@@ -17,19 +16,8 @@ namespace Infrastructure.Managers;
 /// <remarks>
 /// Implements <see cref="IResidentManager"/> for retrieving and manipulating resident data.
 /// </remarks>
-public class ResidentManager : IResidentManager
+public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiManagerBase(httpClientFactory, "SlottetApi"), IResidentManager
 {
-    #region Fields
-    private readonly HttpClient _httpClient;
-    private readonly IHttpClientFactory? _httpClientFactory;
-    #endregion
-
-    public ResidentManager(IHttpClientFactory httpClientFactory)
-    {
-        _httpClientFactory = httpClientFactory;
-        _httpClient = _httpClientFactory.CreateClient("SlottetApi") ?? throw new InvalidOperationException("Failed to create HttpClient.");
-    }
-
     #region Methods create
     /// <summary>
     /// Adds a new resident.
@@ -42,17 +30,23 @@ public class ResidentManager : IResidentManager
     /// <exception cref="NotImplementedException">
     /// Always thrown as this method is not implemented.
     /// </exception>
-    public async Task<Resident> CreateAsync(Resident entity, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(ResidentCreateRequestDto dto, CancellationToken ct = default)
     {
-        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("residents/Create", entity, cancellationToken);
-        _ = response.EnsureSuccessStatusCode();
-        ResidentResponseDto? dto = await response.Content.ReadFromJsonAsync<ResidentResponseDto>(cancellationToken: cancellationToken);
-        return dto != null ? ResidentMapper.ToResident(dto) : throw new InvalidOperationException("Failed to create resident.");
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("residents/Create", dto, ct);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception("Failed to create resident. Status code: " + response.StatusCode);
+        }
     }
 
-    public Task<IEnumerable<Resident>> CreateRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
+
+    public async Task CreateRangeAsync(IEnumerable<ResidentCreateRequestDto> dtos, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("residents/CreateRange", dtos, ct);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception("Failed to create residents. Status code: " + response.StatusCode);
+        }
     }
     #endregion create
 
@@ -67,12 +61,17 @@ public class ResidentManager : IResidentManager
     /// <returns>
     /// A task that represents the asynchronous operation. The task result contains a resident if found; otherwise, <see langword="null"/>.
     /// </returns>
-    public async Task<Resident?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    public async Task<ResidentResponseDto?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
-        ResidentResponseDto? dto =
-            await _httpClient.GetFromJsonAsync<ResidentResponseDto>(
-                $"residents/{id}", ct);
-        return dto != null ? ResidentMapper.ToResident(dto) : null;
+        try
+        {
+            ResidentResponseDto? response = await HttpClient.GetFromJsonAsync<ResidentResponseDto>($"residents/{id}", ct);
+            return response;
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
     }
 
     /// <summary>
@@ -82,12 +81,10 @@ public class ResidentManager : IResidentManager
     /// <returns>
     /// A task that represents the asynchronous operation. The task result contains a collection of residents.
     /// </returns>
-    public async Task<IEnumerable<Resident>> GetAllAsync(CancellationToken ct = default)
+    public async Task<IEnumerable<ResidentResponseDto>> GetAllAsync(CancellationToken ct = default)
     {
-        IEnumerable<ResidentResponseDto>? dtos =
-            await _httpClient.GetFromJsonAsync<IEnumerable<ResidentResponseDto>>(
-                "residents", ct);
-        return dtos != null ? dtos.Select(ResidentMapper.ToResident) : [];
+        IEnumerable<ResidentResponseDto>? response = await HttpClient.GetFromJsonAsync<IEnumerable<ResidentResponseDto>>("residents", ct);
+        return response ?? [];
     }
     #endregion
 
@@ -96,14 +93,14 @@ public class ResidentManager : IResidentManager
     /// Updates a resident.
     /// </summary>
     /// <param name="entity">A resident entity to update.</param>
-    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>
     /// A task that represents the asynchronous operation.
     /// </returns>
     /// <exception cref="NotImplementedException">
     /// Always thrown as this method is not implemented.
     /// </exception>
-    public Task UpdateAsync(Resident entity, CancellationToken cancellationToken = default)
+    public Task UpdateAsync(ResidentUpdateRequestDto entity, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -119,7 +116,7 @@ public class ResidentManager : IResidentManager
     /// <exception cref="NotImplementedException">
     /// Always thrown as this method is not implemented.
     /// </exception>
-    public Task UpdateRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
+    public Task UpdateRangeAsync(IEnumerable<ResidentUpdateRequestDto> entities, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -127,7 +124,7 @@ public class ResidentManager : IResidentManager
     /// <summary>
     /// Deletes a resident.
     /// </summary>
-    /// <param name="entity">A resident entity to delete.</param>
+    /// <param name="id">The unique identifier of the resident to delete.</param>
     /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>
     /// A task that represents the asynchronous operation.
@@ -135,7 +132,7 @@ public class ResidentManager : IResidentManager
     /// <exception cref="NotImplementedException">
     /// Always thrown as this method is not implemented.
     /// </exception>
-    public Task DeleteAsync(Resident entity, CancellationToken cancellationToken = default)
+    public Task DeleteAsync(Guid id, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -143,7 +140,7 @@ public class ResidentManager : IResidentManager
     /// <summary>
     /// Deletes a range of residents.
     /// </summary>
-    /// <param name="entities">A collection of resident entities to delete.</param>
+    /// <param name="ids">A collection of resident IDs to delete.</param>
     /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>
     /// A task that represents the asynchronous operation.
@@ -151,11 +148,20 @@ public class ResidentManager : IResidentManager
     /// <exception cref="NotImplementedException">
     /// Always thrown as this method is not implemented.
     /// </exception>
-    public Task DeleteRangeAsync(IEnumerable<Resident> entities, CancellationToken cancellationToken = default)
+    public Task DeleteRangeAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
 
+    public Task CreateAsync(Resident entity, CancellationToken ct = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task CreateRangeAsync(IEnumerable<Resident> entities, CancellationToken ct = default)
+    {
+        throw new NotImplementedException();
+    }
 
     #endregion
 }

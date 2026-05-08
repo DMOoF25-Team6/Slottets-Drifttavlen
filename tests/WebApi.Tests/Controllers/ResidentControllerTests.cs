@@ -4,7 +4,6 @@
 using Api.Controllers;
 
 using Core.DTOs;
-using Core.Interfaces.Dto;
 using Core.Interfaces.Repositories;
 
 using Domain.Entities;
@@ -72,12 +71,12 @@ public class ResidentControllerTests
     public async Task Create_ValidDto_ReturnsCreatedResident()
     {
         // Arrange
-        ResidentCreateDto dto = new() { Initials = "GH", FirstName = "G", LastName = "H", TrafficLightStatus = TrafficLightStatus.Green };
+        ResidentCreateRequestDto dto = new() { Initials = "GH", FirstName = "G", LastName = "H", TrafficLightStatus = TrafficLightStatus.Green };
         Resident created = new() { Id = Guid.NewGuid(), Initials = dto.Initials, FirstName = dto.FirstName, LastName = dto.LastName, TrafficLightStatus = dto.TrafficLightStatus, Notes = [] };
         _ = _mockRepo.Setup(r => r.CreateAsync(It.IsAny<Resident>(), It.IsAny<CancellationToken>())).ReturnsAsync(created);
 
         // Act
-        ActionResult<IResidentResult> result = await _controller.Create(dto, CancellationToken.None);
+        ActionResult<ResidentResponseDto> result = await _controller.Create(dto, CancellationToken.None);
 
         // Assert
         OkObjectResult okResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -108,8 +107,8 @@ public class ResidentControllerTests
     public async Task Create_NullDto_ReturnsBadRequest()
     {
         // Act
-        ResidentCreateDto? nullDto = null;
-        ActionResult<IResidentResult> result = await _controller.Create(nullDto!, CancellationToken.None);
+        ResidentCreateRequestDto? nullDto = null;
+        ActionResult<ResidentResponseDto> result = await _controller.Create(nullDto!, CancellationToken.None);
 
         // Assert
         BadRequestObjectResult badRequest = Assert.IsType<BadRequestObjectResult>(result.Result);
