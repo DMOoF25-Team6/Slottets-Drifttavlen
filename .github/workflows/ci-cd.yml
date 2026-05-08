@@ -1,4 +1,6 @@
 name: Build and Test
+permissions:
+  issues: write
 on:
   push:
     branches: [ main, develop ]
