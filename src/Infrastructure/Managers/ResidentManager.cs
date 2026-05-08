@@ -100,7 +100,7 @@ public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiMana
     /// <exception cref="NotImplementedException">
     /// Always thrown as this method is not implemented.
     /// </exception>
-    public async Task UpdateAsync(ResidentUpdateRequestDto entity, CancellationToken ct = default)
+    public Task UpdateAsync(ResidentUpdateRequestDto entity, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -116,7 +116,7 @@ public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiMana
     /// <exception cref="NotImplementedException">
     /// Always thrown as this method is not implemented.
     /// </exception>
-    public async Task UpdateRangeAsync(IEnumerable<ResidentUpdateRequestDto> entities, CancellationToken ct = default)
+    public Task UpdateRangeAsync(IEnumerable<ResidentUpdateRequestDto> entities, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -132,7 +132,7 @@ public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiMana
     /// <exception cref="NotImplementedException">
     /// Always thrown as this method is not implemented.
     /// </exception>
-    public async Task DeleteAsync(Guid id, CancellationToken ct = default)
+    public Task DeleteAsync(Guid id, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
@@ -148,7 +148,7 @@ public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiMana
     /// <exception cref="NotImplementedException">
     /// Always thrown as this method is not implemented.
     /// </exception>
-    public async Task DeleteRangeAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
+    public Task DeleteRangeAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
