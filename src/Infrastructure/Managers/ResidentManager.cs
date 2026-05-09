@@ -103,7 +103,7 @@ public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiMana
         HttpResponseMessage response = await HttpClient.PutAsJsonAsync($"residents/{id}", entity, ct);
         if (!response.IsSuccessStatusCode)
         {
-            throw new Exception("Failed to update resident. Status code: " + response.StatusCode);
+            throw new Exception($"Failed to update resident. Status code: {response.StatusCode}");
         }
     }
 
