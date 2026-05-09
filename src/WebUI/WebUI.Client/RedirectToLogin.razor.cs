@@ -12,6 +12,6 @@ public partial class RedirectToLogin
 
     protected override void OnInitialized()
     {
-        NavigationManager.NavigateTo("login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}", forceLoad: true);
+        NavigationManager.NavigateTo($"login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}", forceLoad: true);
     }
 }
