@@ -200,7 +200,8 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
     /// </summary>
     private bool UserCanManageDepartment(Department department)
     {
-        string? deptClaim = User.FindFirstValue("Department");
+        ClaimsPrincipal? principal = HttpContext?.User;
+        string? deptClaim = principal?.FindFirstValue("Department");
 
         // No department claim → unrestricted (admin)
         if (string.IsNullOrEmpty(deptClaim))

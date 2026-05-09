@@ -94,6 +94,7 @@ public class ResidentControllerTests
     public async Task Create_ValidDto_ReturnsCreatedResident()
     {
         // Arrange
+        SetUserDepartmentClaim(null);
         ResidentCreateRequestDto dto = new() { Initials = "GH", FirstName = "G", LastName = "H", TrafficLightStatus = TrafficLightStatus.Green, Department = Department.Slottet };
         Resident created = new() { Id = Guid.NewGuid(), Initials = dto.Initials, FirstName = dto.FirstName, LastName = dto.LastName, TrafficLightStatus = dto.TrafficLightStatus, Department = dto.Department, Notes = [] };
         _ = _mockRepo.Setup(r => r.CreateAsync(It.IsAny<Resident>(), It.IsAny<CancellationToken>())).ReturnsAsync(created);
