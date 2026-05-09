@@ -10,6 +10,16 @@ namespace WebUI.Client.Components.Pages;
 
 public partial class Login
 {
+    // Indicates if the app is running in DEBUG mode for conditional UI rendering
+    public bool IsDebug { get; private set; }
+
+    public Login()
+    {
+        IsDebug = false; // Default value
+#if DEBUG
+        IsDebug = true;
+#endif
+    }
     [Inject]
     private AuthService AuthService { get; set; } = default!;
 
@@ -23,7 +33,9 @@ public partial class Login
     private readonly LoginModel loginModel = new();
     private string? errorMessage;
 
+
 #if DEBUG
+
     // ── Debug helpers ────────────────────────────────────────────────────────
     /// <summary>Lightweight view-model used only in the debug quick-login panel.</summary>
     private sealed record DebugEmployee(
@@ -69,7 +81,7 @@ public partial class Login
         else
         {
             errorMessage = null;
-            var redirectUrl = !string.IsNullOrWhiteSpace(ReturnUrl) ? ReturnUrl : "/";
+            string redirectUrl = !string.IsNullOrWhiteSpace(ReturnUrl) ? ReturnUrl : "/";
             Navigation.NavigateTo(redirectUrl!);
         }
     }
@@ -79,6 +91,8 @@ public partial class Login
         await AuthService.LogoutAsync();
         Navigation.NavigateTo(Navigation.Uri, new NavigationOptions { ForceLoad = true }); // Refresh UI
     }
+
+
 
     public class LoginModel
     {

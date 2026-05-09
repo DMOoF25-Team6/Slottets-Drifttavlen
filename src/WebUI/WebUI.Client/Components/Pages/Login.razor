@@ -14,7 +14,8 @@
                     <label class="form-label">Brugernavn:</label>
                     <InputText @bind-Value="loginModel.Username" class="form-control" />
                 </div>
-                <div class="mb-3">
+
+               <div class="mb-3">
                     <label class="form-label">Adgangskode:</label>
                     <InputText @bind-Value="loginModel.Password" type="password" class="form-control" />
                 </div>
@@ -27,8 +28,9 @@
         </div>
     </div>
 
-#if DEBUG
-    @* ── Debug quick-login panel (only compiled in DEBUG builds) ── *@
+@if (IsDebug)
+{
+    @* ── Debug quick-login panel (only shown in DEBUG builds) ── *@
     <div class="card shadow border-warning" style="min-width: 350px; max-width: 500px; width: 100%;">
         <div class="card-header bg-warning text-dark fw-bold">
             🛠 Debug – hurtig login
@@ -64,6 +66,6 @@
         </div>
         <div class="card-footer small text-muted">Adgangskode for alle: <code>Password123!</code></div>
     </div>
-#endif
+}
 
 </div>
