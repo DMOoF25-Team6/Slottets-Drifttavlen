@@ -225,7 +225,7 @@ public class ResidentControllerTests
         ActionResult<ResidentResponseDto> result = await _controller.Create(dto, CancellationToken.None);
 
         // Assert
-        _ = Assert.IsType<ForbidResult>(result.Result);
+        Assert.IsType<ForbidResult>(result.Result);
         _mockRepo.Verify(r => r.CreateAsync(It.IsAny<Resident>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -280,7 +280,7 @@ public class ResidentControllerTests
         ActionResult result = await _controller.Update(residentId, dto, CancellationToken.None);
 
         // Assert
-        _ = Assert.IsType<ForbidResult>(result);
+        Assert.IsType<ForbidResult>(result);
         _mockRepo.Verify(r => r.UpdateAsync(It.IsAny<Resident>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
