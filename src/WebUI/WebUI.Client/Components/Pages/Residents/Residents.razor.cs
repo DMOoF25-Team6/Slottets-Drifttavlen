@@ -193,7 +193,11 @@ public partial class Residents : ComponentBase
             _showFormModal = false;
             await LoadResidentsAsync();
         }
-        catch (Exception ex)
+        catch (ValidationException ex)
+        {
+            _formError = ex.Message;
+        }
+        catch (InvalidOperationException ex)
         {
             _formError = ex.Message;
         }
