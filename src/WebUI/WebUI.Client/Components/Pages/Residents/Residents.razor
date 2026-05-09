@@ -57,7 +57,14 @@
     else if (!FilteredResidents.Any())
     {
         <div class="alert alert-info" role="alert">
-            Ingen beboere fundet i <strong>@_selectedDepartment</strong>. Opret den første beboer ved at klikke på "Opret beboer".
+            @if (CanManageCurrentDepartment)
+            {
+                <span>Ingen beboere fundet i <strong>@_selectedDepartment</strong>. Opret den første beboer ved at klikke på "Opret beboer".</span>
+            }
+            else
+            {
+                <span>Ingen beboere fundet i <strong>@_selectedDepartment</strong>.</span>
+            }
         </div>
     }
     else
