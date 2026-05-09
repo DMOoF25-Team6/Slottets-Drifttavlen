@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
@@ -103,7 +104,7 @@ public partial class Residents : ComponentBase
             IEnumerable<Resident> residents = await ResidentService.GetAllAsync();
             _residents = [.. residents];
         }
-        catch
+        catch (Exception)
         {
             _hasError = true;
         }
