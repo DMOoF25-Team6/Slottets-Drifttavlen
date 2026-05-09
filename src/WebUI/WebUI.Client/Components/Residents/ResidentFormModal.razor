@@ -1,0 +1,72 @@
+@using Domain.Enums
+@using Microsoft.AspNetCore.Components.Forms
+
+<EditForm Model="FormModel" OnValidSubmit="OnValidSubmitHandler">
+  <DataAnnotationsValidator />
+  <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="residentModalLabel"
+       style="background:rgba(0,0,0,.5);">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="residentModalLabel">@(IsEditing ? "Rediger beboer" : "Opret beboer")</h5>
+          <button type="button" class="btn-close" @onclick="OnCancel" aria-label="Luk"></button>
+        </div>
+        <div class="modal-body">
+          @if (!string.IsNullOrEmpty(FormError))
+          {
+            <div class="alert alert-danger py-2">@FormError</div>
+          }
+          <div class="mb-3">
+            <label for="initials" class="form-label">Initialer <span class="text-danger">*</span></label>
+            <InputText id="initials" class="form-control" @bind-Value="FormModel.Initials"
+                       maxlength="2" placeholder="f.eks. AB" />
+            <ValidationMessage For="@(() => FormModel.Initials)" class="text-danger small" />
+          </div>
+          <div class="mb-3">
+            <label for="firstName" class="form-label">Fornavn <span class="text-danger">*</span></label>
+            <InputText id="firstName" class="form-control" @bind-Value="FormModel.FirstName"
+                       placeholder="Fornavn" />
+            <ValidationMessage For="@(() => FormModel.FirstName)" class="text-danger small" />
+          </div>
+          <div class="mb-3">
+            <label for="lastName" class="form-label">Efternavn <span class="text-danger">*</span></label>
+            <InputText id="lastName" class="form-control" @bind-Value="FormModel.LastName"
+                       placeholder="Efternavn" />
+            <ValidationMessage For="@(() => FormModel.LastName)" class="text-danger small" />
+          </div>
+          <div class="mb-3">
+            <label for="department" class="form-label">Afdeling <span class="text-danger">*</span></label>
+            <InputSelect id="department" class="form-select" @bind-Value="FormModel.Department">
+              <option value="@Department.Slottet">Slottet</option>
+              <option value="@Department.Skoven">Skoven</option>
+              <option value="@Department.Marken">Marken</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => FormModel.Department)" class="text-danger small" />
+          </div>
+          <div class="mb-3">
+            <label for="trafficLight" class="form-label">Trafiklys</label>
+            <InputSelect id="trafficLight" class="form-select" @bind-Value="FormModel.TrafficLightStatus">
+              <option value="">— Vælg status —</option>
+              <option value="@TrafficLightStatus.Green">Grøn</option>
+              <option value="@TrafficLightStatus.Yellow">Gul</option>
+              <option value="@TrafficLightStatus.Red">Rød</option>
+            </InputSelect>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" @onclick="OnCancel"
+                  disabled="@IsSaving">
+            Annuller
+          </button>
+          <button type="submit" class="btn btn-primary" disabled="@IsSaving">
+            @if (IsSaving)
+            {
+              <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+            }
+            @(IsEditing ? "Gem ændringer" : "Opret")
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</EditForm>

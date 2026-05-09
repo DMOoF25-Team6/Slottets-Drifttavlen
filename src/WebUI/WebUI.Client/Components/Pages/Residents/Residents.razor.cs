@@ -63,7 +63,7 @@ public partial class Residents : ComponentBase
     private bool _showFormModal;
     private bool _isEditing;
     private Guid _editingId;
-    private ResidentFormModel _formModel = new();
+    private WebUI.Client.Models.ResidentFormModel _formModel = new();
     private string? _formError;
 
     // Delete modal state
@@ -131,7 +131,7 @@ public partial class Residents : ComponentBase
     {
         _isEditing = false;
         _editingId = Guid.Empty;
-        _formModel = new ResidentFormModel
+        _formModel = new WebUI.Client.Models.ResidentFormModel
         {
             Department = Enum.TryParse<Department>(_selectedDepartment, out Department dept) ? dept : Department.Slottet
         };
@@ -143,7 +143,7 @@ public partial class Residents : ComponentBase
     {
         _isEditing = true;
         _editingId = resident.Id;
-        _formModel = new ResidentFormModel
+        _formModel = new WebUI.Client.Models.ResidentFormModel
         {
             Initials = resident.Initials,
             FirstName = resident.FirstName,
@@ -277,28 +277,5 @@ public partial class Residents : ComponentBase
 
     #endregion
 
-    #region Nested Types
-
-    /// <summary>Form model with validation attributes for the create/edit modal.</summary>
-    private sealed class ResidentFormModel
-    {
-        [Required(ErrorMessage = "Initialer er påkrævet.")]
-        [MaxLength(2, ErrorMessage = "Initialer må højst være 2 tegn.")]
-        public string Initials { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Fornavn er påkrævet.")]
-        [MaxLength(50, ErrorMessage = "Fornavn må højst være 50 tegn.")]
-        public string FirstName { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Efternavn er påkrævet.")]
-        [MaxLength(50, ErrorMessage = "Efternavn må højst være 50 tegn.")]
-        public string LastName { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Afdeling er påkrævet.")]
-        public Department Department { get; set; }
-
-        public TrafficLightStatus? TrafficLightStatus { get; set; }
-    }
-
-    #endregion
+    // ResidentFormModel is now defined in WebUI.Client.Models namespace as a public class.
 }
