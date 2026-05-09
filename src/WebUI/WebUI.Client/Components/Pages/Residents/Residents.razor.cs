@@ -104,7 +104,7 @@ public partial class Residents : ComponentBase
             IEnumerable<Resident> residents = await ResidentService.GetAllAsync();
             _residents = [.. residents];
         }
-        catch (Exception)
+        catch (InvalidOperationException)
         {
             _hasError = true;
         }
