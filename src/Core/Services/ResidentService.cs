@@ -70,12 +70,13 @@ public class ResidentService(IResidentManager residentManager) : IResidentServic
     /// <summary>
     /// Asynchronously updates the information of an existing resident using the specified update request.
     /// </summary>
+    /// <param name="id">The unique identifier of the resident to update.</param>
     /// <param name="resident">The data transfer object containing the updated resident information to apply.</param>
     /// <param name="ct">A cancellation token that can be used to cancel the update operation.</param>
     /// <returns>A task that represents the asynchronous update operation.</returns>
-    public async Task UpdateAsync(ResidentUpdateRequestDto resident, CancellationToken ct = default)
+    public async Task UpdateAsync(Guid id, ResidentUpdateRequestDto resident, CancellationToken ct = default)
     {
-        await residentManager.UpdateAsync(resident, ct);
+        await residentManager.UpdateAsync(id, resident, ct);
     }
 
     /// <summary>

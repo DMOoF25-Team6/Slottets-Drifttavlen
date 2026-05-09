@@ -4,6 +4,7 @@ using Infrastructure.Data.Persistent;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260509133133_AddEmployeeTable")]
+    partial class AddEmployeeTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -364,108 +367,108 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = new Guid("694b9796-dc5a-4a68-bafb-0a59595e8fb3"),
                             Department = 0,
-                            FirstName = "Anna",
-                            Initials = "AA",
-                            LastName = "Andersen",
+                            FirstName = "",
+                            Initials = "A",
+                            LastName = "",
                             TrafficLightStatus = 0
                         },
                         new
                         {
                             Id = new Guid("a1b2c3d4-e5f6-7890-1234-56789abcdef0"),
                             Department = 0,
-                            FirstName = "Birthe",
-                            Initials = "BB",
-                            LastName = "Brun",
+                            FirstName = "",
+                            Initials = "B",
+                            LastName = "",
                             TrafficLightStatus = 2
                         },
                         new
                         {
                             Id = new Guid("c2d3e4f5-6789-0123-4567-89abcdef0123"),
                             Department = 0,
-                            FirstName = "Carl",
-                            Initials = "CC",
-                            LastName = "Christensen",
+                            FirstName = "",
+                            Initials = "C",
+                            LastName = "",
                             TrafficLightStatus = 1
                         },
                         new
                         {
                             Id = new Guid("d3e4f5a6-7890-1234-5678-9abcdef01234"),
-                            Department = 0,
-                            FirstName = "Dorthe",
-                            Initials = "DD",
-                            LastName = "Dalgaard",
+                            Department = 1,
+                            FirstName = "",
+                            Initials = "D",
+                            LastName = "",
                             TrafficLightStatus = 0
                         },
                         new
                         {
                             Id = new Guid("e4f5a6b7-8901-2345-6789-abcdef012345"),
-                            Department = 0,
-                            FirstName = "Erik",
-                            Initials = "EE",
-                            LastName = "Eriksen",
+                            Department = 1,
+                            FirstName = "",
+                            Initials = "E",
+                            LastName = "",
                             TrafficLightStatus = 0
                         },
                         new
                         {
                             Id = new Guid("f5a6b7c8-9012-3456-789a-bcdef0123456"),
-                            Department = 0,
-                            FirstName = "Frida",
-                            Initials = "FF",
-                            LastName = "Frederiksen",
+                            Department = 1,
+                            FirstName = "",
+                            Initials = "F",
+                            LastName = "",
                             TrafficLightStatus = 1
                         },
                         new
                         {
                             Id = new Guid("a6b7c8d9-0123-4567-89ab-cdef01234567"),
-                            Department = 0,
-                            FirstName = "Gunnar",
-                            Initials = "GG",
-                            LastName = "Gregersen",
+                            Department = 1,
+                            FirstName = "",
+                            Initials = "GA",
+                            LastName = "",
                             TrafficLightStatus = 0
                         },
                         new
                         {
                             Id = new Guid("b7c8d9e0-1234-5678-9abc-def012345678"),
-                            Department = 0,
-                            FirstName = "Hanne",
-                            Initials = "HH",
-                            LastName = "Hansen",
+                            Department = 2,
+                            FirstName = "",
+                            Initials = "H",
+                            LastName = "",
                             TrafficLightStatus = 2
                         },
                         new
                         {
                             Id = new Guid("c8d9e0f1-2345-6789-abcd-ef0123456789"),
-                            Department = 0,
-                            FirstName = "Ida",
-                            Initials = "II",
-                            LastName = "Iversen",
+                            Department = 2,
+                            FirstName = "",
+                            Initials = "I",
+                            LastName = "",
                             TrafficLightStatus = 0
                         },
                         new
                         {
                             Id = new Guid("d9e0f1a2-3456-789a-bcde-f01234567890"),
-                            Department = 0,
-                            FirstName = "Jens",
-                            Initials = "JJ",
-                            LastName = "Jensen",
+                            Department = 2,
+                            FirstName = "",
+                            Initials = "J",
+                            LastName = "",
                             TrafficLightStatus = 0
                         },
                         new
                         {
                             Id = new Guid("e0f1a2b3-4567-89ab-cdef-012345678901"),
-                            Department = 0,
-                            FirstName = "Karen",
-                            Initials = "KK",
-                            LastName = "Knudsen",
+                            Department = 2,
+                            FirstName = "",
+                            Initials = "K",
+                            LastName = "",
                             TrafficLightStatus = 2
                         },
                         new
                         {
                             Id = new Guid("f1a2b3c4-5678-9abc-def0-123456789012"),
                             Department = 0,
-                            FirstName = "Lars",
-                            Initials = "LL",
-                            LastName = "Larsen",
+                            FirstName = "",
+                            Initials = "GB",
+                            LastName = "",
                             TrafficLightStatus = 1
                         });
                 });

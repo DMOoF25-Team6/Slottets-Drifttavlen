@@ -3,6 +3,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
+using Domain.Enums;
 using Domain.Interfaces;
 
 using Microsoft.AspNetCore.Identity;
@@ -23,4 +24,10 @@ public class User : IdentityUser<Guid>, IEntity
     }
 
     private string? _userName;
+
+    /// <summary>
+    /// Gets or sets the department this employee is assigned to.
+    /// <see langword="null"/> means the employee is not restricted to a specific department (e.g. admin).
+    /// </summary>
+    public Department? Department { get; set; }
 }

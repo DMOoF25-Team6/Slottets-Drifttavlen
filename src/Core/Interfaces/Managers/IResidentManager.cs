@@ -80,13 +80,14 @@ public interface IResidentManager
    /// <summary>
     /// Updates an existing resident entity asynchronously.
     /// </summary>
+    /// <param name="id">A unique identifier for the resident to update.</param>
     /// <param name="dto">An object containing the updated values for the resident.</param>
     /// <param name="ct">A cancellation token to observe while waiting for the operation to complete.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     /// <remarks>
     /// Throws an exception if <paramref name="dto"/> is <see langword="null"/>.
     /// </remarks>
-    Task UpdateAsync(ResidentUpdateRequestDto dto, CancellationToken ct = default);
+    Task UpdateAsync(Guid id, ResidentUpdateRequestDto dto, CancellationToken ct = default);
 
    /// <summary>
     /// Updates multiple resident entities asynchronously.
