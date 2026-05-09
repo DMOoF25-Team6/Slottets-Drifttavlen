@@ -72,6 +72,11 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
             return BadRequest(Error);
         }
 
+        if (!UserCanManageDepartment(dto.Department))
+        {
+            return Forbid();
+        }
+
         Resident resident = new()
         {
             Id = Guid.NewGuid(),
@@ -145,6 +150,11 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
         }
 
         if (!UserCanManageDepartment(existing.Department))
+        {
+            return Forbid();
+        }
+
+        if (!UserCanManageDepartment(dto.Department))
         {
             return Forbid();
         }

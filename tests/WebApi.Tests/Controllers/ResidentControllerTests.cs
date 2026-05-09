@@ -208,6 +208,29 @@ public class ResidentControllerTests
 
     [Fact]
     [Trait("Category", "EdgeCase")]
+    public async Task Create_WhenUserDepartmentDoesNotMatchRequestDepartment_ReturnsForbid()
+    {
+        // Arrange
+        SetUserDepartmentClaim(Department.Slottet);
+        ResidentCreateRequestDto dto = new()
+        {
+            Initials = "GH",
+            FirstName = "G",
+            LastName = "H",
+            TrafficLightStatus = TrafficLightStatus.Green,
+            Department = Department.Skoven
+        };
+
+        // Act
+        ActionResult<ResidentResponseDto> result = await _controller.Create(dto, CancellationToken.None);
+
+        // Assert
+        _ = Assert.IsType<ForbidResult>(result.Result);
+        _mockRepo.Verify(r => r.CreateAsync(It.IsAny<Resident>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    [Trait("Category", "EdgeCase")]
     public async Task Update_WhenResidentDoesNotExist_ReturnsNotFound()
     {
         // Arrange
@@ -241,6 +264,37 @@ public class ResidentControllerTests
         {
             Id = residentId,
             Department = Department.Skoven,
+            Notes = []
+        };
+        ResidentUpdateRequestDto dto = new()
+        {
+            Initials = "CD",
+            FirstName = "C",
+            LastName = "D",
+            TrafficLightStatus = TrafficLightStatus.Green,
+            Department = Department.Skoven
+        };
+        _ = _mockRepo.Setup(r => r.GetByIdAsync(residentId, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
+
+        // Act
+        ActionResult result = await _controller.Update(residentId, dto, CancellationToken.None);
+
+        // Assert
+        _ = Assert.IsType<ForbidResult>(result);
+        _mockRepo.Verify(r => r.UpdateAsync(It.IsAny<Resident>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    [Trait("Category", "EdgeCase")]
+    public async Task Update_WhenUserCannotManageTargetDepartment_ReturnsForbid()
+    {
+        // Arrange
+        Guid residentId = Guid.NewGuid();
+        SetUserDepartmentClaim(Department.Slottet);
+        Resident existing = new()
+        {
+            Id = residentId,
+            Department = Department.Slottet,
             Notes = []
         };
         ResidentUpdateRequestDto dto = new()
