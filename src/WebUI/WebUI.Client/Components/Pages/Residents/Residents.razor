@@ -1,10 +1,10 @@
 @* UC-014 - Administration: Create, Read, Update and Delete Residents *@
 
-@layout DashboardLayout
 @page "/residents"
 @rendermode InteractiveAuto
 @using Domain.Enums
 @using WebUI.Client.Components.Layout
+@using WebUI.Client.Components.Residents
 
 <PageTitle>Beboere</PageTitle>
 
@@ -124,75 +124,13 @@
 @* ── Create / Edit Modal ── *@
 @if (_showFormModal)
 {
-    <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="residentModalLabel"
-         style="background:rgba(0,0,0,.5);">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="residentModalLabel">@(_isEditing ? "Rediger beboer" : "Opret beboer")</h5>
-                    <button type="button" class="btn-close" @onclick="CloseFormModal" aria-label="Luk"></button>
-                </div>
-                <EditForm Model="_formModel" OnValidSubmit="HandleFormSubmitAsync">
-                    <DataAnnotationsValidator />
-                    <div class="modal-body">
-                        @if (_formError is not null)
-                        {
-                            <div class="alert alert-danger py-2">@_formError</div>
-                        }
-                        <div class="mb-3">
-                            <label for="initials" class="form-label">Initialer <span class="text-danger">*</span></label>
-                            <InputText id="initials" class="form-control" @bind-Value="_formModel.Initials"
-                                       maxlength="2" placeholder="f.eks. AB" />
-                            <ValidationMessage For="() => _formModel.Initials" class="text-danger small" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="firstName" class="form-label">Fornavn <span class="text-danger">*</span></label>
-                            <InputText id="firstName" class="form-control" @bind-Value="_formModel.FirstName"
-                                       placeholder="Fornavn" />
-                            <ValidationMessage For="() => _formModel.FirstName" class="text-danger small" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="lastName" class="form-label">Efternavn <span class="text-danger">*</span></label>
-                            <InputText id="lastName" class="form-control" @bind-Value="_formModel.LastName"
-                                       placeholder="Efternavn" />
-                            <ValidationMessage For="() => _formModel.LastName" class="text-danger small" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="department" class="form-label">Afdeling <span class="text-danger">*</span></label>
-                            <InputSelect id="department" class="form-select" @bind-Value="_formModel.Department">
-                                <option value="@Department.Slottet">Slottet</option>
-                                <option value="@Department.Skoven">Skoven</option>
-                                <option value="@Department.Marken">Marken</option>
-                            </InputSelect>
-                            <ValidationMessage For="() => _formModel.Department" class="text-danger small" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="trafficLight" class="form-label">Trafiklys</label>
-                            <InputSelect id="trafficLight" class="form-select" @bind-Value="_formModel.TrafficLightStatus">
-                                <option value="">— Vælg status —</option>
-                                <option value="@TrafficLightStatus.Green">Grøn</option>
-                                <option value="@TrafficLightStatus.Yellow">Gul</option>
-                                <option value="@TrafficLightStatus.Red">Rød</option>
-                            </InputSelect>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @onclick="CloseFormModal"
-                                disabled="@_isSaving">
-                            Annuller
-                        </button>
-                        <button type="submit" class="btn btn-primary" disabled="@_isSaving">
-                            @if (_isSaving)
-                            {
-                                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                            }
-                            @(_isEditing ? "Gem ændringer" : "Opret")
-                        </button>
-                    </div>
-                </EditForm>
-            </div>
-        </div>
-    </div>
+    <ResidentFormModal
+        IsEditing="_isEditing"
+        IsSaving="_isSaving"
+        FormModel="_formModel"
+        FormError="_formError"
+        OnCancel="CloseFormModal"
+        OnValidSubmit="HandleFormSubmitAsync" />
 }
 
 @* ── Delete Confirmation Modal ── *@
