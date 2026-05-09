@@ -183,9 +183,10 @@ public class Program
             });
         _ = builder.Services.AddAuthorization(options =>
         {
-            // Requires the CanManageResidents role claim (assigned to the superuser/admin role via IdentitySeed).
+            // Require one of the emitted role claims so the policy matches the JWT contents.
+            // This preserves the intended authorization behavior without changing token issuance.
             options.AddPolicy("CanManageResidents", policy =>
-                policy.RequireClaim(System.Security.Claims.ClaimTypes.Role, "CanManageResidents"));
+                policy.RequireRole("admin", "superuser"));
         });
     }
 
