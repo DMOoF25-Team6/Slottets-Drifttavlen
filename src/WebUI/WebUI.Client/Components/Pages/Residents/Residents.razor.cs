@@ -169,7 +169,7 @@ public partial class Residents : ComponentBase
         {
             if (_isEditing)
             {
-                await ResidentService.UpdateAsync(new ResidentUpdateRequestDto
+                await ResidentService.UpdateAsync(_editingId, new ResidentUpdateRequestDto
                 {
                     Initials = _formModel.Initials,
                     FirstName = _formModel.FirstName,

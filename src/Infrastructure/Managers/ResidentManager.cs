@@ -92,17 +92,19 @@ public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiMana
     /// <summary>
     /// Updates a resident.
     /// </summary>
+    /// <param name="id">A unique identifier for the resident to update.</param>
     /// <param name="entity">A resident entity to update.</param>
     /// <param name="ct">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>
     /// A task that represents the asynchronous operation.
     /// </returns>
-    /// <exception cref="NotImplementedException">
-    /// Always thrown as this method is not implemented.
-    /// </exception>
-    public Task UpdateAsync(ResidentUpdateRequestDto entity, CancellationToken ct = default)
+    public async Task UpdateAsync(Guid id, ResidentUpdateRequestDto entity, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        HttpResponseMessage response = await HttpClient.PutAsJsonAsync($"residents/{id}", entity, ct);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception("Failed to update resident. Status code: " + response.StatusCode);
+        }
     }
 
     /// <summary>
