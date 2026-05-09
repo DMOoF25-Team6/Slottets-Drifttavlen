@@ -154,6 +154,15 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
             return Forbid();
         }
 
+        // Only allow department change for admins (no Department claim)
+        ClaimsPrincipal? principal = HttpContext?.User;
+        string? deptClaim = principal?.FindFirstValue("Department");
+        if (!string.IsNullOrEmpty(deptClaim) && dto.Department != existing.Department)
+        {
+            // Non-admins cannot change department
+            return Forbid();
+        }
+
         if (!UserCanManageDepartment(dto.Department))
         {
             return Forbid();
