@@ -26,4 +26,5 @@ public class Resident : IEntity
     public virtual ICollection<ResidentNote> Notes { get; set; } = [];
     public virtual ICollection<MedicineRecord> Medicines { get; set; } = [];
     public virtual ICollection<PainkillerRecord> Painkillers { get; set; } = [];
+    public virtual ICollection<StaffAssignment> StaffAssignments { get; set; } = [];
 }

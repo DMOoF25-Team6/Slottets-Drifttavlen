@@ -17,4 +17,6 @@ public class Employee : IEntity
     public string Initials { get; set; } = string.Empty;
     [ForeignKey("User")]
     public Guid UserId { get; set; }
+
+    public virtual ICollection<StaffAssignment> StaffAssignments { get; set; } = [];
 }
