@@ -181,7 +181,12 @@ public class Program
                     ClockSkew = TimeSpan.Zero
                 };
             });
-        _ = builder.Services.AddAuthorization();
+        _ = builder.Services.AddAuthorization(options =>
+        {
+            // Requires the CanManageResidents role claim (assigned to the superuser/admin role via IdentitySeed).
+            options.AddPolicy("CanManageResidents", policy =>
+                policy.RequireClaim(System.Security.Claims.ClaimTypes.Role, "CanManageResidents"));
+        });
     }
 
     /// <summary>

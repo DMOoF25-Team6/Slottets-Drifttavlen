@@ -22,6 +22,37 @@ public partial class Login
 
     private readonly LoginModel loginModel = new();
     private string? errorMessage;
+
+#if DEBUG
+    // ── Debug helpers ────────────────────────────────────────────────────────
+    /// <summary>Lightweight view-model used only in the debug quick-login panel.</summary>
+    private sealed record DebugEmployee(
+        string Name,
+        string Email,
+        string Role,
+        IReadOnlyList<string> Claims,
+        string? Department);
+
+    /// <summary>
+    /// Static list that mirrors <c>IdentitySeed</c> and <c>EmployeeConfiguration</c>.
+    /// All users share the development password <c>Password123!</c>.
+    /// </summary>
+    private static readonly IReadOnlyList<DebugEmployee> DebugEmployees =
+    [
+        new("Peder Rasmussen",  "PederRasmussen@example.com",  "admin",     ["(ingen)"],                            "Slottet"),
+        new("Sanne Johansen",   "SanneJohansen@example.com",   "superuser", ["CanManageResidents","CanViewMedicine"],"Slottet"),
+        new("Thor Danrsøn",     "ThorDanrsøn@example.com",     "user",      ["CanViewMedicine"],                    "Slottet"),
+        new("Per Nielsen",      "PerNielsen@example.com",      "user",      ["CanViewMedicine"],                    "Skoven"),
+        new("Anders Jensen",    "AndersJensen@example.com",    "user",      ["CanViewMedicine"],                    "Marken"),
+        new("Kasper Holm",      "KasperHolm@example.com",      "(ingen)",   ["(ingen)"],                            null),
+    ];
+
+    private void AutoFill(DebugEmployee emp)
+    {
+        loginModel.Username = emp.Email;
+        loginModel.Password = "Password123!";
+    }
+#endif
     [Parameter]
     [SupplyParameterFromQuery(Name = "returnUrl")]
     public string? ReturnUrl { get; set; }

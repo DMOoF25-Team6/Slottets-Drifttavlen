@@ -2,11 +2,15 @@
 //  No warranty, explicit or implicit, provided.
 
 
+using System.Security.Claims;
+
 using Core.DTOs;
 using Core.Interfaces.Repositories;
 
 using Domain.Entities;
+using Domain.Enums;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -37,6 +41,7 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
             Id = r.Id,
             Initials = r.Initials,
             TrafficLightStatus = r.TrafficLightStatus.HasValue ? (int)r.TrafficLightStatus.Value : null,
+            Department = r.Department,
             Notes = [.. r.Notes.Select(n => new ResidentNoteDto
             {
                 Id = n.Id,
@@ -54,6 +59,7 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
     /// <param name="dto">The resident creation data transfer object.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>An <see cref="ActionResult{T}"/> containing the created <see cref="IResidentResult"/> and location header.</returns>
+    [Authorize(Policy = "CanManageResidents")]
     [HttpPost("Create")]
     public async Task<ActionResult<ResidentResponseDto>> Create([FromBody] ResidentCreateRequestDto dto, CancellationToken cancellationToken)
     {
@@ -72,7 +78,8 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
             Initials = dto.Initials,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
-            TrafficLightStatus = dto.TrafficLightStatus
+            TrafficLightStatus = dto.TrafficLightStatus,
+            Department = dto.Department
         };
 
         Resident created = await _residentRepository.CreateAsync(resident, cancellationToken);
@@ -82,6 +89,7 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
             Id = created.Id,
             Initials = created.Initials,
             TrafficLightStatus = created.TrafficLightStatus.HasValue ? (int)created.TrafficLightStatus.Value : null,
+            Department = created.Department,
             Notes = []
         };
 
@@ -107,6 +115,7 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
             Id = resident.Id,
             Initials = resident.Initials,
             TrafficLightStatus = resident.TrafficLightStatus.HasValue ? (int)resident.TrafficLightStatus.Value : null,
+            Department = resident.Department,
             Notes = [.. resident.Notes.Select(n => new ResidentNoteDto
             {
                 Id = n.Id,
@@ -116,5 +125,79 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
             })]
         };
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Updates an existing resident.
+    /// </summary>
+    /// <param name="id">The unique identifier of the resident to update.</param>
+    /// <param name="dto">The updated resident data.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns><see cref="NoContentResult"/> on success; <see cref="NotFoundResult"/> if no resident with the given id exists; <see cref="ForbidResult"/> if the user's department does not match.</returns>
+    [Authorize(Policy = "CanManageResidents")]
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult> Update(Guid id, [FromBody] ResidentUpdateRequestDto dto, CancellationToken cancellationToken)
+    {
+        Resident? existing = await _residentRepository.GetByIdAsync(id, cancellationToken);
+        if (existing is null)
+        {
+            return NotFound();
+        }
+
+        if (!UserCanManageDepartment(existing.Department))
+        {
+            return Forbid();
+        }
+
+        existing.Initials = dto.Initials;
+        existing.FirstName = dto.FirstName;
+        existing.LastName = dto.LastName;
+        existing.TrafficLightStatus = dto.TrafficLightStatus;
+        existing.Department = dto.Department;
+
+        await _residentRepository.UpdateAsync(existing, cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Deletes a resident by unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the resident to delete.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns><see cref="NoContentResult"/> on success; <see cref="NotFoundResult"/> if no resident with the given id exists; <see cref="ForbidResult"/> if the user's department does not match.</returns>
+    [Authorize(Policy = "CanManageResidents")]
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        Resident? existing = await _residentRepository.GetByIdAsync(id, cancellationToken);
+        if (existing is null)
+        {
+            return NotFound();
+        }
+
+        if (!UserCanManageDepartment(existing.Department))
+        {
+            return Forbid();
+        }
+
+        await _residentRepository.DeleteAsync(existing, cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Returns <see langword="true"/> when the authenticated user may manage residents in <paramref name="department"/>.
+    /// Users without a Department claim are unrestricted (admins). Users with a Department claim must match.
+    /// </summary>
+    private bool UserCanManageDepartment(Department department)
+    {
+        string? deptClaim = User.FindFirstValue("Department");
+
+        // No department claim → unrestricted (admin)
+        if (string.IsNullOrEmpty(deptClaim))
+        {
+            return true;
+        }
+
+        return Enum.TryParse<Department>(deptClaim, out Department userDept) && userDept == department;
     }
 }

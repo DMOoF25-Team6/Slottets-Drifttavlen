@@ -33,6 +33,11 @@ public class ResidentCreateRequestDto
     /// </summary>
     /// <value>One of the <see cref="TrafficLightStatus"/> enumeration values that specifies the resident's status. <see langword="null"/> if no status is set.</value>
     public TrafficLightStatus? TrafficLightStatus { get; set; } = default;
+
+    /// <summary>
+    /// Gets or sets the department the resident belongs to.
+    /// </summary>
+    public Department Department { get; set; }
 }
 
 /// <summary>
@@ -63,6 +68,11 @@ public class ResidentUpdateRequestDto
     /// </summary>
     /// <value>One of the <see cref="TrafficLightStatus"/> enumeration values that specifies the resident's status. <see langword="null"/> if no status is set.</value>
     public required TrafficLightStatus? TrafficLightStatus { get; set; }
+
+    /// <summary>
+    /// Gets or sets the department the resident belongs to.
+    /// </summary>
+    public Department Department { get; set; }
 }
 
 /// <summary>
@@ -105,4 +115,9 @@ public class ResidentResponseDto
     /// </summary>
     /// <value>A list of <see cref="ResidentNoteDto"/> objects associated with the resident. The list may be empty if there are no notes.</value>
     public List<ResidentNoteDto> Notes { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the department the resident belongs to.
+    /// </summary>
+    public Department Department { get; set; }
 }
