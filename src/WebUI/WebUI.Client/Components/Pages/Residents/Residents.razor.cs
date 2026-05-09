@@ -241,7 +241,11 @@ public partial class Residents : ComponentBase
             _residentToDelete = null;
             await LoadResidentsAsync();
         }
-        catch (Exception ex)
+        catch (OperationCanceledException)
+        {
+            _deleteError = "Sletningen blev annulleret.";
+        }
+        catch (InvalidOperationException ex)
         {
             _deleteError = ex.Message;
         }
