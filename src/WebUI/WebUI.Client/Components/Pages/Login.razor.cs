@@ -43,8 +43,8 @@ public partial class Login
         new("Sanne Johansen",   "SanneJohansen@example.com",   "superuser", ["CanManageResidents","CanViewMedicine"],"Slottet"),
         new("Thor Danrsøn",     "ThorDanrsøn@example.com",     "user",      ["CanViewMedicine"],                    "Slottet"),
         new("Per Nielsen",      "PerNielsen@example.com",      "user",      ["CanViewMedicine"],                    "Skoven"),
-        new("Anders Jensen",    "AndersJensen@example.com",    "user",      ["CanViewMedicine"],                    "Marken"),
-        new("Kasper Holm",      "KasperHolm@example.com",      "(ingen)",   ["(ingen)"],                            null),
+        new("Anders Jensen",    "AndersJensen@example.com",    "user",      ["CanViewMedicine"],                    "Skoven"),
+        new("Kasper Holm",      "KasperHolm@example.com",      "(ingen)",   ["(ingen)"],                            "Marken"),
     ];
 
     private void AutoFill(DebugEmployee emp)
