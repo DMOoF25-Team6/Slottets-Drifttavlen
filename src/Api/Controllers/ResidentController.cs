@@ -3,7 +3,6 @@
 
 
 using Core.DTOs;
-using Core.Interfaces.Dto;
 using Core.Interfaces.Repositories;
 
 using Domain.Entities;
@@ -11,7 +10,6 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
-
 
 /// <summary>
 /// Handles API requests related to resident data.
@@ -57,7 +55,7 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>An <see cref="ActionResult{T}"/> containing the created <see cref="IResidentResult"/> and location header.</returns>
     [HttpPost("Create")]
-    public async Task<ActionResult<IResidentResult>> Create([FromBody] ResidentCreateDto dto, CancellationToken cancellationToken)
+    public async Task<ActionResult<ResidentResponseDto>> Create([FromBody] ResidentCreateRequestDto dto, CancellationToken cancellationToken)
     {
         if (dto is null)
         {

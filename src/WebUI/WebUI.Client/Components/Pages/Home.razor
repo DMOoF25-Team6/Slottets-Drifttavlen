@@ -12,24 +12,23 @@
     <p>Checking authentication status...</p>
   </Authorizing>
   <Authorized>
-    @if (user?.Identity?.IsAuthenticated == true)
-    {
-      <p>You are logged in.</p>
-      <p><b>User:</b> @user.Identity?.Name</p>
-      <ul>
-        @foreach (var claim in user.Claims)
+    <p>You are logged in.</p>
+    <p><b>User:</b> @user?.Identity?.Name</p>
+    <ul>
+      @if (user != null)
+      {
+        foreach (var claim in user.Claims)
         {
           <li>@claim.Type: @claim.Value</li>
         }
-      </ul>
-
-      <button @onclick="Logout">Logout</button>
-    }
+      }
+    </ul>
+    <button @onclick="Logout">Logout</button>
   </Authorized>
   <NotAuthorized>
     @if (isInteractive)
     {
-      <button @onclick="Login">Login</button>
+      <RedirectToLogin/>
     }
     else
     {

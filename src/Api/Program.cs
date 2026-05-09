@@ -77,8 +77,6 @@ public class Program
             _ = options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
         });
 
-        _ = builder.Services.AddAuthorization();
-
         _ = builder.Services.AddInfrastructure(builder.Configuration);
         _ = builder.Services.AddInfrastructureData();
 
@@ -162,11 +160,8 @@ public class Program
     /// <param name="builder">A web application builder instance.</param>
     private static void ConfigureJwtAuthentication(WebApplicationBuilder builder)
     {
-        _ = builder.Services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
+        // Set the default authentication and challenge scheme to JwtBearer
+        _ = builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
                 // Use configuration values for TokenValidationParameters validation
@@ -186,6 +181,7 @@ public class Program
                     ClockSkew = TimeSpan.Zero
                 };
             });
+        _ = builder.Services.AddAuthorization();
     }
 
     /// <summary>

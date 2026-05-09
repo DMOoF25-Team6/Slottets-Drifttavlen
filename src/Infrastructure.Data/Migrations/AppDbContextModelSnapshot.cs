@@ -54,6 +54,7 @@ namespace Infrastructure.Data.Migrations
                 });
 
             modelBuilder.Entity("Domain.Entities.Employee", b =>
+            modelBuilder.Entity("Domain.Entities.ChangeDetail", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,6 +79,30 @@ namespace Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Employee");
+                    b.Property<Guid>("AuditEntryId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Field")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("NewValue")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<string>("OldValue")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuditEntryId")
+                        .HasDatabaseName("IX_ChangeDetails_AuditEntryId");
+
+                    b.ToTable("ChangeDetails");
                 });
 
             modelBuilder.Entity("Domain.Entities.MedicineRecord", b =>
@@ -954,6 +979,15 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.ChangeDetail", b =>
+                {
+                    b.HasOne("Domain.Entities.AuditEntry", null)
+                        .WithMany("ChangeDetails")
+                        .HasForeignKey("AuditEntryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Entities.MedicineRecord", b =>
                 {
                     b.HasOne("Domain.Entities.Resident", null)
@@ -1065,6 +1099,9 @@ namespace Infrastructure.Data.Migrations
             modelBuilder.Entity("Domain.Entities.Employee", b =>
                 {
                     b.Navigation("StaffAssignments");
+            modelBuilder.Entity("Domain.Entities.AuditEntry", b =>
+                {
+                    b.Navigation("ChangeDetails");
                 });
 
             modelBuilder.Entity("Domain.Entities.Resident", b =>
