@@ -44,6 +44,11 @@ public class TokenService(IConfiguration configuration, ILogger<TokenService> lo
             .. roles.Select(role => new Claim(ClaimTypes.Role, role)),
         ];
 
+        if (user.Department.HasValue)
+        {
+            claims.Add(new Claim("Department", user.Department.Value.ToString()));
+        }
+
         // Log the roles for debugging
         logger.LogInformation("Generating token for user {UserId} with roles: {Roles}", user.Id, string.Join(",", roles));
 

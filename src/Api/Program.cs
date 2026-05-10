@@ -181,7 +181,13 @@ public class Program
                     ClockSkew = TimeSpan.Zero
                 };
             });
-        _ = builder.Services.AddAuthorization();
+        _ = builder.Services.AddAuthorization(options =>
+        {
+            // Require one of the emitted role claims so the policy matches the JWT contents.
+            // This preserves the intended authorization behavior without changing token issuance.
+            options.AddPolicy("CanManageResidents", policy =>
+                policy.RequireRole("admin", "superuser"));
+        });
     }
 
     /// <summary>

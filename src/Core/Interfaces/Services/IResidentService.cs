@@ -51,9 +51,10 @@ public interface IResidentService
     /// <summary>
     /// Updates an existing resident with the specified data.
     /// </summary>
+    /// <param name="id">The unique identifier of the resident to update.</param>
     /// <param name="resident">An object containing the updated resident data.</param>
     /// <param name="ct">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
     /// <returns>A task that represents the asynchronous update operation.</returns>
     /// <exception cref="KeyNotFoundException">No resident with the specified identifier exists.</exception>
-    Task UpdateAsync(ResidentUpdateRequestDto resident, CancellationToken ct = default);
+    Task UpdateAsync(Guid id, ResidentUpdateRequestDto resident, CancellationToken ct = default);
 }

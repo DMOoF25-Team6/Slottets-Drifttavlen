@@ -4,6 +4,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using Domain.Enums;
 using Domain.Interfaces;
 
 namespace Domain.Entities;
@@ -19,4 +20,13 @@ public class Employee : IEntity
     public Guid UserId { get; set; }
 
     public virtual ICollection<StaffAssignment> StaffAssignments { get; set; } = [];
+    /// <summary>
+    /// The department this employee is assigned to.
+    /// </summary>
+    public Department Department { get; set; }
+
+    /// <summary>
+    /// Navigation property to the associated Identity user.
+    /// </summary>
+    public virtual User? User { get; set; }
 }

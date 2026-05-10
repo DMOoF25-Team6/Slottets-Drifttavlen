@@ -1,0 +1,36 @@
+@* Debug-only quick-login panel – only rendered when IsDebug is true in Login.razor *@
+<div class="card shadow border-warning" style="min-width: 350px; max-width: 500px; width: 100%;">
+    <div class="card-header bg-warning text-dark fw-bold">
+        🛠 Debug – hurtig login
+    </div>
+    <div class="card-body p-2">
+        <p class="small text-muted mb-2">Klik på en medarbejder for at udfylde login-formularen.</p>
+        <table class="table table-sm table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Navn</th>
+                    <th>Rolle</th>
+                    <th>Claims</th>
+                    <th>Afdeling</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var emp in DebugEmployees)
+                {
+                    <tr role="button" style="cursor:pointer" @onclick="() => AutoFillAsync(emp)">
+                        <td>@emp.Name</td>
+                        <td><span class="badge bg-secondary">@emp.Role</span></td>
+                        <td>
+                            @foreach (var claim in emp.Claims)
+                            {
+                                <span class="badge bg-info text-dark me-1">@claim</span>
+                            }
+                        </td>
+                        <td>@(emp.Department ?? "—")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer small text-muted">Adgangskode for alle: <code>Password123!</code></div>
+</div>

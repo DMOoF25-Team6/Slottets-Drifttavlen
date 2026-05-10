@@ -143,6 +143,36 @@ public class ResidentManagerTests
         Assert.Equal(2, System.Linq.Enumerable.Count(result));
     }
 
+    [Fact]
+    [Trait("Category", "Functionality")]
+    public async Task UpdateAsync_ValidResidentRequest_Success()
+    {
+        // Arrange
+        Guid id = Guid.NewGuid();
+        ResidentUpdateRequestDto dto = new()
+        {
+            Initials = "JD",
+            FirstName = "John",
+            LastName = "Doe",
+            TrafficLightStatus = null
+        };
+        using HttpResponseMessage response = new(HttpStatusCode.NoContent);
+        _ = _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Put &&
+                    req.RequestUri!.ToString().Contains($"residents/{id}")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        // Act
+        Exception? exception = await Record.ExceptionAsync(() => _residentManager.UpdateAsync(id, dto, CancellationToken.None));
+
+        // Assert
+        Assert.Null(exception);
+    }
+
     #endregion
 
     #region EdgeCase
@@ -183,6 +213,32 @@ public class ResidentManagerTests
         // Act & Assert
         Exception ex = await Assert.ThrowsAsync<Exception>(() => _residentManager.CreateRangeAsync(dtos, CancellationToken.None));
         Assert.Contains("Failed to create residents", ex.Message);
+    }
+
+    [Fact]
+    [Trait("Category", "EdgeCase")]
+    public async Task UpdateAsync_ApiReturnsError_ThrowsException()
+    {
+        // Arrange
+        Guid id = Guid.NewGuid();
+        ResidentUpdateRequestDto dto = new()
+        {
+            Initials = "JD",
+            FirstName = "John",
+            LastName = "Doe",
+            TrafficLightStatus = null
+        };
+        using HttpResponseMessage response = new(HttpStatusCode.Forbidden);
+        _ = _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        // Act & Assert
+        Exception ex = await Assert.ThrowsAsync<Exception>(() => _residentManager.UpdateAsync(id, dto, CancellationToken.None));
+        Assert.Contains("Failed to update resident", ex.Message);
     }
 
     [Fact]

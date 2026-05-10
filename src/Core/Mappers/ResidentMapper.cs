@@ -24,7 +24,8 @@ public class ResidentMapper
             Initials = dto.Initials,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
-            TrafficLightStatus = (TrafficLightStatus?)dto.TrafficLightStatus
+            TrafficLightStatus = (TrafficLightStatus?)dto.TrafficLightStatus,
+            Department = dto.Department
         };
     }
 
@@ -37,7 +38,8 @@ public class ResidentMapper
             FirstName = entity.FirstName,
             LastName = entity.LastName,
             TrafficLightStatus = (int?)entity.TrafficLightStatus,
-            Notes = entity.Notes?.Select(ToResidentNoteDto).ToList() ?? []
+            Notes = entity.Notes?.Select(ToResidentNoteDto).ToList() ?? [],
+            Department = entity.Department
         };
     }
 
@@ -63,7 +65,8 @@ public class ResidentMapper
             Initials = dto.Initials,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
-            TrafficLightStatus = dto.TrafficLightStatus
+            TrafficLightStatus = dto.TrafficLightStatus,
+            Department = dto.Department
         };
     }
 

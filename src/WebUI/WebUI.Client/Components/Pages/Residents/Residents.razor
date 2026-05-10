@@ -1,0 +1,176 @@
+@* UC-014 - Administration: Create, Read, Update and Delete Residents *@
+
+@page "/residents"
+@rendermode InteractiveAuto
+@using Domain.Enums
+@using WebUI.Client.Components.Layout
+@using WebUI.Client.Components.Residents
+
+<PageTitle>Beboere</PageTitle>
+
+<section aria-label="Residents administration" class="container-fluid p-3">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Beboere</h2>
+        <div class="d-flex gap-2">
+            @if (CanManageCurrentDepartment)
+            {
+                <button type="button" class="btn btn-primary btn-sm" @onclick="OpenCreateModal">
+                    + Opret beboer
+                </button>
+            }
+            <a href="/dashboard" class="btn btn-outline-secondary btn-sm">
+                &larr; Tilbage til dashboard
+            </a>
+        </div>
+    </div>
+
+    @* ── Department filter tabs ── *@
+    <ul class="nav nav-tabs mb-3" role="tablist">
+        @foreach (var dept in DepartmentOptions)
+        {
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(dept == _selectedDepartment ? "active" : "")"
+                        type="button" role="tab"
+                        @onclick="() => SelectDepartment(dept)">
+                    @dept
+                </button>
+            </li>
+        }
+    </ul>
+
+    @if (_isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Indlæser...</span>
+            </div>
+        </div>
+    }
+    else if (_hasError)
+    {
+        <div class="alert alert-danger" role="alert">
+            Der opstod en fejl ved indlæsning af beboere. Prøv igen.
+            <button type="button" class="btn btn-sm btn-outline-danger ms-2" @onclick="LoadResidentsAsync">Genindlæs</button>
+        </div>
+    }
+    else if (!FilteredResidents.Any())
+    {
+        <div class="alert alert-info" role="alert">
+            @if (CanManageCurrentDepartment)
+            {
+                <span>Ingen beboere fundet i <strong>@_selectedDepartment</strong>. Opret den første beboer ved at klikke på "Opret beboer".</span>
+            }
+            else
+            {
+                <span>Ingen beboere fundet i <strong>@_selectedDepartment</strong>.</span>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Initialer</th>
+                        <th>Fornavn</th>
+                        <th>Efternavn</th>
+                        <th>Trafiklys</th>
+                        <th class="text-end">Handlinger</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var resident in FilteredResidents)
+                    {
+                        <tr>
+                            <td><code>@resident.Initials</code></td>
+                            <td>@resident.FirstName</td>
+                            <td>@resident.LastName</td>
+                            <td>
+                                @if (resident.TrafficLightStatus.HasValue)
+                                {
+                                    <span class="badge @GetTrafficLightBadgeClass(resident.TrafficLightStatus.Value)">
+                                        @GetTrafficLightLabel(resident.TrafficLightStatus.Value)
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                @if (CanManageResident(resident))
+                                {
+                                    <button type="button" class="btn btn-outline-primary btn-sm me-1"
+                                            @onclick="() => OpenEditModal(resident)">
+                                        Rediger
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm"
+                                            @onclick="() => OpenDeleteConfirm(resident)">
+                                        Slet
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+</section>
+
+@* ── Create / Edit Modal ── *@
+@if (_showFormModal)
+{
+    <ResidentFormModal
+        IsEditing="_isEditing"
+        IsSaving="_isSaving"
+        FormModel="_formModel"
+        FormError="_formError"
+        OnCancel="CloseFormModal"
+        OnValidSubmit="HandleFormSubmitAsync" />
+}
+
+@* ── Delete Confirmation Modal ── *@
+@if (_showDeleteModal && _residentToDelete is not null)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="deleteModalLabel"
+         style="background:rgba(0,0,0,.5);">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Slet beboer</h5>
+                    <button type="button" class="btn-close" @onclick="CloseDeleteModal" aria-label="Luk"></button>
+                </div>
+                <div class="modal-body">
+                    @if (_deleteError is not null)
+                    {
+                        <div class="alert alert-danger py-2">@_deleteError</div>
+                    }
+                    <p>
+                        Er du sikker på, at du vil slette beboer
+                        <strong>@_residentToDelete.FirstName @_residentToDelete.LastName</strong>?
+                    </p>
+                    <p class="text-danger small mb-0">Denne handling kan ikke fortrydes.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" @onclick="CloseDeleteModal"
+                            disabled="@_isSaving">
+                        Annuller
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" @onclick="HandleDeleteAsync"
+                            disabled="@_isSaving">
+                        @if (_isSaving)
+                        {
+                            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        }
+                        Slet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

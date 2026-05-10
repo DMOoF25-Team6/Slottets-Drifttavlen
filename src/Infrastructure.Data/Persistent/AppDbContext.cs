@@ -24,6 +24,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
     public DbSet<PainkillerRecord> PainkillerRecord { get; set; }
     public DbSet<PhoneAssignment> PhoneAssignments { get; set; }
     public DbSet<StaffAssignment> StaffAssignments { get; set; }
+    public DbSet<Employee> Employees { get; set; }
 
     // Identity-related DbSet for refresh tokens
     public DbSet<RefreshToken> RefreshTokens { get; set; }
@@ -53,6 +54,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
         _ = modelBuilder.ApplyConfiguration(new Configurations.MedicineRecordConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.PainkillerRecordConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.ChangeDetailConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new Configurations.EmployeeConfiguration());
 
         _ = modelBuilder.Entity<MedicineStatusView>()
             .HasNoKey()
