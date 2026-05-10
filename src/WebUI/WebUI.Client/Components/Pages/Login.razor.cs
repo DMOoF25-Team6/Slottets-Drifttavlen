@@ -61,9 +61,13 @@ public partial class Login
         Navigation.NavigateTo(Navigation.Uri, new NavigationOptions { ForceLoad = true }); // Refresh UI
     }
 
-    public void NotifyLoginModelChanged()
+    /// <summary>
+    /// Requests a re-render of the component on the correct Blazor renderer context.
+    /// </summary>
+    /// <returns>A task that completes when the render request has been dispatched.</returns>
+    public Task NotifyLoginModelChanged()
     {
-        StateHasChanged();
+        return InvokeAsync(StateHasChanged);
     }
 
     public class LoginModel
