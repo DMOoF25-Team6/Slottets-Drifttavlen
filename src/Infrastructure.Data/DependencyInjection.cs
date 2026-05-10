@@ -7,6 +7,7 @@ using Core.Interfaces.Services;
 using Domain.Entities;
 
 using Infrastructure.Data.Repositories;
+using Infrastructure.Services;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,6 +25,7 @@ public static class DependencyInjection
         _ = services.AddScoped<IMedicineRepository, MedicineRepository>();
         _ = services.AddScoped<IPainkillerRepository, PainKillerRepository>();
         _ = services.AddScoped<IPhoneAssignmentRepository, PhoneAssignmentRepository>();
+       _  = services.AddScoped<IStaffAssignmentRepository, StaffAssignmentRepository>();
         _ = services.AddScoped<IAuditRepository, AuditRepository>();
 
         // Identity services
@@ -31,6 +33,9 @@ public static class DependencyInjection
 
         // Database connectivity service
         _ = services.AddScoped<IDatabaseService, Services.DatabaseService>();
+
+        // Staff assignment services
+        _ = services.AddScoped<IStaffAssignmentService, StaffAssignmentService>();
 
         //
         _ = services.AddKeyedScoped<IEnumerable<AuditEntry>>("Audit", (_, _) => []);

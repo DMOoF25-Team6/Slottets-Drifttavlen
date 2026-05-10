@@ -23,6 +23,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
     public DbSet<MedicineRecord> MedicineRecord { get; set; }
     public DbSet<PainkillerRecord> PainkillerRecord { get; set; }
     public DbSet<PhoneAssignment> PhoneAssignments { get; set; }
+    public DbSet<StaffAssignment> StaffAssignments { get; set; }
     public DbSet<Employee> Employees { get; set; }
 
     // Identity-related DbSet for refresh tokens

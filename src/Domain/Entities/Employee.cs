@@ -19,6 +19,7 @@ public class Employee : IEntity
     [ForeignKey("User")]
     public Guid UserId { get; set; }
 
+    public virtual ICollection<StaffAssignment> StaffAssignments { get; set; } = [];
     /// <summary>
     /// The department this employee is assigned to.
     /// </summary>
