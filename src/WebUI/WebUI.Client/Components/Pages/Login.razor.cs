@@ -35,7 +35,7 @@ public partial class Login
         IsDebug = true;
 #else
         IsDebug = false;
-#endif        
+#endif
     }
 
 
