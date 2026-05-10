@@ -1,10 +1,11 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 
 using Infrastructure;
 
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 using WebUI.Client.Services;
 
@@ -15,12 +16,35 @@ internal class Program
     private static async Task Main(string[] args)
     {
         WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
+
+        // Register infrastructure (HttpClient "SlottetApi" + managers + services).
         _ = builder.Services.AddInfrastructure(builder.Configuration);
+
+        // Token storage and authentication services (client-side).
         _ = builder.Services.AddScoped<TokenStorageService>();
         _ = builder.Services.AddScoped<AuthService>();
         _ = builder.Services.AddAuthorizationCore();
         _ = builder.Services.AddCascadingAuthenticationState();
         _ = builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
+
+        // UC-007: register the JWT message handlers and wire them into the
+        // "SlottetApi" HttpClient pipeline.
+        //
+        // Pipeline order (outermost first):
+        //   1. JwtRefreshMessageHandler  — intercepts 401 responses, refreshes the
+        //                                   access token, and retries the original request.
+        //   2. JwtAuthorizationMessageHandler — attaches "Authorization: Bearer <token>"
+        //                                        to every outgoing request.
+        //
+        // The order matters: if Refresh ran INSIDE Authorize, a refreshed token
+        // would not be reattached on retry. Refresh outside Authorize ensures the
+        // retried request goes through Authorize again and picks up the new token.
+        _ = builder.Services.AddTransient<JwtAuthorizationMessageHandler>();
+        _ = builder.Services.AddTransient<JwtRefreshMessageHandler>();
+
+        _ = builder.Services.AddHttpClient("SlottetApi")
+            .AddHttpMessageHandler<JwtRefreshMessageHandler>()
+            .AddHttpMessageHandler<JwtAuthorizationMessageHandler>();
 
         await builder.Build().RunAsync();
     }

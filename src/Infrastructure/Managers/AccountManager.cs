@@ -1,4 +1,4 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 
 using System.Net.Http.Json;
@@ -122,7 +122,8 @@ public class AccountManager(IHttpClientFactory httpClientFactory) : IAccountMana
     /// </remarks>
     public async Task<RefreshTokenResponseDto> RefreshTokenAsync(RefreshTokenRequestDto refreshTokenRequestDto)
     {
-        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/Account/refresh-token", refreshTokenRequestDto);
+        // UC-007: backend endpoint is /Account/refresh (see AccountController.Refresh).
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/Account/refresh", refreshTokenRequestDto);
         try
         {
             RefreshTokenResponseDto? refreshTokenResponseDto = await response.Content.ReadFromJsonAsync<RefreshTokenResponseDto>();
