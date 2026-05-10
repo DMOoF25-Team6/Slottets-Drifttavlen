@@ -67,7 +67,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const pr = github.context.payload.pull_request;
+            const pr = context.payload.pull_request;
             if (pr) {
               const committer = pr.user.login;
               const message = `@${committer} :x: Tests failed for this pull request. Please check the logs and fix the issues.`;
