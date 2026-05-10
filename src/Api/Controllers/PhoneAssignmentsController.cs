@@ -3,7 +3,7 @@
 
 using Core.DTOs;
 using Core.Interfaces.Services;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -12,6 +12,8 @@ namespace Api.Controllers;
 /// API controller for managing phone assignments on the dashboard.
 /// </summary>
 [ApiController]
+// UC-007: REQ-F-005 — Phone assignment data requires authentication.
+[Authorize]
 [Route("[controller]")]
 public class PhoneAssignmentsController(IPhoneAssignmentService phoneAssignmentService) : ControllerBase
 {

@@ -1,10 +1,12 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 using Core.DTOs;
 using Core.Interfaces.Repositories;
 using Core.Mappers;
 
 using Domain.Entities;
+
+using Microsoft.AspNetCore.Authorization;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +26,8 @@ namespace Api.Controllers;
 /// Provides endpoints for retrieving medicine and painkiller status for a specific resident.
 /// </remarks>
 [ApiController]
+// UC-007: REQ-F-005 — Medicine data requires authentication.
+[Authorize]
 [Route("[controller]")]
 public class MedicineController(IMedicineRepository medicineRepository, IPainkillerRepository painkillerRepository) : Controller
 {
