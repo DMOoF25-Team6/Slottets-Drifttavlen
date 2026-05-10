@@ -10,16 +10,6 @@ namespace WebUI.Client.Components.Pages;
 
 public partial class Login
 {
-    // Indicates if the app is running in DEBUG mode for conditional UI rendering
-    public bool IsDebug { get; private set; }
-
-    public Login()
-    {
-        IsDebug = false; // Default value
-#if DEBUG
-        IsDebug = true;
-#endif
-    }
     [Inject]
     private AuthService AuthService { get; set; } = default!;
 
@@ -29,45 +19,24 @@ public partial class Login
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
-
     private readonly LoginModel loginModel = new();
     private string? errorMessage;
 
+    // Indicates if the app is running in DEBUG mode for conditional UI rendering
+    public bool IsDebug { get; private set; }
 
-#if DEBUG
-
-    // ── Debug helpers ────────────────────────────────────────────────────────
-    /// <summary>Lightweight view-model used only in the debug quick-login panel.</summary>
-    private sealed record DebugEmployee(
-        string Name,
-        string Email,
-        string Role,
-        IReadOnlyList<string> Claims,
-        string? Department);
-
-    /// <summary>
-    /// Static list that mirrors <c>IdentitySeed</c> and <c>EmployeeConfiguration</c>.
-    /// All users share the development password <c>Password123!</c>.
-    /// </summary>
-    private static readonly IReadOnlyList<DebugEmployee> DebugEmployees =
-    [
-        new("Peder Rasmussen",  "PederRasmussen@example.com",  "admin",     ["(ingen)"],                            "Slottet"),
-        new("Sanne Johansen",   "SanneJohansen@example.com",   "superuser", ["CanManageResidents","CanViewMedicine"],"Slottet"),
-        new("Thor Danrsøn",     "ThorDanrsøn@example.com",     "user",      ["CanViewMedicine"],                    "Slottet"),
-        new("Per Nielsen",      "PerNielsen@example.com",      "user",      ["CanViewMedicine"],                    "Skoven"),
-        new("Anders Jensen",    "AndersJensen@example.com",    "user",      ["CanViewMedicine"],                    "Skoven"),
-        new("Kasper Holm",      "KasperHolm@example.com",      "(ingen)",   ["(ingen)"],                            "Marken"),
-    ];
-
-    private void AutoFill(DebugEmployee emp)
-    {
-        loginModel.Username = emp.Email;
-        loginModel.Password = "Password123!";
-    }
-#endif
     [Parameter]
     [SupplyParameterFromQuery(Name = "returnUrl")]
     public string? ReturnUrl { get; set; }
+
+    public Login()
+    {
+#if DEBUG
+        IsDebug = true;
+#else
+        IsDebug = false;
+#endif        
+    }
 
 
     private async Task HandleLogin()
@@ -92,7 +61,20 @@ public partial class Login
         Navigation.NavigateTo(Navigation.Uri, new NavigationOptions { ForceLoad = true }); // Refresh UI
     }
 
+    /// <summary>
+    /// Sets the login credentials from the debug quick-login panel and triggers a re-render
+    /// on the correct Blazor renderer context.
+    /// </summary>
+    /// <param name="email">The email address to pre-fill.</param>
+    /// <param name="password">The password to pre-fill.</param>
+    /// <returns>A task that completes when the render request has been dispatched.</returns>
+    public Task SetQuickLoginCredentialsAsync(string email, string password)
+    {
+        loginModel.Username = email;
+        loginModel.Password = password;
 
+        return InvokeAsync(StateHasChanged);
+    }
 
     public class LoginModel
     {
