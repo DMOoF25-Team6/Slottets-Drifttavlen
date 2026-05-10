@@ -1,4 +1,4 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 
 
@@ -22,6 +22,8 @@ namespace Api.Controllers;
 /// Provides endpoints for retrieving resident information and related notes.
 /// </remarks>
 [ApiController]
+// UC-007: REQ-F-005 — All resident data requires authentication.
+[Authorize]
 [Route("residents")]
 public class ResidentController(IResidentRepository residentRepository) : ControllerBase
 {

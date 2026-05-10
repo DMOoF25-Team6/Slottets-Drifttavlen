@@ -3,7 +3,7 @@
 
 #if DEBUG
 using Core.Interfaces.Services;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -13,6 +13,8 @@ namespace Api.Controllers;
 /// Only available in DEBUG builds — excluded from production.
 /// </summary>
 [ApiController]
+// UC-007: REQ-F-005 — Test endpoint requires authentication even in DEBUG.
+[Authorize]
 [Route("api/test")]
 public class TestController(IAuditService auditService) : ControllerBase
 {

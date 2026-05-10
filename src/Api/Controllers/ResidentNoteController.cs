@@ -1,9 +1,9 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 
 using Core.DTOs;
 using Core.Interfaces.Services;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -24,6 +24,8 @@ namespace Api.Controllers;
 /// </code>
 /// </example>
 [ApiController]
+// UC-007: REQ-F-005 — Resident note data requires authentication.
+[Authorize]
 [Route("[controller]")]
 public class ResidentNoteController : ControllerBase
 {
