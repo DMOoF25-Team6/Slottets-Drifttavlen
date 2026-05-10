@@ -24,8 +24,9 @@
     <PackageReference Include="xunit.v3" Version="3.2.2" />
   </ItemGroup>
 
-  <ItemGroup>
+<ItemGroup>
     <ProjectReference Include="..\..\src\WebUI\WebUI\WebUI.csproj" />
+    <ProjectReference Include="..\..\src\WebUI\WebUI.Client\WebUI.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>
