@@ -19,7 +19,7 @@ public partial class Login
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
-    public readonly LoginModel loginModel = new();
+    private readonly LoginModel loginModel = new();
     private string? errorMessage;
 
     // Indicates if the app is running in DEBUG mode for conditional UI rendering
@@ -62,11 +62,17 @@ public partial class Login
     }
 
     /// <summary>
-    /// Requests a re-render of the component on the correct Blazor renderer context.
+    /// Sets the login credentials from the debug quick-login panel and triggers a re-render
+    /// on the correct Blazor renderer context.
     /// </summary>
+    /// <param name="email">The email address to pre-fill.</param>
+    /// <param name="password">The password to pre-fill.</param>
     /// <returns>A task that completes when the render request has been dispatched.</returns>
-    public Task NotifyLoginModelChanged()
+    public Task SetQuickLoginCredentialsAsync(string email, string password)
     {
+        loginModel.Username = email;
+        loginModel.Password = password;
+
         return InvokeAsync(StateHasChanged);
     }
 
