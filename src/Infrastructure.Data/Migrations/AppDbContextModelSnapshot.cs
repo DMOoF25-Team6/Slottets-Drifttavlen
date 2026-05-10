@@ -53,59 +53,39 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("AuditEntries");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Employee", b =>
-            modelBuilder.Entity("Domain.Entities.ChangeDetail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                    modelBuilder.Entity("Domain.Entities.ChangeDetail", b =>
+                    {
+                        b.Property<Guid>("Id")
+                            .ValueGeneratedOnAdd()
+                            .HasColumnType("char(36)");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                        b.Property<Guid>("AuditEntryId")
+                            .HasColumnType("char(36)");
 
-                    b.Property<string>("Initials")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("varchar(3)");
+                        b.Property<string>("Field")
+                            .IsRequired()
+                            .HasMaxLength(100)
+                            .HasColumnType("varchar(100)");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                        b.Property<string>("NewValue")
+                            .IsRequired()
+                            .HasMaxLength(2000)
+                            .HasColumnType("varchar(2000)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
+                        b.Property<string>("OldValue")
+                            .IsRequired()
+                            .HasMaxLength(2000)
+                            .HasColumnType("varchar(2000)");
 
-                    b.HasKey("Id");
+                        b.HasKey("Id");
 
-                    b.ToTable("Employee");
-                    b.Property<Guid>("AuditEntryId")
-                        .HasColumnType("char(36)");
+                        b.HasIndex("AuditEntryId")
+                            .HasDatabaseName("IX_ChangeDetails_AuditEntryId");
 
-                    b.Property<string>("Field")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        b.ToTable("ChangeDetails");
+                    });
 
-                    b.Property<string>("NewValue")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("varchar(2000)");
-
-                    b.Property<string>("OldValue")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("varchar(2000)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuditEntryId")
-                        .HasDatabaseName("IX_ChangeDetails_AuditEntryId");
-
-                    b.ToTable("ChangeDetails");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Employee", b =>
+                    modelBuilder.Entity("Domain.Entities.Employee", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1218,12 +1198,14 @@ namespace Infrastructure.Data.Migrations
                 });
 
             modelBuilder.Entity("Domain.Entities.Employee", b =>
-                {
-                    b.Navigation("StaffAssignments");
+            {
+                b.Navigation("StaffAssignments");
+            });
+
             modelBuilder.Entity("Domain.Entities.AuditEntry", b =>
-                {
-                    b.Navigation("ChangeDetails");
-                });
+            {
+                b.Navigation("ChangeDetails");
+        });
 
             modelBuilder.Entity("Domain.Entities.Resident", b =>
                 {
