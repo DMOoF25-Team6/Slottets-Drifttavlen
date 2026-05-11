@@ -17,6 +17,7 @@
 | Art. 33 notification | A notification step for reporting certain personal data breaches (GDPR Art. 33). | Triggered when breach conditions apply. |
 | DPO (Data Protection Officer) | The person/role responsible for oversight of data protection compliance and breach communication. | Recipient in breach notification confirmation. |
 | Phone assignments | Information about how phones or phone responsibilities are assigned (e.g., per shift/team). | Included as an optional item in SAR exports. |
+| Pseudonymization | Replacing direct identifiers with an indirect reference so data can no longer be attributed to a specific person without additional information. | Used for Medicine Logs due to legal retention requirements. |
 
 ## Artifact Term Change Table
 | High-Level Term | Low-Level Term | Reason/Context |
