@@ -26,6 +26,13 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
     public DbSet<StaffAssignment> StaffAssignments { get; set; }
     public DbSet<Employee> Employees { get; set; }
 
+
+    // UC-010 GDPR compliance entities
+    public DbSet<RetentionPolicy> RetentionPolicies { get; set; }
+    public DbSet<RetentionPolicyAudit> RetentionPolicyAudits { get; set; }
+    public DbSet<AnonymizationCandidate> AnonymizationCandidates { get; set; }
+    public DbSet<SecurityIncident> SecurityIncidents { get; set; }
+
     // Identity-related DbSet for refresh tokens
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 
@@ -55,6 +62,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
         _ = modelBuilder.ApplyConfiguration(new Configurations.PainkillerRecordConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.ChangeDetailConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.EmployeeConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new Configurations.RetentionPolicyConfiguration());
 
         _ = modelBuilder.Entity<MedicineStatusView>()
             .HasNoKey()
