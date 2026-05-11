@@ -1,15 +1,14 @@
 @using Microsoft.AspNetCore.Components.Routing
-
 <CascadingAuthenticationState>
-  <Router AppAssembly="typeof(Program).Assembly">
+  <Router AppAssembly="@(typeof(Program).Assembly)">
     <Found Context="routeData">
       @* Renders the page that matches the URL *@
-      @* <FocusOnNavigate RouteData="routeData" Selector="h1" /> *@
       <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
         <NotAuthorized>
           <RedirectToLogin />
         </NotAuthorized>
       </AuthorizeRouteView>
+      <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
     <NotFound>
       @* Content shown if no component matches the URL *@
@@ -20,4 +19,3 @@
     </NotFound>
   </Router>
 </CascadingAuthenticationState>
-
