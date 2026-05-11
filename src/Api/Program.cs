@@ -80,6 +80,10 @@ public class Program
         _ = builder.Services.AddInfrastructure(builder.Configuration);
         _ = builder.Services.AddInfrastructureData();
 
+        // UC-010 GDPR compliance — Background services
+        _ = builder.Services.AddHostedService<Api.BackgroundServices.RetentionBackgroundService>();
+        _ = builder.Services.AddHostedService<Api.BackgroundServices.IncidentDetectionService>();
+
         ConfigureIdentity(builder);
         ConfigureJwtAuthentication(builder);
 

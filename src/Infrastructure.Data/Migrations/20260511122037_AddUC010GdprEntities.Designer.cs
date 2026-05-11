@@ -4,6 +4,7 @@ using Infrastructure.Data.Persistent;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260511122037_AddUC010GdprEntities")]
+    partial class AddUC010GdprEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1121,22 +1124,6 @@ namespace Infrastructure.Data.Migrations
                             SecurityStamp = "5e9a0fd8-e3f1-4d66-afe3-77e1e83a7446",
                             TwoFactorEnabled = false,
                             UserName = "kasperholm@example.com"
-                        },
-                        new
-                        {
-                            Id = new Guid("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "c0ffee00-dead-beef-cafe-000000000001",
-                            Email = "dashboard@slottet.dk",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "DASHBOARD@SLOTTET.DK",
-                            NormalizedUserName = "DASHBOARD@SLOTTET.DK",
-                            PasswordHash = "AQAAAAEAACcQAAAAEEGYLbEVvDkMGpWxvBizSJSS95uMkciMO3NcZV2yi+7goH8chkCEacnfd4IcKtrBaQ==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "c0ffee00-dead-beef-cafe-000000000002",
-                            TwoFactorEnabled = false,
-                            UserName = "dashboard@slottet.dk"
                         });
                 });
 
@@ -1270,12 +1257,6 @@ namespace Infrastructure.Data.Migrations
                             Id = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae"),
                             Name = "caretaker",
                             NormalizedName = "CARETAKER"
-                        },
-                        new
-                        {
-                            Id = new Guid("d0a5b0a1-0000-4000-8000-000000000001"),
-                            Name = "dashboard",
-                            NormalizedName = "DASHBOARD"
                         });
                 });
 
@@ -1323,13 +1304,6 @@ namespace Infrastructure.Data.Migrations
                             ClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
                             ClaimValue = "CanViewMedicine",
                             RoleId = new Guid("d1c9e8b5-3f4a-4c2e-9a1b-5e6f7a8b9c0d")
-                        },
-                        new
-                        {
-                            Id = 4,
-                            ClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
-                            ClaimValue = "CanViewMedicine",
-                            RoleId = new Guid("d0a5b0a1-0000-4000-8000-000000000001")
                         });
                 });
 
@@ -1422,11 +1396,6 @@ namespace Infrastructure.Data.Migrations
                         {
                             UserId = new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37"),
                             RoleId = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae")
-                        },
-                        new
-                        {
-                            UserId = new Guid("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
-                            RoleId = new Guid("d0a5b0a1-0000-4000-8000-000000000001")
                         });
                 });
 
