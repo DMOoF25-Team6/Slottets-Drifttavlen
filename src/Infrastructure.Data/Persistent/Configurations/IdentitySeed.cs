@@ -124,8 +124,8 @@ public static class IdentitySeed
     public static readonly IdentityRole<Guid> careTakerRole = new()
     {
         Id = Guid.Parse("ee697c76-947a-4fe2-8b14-40194c30bdae"),
-        Name = "user",
-        NormalizedName = "USER"
+        Name = "caretaker",
+        NormalizedName = "CARETAKER"
     };
 
     #endregion
@@ -203,6 +203,32 @@ public static class IdentitySeed
             {
                 UserId = adminUser.Id,
                 RoleId = adminRole.Id
+            },
+            new IdentityUserRole<Guid>
+            {
+                UserId = superUser.Id,
+                RoleId = superUserRole.Id
+            },
+            // Default role for regular employees is caretaker
+            new IdentityUserRole<Guid>
+            {
+                UserId = normal1User.Id,
+                RoleId = careTakerRole.Id
+            },
+            new IdentityUserRole<Guid>
+            {
+                UserId = normal2User.Id,
+                RoleId = careTakerRole.Id
+            },
+            new IdentityUserRole<Guid>
+            {
+                UserId = normal3User.Id,
+                RoleId = careTakerRole.Id
+            },
+            new IdentityUserRole<Guid>
+            {
+                UserId = substitutUser.Id,
+                RoleId = careTakerRole.Id
             }
         );
     }

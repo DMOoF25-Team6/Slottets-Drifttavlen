@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260508135000_AddChangeDetailEntity")]
-    partial class AddChangeDetailEntity
+    [Migration("20260511015329_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -86,6 +86,98 @@ namespace Infrastructure.Data.Migrations
                         .HasDatabaseName("IX_ChangeDetails_AuditEntryId");
 
                     b.ToTable("ChangeDetails");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Employee", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Department")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Initials")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("varchar(3)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Employees_UserId");
+
+                    b.ToTable("Employees");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-0000-0000-0000-000000000001"),
+                            Department = 0,
+                            FirstName = "Peder",
+                            Initials = "PR",
+                            LastName = "Rasmussen",
+                            UserId = new Guid("3a21f8e1-885b-4394-abf0-ed0baeea239b")
+                        },
+                        new
+                        {
+                            Id = new Guid("11111111-0000-0000-0000-000000000002"),
+                            Department = 0,
+                            FirstName = "Sanne",
+                            Initials = "SJ",
+                            LastName = "Johansen",
+                            UserId = new Guid("4711a300-711e-4132-86d4-cafd3f11deec")
+                        },
+                        new
+                        {
+                            Id = new Guid("11111111-0000-0000-0000-000000000003"),
+                            Department = 0,
+                            FirstName = "Thor",
+                            Initials = "TD",
+                            LastName = "Danrsøn",
+                            UserId = new Guid("30cffcf9-5784-4fa9-9c10-c013ef3faf16")
+                        },
+                        new
+                        {
+                            Id = new Guid("11111111-0000-0000-0000-000000000004"),
+                            Department = 1,
+                            FirstName = "Per",
+                            Initials = "PN",
+                            LastName = "Nielsen",
+                            UserId = new Guid("37155b80-7111-422a-aba6-89d7070f1644")
+                        },
+                        new
+                        {
+                            Id = new Guid("11111111-0000-0000-0000-000000000005"),
+                            Department = 1,
+                            FirstName = "Anders",
+                            Initials = "AJ",
+                            LastName = "Jensen",
+                            UserId = new Guid("b836e975-e775-48bc-8b84-5d2bdd5bd87a")
+                        },
+                        new
+                        {
+                            Id = new Guid("11111111-0000-0000-0000-000000000006"),
+                            Department = 2,
+                            FirstName = "Kasper",
+                            Initials = "KH",
+                            LastName = "Holm",
+                            UserId = new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37")
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.MedicineRecord", b =>
@@ -245,6 +337,9 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<int>("Department")
+                        .HasColumnType("int");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -271,98 +366,254 @@ namespace Infrastructure.Data.Migrations
                         new
                         {
                             Id = new Guid("694b9796-dc5a-4a68-bafb-0a59595e8fb3"),
-                            FirstName = "",
-                            Initials = "A",
-                            LastName = "",
+                            Department = 0,
+                            FirstName = "Anna",
+                            Initials = "AA",
+                            LastName = "Andersen",
                             TrafficLightStatus = 0
                         },
                         new
                         {
                             Id = new Guid("a1b2c3d4-e5f6-7890-1234-56789abcdef0"),
-                            FirstName = "",
-                            Initials = "B",
-                            LastName = "",
+                            Department = 0,
+                            FirstName = "Birthe",
+                            Initials = "BB",
+                            LastName = "Brun",
                             TrafficLightStatus = 2
                         },
                         new
                         {
                             Id = new Guid("c2d3e4f5-6789-0123-4567-89abcdef0123"),
-                            FirstName = "",
-                            Initials = "C",
-                            LastName = "",
+                            Department = 0,
+                            FirstName = "Carl",
+                            Initials = "CC",
+                            LastName = "Christensen",
                             TrafficLightStatus = 1
                         },
                         new
                         {
                             Id = new Guid("d3e4f5a6-7890-1234-5678-9abcdef01234"),
-                            FirstName = "",
-                            Initials = "D",
-                            LastName = "",
+                            Department = 0,
+                            FirstName = "Dorthe",
+                            Initials = "DD",
+                            LastName = "Dalgaard",
                             TrafficLightStatus = 0
                         },
                         new
                         {
                             Id = new Guid("e4f5a6b7-8901-2345-6789-abcdef012345"),
-                            FirstName = "",
-                            Initials = "E",
-                            LastName = "",
+                            Department = 0,
+                            FirstName = "Erik",
+                            Initials = "EE",
+                            LastName = "Eriksen",
                             TrafficLightStatus = 0
                         },
                         new
                         {
                             Id = new Guid("f5a6b7c8-9012-3456-789a-bcdef0123456"),
-                            FirstName = "",
-                            Initials = "F",
-                            LastName = "",
+                            Department = 0,
+                            FirstName = "Frida",
+                            Initials = "FF",
+                            LastName = "Frederiksen",
                             TrafficLightStatus = 1
                         },
                         new
                         {
                             Id = new Guid("a6b7c8d9-0123-4567-89ab-cdef01234567"),
-                            FirstName = "",
-                            Initials = "GA",
-                            LastName = "",
+                            Department = 0,
+                            FirstName = "Gunnar",
+                            Initials = "GG",
+                            LastName = "Gregersen",
                             TrafficLightStatus = 0
                         },
                         new
                         {
                             Id = new Guid("b7c8d9e0-1234-5678-9abc-def012345678"),
-                            FirstName = "",
-                            Initials = "H",
-                            LastName = "",
+                            Department = 0,
+                            FirstName = "Hanne",
+                            Initials = "HH",
+                            LastName = "Hansen",
                             TrafficLightStatus = 2
                         },
                         new
                         {
                             Id = new Guid("c8d9e0f1-2345-6789-abcd-ef0123456789"),
-                            FirstName = "",
-                            Initials = "I",
-                            LastName = "",
+                            Department = 0,
+                            FirstName = "Ida",
+                            Initials = "II",
+                            LastName = "Iversen",
                             TrafficLightStatus = 0
                         },
                         new
                         {
                             Id = new Guid("d9e0f1a2-3456-789a-bcde-f01234567890"),
-                            FirstName = "",
-                            Initials = "J",
-                            LastName = "",
+                            Department = 0,
+                            FirstName = "Jens",
+                            Initials = "JJ",
+                            LastName = "Jensen",
                             TrafficLightStatus = 0
                         },
                         new
                         {
                             Id = new Guid("e0f1a2b3-4567-89ab-cdef-012345678901"),
-                            FirstName = "",
-                            Initials = "K",
-                            LastName = "",
+                            Department = 0,
+                            FirstName = "Karen",
+                            Initials = "KK",
+                            LastName = "Knudsen",
                             TrafficLightStatus = 2
                         },
                         new
                         {
                             Id = new Guid("f1a2b3c4-5678-9abc-def0-123456789012"),
-                            FirstName = "",
-                            Initials = "GB",
-                            LastName = "",
+                            Department = 0,
+                            FirstName = "Lars",
+                            Initials = "LL",
+                            LastName = "Larsen",
                             TrafficLightStatus = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("aa000001-0000-0000-0000-000000000001"),
+                            Department = 1,
+                            FirstName = "Mette",
+                            Initials = "MM",
+                            LastName = "Madsen",
+                            TrafficLightStatus = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("aa000001-0000-0000-0000-000000000002"),
+                            Department = 1,
+                            FirstName = "Niels",
+                            Initials = "NN",
+                            LastName = "Nielsen",
+                            TrafficLightStatus = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("aa000001-0000-0000-0000-000000000003"),
+                            Department = 1,
+                            FirstName = "Ole",
+                            Initials = "OO",
+                            LastName = "Olesen",
+                            TrafficLightStatus = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("aa000001-0000-0000-0000-000000000004"),
+                            Department = 1,
+                            FirstName = "Pia",
+                            Initials = "PP",
+                            LastName = "Petersen",
+                            TrafficLightStatus = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("aa000001-0000-0000-0000-000000000005"),
+                            Department = 1,
+                            FirstName = "Rasmus",
+                            Initials = "RR",
+                            LastName = "Rasmussen",
+                            TrafficLightStatus = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("aa000001-0000-0000-0000-000000000006"),
+                            Department = 1,
+                            FirstName = "Sofie",
+                            Initials = "SS",
+                            LastName = "Sørensen",
+                            TrafficLightStatus = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("aa000001-0000-0000-0000-000000000007"),
+                            Department = 1,
+                            FirstName = "Thomas",
+                            Initials = "TT",
+                            LastName = "Thomsen",
+                            TrafficLightStatus = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000001"),
+                            Department = 2,
+                            FirstName = "Ulla",
+                            Initials = "UU",
+                            LastName = "Ulrichsen",
+                            TrafficLightStatus = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000002"),
+                            Department = 2,
+                            FirstName = "Viggo",
+                            Initials = "VV",
+                            LastName = "Vestergaard",
+                            TrafficLightStatus = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000003"),
+                            Department = 2,
+                            FirstName = "Winnie",
+                            Initials = "WW",
+                            LastName = "Winther",
+                            TrafficLightStatus = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000004"),
+                            Department = 2,
+                            FirstName = "Xenia",
+                            Initials = "XX",
+                            LastName = "Xu",
+                            TrafficLightStatus = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000005"),
+                            Department = 2,
+                            FirstName = "Yvonne",
+                            Initials = "YY",
+                            LastName = "Yilmaz",
+                            TrafficLightStatus = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000006"),
+                            Department = 2,
+                            FirstName = "Zenia",
+                            Initials = "ZZ",
+                            LastName = "Zahle",
+                            TrafficLightStatus = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000007"),
+                            Department = 2,
+                            FirstName = "Bent",
+                            Initials = "BA",
+                            LastName = "Bagger",
+                            TrafficLightStatus = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000008"),
+                            Department = 2,
+                            FirstName = "Connie",
+                            Initials = "CO",
+                            LastName = "Christoffersen",
+                            TrafficLightStatus = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000009"),
+                            Department = 2,
+                            FirstName = "Dagmar",
+                            Initials = "DA",
+                            LastName = "Damgaard",
+                            TrafficLightStatus = 0
                         });
                 });
 
@@ -500,6 +751,39 @@ namespace Infrastructure.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Domain.Entities.StaffAssignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("AssignmentDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ResidentId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("ShiftType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("ResidentId");
+
+                    b.ToTable("StaffAssignments");
+                });
+
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -512,6 +796,9 @@ namespace Infrastructure.Data.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
+
+                    b.Property<int?>("Department")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -791,8 +1078,8 @@ namespace Infrastructure.Data.Migrations
                         new
                         {
                             Id = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae"),
-                            Name = "user",
-                            NormalizedName = "USER"
+                            Name = "caretaker",
+                            NormalizedName = "CARETAKER"
                         });
                 });
 
@@ -907,6 +1194,31 @@ namespace Infrastructure.Data.Migrations
                         {
                             UserId = new Guid("3a21f8e1-885b-4394-abf0-ed0baeea239b"),
                             RoleId = new Guid("fabc2277-7992-491b-ae4a-bc78f8de56aa")
+                        },
+                        new
+                        {
+                            UserId = new Guid("4711a300-711e-4132-86d4-cafd3f11deec"),
+                            RoleId = new Guid("d1c9e8b5-3f4a-4c2e-9a1b-5e6f7a8b9c0d")
+                        },
+                        new
+                        {
+                            UserId = new Guid("30cffcf9-5784-4fa9-9c10-c013ef3faf16"),
+                            RoleId = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae")
+                        },
+                        new
+                        {
+                            UserId = new Guid("37155b80-7111-422a-aba6-89d7070f1644"),
+                            RoleId = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae")
+                        },
+                        new
+                        {
+                            UserId = new Guid("b836e975-e775-48bc-8b84-5d2bdd5bd87a"),
+                            RoleId = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae")
+                        },
+                        new
+                        {
+                            UserId = new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37"),
+                            RoleId = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae")
                         });
                 });
 
@@ -936,6 +1248,17 @@ namespace Infrastructure.Data.Migrations
                         .HasForeignKey("AuditEntryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.Employee", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Entities.MedicineRecord", b =>
@@ -974,6 +1297,25 @@ namespace Infrastructure.Data.Migrations
                         .HasForeignKey("ResidentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.StaffAssignment", b =>
+                {
+                    b.HasOne("Domain.Entities.Employee", "Employee")
+                        .WithMany("StaffAssignments")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Resident", "Resident")
+                        .WithMany("StaffAssignments")
+                        .HasForeignKey("ResidentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Resident");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -1032,6 +1374,11 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("ChangeDetails");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Employee", b =>
+                {
+                    b.Navigation("StaffAssignments");
+                });
+
             modelBuilder.Entity("Domain.Entities.Resident", b =>
                 {
                     b.Navigation("Medicines");
@@ -1039,6 +1386,8 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("Notes");
 
                     b.Navigation("Painkillers");
+
+                    b.Navigation("StaffAssignments");
                 });
 #pragma warning restore 612, 618
         }

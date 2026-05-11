@@ -7,5 +7,5 @@ namespace Core.Interfaces.Services;
 
 public interface ITokenService
 {
-    string GenerateToken(User user, IList<string> roles);
+    string GenerateToken(User user, IList<string> roles, IList<System.Security.Claims.Claim>? roleClaims = null);
 }

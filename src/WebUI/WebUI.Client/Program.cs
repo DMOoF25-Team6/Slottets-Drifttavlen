@@ -5,7 +5,6 @@ using Infrastructure;
 
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 
 using WebUI.Client.Services;
 
@@ -23,7 +22,18 @@ internal class Program
         // Token storage and authentication services (client-side).
         _ = builder.Services.AddScoped<TokenStorageService>();
         _ = builder.Services.AddScoped<AuthService>();
-        _ = builder.Services.AddAuthorizationCore();
+
+        // The "CanManageResidents" policy allows access to resident management features for users with either:
+        //   - the "admin" role, or
+        //   - a "CanManageResidents" role claim (for more granular control without granting full admin privileges).
+        _ = builder.Services.AddAuthorizationCore(options =>
+        {
+            options.AddPolicy("CanManageResidents", policy =>
+                policy.RequireAssertion(ctx =>
+                    ctx.User.IsInRole("admin") ||
+                    ctx.User.HasClaim(c => c.Type == System.Security.Claims.ClaimTypes.Role && c.Value == "CanManageResidents")));
+        });
+
         _ = builder.Services.AddCascadingAuthenticationState();
         _ = builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
 

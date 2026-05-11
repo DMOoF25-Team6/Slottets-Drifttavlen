@@ -32,7 +32,7 @@ public class TokenService(IConfiguration configuration, ILogger<TokenService> lo
     /// <param name="user">The user entity.</param>
     /// <param name="roles">The list of roles for the user.</param>
     /// <returns>A JWT token string.</returns>
-    public string GenerateToken(User user, IList<string> roles)
+    public string GenerateToken(User user, IList<string> roles, IList<Claim>? roleClaims = null)
     {
         List<Claim> claims =
         [
@@ -43,6 +43,11 @@ public class TokenService(IConfiguration configuration, ILogger<TokenService> lo
             new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             .. roles.Select(role => new Claim(ClaimTypes.Role, role)),
         ];
+
+        if (roleClaims is not null)
+        {
+            claims.AddRange(roleClaims);
+        }
 
         if (user.Department.HasValue)
         {

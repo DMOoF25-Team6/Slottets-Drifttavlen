@@ -57,7 +57,16 @@ public class Program
 
         _ = builder.Services.AddScoped<TokenStorageService>();
         _ = builder.Services.AddScoped<AuthService>();
-        _ = builder.Services.AddAuthorizationCore();
+        _ = builder.Services.AddAuthorizationCore(options =>
+        {
+            // The "CanManageResidents" policy allows access to resident management features for users with either:
+            //   - the "admin" role, or
+            //   - a "CanManageResidents" role claim (for more granular control without granting full admin privileges).
+            options.AddPolicy("CanManageResidents", policy =>
+                policy.RequireAssertion(ctx =>
+                    ctx.User.IsInRole("admin") ||
+                    ctx.User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "CanManageResidents")));
+        });
         _ = builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
         _ = builder.Services.AddScoped<AccountService>();
         // Set the default authentication and challenge scheme to JwtBearer
@@ -83,7 +92,13 @@ public class Program
             });
 
 
-        _ = builder.Services.AddAuthorization();
+        _ = builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("CanManageResidents", policy =>
+                policy.RequireAssertion(ctx =>
+                    ctx.User.IsInRole("admin") ||
+                    ctx.User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "CanManageResidents")));
+        });
 
         WebApplication app = builder.Build();
 
