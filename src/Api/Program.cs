@@ -160,8 +160,15 @@ public class Program
     /// <param name="builder">A web application builder instance.</param>
     private static void ConfigureJwtAuthentication(WebApplicationBuilder builder)
     {
-        // Set the default authentication and challenge scheme to JwtBearer
-        _ = builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        // Set the default authentication and challenge scheme to JwtBearer.
+        // AddIdentity overrides defaults to cookie-based auth; explicitly restoring JWT
+        // here ensures [Authorize] uses Bearer tokens rather than cookie redirects.
+        _ = builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
             .AddJwtBearer(options =>
             {
                 // Use configuration values for TokenValidationParameters validation

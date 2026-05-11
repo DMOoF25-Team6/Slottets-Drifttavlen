@@ -24,6 +24,9 @@
       }
     </ul>
     <button @onclick="Logout">Logout</button>
+    <span class="nav" >
+      <NavLink href="/residents">Manage residents</NavLink>
+    </span>
   </Authorized>
   <NotAuthorized>
     @if (isInteractive)

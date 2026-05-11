@@ -103,6 +103,20 @@ public static class IdentitySeed
         SecurityStamp = "5e9a0fd8-e3f1-4d66-afe3-77e1e83a7446"
     };
 
+    // UC-001: Read-only kiosk account used by unattended dashboard screens.
+    public static readonly User dashboardUser = new()
+    {
+        Id = Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+        UserName = "dashboard@slottet.dk",
+        NormalizedUserName = "DASHBOARD@SLOTTET.DK",
+        Email = "dashboard@slottet.dk",
+        NormalizedEmail = "DASHBOARD@SLOTTET.DK",
+        EmailConfirmed = true,
+        ConcurrencyStamp = "c0ffee00-dead-beef-cafe-000000000001",
+        PasswordHash = "AQAAAAEAACcQAAAAEEGYLbEVvDkMGpWxvBizSJSS95uMkciMO3NcZV2yi+7goH8chkCEacnfd4IcKtrBaQ==",
+        SecurityStamp = "c0ffee00-dead-beef-cafe-000000000002"
+    };
+
     #endregion
 
     #region Roles
@@ -126,6 +140,14 @@ public static class IdentitySeed
         Id = Guid.Parse("ee697c76-947a-4fe2-8b14-40194c30bdae"),
         Name = "caretaker",
         NormalizedName = "CARETAKER"
+    };
+
+    // UC-001: Read-only role for unattended dashboard kiosk screens.
+    public static readonly IdentityRole<Guid> dashboardRole = new()
+    {
+        Id = Guid.Parse("d0a5b0a1-0000-4000-8000-000000000001"),
+        Name = "dashboard",
+        NormalizedName = "DASHBOARD"
     };
 
     #endregion
@@ -156,6 +178,15 @@ public static class IdentitySeed
         ClaimValue = "CanViewMedicine"
     };
 
+    // UC-001: Dashboard kiosk can view residents and medicine status (read-only).
+    public static readonly IdentityRoleClaim<Guid> dashboardClaim1 = new()
+    {
+        Id = 4,
+        RoleId = dashboardRole.Id,
+        ClaimType = ClaimTypes.Role,
+        ClaimValue = "CanViewMedicine"
+    };
+
     #endregion
 
     #region Seed methods
@@ -172,7 +203,8 @@ public static class IdentitySeed
             normal1User,
             normal2User,
             normal3User,
-            substitutUser);
+            substitutUser,
+            dashboardUser);
     }
 
     /// <summary>
@@ -185,11 +217,13 @@ public static class IdentitySeed
         _ = modelBuilder.Entity<IdentityRole<Guid>>().HasData(
             adminRole,
             superUserRole,
-            careTakerRole);
+            careTakerRole,
+            dashboardRole);
         _ = modelBuilder.Entity<IdentityRoleClaim<Guid>>().HasData(
             careTakerClaim1,
             adminClaim1,
-            superUserClaim1);
+            superUserClaim1,
+            dashboardClaim1);
     }
 
     /// <summary>
@@ -229,6 +263,11 @@ public static class IdentitySeed
             {
                 UserId = substitutUser.Id,
                 RoleId = careTakerRole.Id
+            },
+            new IdentityUserRole<Guid>
+            {
+                UserId = dashboardUser.Id,
+                RoleId = dashboardRole.Id
             }
         );
     }

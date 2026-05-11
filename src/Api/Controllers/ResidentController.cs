@@ -215,11 +215,6 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
         string? deptClaim = principal?.FindFirstValue("Department");
 
         // No department claim → unrestricted (admin)
-        if (string.IsNullOrEmpty(deptClaim))
-        {
-            return true;
-        }
-
-        return Enum.TryParse<Department>(deptClaim, out Department userDept) && userDept == department;
+        return string.IsNullOrEmpty(deptClaim) || (Enum.TryParse<Department>(deptClaim, out Department userDept) && userDept == department);
     }
 }
