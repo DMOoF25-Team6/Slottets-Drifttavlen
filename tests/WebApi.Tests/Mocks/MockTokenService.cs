@@ -12,7 +12,8 @@ namespace WebApi.Tests.Mocks;
 /// </summary>
 public class MockTokenService : ITokenService
 {
-    public string GenerateToken(User user, IList<string> roles)
+
+    public string GenerateToken(User user, IList<string> roles, IList<System.Security.Claims.Claim>? roleClaims = null)
         => "test-jwt-token";
 
     public static string GenerateRefreshToken()

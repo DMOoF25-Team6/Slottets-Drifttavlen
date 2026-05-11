@@ -41,8 +41,11 @@ public partial class Residents : ComponentBase
 
     private string _selectedDepartment = Department.Slottet.ToString();
 
-    private static readonly string[] DepartmentOptions =
+    private static readonly string[] AllDepartmentOptions =
         [Department.Slottet.ToString(), Department.Skoven.ToString(), Department.Marken.ToString()];
+
+    // Departments visible to the current user (filtered by Department claim, or all for admin/superuser)
+    private string[] DepartmentOptions = AllDepartmentOptions;
 
     private IEnumerable<Resident> FilteredResidents =>
         _residents.Where(r => r.Department.ToString() == _selectedDepartment);
@@ -81,11 +84,22 @@ public partial class Residents : ComponentBase
         AuthenticationState authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         ClaimsPrincipal user = authState.User;
 
-        _hasManageClaim = user.HasClaim(
+        bool isAdmin = user.IsInRole("admin");
+        bool hasCanManageClaim = user.HasClaim(
             c => c.Type == ClaimTypes.Role && c.Value == "CanManageResidents");
+        _hasManageClaim = isAdmin || hasCanManageClaim;
 
         // Null means the user has no department restriction (admin).
-        _userDepartment = user.FindFirstValue("Department");
+        _userDepartment = isAdmin ? null : user.FindFirstValue("Department");
+
+        // Only show tabs for the user's own department, unless admin (show all).
+        if (_userDepartment is not null)
+        {
+            DepartmentOptions = AllDepartmentOptions.Contains(_userDepartment)
+                ? [_userDepartment]
+                : [];
+            _selectedDepartment = _userDepartment;
+        }
 
         await LoadResidentsAsync();
     }

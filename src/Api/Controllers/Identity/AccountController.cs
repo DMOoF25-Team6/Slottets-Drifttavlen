@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using System.Security.Claims;
 using System.Security.Cryptography;
 
 using Core.DTOs;
@@ -27,6 +28,7 @@ namespace Api.Controllers.Identity;
 [ApiController]
 public class AccountController(
     UserManager<User> userManager,
+    RoleManager<IdentityRole<Guid>> roleManager,
     IRefreshTokenStore refreshTokenStore,
     //SignInManager<User> signInManager,
     ITokenService tokenService,
@@ -280,7 +282,20 @@ public class AccountController(
         bool error = false;
         IEnumerable<string> errorMsg = [];
         IList<string> roles = await userManager.GetRolesAsync(user);
-        string token = tokenService.GenerateToken(user, roles);
+
+        // Collect all role claims (e.g. CanManageResidents) from AspNetRoleClaims for the user's roles
+        List<Claim> roleClaims = [];
+        foreach (string roleName in roles)
+        {
+            IdentityRole<Guid>? role = await roleManager.FindByNameAsync(roleName);
+            if (role is not null)
+            {
+                IList<Claim> claims = await roleManager.GetClaimsAsync(role);
+                roleClaims.AddRange(claims);
+            }
+        }
+
+        string token = tokenService.GenerateToken(user, roles, roleClaims);
         if (string.IsNullOrWhiteSpace(token))
         {
             error = true;
