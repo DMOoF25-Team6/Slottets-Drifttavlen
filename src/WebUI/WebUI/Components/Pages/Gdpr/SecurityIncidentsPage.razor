@@ -1,0 +1,143 @@
+@* UC-010 - Security Incidents Management (Admin only) *@
+
+@page "/admin/gdpr/incidents"
+@rendermode InteractiveServer
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
+
+@using Core.DTOs.Security
+@using Domain.Enums
+
+<PageTitle>Security Incidents</PageTitle>
+
+<main class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/admin/gdpr">GDPR</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Security Incidents</li>
+        </ol>
+    </nav>
+
+    <h1 class="mb-4">Security Incidents</h1>
+    <p class="text-muted mb-4">
+        Investigate detected security events. Escalation as a personal data breach
+        triggers GDPR Article 33 notification to the Data Protection Officer within 72 hours.
+    </p>
+
+    @if (!string.IsNullOrEmpty(_feedbackMessage))
+    {
+        <div class="alert @_feedbackClass alert-dismissible fade show" role="alert">
+            @_feedbackMessage
+            <button type="button" class="btn-close" @onclick="ClearFeedback"></button>
+        </div>
+    }
+
+    @if (_isLoading)
+    {
+        <div class="text-center my-5">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (_incidents.Count == 0)
+    {
+        <div class="alert alert-info">
+            ✅ No security incidents detected.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-7">
+                <h5 class="mb-3">Incident list</h5>
+                <div class="list-group">
+                    @foreach (SecurityIncidentDto incident in _incidents)
+                    {
+                        bool isSelected = _selectedIncident?.Id == incident.Id;
+                        <button type="button"
+                                class="list-group-item list-group-item-action @(isSelected ? "active" : "")"
+                                @onclick="() => SelectIncident(incident)">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">@incident.Type</h6>
+                                <small>@incident.DetectedAt.ToString("yyyy-MM-dd HH:mm")</small>
+                            </div>
+                            <div class="d-flex gap-2 mt-1">
+                                <span class="badge @GetSeverityBadgeClass(incident.Severity)">@incident.Severity</span>
+                                <span class="badge @GetStatusBadgeClass(incident.Status)">@incident.Status</span>
+                            </div>
+                        </button>
+                    }
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                @if (_selectedIncident is null)
+                {
+                    <div class="text-center text-muted mt-5">
+                        <p>Select an incident to view details</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Incident details</h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-3">
+                                <dt class="col-sm-5">Type</dt>
+                                <dd class="col-sm-7">@_selectedIncident.Type</dd>
+
+                                <dt class="col-sm-5">Detected</dt>
+                                <dd class="col-sm-7">@_selectedIncident.DetectedAt.ToString("yyyy-MM-dd HH:mm 'UTC'")</dd>
+
+                                <dt class="col-sm-5">Severity</dt>
+                                <dd class="col-sm-7"><span class="badge @GetSeverityBadgeClass(_selectedIncident.Severity)">@_selectedIncident.Severity</span></dd>
+
+                                <dt class="col-sm-5">Status</dt>
+                                <dd class="col-sm-7"><span class="badge @GetStatusBadgeClass(_selectedIncident.Status)">@_selectedIncident.Status</span></dd>
+                            </dl>
+
+                            <h6>Investigation notes</h6>
+                            <pre class="bg-light p-2 small" style="max-height:150px;overflow:auto;">@(string.IsNullOrEmpty(_selectedIncident.InvestigationNotes) ? "(No notes yet)" : _selectedIncident.InvestigationNotes)</pre>
+
+                            @if (_selectedIncident.Status != IncidentStatus.Closed && _selectedIncident.Status != IncidentStatus.BreachNotified)
+                            {
+                                <div class="mb-3">
+                                    <label class="form-label">Add investigation note</label>
+                                    <textarea class="form-control form-control-sm" rows="2" @bind="_newNote" placeholder="Findings, evidence, next steps..."></textarea>
+                                    <button class="btn btn-sm btn-outline-primary mt-1" @onclick="AddNoteAsync" disabled="@string.IsNullOrWhiteSpace(_newNote)">Add note</button>
+                                </div>
+
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <button class="btn btn-sm btn-success" @onclick="CloseIncidentAsync">Close</button>
+                                    <button class="btn btn-sm btn-warning" @onclick="() => EscalateAsync(false)">Escalate</button>
+                                    <button class="btn btn-sm btn-danger" @onclick="StartBreachConfirm">🚨 Notify DPO (Art. 33)</button>
+                                </div>
+
+                                @if (_confirmingBreach)
+                                {
+                                    <div class="alert alert-danger mt-3">
+                                        <strong>Confirm GDPR Art. 33 breach notification?</strong>
+                                        <p class="small mb-2">This will notify the Data Protection Officer that a personal data breach occurred. This action cannot be undone.</p>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-danger" @onclick="() => EscalateAsync(true)">Yes, notify DPO</button>
+                                            <button class="btn btn-sm btn-secondary" @onclick="() => _confirmingBreach = false">Cancel</button>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="alert alert-secondary small mb-0">
+                                    No further actions available for status @_selectedIncident.Status.
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</main>

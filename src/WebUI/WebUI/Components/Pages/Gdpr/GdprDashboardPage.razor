@@ -1,0 +1,64 @@
+@* UC-010 - GDPR Compliance Dashboard (Admin only) *@
+
+@page "/admin/gdpr"
+@rendermode InteractiveServer
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
+
+<PageTitle>GDPR Compliance</PageTitle>
+
+<main class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">GDPR Compliance</li>
+        </ol>
+    </nav>
+
+    <h1 class="mb-4">GDPR Compliance Dashboard</h1>
+    <p class="text-muted mb-4">
+        Administer data retention, anonymization queue, security incidents, and Subject Access Requests
+        in accordance with GDPR and Autorisationsloven §22.
+    </p>
+
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">📋 Retention Settings</h5>
+                    <p class="card-text">Configure how long each data category is retained. MedicineLogs are locked at 10 years (legal minimum).</p>
+                    <a href="/admin/gdpr/retention" class="btn btn-primary">Manage policies</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">🔒 Anonymization Queue @if (_pendingCandidates > 0) { <span class="badge bg-warning text-dark ms-2">@_pendingCandidates</span> }</h5>
+                    <p class="card-text">Review residents whose data has reached the retention threshold. Approve, reject, or postpone anonymization.</p>
+                    <a href="/admin/gdpr/anonymization" class="btn btn-primary">Review queue</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">🚨 Security Incidents @if (_openIncidents > 0) { <span class="badge bg-danger ms-2">@_openIncidents</span> }</h5>
+                    <p class="card-text">Investigate detected security events. Escalate to GDPR Art. 33 breach notification to the DPO when required.</p>
+                    <a href="/admin/gdpr/incidents" class="btn btn-primary">Handle incidents</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">📤 Subject Access Request</h5>
+                    <p class="card-text">Generate GDPR Article 15 data exports for residents on request.</p>
+                    <a href="/admin/gdpr/sar" class="btn btn-primary">Process request</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

@@ -1,0 +1,107 @@
+@* UC-010 - Retention Policy Settings (Admin only) *@
+
+@page "/admin/gdpr/retention"
+@rendermode InteractiveServer
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
+
+@using Core.DTOs.Retention
+@using Domain.Enums
+
+<PageTitle>Retention Settings</PageTitle>
+
+<main class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/admin/gdpr">GDPR</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Retention Settings</li>
+        </ol>
+    </nav>
+
+    <h1 class="mb-4">Retention Settings</h1>
+    <p class="text-muted mb-4">
+        Configure retention periods for each data category. Values cannot fall below the legal minimum.
+        MedicineLogs are locked at 10 years per Autorisationsloven §22.
+    </p>
+
+    @if (!string.IsNullOrEmpty(_feedbackMessage))
+    {
+        <div class="alert @_feedbackClass alert-dismissible fade show" role="alert">
+            @_feedbackMessage
+            <button type="button" class="btn-close" @onclick="ClearFeedback"></button>
+        </div>
+    }
+
+    @if (_isLoading)
+    {
+        <div class="text-center my-5">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (_policies.Count == 0)
+    {
+        <div class="alert alert-info">No retention policies found. Run database migration first.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Current Period (days)</th>
+                        <th>Legal Minimum (days)</th>
+                        <th>Effective From</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (RetentionPolicyDto policy in _policies)
+                    {
+                        bool isLocked = policy.Category == RetentionDataCategory.MedicineLogs;
+                        <tr>
+                            <td>
+                                <strong>@policy.Category</strong>
+                                @if (isLocked)
+                                {
+                                    <span class="badge bg-secondary ms-2" title="Locked by Autorisationsloven §22">🔒 Locked</span>
+                                }
+                            </td>
+                            <td>
+                                @if (_editingCategory == policy.Category)
+                                {
+                                    <input type="number" class="form-control form-control-sm"
+                                           @bind="_editDays"
+                                           min="@((int)policy.LegalMinimum.TotalDays)" />
+                                }
+                                else
+                                {
+                                    @((int)policy.RetentionPeriod.TotalDays)
+                                }
+                            </td>
+                            <td>@((int)policy.LegalMinimum.TotalDays)</td>
+                            <td>@policy.EffectiveFrom.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                @if (isLocked)
+                                {
+                                    <button class="btn btn-sm btn-outline-secondary" disabled>Locked</button>
+                                }
+                                else if (_editingCategory == policy.Category)
+                                {
+                                    <button class="btn btn-sm btn-success me-1" @onclick="() => SavePolicyAsync(policy)">Save</button>
+                                    <button class="btn btn-sm btn-secondary" @onclick="CancelEdit">Cancel</button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-primary" @onclick="() => StartEdit(policy)">Edit</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</main>
