@@ -15,6 +15,8 @@
 | Data minimization | Principle of limiting disclosed/processed personal data to what is necessary for a purpose. | Applied during SAR review. |
 | Audit log / audit trail | A tamper-evident record of user actions and state changes. | Used for traceability (UC-009). |
 | Art. 33 notification | A notification step for reporting certain personal data breaches (GDPR Art. 33). | Triggered when breach conditions apply. |
+| DPO (Data Protection Officer) | The person/role responsible for oversight of data protection compliance and breach communication. | Recipient in breach notification confirmation. |
+| Phone assignments | Information about how phones or phone responsibilities are assigned (e.g., per shift/team). | Included as an optional item in SAR exports. |
 
 ## Artifact Term Change Table
 | High-Level Term | Low-Level Term | Reason/Context |

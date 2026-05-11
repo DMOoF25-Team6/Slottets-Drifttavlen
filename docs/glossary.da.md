@@ -15,6 +15,8 @@
 | Data minimization | Dataminimering | Gennemgang i SAR-flow. |
 | Audit log / audit trail | Audit-log / revisionsspor | Sporbarhed (UC-009). |
 | Art. 33 notification | Art. 33-underretning | Underretning ved brud. |
+| DPO (Data Protection Officer) | Databeskyttelsesrådgiver (DPO) | Modtager ved brud-underretning. |
+| Phone assignments | Telefon-tildelinger | Valg i SAR-eksport. |
 
 ## Artifact Term Change Table
 | High-Level Term | Low-Level Term | Reason/Context |
