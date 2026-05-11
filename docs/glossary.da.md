@@ -17,6 +17,7 @@
 | Art. 33 notification | Art. 33-underretning | Underretning ved brud. |
 | DPO (Data Protection Officer) | Databeskyttelsesrådgiver (DPO) | Modtager ved brud-underretning. |
 | Phone assignments | Telefon-tildelinger | Valg i SAR-eksport. |
+| Pseudonymization | Pseudonymisering | Bruges for Medicine Logs pga. lovpligtige opbevaringskrav. |
 
 ## Artifact Term Change Table
 | High-Level Term | Low-Level Term | Reason/Context |
