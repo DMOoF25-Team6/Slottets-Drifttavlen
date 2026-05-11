@@ -21,7 +21,7 @@ namespace Api.Controllers;
 /// per Autorisationsloven §22 — preserved by RetentionPolicy enforcement at the repository level.
 /// </remarks>
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "admin")]
 [Route("anonymization")]
 public class AnonymizationController : ControllerBase
 {

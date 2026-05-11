@@ -20,7 +20,7 @@ namespace Api.Controllers;
 /// with legal-minimum enforcement (e.g., Autorisationsloven §22 for MedicineLogs).
 /// </remarks>
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "admin")]
 [Route("retentionpolicy")]
 public class RetentionPolicyController : ControllerBase
 {

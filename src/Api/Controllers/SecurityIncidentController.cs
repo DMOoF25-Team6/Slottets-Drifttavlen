@@ -22,7 +22,7 @@ namespace Api.Controllers;
 /// notification to the Data Protection Officer via <see cref="IArt33NotificationService"/>.
 /// </remarks>
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "admin")]
 [Route("securityincident")]
 public class SecurityIncidentController : ControllerBase
 {

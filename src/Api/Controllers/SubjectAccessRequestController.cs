@@ -20,7 +20,7 @@ namespace Api.Controllers;
 /// for a given resident across the scopes specified in the request.
 /// </remarks>
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "admin")]
 [Route("subjectaccessrequest")]
 public class SubjectAccessRequestController : ControllerBase
 {
