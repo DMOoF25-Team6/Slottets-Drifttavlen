@@ -39,7 +39,6 @@ public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiMana
         }
     }
 
-
     public async Task CreateRangeAsync(IEnumerable<ResidentCreateRequestDto> dtos, CancellationToken ct = default)
     {
         HttpResponseMessage response = await HttpClient.PostAsJsonAsync("residents/CreateRange", dtos, ct);
@@ -51,8 +50,6 @@ public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiMana
     #endregion create
 
     #region Methods read
-
-
     /// <summary>
     /// Gets a resident by their unique identifier.
     /// </summary>

@@ -7,5 +7,7 @@ namespace Core.Interfaces.Services;
 
 public interface ITokenService
 {
-    string GenerateToken(User user, IList<string> roles, IList<System.Security.Claims.Claim>? roleClaims = null);
+    Task<string> CreateJwtTokenAsync(User user, IList<string> roles, IList<System.Security.Claims.Claim> permissions);
+    Task<RefreshToken> CreateRefreshTokenAsync(User user, string ipAddress);
+    Task<string> ComputeSha256Hash(string token);
 }

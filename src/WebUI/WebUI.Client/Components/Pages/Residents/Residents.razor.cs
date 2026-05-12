@@ -2,6 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 using Core.DTOs;
 using Core.Interfaces.Services;
@@ -10,6 +11,7 @@ using Domain.Entities;
 using Domain.Enums;
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace WebUI.Client.Components.Pages.Residents;
 
@@ -19,10 +21,10 @@ namespace WebUI.Client.Components.Pages.Residents;
 public partial class Residents : ComponentBase
 {
     #region Injected Services
-
     [Inject]
     private IResidentService ResidentService { get; set; } = default!;
-
+    [Inject]
+    private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
     #endregion
 
     #region Fields
@@ -45,16 +47,16 @@ public partial class Residents : ComponentBase
         _residents.Where(r => r.Department.ToString() == _selectedDepartment);
 
     // Authorization state derived from JWT claims
-    //private readonly bool _hasManageClaim;
-    //private readonly string? _userDepartment; // null = unrestricted (admin), value = restricted to that department
+    private bool _hasManageClaim;
+    private string? _userDepartment; // null = unrestricted (admin), value = restricted to that department
 
     /// <summary>True when the current user may manage residents in the currently selected department tab.</summary>
-    //private bool CanManageCurrentDepartment =>
-    //    _hasManageClaim && (_userDepartment is null || _userDepartment == _selectedDepartment);
+    private bool CanManageCurrentDepartment =>
+        _hasManageClaim && (_userDepartment is null || _userDepartment == _selectedDepartment);
 
     /// <summary>True when the current user may manage a specific resident's department.</summary>
-    //private bool CanManageResident(Resident resident) =>
-    //    _hasManageClaim && (_userDepartment is null || _userDepartment == resident.Department.ToString());
+    private bool CanManageResident(Resident resident) =>
+        _hasManageClaim && (_userDepartment is null || _userDepartment == resident.Department.ToString());
 
     // Form modal state
     private bool _showFormModal;
@@ -73,29 +75,39 @@ public partial class Residents : ComponentBase
     #region Lifecycle
 
     /// <inheritdoc />
-    protected override Task OnInitializedAsync()
-    {
-        // Data loading is deferred to OnAfterRenderAsync: during SSR pre-render
-        // JS interop (localStorage) is unavailable so the Bearer token cannot be
-        // read, and every API call would return 401. OnAfterRenderAsync only runs
-        // during interactive rendering where localStorage is accessible.
-        return Task.CompletedTask;
-    }
+    //protected override Task OnInitializedAsync()
+    //{
+    //    // Data loading is deferred to OnAfterRenderAsync: during SSR pre-render
+    //    // JS interop (localStorage) is unavailable so the Bearer token cannot be
+    //    // read, and every API call would return 401. OnAfterRenderAsync only runs
+    //    // during interactive rendering where localStorage is accessible.
+    //    return Task.CompletedTask;
+    //}
 
     /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (!firstRender)
         {
-            await LoadResidentsAsync();
-            StateHasChanged();
+            return;
         }
+
+        await InitializeAuthorizationAsync();
+        await LoadResidentsAsync();
+        StateHasChanged();
     }
 
+    private async Task InitializeAuthorizationAsync()
+    {
+        AuthenticationState authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        ClaimsPrincipal user = authState.User;
+
+        _hasManageClaim = user.HasClaim(c => c.Type == "permission" && c.Value == "manage:residents");
+        _userDepartment = user.FindFirst("department")?.Value;
+    }
     #endregion
 
     #region Data Loading
-
     private async Task LoadResidentsAsync()
     {
         _isLoading = true;

@@ -65,8 +65,6 @@ public class AuthServiceTests
             .ReturnsAsync(new LoginResponseDto
             {
                 Token = "test-access-token",
-                Email = "user@example.com",
-                ExpiresAt = DateTime.UtcNow.AddMinutes(15),
                 RefreshToken = "test-refresh-token"
             });
 
@@ -88,8 +86,6 @@ public class AuthServiceTests
             .ReturnsAsync(new LoginResponseDto
             {
                 Token = "access-token-only",
-                Email = "user@example.com",
-                ExpiresAt = DateTime.UtcNow.AddMinutes(15),
                 RefreshToken = null
             });
 

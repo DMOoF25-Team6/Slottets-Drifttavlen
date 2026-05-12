@@ -24,12 +24,12 @@ public static class MedicineMapper
         return new MedicineStatusDto
         {
             ResidentId = residentId,
-            Entries = records.Select(m => new MedicineEntryDto
+            Entries = [.. records.Select(m => new MedicineEntryDto
             {
                 Name = m.MedicineName,
                 Timestamp = m.Timestamp,
                 Given = m.Given
-            }).ToList()
+            })]
         };
     }
 }

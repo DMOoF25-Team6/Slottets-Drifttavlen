@@ -21,9 +21,6 @@ public class LoginResponseDto : ILoginResult
     /// </value>
     public required string Token { get; set; }
 
-    public required string Email { get; set; }
-    public required DateTime ExpiresAt { get; set; }
-
     /// <summary>
     /// Gets or sets the refresh token issued for obtaining new access tokens.
     /// </summary>

@@ -96,8 +96,7 @@ public class AccountManagerTests
         LoginResponseDto expected = new()
         {
             Token = "abc",
-            Email = "test@example.com",
-            ExpiresAt = DateTime.UtcNow.AddHours(1)
+            RefreshToken = "refresh"
         };
         HttpResponseMessage response = new(HttpStatusCode.OK)
         {

@@ -95,7 +95,7 @@ public class ChangeDetailMapperTests
             new ChangeDetail { Id = secondId, Field = "B" }
         ];
 
-        List<ChangeDetailDto> result = ChangeDetailMapper.ToDtos(entities).ToList();
+        List<ChangeDetailDto> result = [.. ChangeDetailMapper.ToDtos(entities)];
 
         Assert.Equal(firstId, result[0].Id);
         Assert.Equal(secondId, result[1].Id);

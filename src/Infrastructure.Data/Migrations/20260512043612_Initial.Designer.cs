@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260511015329_Initial")]
+    [Migration("20260512043612_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -842,6 +842,9 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -947,6 +950,22 @@ namespace Infrastructure.Data.Migrations
                             SecurityStamp = "5e9a0fd8-e3f1-4d66-afe3-77e1e83a7446",
                             TwoFactorEnabled = false,
                             UserName = "kasperholm@example.com"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "c0ffee00-dead-beef-cafe-000000000001",
+                            Email = "dashboard@slottet.dk",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "DASHBOARD@SLOTTET.DK",
+                            NormalizedUserName = "DASHBOARD@SLOTTET.DK",
+                            PasswordHash = "AQAAAAEAACcQAAAAEEGYLbEVvDkMGpWxvBizSJSS95uMkciMO3NcZV2yi+7goH8chkCEacnfd4IcKtrBaQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "c0ffee00-dead-beef-cafe-000000000002",
+                            TwoFactorEnabled = false,
+                            UserName = "dashboard@slottet.dk"
                         });
                 });
 
@@ -1080,6 +1099,12 @@ namespace Infrastructure.Data.Migrations
                             Id = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae"),
                             Name = "caretaker",
                             NormalizedName = "CARETAKER"
+                        },
+                        new
+                        {
+                            Id = new Guid("d0a5b0a1-0000-4000-8000-000000000001"),
+                            Name = "dashboard",
+                            NormalizedName = "DASHBOARD"
                         });
                 });
 
@@ -1105,29 +1130,6 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
-                            ClaimValue = "CanViewMedicine",
-                            RoleId = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae")
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
-                            ClaimValue = "CanManageResidents",
-                            RoleId = new Guid("d1c9e8b5-3f4a-4c2e-9a1b-5e6f7a8b9c0d")
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
-                            ClaimValue = "CanViewMedicine",
-                            RoleId = new Guid("d1c9e8b5-3f4a-4c2e-9a1b-5e6f7a8b9c0d")
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
@@ -1152,6 +1154,15 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("AspNetUserClaims", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1001,
+                            ClaimType = "permission",
+                            ClaimValue = "manage:residents",
+                            UserId = new Guid("4711a300-711e-4132-86d4-cafd3f11deec")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
@@ -1219,6 +1230,11 @@ namespace Infrastructure.Data.Migrations
                         {
                             UserId = new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37"),
                             RoleId = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae")
+                        },
+                        new
+                        {
+                            UserId = new Guid("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+                            RoleId = new Guid("d0a5b0a1-0000-4000-8000-000000000001")
                         });
                 });
 

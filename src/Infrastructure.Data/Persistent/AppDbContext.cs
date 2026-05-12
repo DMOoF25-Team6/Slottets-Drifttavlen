@@ -80,9 +80,15 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
             .HasNoKey()
             .ToView("vwPhoneAssignment");
 
+        // Unique index on User.Email
+        _ = modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
         // RolesClaimSeed Identity roles and claims
         IdentitySeed.UserSeed(modelBuilder);
         IdentitySeed.RolesClaimSeed(modelBuilder);
         IdentitySeed.UserRoleSeed(modelBuilder);
+        IdentitySeed.UserClaimSeed(modelBuilder);
     }
 }

@@ -18,7 +18,7 @@ public class RefreshTokenStore(AppDbContext dbContext) : IRefreshTokenStore
 {
     private readonly AppDbContext dbContext = dbContext;
 
-    public async Task SaveAsync(RefreshToken token, CancellationToken cancellationToken = default)
+    public async Task SaveAsync(RefreshToken token, ITokenService tokenService, CancellationToken cancellationToken = default)
     {
         // Try to find existing token by Id (primary key) or TokenHash value
         RefreshToken? existing = await dbContext.RefreshTokens
@@ -41,17 +41,17 @@ public class RefreshTokenStore(AppDbContext dbContext) : IRefreshTokenStore
         _ = await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<RefreshToken?> GetByTokenAsync(string token, CancellationToken cancellationToken = default)
+    public async Task<RefreshToken?> GetByTokenAsync(string token, ITokenService tokenService, CancellationToken cancellationToken = default)
     {
-        string tokenHash = RefreshToken.ComputeSha256Hash(token);
+        string tokenHash = await tokenService.ComputeSha256Hash(token);
         return await dbContext.RefreshTokens
             .Include(rt => rt.User)
             .FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash, cancellationToken);
     }
 
-    public async Task RevokeAsync(string token, CancellationToken cancellationToken = default)
+    public async Task RevokeAsync(string token, ITokenService tokenService, CancellationToken cancellationToken = default)
     {
-        string tokenHash = RefreshToken.ComputeSha256Hash(token);
+        string tokenHash = await tokenService.ComputeSha256Hash(token);
         RefreshToken? entity = await dbContext.RefreshTokens.FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash, cancellationToken);
         if (entity is not null)
         {

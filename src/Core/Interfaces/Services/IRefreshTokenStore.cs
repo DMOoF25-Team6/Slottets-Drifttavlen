@@ -10,18 +10,7 @@ namespace Core.Interfaces.Services;
 /// </summary>
 public interface IRefreshTokenStore
 {
-    /// <summary>
-    /// Saves a refresh token for a user.
-    /// </summary>
-    Task SaveAsync(RefreshToken token, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Gets a refresh token by token value.
-    /// </summary>
-    Task<RefreshToken?> GetByTokenAsync(string token, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Revokes a refresh token by token value.
-    /// </summary>
-    Task RevokeAsync(string token, CancellationToken cancellationToken = default);
+    Task<RefreshToken?> GetByTokenAsync(string token, ITokenService tokenService, CancellationToken cancellationToken = default);
+    Task RevokeAsync(string token, ITokenService tokenService, CancellationToken cancellationToken = default);
+    Task SaveAsync(RefreshToken token, ITokenService tokenService, CancellationToken cancellationToken = default);
 }

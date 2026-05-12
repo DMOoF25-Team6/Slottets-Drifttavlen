@@ -1,9 +1,9 @@
 @* UC001 - Dashboard for all residents overview and status *@
 @*UC001 Task - Low Fi prototype for first iteration of prototype*@
 
+@page "/dashboard/"
+@page "/dashboard/{DepartmentId:int?}"
 @layout DashboardLayout
-@page "/dashboard"
-@* @page "/dashboard/{DepartmentId:int?}" *@
 @rendermode InteractiveAuto
 @using Domain.Enums
 @using Domain.Entities
