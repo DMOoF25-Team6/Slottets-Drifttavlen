@@ -1,6 +1,11 @@
 @inherits LayoutComponentBase
 
 <header class="navbar navbar-expand-lg navbar-light bg-light">
+  <AuthorizeView>
+    <Authorized>
+      <a class="navbar-brand" href="/admin">Admin Dashboard</a>
+    </Authorized>
+  </AuthorizeView>
 </header>
 
 <main class="container mt-4 flex-fill">

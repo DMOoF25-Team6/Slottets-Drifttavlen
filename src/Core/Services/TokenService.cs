@@ -24,13 +24,13 @@ namespace Core.Services;
 /// </remarks>
 /// <param name="configuration">The application configuration.</param>
 /// <param name="logger">The logger instance.</param>
-/// <param name="refreshTokenStore">The refresh token store instance.</param>
 public class TokenService(
     IConfiguration configuration,
-    ILogger<TokenService> logger,
-    IRefreshTokenStore refreshTokenStore)
-    : ITokenService
+    ILogger<TokenService> logger) : ITokenService
 {
+    private readonly IConfiguration configuration = configuration;
+    private readonly ILogger<TokenService> logger = logger;
+
     /// <summary>
     /// Generates a JWT token for the specified user and roles.
     /// </summary>
@@ -38,18 +38,25 @@ public class TokenService(
     /// <param name="roles">The list of roles for the user.</param>
     /// <param name="permission">The list of permissions for the user.</param>
     /// <returns>A JWT token string.</returns>
-    public async Task<string> CreateJwtTokenAsync(User user, IList<string> roles, IList<System.Security.Claims.Claim> permissions)
+    /// <summary>
+    /// Generates a JWT token for the specified user and roles.
+    /// </summary>
+    /// <param name="user">The user entity.</param>
+    /// <param name="roles">The list of roles for the user.</param>
+    /// <param name="permissions">The list of permissions for the user.</param>
+    /// <returns>A JWT token string.</returns>
+    public async Task<string> CreateJwtTokenAsync(User user, IList<string> roles, IList<System.Security.Claims.Claim> permissions, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(user);
         List<Claim> claims =
         [
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new (ClaimTypes.Name, user.UserName!),
-            new (ClaimTypes.Email, user.Email!),
-            new (JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            .. roles.Select(role => new Claim(ClaimTypes.Role, role)),
-            .. permissions.Select(p => new Claim("Permission", p.Value))
+            new(ClaimTypes.Name, user.UserName!),
+            new(ClaimTypes.Email, user.Email!),
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            ..roles.Select(role => new Claim(ClaimTypes.Role, role)),
+            ..permissions.Select(p => new Claim("Permission", p.Value))
         ];
 
         if (user.Department.HasValue)
@@ -72,20 +79,18 @@ public class TokenService(
             signingCredentials: credentials
         );
 
-        return await Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     /// <summary>
-    /// Creates and persists a new refresh token for the specified user and originating IP address.
+    /// Generates a JWT token for the specified user and roles, supporting cancellation token.
     /// </summary>
-    /// <remarks>The expiration time for the refresh token is determined by the configuration setting
-    /// 'TokenValidationParameters:TokenExpirationMinutes'. The created token is immediately saved to the refresh token
-    /// store.</remarks>
-    /// <param name="user">The user for whom the refresh token is being created. Must not be null.</param>
-    /// <param name="ipAddress">The IP address from which the refresh token creation request originated. Used for auditing and security
-    /// purposes.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the newly created refresh token.</returns>
-    public async Task<RefreshToken> CreateRefreshTokenAsync(User user, string ipAddress)
+    /// <param name="user">The user entity.</param>
+    /// <param name="roles">The list of roles for the user.</param>
+    /// <param name="permissions">The list of permissions for the user.</param>
+    /// <param name="cancellationToken">A cancellation token (currently not used).</param>
+    /// <returns>A JWT token string.</returns>
+    public async Task<RefreshToken> CreateRefreshTokenAsync(User user, string ipAddress, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(user);
         RefreshToken refreshToken = new()
@@ -96,7 +101,6 @@ public class TokenService(
             CreatedByIp = ipAddress,
             CreatedAt = DateTime.UtcNow
         };
-        await refreshTokenStore.SaveAsync(refreshToken, this);
         return refreshToken;
     }
 
@@ -105,11 +109,11 @@ public class TokenService(
     /// </summary>
     /// <param name="token">The input string to hash.</param>
     /// <returns>Hex-encoded SHA-256 hash.</returns>
-    public Task<string> ComputeSha256Hash(string token)
+    public async Task<string> ComputeSha256HashAsync(string token, CancellationToken cancellationToken = default)
     {
         byte[] bytes = System.Text.Encoding.UTF8.GetBytes(token);
-        byte[] hash = System.Security.Cryptography.SHA256.HashData(bytes);
-        return Task.FromResult(string.Concat(hash.Select(b => b.ToString("x2"))));
+        byte[] hash = SHA256.HashData(bytes);
+        return await Task.FromResult(string.Concat(hash.Select(b => b.ToString("x2"))));
     }
 
     #region Helper Methods
@@ -119,14 +123,14 @@ public class TokenService(
     /// <remarks>The generated token is suitable for use in authentication scenarios where a secure, random
     /// value is required. Each call produces a unique token.</remarks>
     /// <returns>A Base64-encoded string representing a newly generated refresh token.</returns>
-    private async Task<string> ComputeRefreshTokenAsync()
+    private async Task<string> ComputeRefreshTokenAsync(CancellationToken cancellationToken = default)
     {
         byte[] randomBytes = new byte[32];
         using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
         {
             rng.GetBytes(randomBytes);
         }
-        return await ComputeSha256Hash(Convert.ToBase64String(randomBytes));
+        return await ComputeSha256HashAsync(Convert.ToBase64String(randomBytes), cancellationToken);
     }
 
     private Task<bool> IsValidAsync(string token)

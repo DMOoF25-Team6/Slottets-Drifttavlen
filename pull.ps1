@@ -1,5 +1,5 @@
-# Fetch latest changes from git
-git fetch
+# Pull the latest changes from the remote repository
+git pull origin main
 
 # Start Docker Compose with the 'prod' profile, build, and run detached
 docker-compose --profile prod up --menu=false --build -d

@@ -43,7 +43,7 @@ public class RefreshTokenStore(AppDbContext dbContext) : IRefreshTokenStore
 
     public async Task<RefreshToken?> GetByTokenAsync(string token, ITokenService tokenService, CancellationToken cancellationToken = default)
     {
-        string tokenHash = await tokenService.ComputeSha256Hash(token);
+        string tokenHash = await tokenService.ComputeSha256HashAsync(token, cancellationToken);
         return await dbContext.RefreshTokens
             .Include(rt => rt.User)
             .FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash, cancellationToken);
@@ -51,7 +51,7 @@ public class RefreshTokenStore(AppDbContext dbContext) : IRefreshTokenStore
 
     public async Task RevokeAsync(string token, ITokenService tokenService, CancellationToken cancellationToken = default)
     {
-        string tokenHash = await tokenService.ComputeSha256Hash(token);
+        string tokenHash = await tokenService.ComputeSha256HashAsync(token, cancellationToken);
         RefreshToken? entity = await dbContext.RefreshTokens.FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash, cancellationToken);
         if (entity is not null)
         {
