@@ -34,7 +34,7 @@ public class TokenServiceTests
         _ = _configurationMock.Setup(c => c["TokenValidationParameters:Audience"]).Returns("TestAudience");
         _ = _configurationMock.Setup(c => c["TokenValidationParameters:ExpireMinutes"]).Returns("60");
         _ = _configurationMock.Setup(c => c["TokenValidationParameters:TokenExpirationMinutes"]).Returns("120");
-        _tokenService = new TokenService(_configurationMock.Object, _loggerMock.Object, _refreshTokenStoreMock.Object, _configurationMock.Object);
+        _tokenService = new TokenService(_configurationMock.Object, _loggerMock.Object, _refreshTokenStoreMock.Object);
     }
 
     #region Functionality
