@@ -12,8 +12,8 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      vlan-web:
-        ipv4_address: 10.29.30.99
+      vlan-db:
+        ipv4_address: 10.29.10.99
 
   build-stage:
     profiles:
@@ -87,7 +87,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:5051
-      - MYSQL_HOST=10.29.30.99
+      - MYSQL_HOST=10.29.10.99
       - MYSQL_PORT=3306
     ports:
       - "5051:5051"
