@@ -27,9 +27,7 @@ namespace Core.Services;
 /// <param name="refreshTokenStore">The refresh token store instance.</param>
 public class TokenService(
     IConfiguration configuration,
-    ILogger<TokenService> logger,
-    IRefreshTokenStore refreshTokenStore,
-    IConfiguration config)
+    ILogger<TokenService> logger)
     : ITokenService
 {
     /// <summary>
@@ -93,11 +91,10 @@ public class TokenService(
         {
             UserId = user.Id,
             TokenHash = await ComputeRefreshTokenAsync(),
-            ExpiresAt = DateTime.UtcNow.AddMinutes(int.Parse(config["TokenValidationParameters:TokenExpirationMinutes"] ?? "60")),
+            ExpiresAt = DateTime.UtcNow.AddMinutes(int.Parse(configuration["TokenValidationParameters:TokenExpirationMinutes"] ?? "60")),
             CreatedByIp = ipAddress,
             CreatedAt = DateTime.UtcNow
         };
-        await refreshTokenStore.SaveAsync(refreshToken, this);
         return refreshToken;
     }
 
