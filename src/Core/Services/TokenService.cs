@@ -27,7 +27,8 @@ namespace Core.Services;
 /// <param name="refreshTokenStore">The refresh token store instance.</param>
 public class TokenService(
     IConfiguration configuration,
-    ILogger<TokenService> logger)
+    ILogger<TokenService> logger,
+    IRefreshTokenStore refreshTokenStore)
     : ITokenService
 {
     /// <summary>
@@ -95,6 +96,7 @@ public class TokenService(
             CreatedByIp = ipAddress,
             CreatedAt = DateTime.UtcNow
         };
+        await refreshTokenStore.SaveAsync(refreshToken, this);
         return refreshToken;
     }
 

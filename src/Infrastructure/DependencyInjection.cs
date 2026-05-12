@@ -48,10 +48,10 @@ public static class DependencyInjection
         _ = services.AddScoped<IDatabaseConnectionManager, DatabaseConnectionManager>();
 
         // UC-010 GDPR compliance — Manager HTTP clients
-        _ = services.AddScoped<IRetentionPolicyManager, RetentionPolicyManager>();
-        _ = services.AddScoped<IAnonymizationManager, AnonymizationManager>();
-        _ = services.AddScoped<ISecurityIncidentManager, SecurityIncidentManager>();
-        _ = services.AddScoped<ISubjectAccessRequestManager, SubjectAccessRequestManager>();
+        //_ = services.AddScoped<IRetentionPolicyManager, RetentionPolicyManager>();
+        //_ = services.AddScoped<IAnonymizationManager, AnonymizationManager>();
+        //_ = services.AddScoped<ISecurityIncidentManager, SecurityIncidentManager>();
+        //_ = services.AddScoped<ISubjectAccessRequestManager, SubjectAccessRequestManager>();
 
         return services;
     }
