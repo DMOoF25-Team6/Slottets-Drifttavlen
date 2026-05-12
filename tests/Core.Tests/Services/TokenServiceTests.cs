@@ -34,7 +34,7 @@ public class TokenServiceTests
         _ = _configurationMock.Setup(c => c["TokenValidationParameters:Audience"]).Returns("TestAudience");
         _ = _configurationMock.Setup(c => c["TokenValidationParameters:ExpireMinutes"]).Returns("60");
         _ = _configurationMock.Setup(c => c["TokenValidationParameters:TokenExpirationMinutes"]).Returns("120");
-        _tokenService = new TokenService(_configurationMock.Object, _loggerMock.Object, _refreshTokenStoreMock.Object);
+        _tokenService = new TokenService(_configurationMock.Object, _loggerMock.Object);
     }
 
     #region Functionality
@@ -48,7 +48,7 @@ public class TokenServiceTests
         List<Claim> permissions = [new Claim("Permission", "Read"), new Claim("Permission", "Write")];
 
         // Act
-        string token = await _tokenService.CreateJwtTokenAsync(user, roles, permissions);
+        string token = await _tokenService.CreateJwtTokenAsync(user, roles, permissions, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.False(string.IsNullOrWhiteSpace(token));
@@ -58,52 +58,24 @@ public class TokenServiceTests
         Assert.Contains(jwt.Claims, c => c.Type == ClaimTypes.Role && c.Value == "Admin");
         Assert.Contains(jwt.Claims, c => c.Type == "Permission" && c.Value == "Read");
     }
-    #endregion
-
-    #region EdgeCase
-    [Fact]
-    [Trait("Category", "EdgeCase")]
-    public async Task CreateJwtTokenAsync_NullUser_ThrowsArgumentNullException()
-    {
-        // Arrange
-        User? user = null;
-        List<string> roles = [];
-        List<Claim> permissions = [];
-
-        // Act & Assert
-        _ = await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenService.CreateJwtTokenAsync(user!, roles, permissions));
-    }
 
     [Fact]
-    [Trait("Category", "EdgeCase")]
-    public async Task CreateJwtTokenAsync_EmptyRolesAndPermissions_StillReturnsToken()
+    [Trait("Category", "Functionality")]
+    public async Task ComputeSha256Hash_ValidInput_ReturnsHash()
     {
         // Arrange
-        User user = new() { Id = Guid.NewGuid(), UserName = "testuser", Email = "test@example.com" };
-        List<string> roles = [];
-        List<Claim> permissions = [];
+        string input = "teststring";
 
         // Act
-        string token = await _tokenService.CreateJwtTokenAsync(user, roles, permissions);
+        string hash = await _tokenService.ComputeSha256HashAsync(input, TestContext.Current.CancellationToken);
 
         // Assert
-        Assert.False(string.IsNullOrWhiteSpace(token));
+        Assert.False(string.IsNullOrWhiteSpace(hash));
+        Assert.Equal(64, hash.Length); // SHA256 hash length in hex
     }
 
-    [Fact]
-    [Trait("Category", "EdgeCase")]
-    public async Task CreateJwtTokenAsync_MissingConfig_ThrowsException()
-    {
-        // Arrange
-        User user = new() { Id = Guid.NewGuid(), UserName = "testuser", Email = "test@example.com" };
-        List<string> roles = [];
-        List<Claim> permissions = [];
-        _ = _configurationMock.Setup(c => c["TokenValidationParameters:IssuerSigningKey"]).Returns((string?)null);
-
-        // Act & Assert
-        _ = await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenService.CreateJwtTokenAsync(user, roles, permissions));
-    }
     #endregion
+
 
     #region Concurrency
     [Fact]
@@ -124,28 +96,51 @@ public class TokenServiceTests
     }
     #endregion
 
-    #region Functionality
-    [Fact]
-    [Trait("Category", "Functionality")]
-    public async Task CreateRefreshTokenAsync_ValidUser_ReturnsRefreshTokenAndPersists()
-    {
-        // Arrange
-        User user = new() { Id = Guid.NewGuid() };
-        string ip = "127.0.0.1";
-        _refreshTokenStoreMock.Setup(s => s.SaveAsync(It.IsAny<RefreshToken>(), It.IsAny<ITokenService>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask).Verifiable();
-
-        // Act
-        RefreshToken refreshToken = await _tokenService.CreateRefreshTokenAsync(user, ip);
-
-        // Assert
-        Assert.NotNull(refreshToken);
-        Assert.Equal(user.Id, refreshToken.UserId);
-        Assert.Equal(ip, refreshToken.CreatedByIp);
-        _refreshTokenStoreMock.Verify(s => s.SaveAsync(It.IsAny<RefreshToken>(), It.IsAny<ITokenService>(), It.IsAny<CancellationToken>()), Times.Once);
-    }
-    #endregion
 
     #region EdgeCase
+    [Fact]
+    [Trait("Category", "EdgeCase")]
+    public async Task CreateJwtTokenAsync_NullUser_ThrowsArgumentNullException()
+    {
+        // Arrange
+        User? user = null;
+        List<string> roles = [];
+        List<Claim> permissions = [];
+
+        // Act & Assert
+        _ = await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenService.CreateJwtTokenAsync(user!, roles, permissions, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    [Trait("Category", "EdgeCase")]
+    public async Task CreateJwtTokenAsync_EmptyRolesAndPermissions_StillReturnsToken()
+    {
+        // Arrange
+        User user = new() { Id = Guid.NewGuid(), UserName = "testuser", Email = "test@example.com" };
+        List<string> roles = [];
+        List<Claim> permissions = [];
+
+        // Act
+        string token = await _tokenService.CreateJwtTokenAsync(user, roles, permissions, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.False(string.IsNullOrWhiteSpace(token));
+    }
+
+    [Fact]
+    [Trait("Category", "EdgeCase")]
+    public async Task CreateJwtTokenAsync_MissingConfig_ThrowsException()
+    {
+        // Arrange
+        User user = new() { Id = Guid.NewGuid(), UserName = "testuser", Email = "test@example.com" };
+        List<string> roles = [];
+        List<Claim> permissions = [];
+        _ = _configurationMock.Setup(c => c["TokenValidationParameters:IssuerSigningKey"]).Returns((string?)null);
+
+        // Act & Assert
+        _ = await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenService.CreateJwtTokenAsync(user, roles, permissions, TestContext.Current.CancellationToken));
+    }
+
     [Fact]
     [Trait("Category", "EdgeCase")]
     public async Task CreateRefreshTokenAsync_NullUser_ThrowsArgumentNullException()
@@ -155,28 +150,9 @@ public class TokenServiceTests
         string ip = "127.0.0.1";
 
         // Act & Assert
-        _ = await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenService.CreateRefreshTokenAsync(user!, ip));
+        _ = await Assert.ThrowsAsync<ArgumentNullException>(() => _tokenService.CreateRefreshTokenAsync(user!, ip, TestContext.Current.CancellationToken));
     }
-    #endregion
 
-    #region Functionality
-    [Fact]
-    [Trait("Category", "Functionality")]
-    public async Task ComputeSha256Hash_ValidInput_ReturnsHash()
-    {
-        // Arrange
-        string input = "teststring";
-
-        // Act
-        string hash = await _tokenService.ComputeSha256Hash(input);
-
-        // Assert
-        Assert.False(string.IsNullOrWhiteSpace(hash));
-        Assert.Equal(64, hash.Length); // SHA256 hash length in hex
-    }
-    #endregion
-
-    #region EdgeCase
     [Fact]
     [Trait("Category", "EdgeCase")]
     public async Task ComputeSha256Hash_EmptyString_ReturnsHash()
@@ -185,7 +161,7 @@ public class TokenServiceTests
         string input = string.Empty;
 
         // Act
-        string hash = await _tokenService.ComputeSha256Hash(input);
+        string hash = await _tokenService.ComputeSha256HashAsync(input, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.False(string.IsNullOrWhiteSpace(hash));

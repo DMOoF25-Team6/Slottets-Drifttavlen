@@ -19,15 +19,16 @@ flowchart TD
         end
 
         subgraph vlan-db 10.29.10.0/24
-            MYSQL[slottets-sqlserver<br/>MySQL Server<br/>10.29.10.99<br/>Port 3306]
+            MYSQL[slottets-sqlserver<br/>MySQL Server<br/>10.29.10.99<br/>Port 3306<br/>Port 3307]
         end
-
-        Data[(Persistent Volume<br/>./Data)]
     end
+
+    Data[(Persistent Volume<br/>./Data)]
 
     User -->|HTTP :5050| WEBUI
     WEBUI -->|HTTP :5051| WEBAPI
     WEBAPI -->|MySQL :3306| MYSQL
+    User -->|MySQL :3307| MYSQL
     MYSQL --> Data
 ```
 
