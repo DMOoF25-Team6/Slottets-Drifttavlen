@@ -1,12 +1,8 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-using System.Security.Claims;
-using System.Security.Cryptography;
-
 using Core.DTOs;
 using Core.DTOs.Identity;
-using Core.Interfaces.Dto.Identity;
 using Core.Interfaces.Services;
 using Core.Mappers.Accounts;
 
@@ -28,11 +24,10 @@ namespace Api.Controllers.Identity;
 [ApiController]
 public class AccountController(
     UserManager<User> userManager,
-    RoleManager<IdentityRole<Guid>> roleManager,
+    //RoleManager<IdentityRole<Guid>> roleManager,
     IRefreshTokenStore refreshTokenStore,
     //SignInManager<User> signInManager,
-    ITokenService tokenService,
-    IConfiguration config) : ControllerBase
+    ITokenService tokenService) : ControllerBase
 {
 
     /// <summary>
@@ -68,7 +63,32 @@ public class AccountController(
         // Map the registration request to a User entity
         User user = RegistrationMapper.ToUserEntity(request);
 
-        IdentityResult result = await userManager.CreateAsync(user, request.Password);
+        IdentityResult result;
+        try
+        {
+            result = await userManager.CreateAsync(user, request.Password);
+        }
+        catch (Exception ex) when (ex.InnerException?.Message.Contains("duplicate", StringComparison.OrdinalIgnoreCase) == true
+                                   || ex.Message.Contains("duplicate", StringComparison.OrdinalIgnoreCase))
+        {
+            // Handles database unique constraint violation (e.g., MySQL, SQLite, SQL Server)
+            return BadRequest(new RegistrationResponseDto
+            {
+                IsSuccessful = false,
+                ErrorMessages = ["Email er allerede i brug."]
+            });
+        }
+
+        // Also handle IdentityResult errors for duplicate email
+        if (!result.Succeeded && result.Errors.Any(e => e.Code.Contains("Duplicate", StringComparison.OrdinalIgnoreCase) || e.Description.Contains("already taken", StringComparison.OrdinalIgnoreCase)))
+        {
+            return BadRequest(new RegistrationResponseDto
+            {
+                IsSuccessful = false,
+                ErrorMessages = ["Email er allerede i brug."]
+            });
+        }
+
         return result.Succeeded
             ? Ok(new RegistrationResponseDto { IsSuccessful = true })
             : BadRequest(new RegistrationResponseDto
@@ -140,7 +160,7 @@ public class AccountController(
         // Explicitly check for empty or null password
         if (string.IsNullOrWhiteSpace(request.Password))
         {
-            return BadRequest(new ErrorDto { ErrorMessages = ["Password is required."] });
+            return BadRequest(new ErrorDto { ErrorMessages = ["Password skal udfyldes."] });
         }
 
         User? user = await FindValidUserAsync(request.Email, request.Password);
@@ -149,28 +169,20 @@ public class AccountController(
             return Unauthorized(new ErrorDto { ErrorMessages = ["Ugyldig e-mail eller adgangskode."] });
         }
 
-        ILoginResult loginResult = await GenerateJwtTokenAsync(user);
-        if (loginResult is ErrorDto errorDto)
+        string token = await tokenService.CreateJwtTokenAsync(user, await userManager.GetRolesAsync(user), await userManager.GetClaimsAsync(user));
+
+        // Generate refresh token
+        string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+        RefreshToken refreshToken = await tokenService.CreateRefreshTokenAsync(user, ipAddress);
+        await refreshTokenStore.SaveAsync(refreshToken, tokenService);
+
+        LoginResponseDto response = new()
         {
-            return Unauthorized(errorDto);
-        }
+            Token = token,
+            RefreshToken = refreshToken.TokenHash
+        };
 
-        //string token = ((LoginResponseDto)loginResult).Token;
-        //string refreshTokenValue = GenerateRefreshToken();
-        //string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-        //RefreshToken refreshToken = new()
-        //{
-        //    Id = Guid.NewGuid(),
-        //    UserId = user.Id,
-        //    Token = refreshTokenValue,
-        //    CreatedAt = DateTime.UtcNow,
-        //    ExpiresAt = DateTime.UtcNow.AddH(7),
-        //    CreatedByIp = ipAddress
-        //};
-
-        //await refreshTokenStore.SaveAsync(refreshToken);
-
-        return Ok(loginResult);
+        return Ok(response);
     }
 
     /// <summary>
@@ -189,7 +201,7 @@ public class AccountController(
             return validationError;
         }
 
-        RefreshToken? refreshToken = await refreshTokenStore.GetByTokenAsync(request.RefreshToken!);
+        RefreshToken? refreshToken = await refreshTokenStore.GetByTokenAsync(request.RefreshToken!, tokenService);
         if (refreshToken is null || refreshToken.RevokedAt is not null || refreshToken.ExpiresAt < DateTime.UtcNow)
         {
             return Unauthorized(new RefreshTokenResponseDto { ErrorMessages = ["Invalid or expired refresh token."] });
@@ -198,7 +210,7 @@ public class AccountController(
         // Revoke the old refresh token
         refreshToken.RevokedAt = DateTime.UtcNow;
         refreshToken.RevokedReason = "Rotated by refresh endpoint";
-        await refreshTokenStore.SaveAsync(refreshToken);
+        await refreshTokenStore.SaveAsync(refreshToken, tokenService);
 
         User? user = await GetValidUserByIdAsync(refreshToken.UserId);
         if (user is null)
@@ -206,27 +218,20 @@ public class AccountController(
             return Unauthorized(new RefreshTokenResponseDto { ErrorMessages = ["User not found or email unavailable."] });
         }
 
-        ILoginResult loginResult = await GenerateJwtTokenAsync(user);
-        if (loginResult is ErrorDto errorDto)
+        string token = await tokenService.CreateJwtTokenAsync(user, await userManager.GetRolesAsync(user), await userManager.GetClaimsAsync(user));
+        if (string.IsNullOrEmpty(token))
         {
-            return Unauthorized(errorDto);
+            return Unauthorized(new ErrorDto { ErrorMessages = ["Failed to generate JWT token."] });
         }
 
-        string newPlainToken = GenerateRefreshToken();
-        string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-        RefreshToken newRefreshToken = new()
-        {
-            Id = Guid.NewGuid(),
-            UserId = user.Id,
-            CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(7),
-            CreatedByIp = ipAddress
-        };
-        newRefreshToken.SetTokenFromPlaintext(newPlainToken);
-        await refreshTokenStore.SaveAsync(newRefreshToken);
+        string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+        RefreshToken newRefreshToken = await tokenService.CreateRefreshTokenAsync(user, ipAddress);
 
-        LoginResponseDto loginResponse = (LoginResponseDto)loginResult;
-        loginResponse.RefreshToken = newPlainToken;
+        LoginResponseDto loginResponse = new()
+        {
+            Token = token,
+            RefreshToken = newRefreshToken.TokenHash
+        };
         return Ok(loginResponse);
     }
 
@@ -254,12 +259,12 @@ public class AccountController(
         }
 
         // Revoke the refresh token
-        RefreshToken? tokenEntity = await refreshTokenStore.GetByTokenAsync(refreshToken);
+        RefreshToken? tokenEntity = await refreshTokenStore.GetByTokenAsync(refreshToken, tokenService);
         if (tokenEntity is not null)
         {
             tokenEntity.RevokedAt = DateTime.UtcNow;
             tokenEntity.RevokedReason = "User logout";
-            await refreshTokenStore.SaveAsync(tokenEntity);
+            await refreshTokenStore.SaveAsync(tokenEntity, tokenService);
         }
 
         return Ok(new LogoutResponseDto
@@ -277,81 +282,72 @@ public class AccountController(
     /// </remarks>
     /// <returns>A JWT access token as a string.</returns>
     /// <exception cref="InvalidOperationException">IssuerSigningKey not found in environment variables.</exception>
-    private async Task<ILoginResult> GenerateJwtTokenAsync(User user)
-    {
-        bool error = false;
-        IEnumerable<string> errorMsg = [];
-        IList<string> roles = await userManager.GetRolesAsync(user);
+    //private async Task<ILoginResult> CreateJwtTokenAsync(User user)
+    //{
+    //    bool error = false;
+    //    IEnumerable<string> errorMsg = [];
 
-        // Collect all role claims (e.g. CanManageResidents) from AspNetRoleClaims for the user's roles
-        List<Claim> roleClaims = [];
-        foreach (string roleName in roles)
-        {
-            IdentityRole<Guid>? role = await roleManager.FindByNameAsync(roleName);
-            if (role is not null)
-            {
-                IList<Claim> claims = await roleManager.GetClaimsAsync(role);
-                roleClaims.AddRange(claims);
-            }
-        }
+    //    IList<string> roles = await userManager.GetRolesAsync(user);
+    //    IList<Claim> userClaims = await userManager.GetClaimsAsync(user);
 
-        string token = tokenService.GenerateToken(user, roles, roleClaims);
-        if (string.IsNullOrWhiteSpace(token))
-        {
-            error = true;
-            errorMsg = ["Failed to generate JWT token."];
-        }
-        int minuttesToExpire = int.Parse(config["TokenValidationParameters:TokenExpirationMinutes"] ?? "5");
+    //    tokenService =
 
-        if (error)
-        {
-            return new ErrorDto
-            {
-                ErrorMessages = errorMsg
-            };
-        }
+    //    List < Claim > claims =
+    //    [
+    //        new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+    //        new (ClaimTypes.Name, user.UserName!),
+    //        new (ClaimTypes.Email, user.Email!),
+    //        new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+    //        new(JwtRegisteredClaimNames.UniqueName, user.UserName ?? string.Empty),
+    //        // Add user claims (including your "permission" claim)
+    //        .. userClaims,
+    //    ];
 
-        // Generate a refresh token (plaintext for client, hash for storage)
-        string refreshTokenValue = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-        string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-        RefreshToken refreshToken = new()
-        {
-            Id = Guid.NewGuid(),
-            UserId = user.Id,
-            CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(7),
-            CreatedByIp = ipAddress
-        };
-        refreshToken.SetTokenFromPlaintext(refreshTokenValue);
-        await refreshTokenStore.SaveAsync(refreshToken);
+    //    if (user.Department.HasValue)
+    //    {
+    //        claims.Add(new Claim("Department", user.Department.Value.ToString()));
+    //    }
 
-        LoginResponseDto loginResponse = new()
-        {
-            Token = token,
-            Email = user.Email ?? string.Empty,
-            ExpiresAt = DateTime.UtcNow.AddMinutes(minuttesToExpire),
-            RefreshToken = refreshTokenValue
-        };
-        return loginResponse;
-        //string key = Environment.GetEnvironmentVariable("TokenValidationParameters__IssuerSigningKey") ?? throw new InvalidOperationException("IssuerSigningKey not found in environment variables.");
-        //SymmetricSecurityKey secretKey = new(Encoding.UTF8.GetBytes(key));
-        //SigningCredentials signingCredentials = new(secretKey, SecurityAlgorithms.HmacSha256);
 
-        //Claim[] claims =
-        //[
-        //    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        //];
+    //    string token = tokenService.GenerateToken(user, roles);
+    //    if (string.IsNullOrWhiteSpace(token))
+    //    {
+    //        error = true;
+    //        errorMsg = ["Failed to generate JWT token."];
+    //    }
+    //    int minuttesToExpire = int.Parse(config["TokenValidationParameters:TokenExpirationMinutes"] ?? "5");
 
-        //JwtSecurityToken tokenOptions = new(
-        //    issuer: Environment.GetEnvironmentVariable("TokenValidationParameters__Issuer"),
-        //    audience: Environment.GetEnvironmentVariable("TokenValidationParameters__Audience"),
-        //    claims: claims,
-        //    expires: DateTime.Now.AddMinutes(5),
-        //    signingCredentials: signingCredentials
-        //);
+    //    if (error)
+    //    {
+    //        return new ErrorDto
+    //        {
+    //            ErrorMessages = errorMsg
+    //        };
+    //    }
 
-        //return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-    }
+    //    // Generate a refresh token (plaintext for client, hash for storage)
+    //    string refreshTokenValue = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+    //    string? ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+    //    RefreshToken refreshToken = new()
+    //    {
+    //        Id = Guid.NewGuid(),
+    //        UserId = user.Id,
+    //        CreatedAt = DateTime.UtcNow,
+    //        ExpiresAt = DateTime.UtcNow.AddDays(7),
+    //        CreatedByIp = ipAddress
+    //    };
+    //    refreshToken.SetTokenFromPlaintext(refreshTokenValue);
+    //    await refreshTokenStore.SaveAsync(refreshToken);
+
+    //    LoginResponseDto loginResponse = new()
+    //    {
+    //        Token = token,
+    //        Email = user.Email ?? string.Empty,
+    //        ExpiresAt = DateTime.UtcNow.AddMinutes(minuttesToExpire),
+    //        RefreshToken = refreshTokenValue
+    //    };
+    //    return loginResponse;
+    //}
 
     // Helper: Validate ModelState
     private static bool IsValidRequest(Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary modelState, out IActionResult errorResult)
@@ -373,17 +369,17 @@ public class AccountController(
             : null;
     }
 
-    // Helper: Retrieve and validate refresh token
-    private async Task<RefreshToken?> GetValidRefreshTokenAsync(string? token)
-    {
-        if (string.IsNullOrWhiteSpace(token))
-        {
-            return null;
-        }
+    //// Helper: Retrieve and validate refresh token
+    //private async Task<RefreshToken?> GetValidRefreshTokenAsync(string? token)
+    //{
+    //    if (string.IsNullOrWhiteSpace(token))
+    //    {
+    //        return null;
+    //    }
 
-        RefreshToken? refreshToken = await refreshTokenStore.GetByTokenAsync(token);
-        return refreshToken == null || refreshToken.ExpiresAt < DateTime.UtcNow || refreshToken.RevokedAt != null ? null : refreshToken;
-    }
+    //    RefreshToken? refreshToken = await refreshTokenStore.GetByTokenAsync(token);
+    //    return refreshToken == null || refreshToken.ExpiresAt < DateTime.UtcNow || refreshToken.RevokedAt != null ? null : refreshToken;
+    //}
 
     // Helper: Retrieve and validate user by id
     private async Task<User?> GetValidUserByIdAsync(Guid userId)
@@ -392,24 +388,21 @@ public class AccountController(
         return user == null || string.IsNullOrWhiteSpace(user.Email) ? null : user;
     }
 
-    // Helper: Rotate and save refresh token
-    private async Task<RefreshToken> RotateAndSaveRefreshTokenAsync(User user)
-    {
-        string newRefreshTokenValue = GenerateRefreshToken();
-        RefreshToken newRefreshToken = new()
-        {
-            Id = Guid.NewGuid(),
-            UserId = user.Id,
-            CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(7)
-        };
-        newRefreshToken.SetTokenFromPlaintext(newRefreshTokenValue);
-        await refreshTokenStore.SaveAsync(newRefreshToken);
-        return newRefreshToken;
-    }
-
-    // Helper: Generate refresh token
-    private static string GenerateRefreshToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+    //// Helper: Rotate and save refresh token
+    //private async Task<RefreshToken> RotateAndSaveRefreshTokenAsync(User user)
+    //{
+    //    string newRefreshTokenValue = await tokenService.ComputeRefreshTokenAsync();
+    //    RefreshToken newRefreshToken = new()
+    //    {
+    //        Id = Guid.NewGuid(),
+    //        UserId = user.Id,
+    //        CreatedAt = DateTime.UtcNow,
+    //        ExpiresAt = DateTime.UtcNow.AddDays(7)
+    //    };
+    //    newRefreshToken.SetTokenFromPlaintext(newRefreshTokenValue);
+    //    await refreshTokenStore.SaveAsync(newRefreshToken);
+    //    return newRefreshToken;
+    //}
 
     // Helper: Find user and check password
     private async Task<User?> FindValidUserAsync(string email, string password)

@@ -14,12 +14,12 @@
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0">Beboere</h2>
     <div class="d-flex gap-2">
-      @* @if (CanManageCurrentDepartment)
-      { *@
+      @if (CanManageCurrentDepartment)
+      {
         <button type="button" class="btn btn-primary btn-sm" @onclick="OpenCreateModal">
           + Opret beboer
         </button>
-      @* } *@
+      }
       <a href="/" class="btn btn-outline-secondary btn-sm">
         &larr; Tilbage til forsiden
       </a>
@@ -58,11 +58,11 @@
   else if (!FilteredResidents.Any())
   {
     <div class="alert alert-info" role="alert">
-      @* @if (CanManageCurrentDepartment)
-      { *@
+      @if (CanManageCurrentDepartment)
+      {
         <span>Ingen beboere fundet i <strong>@_selectedDepartment</strong>. Opret den første beboer ved at klikke på "Opret beboer".</span>
-      @* }
-      else *@
+      }
+      else
       {
         <span>Ingen beboere fundet i <strong>@_selectedDepartment</strong>.</span>
       }
@@ -101,8 +101,8 @@
                 }
               </td>
               <td class="text-end">
-                @* @if (CanManageResident(resident))
-                { *@
+                @if (CanManageResident(resident))
+                {
                   <button type="button" class="btn btn-outline-primary btn-sm me-1"
                           @onclick="() => OpenEditModal(resident)">
                     Rediger
@@ -111,7 +111,7 @@
                           @onclick="() => OpenDeleteConfirm(resident)">
                     Slet
                   </button>
-                @* } *@
+                }
               </td>
             </tr>
           }
@@ -134,43 +134,11 @@
 }
 
 @* ── Delete Confirmation Modal ── *@
-@if (_showDeleteModal && _residentToDelete is not null)
-{
-  <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="deleteModalLabel"
-       style="background:rgba(0,0,0,.5);">
-    <div class="modal-dialog modal-sm" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deleteModalLabel">Slet beboer</h5>
-          <button type="button" class="btn-close" @onclick="CloseDeleteModal" aria-label="Luk"></button>
-        </div>
-        <div class="modal-body">
-          @if (_deleteError is not null)
-          {
-            <div class="alert alert-danger py-2">@_deleteError</div>
-          }
-          <p>
-            Er du sikker på, at du vil slette beboer
-            <strong>@_residentToDelete.FirstName @_residentToDelete.LastName</strong>?
-          </p>
-          <p class="text-danger small mb-0">Denne handling kan ikke fortrydes.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary btn-sm" @onclick="CloseDeleteModal"
-                  disabled="@_isSaving">
-            Annuller
-          </button>
-          <button type="button" class="btn btn-danger btn-sm" @onclick="HandleDeleteAsync"
-                  disabled="@_isSaving">
-            @if (_isSaving)
-            {
-              <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-            }
-            Slet
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-}
+<DeleteConfirmationModal 
+    Show="_showDeleteModal" 
+    ResidentToDelete="_residentToDelete" 
+    IsSaving="_isSaving" 
+    DeleteError="_deleteError" 
+    OnCancel="CloseDeleteModal" 
+    OnDelete="HandleDeleteAsync" />
 

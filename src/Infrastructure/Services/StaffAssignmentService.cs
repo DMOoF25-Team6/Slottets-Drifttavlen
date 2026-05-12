@@ -1,12 +1,6 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Core.DTOs;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
@@ -67,16 +61,11 @@ public class StaffAssignmentService(
                 cancellationToken);
 
         // Get created assignment with resident and employee details
+        // Stop if created assignment cannot be found
         StaffAssignment? createdWithDetails =
             await _repository.GetByIdWithDetailsAsync(
                 created.Id,
-                cancellationToken);
-
-        // Stop if created assignment cannot be found
-        if (createdWithDetails is null)
-        {
-            throw new KeyNotFoundException("Assignment not found after creation.");
-        }
+                cancellationToken) ?? throw new KeyNotFoundException("Assignment not found after creation.");
 
         // Convert entity to DTO and return it
         return MapToOverviewDto(createdWithDetails);
@@ -110,13 +99,7 @@ public class StaffAssignmentService(
         StaffAssignment? assignment =
             await _repository.GetByIdAsync(
                 assignmentId,
-                cancellationToken);
-
-        if (assignment is null)
-        {
-            throw new KeyNotFoundException("Assignment not found.");
-        }
-
+                cancellationToken) ?? throw new KeyNotFoundException("Assignment not found.");
         await _repository.DeleteAsync(
             assignment,
             cancellationToken);
@@ -155,12 +138,9 @@ public class StaffAssignmentService(
                 assignment.Id,
                 cancellationToken);
 
-        if (updatedWithDetails is null)
-        {
-            throw new KeyNotFoundException("Assignment not found after update.");
-        }
-
-        return MapToOverviewDto(updatedWithDetails);
+        return updatedWithDetails is null
+            ? throw new KeyNotFoundException("Assignment not found after update.")
+            : MapToOverviewDto(updatedWithDetails);
     }
 
     // Convert StaffAssignment entity to AssignmentOverviewDto

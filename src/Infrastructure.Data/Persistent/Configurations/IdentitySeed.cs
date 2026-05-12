@@ -1,8 +1,6 @@
 // Copyright (c) 2026 Team6. All rights reserved.
 // No warranty, explicit or implicit, provided.
 
-using System.Security.Claims;
-
 using Domain.Entities;
 
 using Microsoft.AspNetCore.Identity;
@@ -154,38 +152,38 @@ public static class IdentitySeed
 
     #region Role Claims
 
-    public static readonly IdentityRoleClaim<Guid> careTakerClaim1 = new()
-    {
-        Id = 1,
-        RoleId = careTakerRole.Id,
-        ClaimType = ClaimTypes.Role,
-        ClaimValue = "CanViewMedicine"
-    };
+    //public static readonly IdentityRoleClaim<Guid> careTakerClaim1 = new()
+    //{
+    //    Id = 1,
+    //    RoleId = careTakerRole.Id,
+    //    ClaimType = ClaimTypes.Role,
+    //    ClaimValue = "CanViewMedicine"
+    //};
 
-    public static readonly IdentityRoleClaim<Guid> adminClaim1 = new()
-    {
-        Id = 2,
-        RoleId = superUserRole.Id,
-        ClaimType = ClaimTypes.Role,
-        ClaimValue = "CanManageResidents"
-    };
+    //public static readonly IdentityRoleClaim<Guid> adminClaim1 = new()
+    //{
+    //    Id = 2,
+    //    RoleId = superUserRole.Id,
+    //    ClaimType = ClaimTypes.Role,
+    //    ClaimValue = "CanManageResidents"
+    //};
 
-    public static readonly IdentityRoleClaim<Guid> superUserClaim1 = new()
-    {
-        Id = 3,
-        RoleId = superUserRole.Id,
-        ClaimType = ClaimTypes.Role,
-        ClaimValue = "CanViewMedicine"
-    };
+    //public static readonly IdentityRoleClaim<Guid> superUserClaim1 = new()
+    //{
+    //    Id = 3,
+    //    RoleId = superUserRole.Id,
+    //    ClaimType = ClaimTypes.Role,
+    //    ClaimValue = "CanViewMedicine"
+    //};
 
-    // UC-001: Dashboard kiosk can view residents and medicine status (read-only).
-    public static readonly IdentityRoleClaim<Guid> dashboardClaim1 = new()
-    {
-        Id = 4,
-        RoleId = dashboardRole.Id,
-        ClaimType = ClaimTypes.Role,
-        ClaimValue = "CanViewMedicine"
-    };
+    //// UC-001: Dashboard kiosk can view residents and medicine status (read-only).
+    //public static readonly IdentityRoleClaim<Guid> dashboardClaim1 = new()
+    //{
+    //    Id = 4,
+    //    RoleId = dashboardRole.Id,
+    //    ClaimType = ClaimTypes.Role,
+    //    ClaimValue = "CanViewMedicine"
+    //};
 
     #endregion
 
@@ -219,11 +217,11 @@ public static class IdentitySeed
             superUserRole,
             careTakerRole,
             dashboardRole);
-        _ = modelBuilder.Entity<IdentityRoleClaim<Guid>>().HasData(
-            careTakerClaim1,
-            adminClaim1,
-            superUserClaim1,
-            dashboardClaim1);
+        //_ = modelBuilder.Entity<IdentityRoleClaim<Guid>>().HasData(
+        //    careTakerClaim1,
+        //    adminClaim1,
+        //    superUserClaim1,
+        //    dashboardClaim1);
     }
 
     /// <summary>
@@ -272,5 +270,19 @@ public static class IdentitySeed
         );
     }
 
+    public static readonly IdentityUserClaim<Guid> superUserPermissionClaim = new()
+    {
+        Id = 1001,
+        UserId = superUser.Id,
+        ClaimType = "permission",
+        ClaimValue = "manage:residents"
+    };
+
+    public static void UserClaimSeed(ModelBuilder modelBuilder)
+    {
+        _ = modelBuilder.Entity<IdentityUserClaim<Guid>>().HasData(
+            superUserPermissionClaim
+        );
+    }
     #endregion
 }

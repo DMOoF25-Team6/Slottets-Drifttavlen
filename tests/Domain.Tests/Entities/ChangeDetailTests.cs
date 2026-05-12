@@ -76,12 +76,13 @@ public class ChangeDetailTests
     public void Properties_WhenAssigned_ReturnAssignedValues(string field, string oldValue, string newValue)
     {
         // Arrange
-        ChangeDetail detail = new();
-
-        // Act
-        detail.Field = field;
-        detail.OldValue = oldValue;
-        detail.NewValue = newValue;
+        ChangeDetail detail = new()
+        {
+            // Act
+            Field = field,
+            OldValue = oldValue,
+            NewValue = newValue
+        };
 
         // Assert
         Assert.Equal(field, detail.Field);

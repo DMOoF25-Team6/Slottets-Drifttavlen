@@ -10,6 +10,15 @@ namespace WebUI.Client.Components.Pages;
 
 public partial class Dashboard
 {
+    #region Injected Services
+    [Inject]
+    private AuthService AuthService { get; set; } = default!;
+
+    [Inject]
+    private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+    #endregion
+    #region Fields
+
     // UC-001: Credentials for the read-only kiosk account used by unattended dashboard screens.
     private const string DashboardEmail = "dashboard@slottet.dk";
     private const string DashboardPassword = "Dashboard123!";
@@ -17,18 +26,14 @@ public partial class Dashboard
     //private static readonly string DashboardEmail = Environment.GetEnvironmentVariable("Dashboard__AutoLoginEmail") ?? string.Empty;
     //private static readonly string DashboardPassword = Environment.GetEnvironmentVariable("Dashboard__AutoLoginPassword") ?? string.Empty;
 
-    [Inject]
-    private AuthService AuthService { get; set; } = default!;
-
-    [Inject]
-    private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
     private IEnumerable<Resident> _residents = [];
     private bool _isLoading = true;
 
-    //[Parameter]
-    //public int? DepartmentId { get; set; }
-
+    [Parameter]
+    public int? DepartmentId { get; set; }
+    #endregion
+    #region Lifecycle
     // JS interop (localStorage) is only available after the component is rendered interactively
     // on the client, so login and data loading must happen in OnAfterRenderAsync.
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -67,4 +72,5 @@ public partial class Dashboard
         _isLoading = false;
         StateHasChanged();
     }
+    #endregion
 }

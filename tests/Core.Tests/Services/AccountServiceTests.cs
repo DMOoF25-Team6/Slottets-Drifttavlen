@@ -90,8 +90,7 @@ public class AccountServiceTests
         LoginResponseDto expectedResponse = new()
         {
             Token = "test-token",
-            Email = username,
-            ExpiresAt = DateTime.UtcNow.AddHours(1)
+            RefreshToken = "test-refresh-token",
         };
         _ = _AccountManagerMock
             .Setup(m => m.LoginAsync(request))
@@ -103,8 +102,7 @@ public class AccountServiceTests
 
         // Assert
         Assert.Equal(expectedResponse.Token, loginResponse.Token);
-        Assert.Equal(expectedResponse.Email, loginResponse.Email);
-        Assert.Equal(expectedResponse.ExpiresAt, loginResponse.ExpiresAt);
+        Assert.Equal(expectedResponse.RefreshToken, loginResponse.RefreshToken);
         _AccountManagerMock.Verify(m => m.LoginAsync(request), Times.Once);
     }
 }

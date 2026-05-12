@@ -80,7 +80,7 @@ public class AuditControllerTests
 
         // Assert
         OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
-        IEnumerable<AuditEntryDto> dtos = Assert.IsAssignableFrom<IEnumerable<AuditEntryDto>>(okResult.Value);
+        IEnumerable<AuditEntryDto> dtos = Assert.IsType<IEnumerable<AuditEntryDto>>(okResult.Value, exactMatch: false);
         Assert.Equal(2, dtos.Count());
     }
 
@@ -115,7 +115,7 @@ public class AuditControllerTests
 
         // Assert
         OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
-        IEnumerable<AuditEntryDto> dtos = Assert.IsAssignableFrom<IEnumerable<AuditEntryDto>>(okResult.Value);
+        IEnumerable<AuditEntryDto> dtos = Assert.IsType<IEnumerable<AuditEntryDto>>(okResult.Value, exactMatch: false);
         Assert.Empty(dtos);
     }
 
@@ -134,7 +134,7 @@ public class AuditControllerTests
 
         // Assert
         OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
-        AuditEntryDto dto = Assert.Single(Assert.IsAssignableFrom<IEnumerable<AuditEntryDto>>(okResult.Value));
+        AuditEntryDto dto = Assert.Single(Assert.IsType<IEnumerable<AuditEntryDto>>(okResult.Value, exactMatch: false));
         Assert.Equal("Resident", dto.Entity);
         Assert.Equal("Added", dto.ChangeType);
     }
@@ -163,7 +163,7 @@ public class AuditControllerTests
 
         // Assert
         OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
-        IEnumerable<AuditEntryDto> dtos = Assert.IsAssignableFrom<IEnumerable<AuditEntryDto>>(okResult.Value);
+        IEnumerable<AuditEntryDto> dtos = Assert.IsType<IEnumerable<AuditEntryDto>>(okResult.Value, exactMatch: false);
         Assert.Equal(2, dtos.Count());
     }
 
@@ -198,7 +198,7 @@ public class AuditControllerTests
 
         // Assert
         OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
-        IEnumerable<AuditEntryDto> dtos = Assert.IsAssignableFrom<IEnumerable<AuditEntryDto>>(okResult.Value);
+        IEnumerable<AuditEntryDto> dtos = Assert.IsType<IEnumerable<AuditEntryDto>>(okResult.Value, exactMatch: false);
         Assert.Empty(dtos);
     }
 
@@ -228,7 +228,7 @@ public class AuditControllerTests
         OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
         AuditEntryDto dto = Assert.IsType<AuditEntryDto>(okResult.Value);
         Assert.Equal(id, dto.Id);
-        Assert.Single(dto.ChangeDetails);
+        _ = Assert.Single(dto.ChangeDetails);
     }
 
     [Fact]
