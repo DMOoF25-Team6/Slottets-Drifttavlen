@@ -79,7 +79,7 @@ public class TokenService(
             signingCredentials: credentials
         );
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        return await Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
     }
 
     /// <summary>
