@@ -31,6 +31,13 @@ public static class DependencyInjection
         // Register the DatabaseConnectionStateProvider as a singleton to maintain a single instance across the application
         _ = services.AddSingleton<IDatabaseConnectionStateProvider, DatabaseConnectionStateProvider>();
 
+
+        // UC-010 GDPR compliance services
+        _ = services.AddScoped<IRetentionPolicyService, RetentionPolicyService>();
+        _ = services.AddScoped<IAnonymizationService, AnonymizationService>();
+        _ = services.AddScoped<ISecurityIncidentService, SecurityIncidentService>();
+        _ = services.AddScoped<ISubjectAccessRequestService, SubjectAccessRequestService>();
+        _ = services.AddScoped<IArt33NotificationService, Art33NotificationService>();
         return services;
     }
 }
