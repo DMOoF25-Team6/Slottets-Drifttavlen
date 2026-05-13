@@ -21,8 +21,8 @@ public partial class Dashboard
     #region Fields
 
     // UC-001: Credentials for the read-only kiosk account used by unattended dashboard screens.
-    private const string DashboardEmail = "dashboard@slottet.dk";
-    private const string DashboardPassword = "Dashboard123!";
+    private readonly string DashboardEmail = Environment.GetEnvironmentVariable("Dashboard__AutoLoginEmail") ?? string.Empty;
+    private readonly string DashboardPassword = Environment.GetEnvironmentVariable("Dashboard__AutoLoginPassword") ?? string.Empty;
 
     //private static readonly string DashboardEmail = Environment.GetEnvironmentVariable("Dashboard__AutoLoginEmail") ?? string.Empty;
     //private static readonly string DashboardPassword = Environment.GetEnvironmentVariable("Dashboard__AutoLoginPassword") ?? string.Empty;
