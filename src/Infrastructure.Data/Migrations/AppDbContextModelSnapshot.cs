@@ -1304,6 +1304,22 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 2,
+                            ClaimType = "permission",
+                            ClaimValue = "view:medicine",
+                            RoleId = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae")
+                        },
+                        new
+                        {
+                            Id = 1,
+                            ClaimType = "permission",
+                            ClaimValue = "manage:residents",
+                            RoleId = new Guid("fabc2277-7992-491b-ae4a-bc78f8de56aa")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
@@ -1336,6 +1352,48 @@ namespace Infrastructure.Data.Migrations
                             ClaimType = "permission",
                             ClaimValue = "manage:residents",
                             UserId = new Guid("4711a300-711e-4132-86d4-cafd3f11deec")
+                        },
+                        new
+                        {
+                            Id = 1002,
+                            ClaimType = "permission",
+                            ClaimValue = "department:slottets:basic",
+                            UserId = new Guid("30cffcf9-5784-4fa9-9c10-c013ef3faf16")
+                        },
+                        new
+                        {
+                            Id = 1003,
+                            ClaimType = "permission",
+                            ClaimValue = "department:skoven:basic",
+                            UserId = new Guid("37155b80-7111-422a-aba6-89d7070f1644")
+                        },
+                        new
+                        {
+                            Id = 1004,
+                            ClaimType = "permission",
+                            ClaimValue = "department:skoven:basic",
+                            UserId = new Guid("b836e975-e775-48bc-8b84-5d2bdd5bd87a")
+                        },
+                        new
+                        {
+                            Id = 1005,
+                            ClaimType = "permission",
+                            ClaimValue = "department:marken:basic",
+                            UserId = new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37")
+                        },
+                        new
+                        {
+                            Id = 1006,
+                            ClaimType = "permission",
+                            ClaimValue = "department:slottets:basic",
+                            UserId = new Guid("4711a300-711e-4132-86d4-cafd3f11deec")
+                        },
+                        new
+                        {
+                            Id = 1007,
+                            ClaimType = "permission",
+                            ClaimValue = "department:all:view",
+                            UserId = new Guid("3a21f8e1-885b-4394-abf0-ed0baeea239b")
                         });
                 });
 

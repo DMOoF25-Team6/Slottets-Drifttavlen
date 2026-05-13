@@ -2,6 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 using Domain.Entities;
+using Domain.Enums;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -31,7 +32,7 @@ public partial class Dashboard
     private bool _isLoading = true;
 
     [Parameter]
-    public int? DepartmentId { get; set; }
+    public string? Department { get; set; }
     #endregion
     #region Lifecycle
     // JS interop (localStorage) is only available after the component is rendered interactively
@@ -47,10 +48,28 @@ public partial class Dashboard
         AuthenticationState authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         if (authState.User.Identity is not { IsAuthenticated: true })
         {
-            _ = await AuthService.LoginAsync(DashboardEmail, DashboardPassword);
+            if (!await AuthService.LoginAsync(DashboardEmail, DashboardPassword))
+            {
+                throw new Exception("Failed to auto-login to dashboard account. Check credentials and ensure the account exists.");
+            }
+            // make sure that browser storage is updated with the new auth state before proceeding to load data
+            _ = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        }
+        IEnumerable<Resident> residents = [];
+
+        Department parsedDepartment = default;
+
+        // Validate Department parameter if provided, and set debug message
+        if (Department is not null)
+        {
+            if (!Enum.TryParse<Department>(Department, true, out parsedDepartment))
+            {
+                Department = null;
+            }
         }
 
-        IEnumerable<Resident> residents = await ResidentService.GetAllAsync();
+        residents = Department == null ? await ResidentService.GetAllAsync() : await ResidentService.GetByDepartmentsAsync([parsedDepartment]);
+
         _residents = [.. residents.Select(dto => new Resident
         {
             Id = dto.Id,

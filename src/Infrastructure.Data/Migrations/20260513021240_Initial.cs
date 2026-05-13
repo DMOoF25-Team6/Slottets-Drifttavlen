@@ -129,6 +129,43 @@ namespace Infrastructure.Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "RetentionPolicies",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Category = table.Column<int>(type: "int", nullable: false),
+                    RetentionPeriod = table.Column<TimeSpan>(type: "time(6)", nullable: false),
+                    LegalMinimum = table.Column<TimeSpan>(type: "time(6)", nullable: false),
+                    EffectiveFrom = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RetentionPolicies", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "SecurityIncidents",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    DetectedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Type = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Severity = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    InvestigationNotes = table.Column<string>(type: "varchar(2000)", maxLength: 2000, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ReportedByEmployeeId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    ResolvedByEmployeeId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SecurityIncidents", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -398,6 +435,61 @@ namespace Infrastructure.Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "AnonymizationCandidates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ResidentId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RetentionPolicyId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    SuggestedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Reason = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Status = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AnonymizationCandidates", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AnonymizationCandidates_Residents_ResidentId",
+                        column: x => x.ResidentId,
+                        principalTable: "Residents",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AnonymizationCandidates_RetentionPolicies_RetentionPolicyId",
+                        column: x => x.RetentionPolicyId,
+                        principalTable: "RetentionPolicies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "RetentionPolicyAudits",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RetentionPolicyId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ChangedByEmployeeId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    PreviousPeriod = table.Column<TimeSpan>(type: "time(6)", nullable: false),
+                    NewPeriod = table.Column<TimeSpan>(type: "time(6)", nullable: false),
+                    ChangedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Reason = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RetentionPolicyAudits", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RetentionPolicyAudits_RetentionPolicies_RetentionPolicyId",
+                        column: x => x.RetentionPolicyId,
+                        principalTable: "RetentionPolicies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "StaffAssignments",
                 columns: table => new
                 {
@@ -488,9 +580,40 @@ namespace Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "RetentionPolicies",
+                columns: new[] { "Id", "Category", "EffectiveFrom", "LegalMinimum", "RetentionPeriod" },
+                values: new object[,]
+                {
+                    { new Guid("a1111111-0000-0000-0000-000000000001"), 0, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new TimeSpan(3650, 0, 0, 0, 0), new TimeSpan(3650, 0, 0, 0, 0) },
+                    { new Guid("a1111111-0000-0000-0000-000000000002"), 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new TimeSpan(730, 0, 0, 0, 0), new TimeSpan(1825, 0, 0, 0, 0) },
+                    { new Guid("a1111111-0000-0000-0000-000000000003"), 2, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new TimeSpan(365, 0, 0, 0, 0), new TimeSpan(1095, 0, 0, 0, 0) },
+                    { new Guid("a1111111-0000-0000-0000-000000000004"), 3, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new TimeSpan(90, 0, 0, 0, 0), new TimeSpan(180, 0, 0, 0, 0) },
+                    { new Guid("a1111111-0000-0000-0000-000000000005"), 4, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new TimeSpan(180, 0, 0, 0, 0), new TimeSpan(365, 0, 0, 0, 0) },
+                    { new Guid("a1111111-0000-0000-0000-000000000006"), 5, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new TimeSpan(7, 0, 0, 0, 0), new TimeSpan(30, 0, 0, 0, 0) }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoleClaims",
+                columns: new[] { "Id", "ClaimType", "ClaimValue", "RoleId" },
+                values: new object[,]
+                {
+                    { 1, "permission", "manage:residents", new Guid("fabc2277-7992-491b-ae4a-bc78f8de56aa") },
+                    { 2, "permission", "view:medicine", new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae") }
+                });
+
+            migrationBuilder.InsertData(
                 table: "AspNetUserClaims",
                 columns: new[] { "Id", "ClaimType", "ClaimValue", "UserId" },
-                values: new object[] { 1001, "permission", "manage:residents", new Guid("4711a300-711e-4132-86d4-cafd3f11deec") });
+                values: new object[,]
+                {
+                    { 1001, "permission", "manage:residents", new Guid("4711a300-711e-4132-86d4-cafd3f11deec") },
+                    { 1002, "permission", "department:slottets:basic", new Guid("30cffcf9-5784-4fa9-9c10-c013ef3faf16") },
+                    { 1003, "permission", "department:skoven:basic", new Guid("37155b80-7111-422a-aba6-89d7070f1644") },
+                    { 1004, "permission", "department:skoven:basic", new Guid("b836e975-e775-48bc-8b84-5d2bdd5bd87a") },
+                    { 1005, "permission", "department:marken:basic", new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37") },
+                    { 1006, "permission", "department:slottets:basic", new Guid("4711a300-711e-4132-86d4-cafd3f11deec") },
+                    { 1007, "permission", "department:all:view", new Guid("3a21f8e1-885b-4394-abf0-ed0baeea239b") }
+                });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -549,6 +672,16 @@ namespace Infrastructure.Data.Migrations
                     { new Guid("f5a6b7c8-9012-3456-7890-abcdef012345"), new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Resident A's note.", new Guid("694b9796-dc5a-4a68-bafb-0a59595e8fb3") },
                     { new Guid("f7a8b9c0-1234-5678-9012-6789abcde012"), new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Resident GB's note 2.", new Guid("f1a2b3c4-5678-9abc-def0-123456789012") }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AnonymizationCandidates_ResidentId",
+                table: "AnonymizationCandidates",
+                column: "ResidentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AnonymizationCandidates_RetentionPolicyId",
+                table: "AnonymizationCandidates",
+                column: "RetentionPolicyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -631,6 +764,17 @@ namespace Infrastructure.Data.Migrations
                 column: "ResidentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RetentionPolicies_Category",
+                table: "RetentionPolicies",
+                column: "Category",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RetentionPolicyAudits_RetentionPolicyId",
+                table: "RetentionPolicyAudits",
+                column: "RetentionPolicyId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_StaffAssignments_EmployeeId",
                 table: "StaffAssignments",
                 column: "EmployeeId");
@@ -644,6 +788,9 @@ namespace Infrastructure.Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AnonymizationCandidates");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -678,6 +825,12 @@ namespace Infrastructure.Data.Migrations
                 name: "ResidentNotes");
 
             migrationBuilder.DropTable(
+                name: "RetentionPolicyAudits");
+
+            migrationBuilder.DropTable(
+                name: "SecurityIncidents");
+
+            migrationBuilder.DropTable(
                 name: "StaffAssignments");
 
             migrationBuilder.DropTable(
@@ -685,6 +838,9 @@ namespace Infrastructure.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AuditEntries");
+
+            migrationBuilder.DropTable(
+                name: "RetentionPolicies");
 
             migrationBuilder.DropTable(
                 name: "Employees");
