@@ -4,6 +4,7 @@
 using Core.DTOs;
 
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Core.Interfaces.Services;
 
@@ -39,6 +40,7 @@ public interface IResidentService
     /// <param name="ct">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a collection of residents.</returns>
     Task<IEnumerable<Resident>> GetAllAsync(CancellationToken ct = default);
+    Task<IEnumerable<Resident>> GetByDepartmentsAsync(IList<Department> departments, CancellationToken ct = default);
 
     /// <summary>
     /// Retrieves a resident by its unique identifier.

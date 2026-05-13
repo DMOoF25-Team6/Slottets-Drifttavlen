@@ -1,7 +1,11 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+// Copyright (c) 2026 Team6. All rights reserved. 
+//  No warranty, explicit or implicit, provided.
+
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Core.Interfaces.Repositories;
 
@@ -14,4 +18,5 @@ namespace Core.Interfaces.Repositories;
 /// </remarks>
 public interface IResidentRepository : IRepository<Resident>
 {
+    Task<IEnumerable<Resident>> GetAllAsync(Department department, CancellationToken cancellationToken = default);
 }
