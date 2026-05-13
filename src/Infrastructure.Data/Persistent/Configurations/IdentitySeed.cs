@@ -151,6 +151,21 @@ public static class IdentitySeed
     #endregion
 
     #region Role Claims
+    public static readonly IdentityRoleClaim<Guid> adminClaim1 = new()
+    {
+        Id = 1,
+        RoleId = adminRole.Id,
+        ClaimType = "permission",
+        ClaimValue = "manage:residents"
+    };
+
+    public static readonly IdentityRoleClaim<Guid> careTakerClaim1 = new()
+    {
+        Id = 2,
+        RoleId = careTakerRole.Id,
+        ClaimType = "permission",
+        ClaimValue = "view:medicine"
+    };
 
     //public static readonly IdentityRoleClaim<Guid> careTakerClaim1 = new()
     //{
@@ -217,11 +232,10 @@ public static class IdentitySeed
             superUserRole,
             careTakerRole,
             dashboardRole);
-        //_ = modelBuilder.Entity<IdentityRoleClaim<Guid>>().HasData(
-        //    careTakerClaim1,
-        //    adminClaim1,
-        //    superUserClaim1,
-        //    dashboardClaim1);
+        _ = modelBuilder.Entity<IdentityRoleClaim<Guid>>().HasData(
+            careTakerClaim1,
+            adminClaim1
+        );
     }
 
     /// <summary>
@@ -270,6 +284,7 @@ public static class IdentitySeed
         );
     }
 
+
     public static readonly IdentityUserClaim<Guid> superUserPermissionClaim = new()
     {
         Id = 1001,
@@ -278,10 +293,62 @@ public static class IdentitySeed
         ClaimValue = "manage:residents"
     };
 
+    // Department Slottets permission claims for all working users
+    public static readonly IdentityUserClaim<Guid> normal1UserSlottetsClaim = new()
+    {
+        Id = 1002,
+        UserId = normal1User.Id,
+        ClaimType = "permission",
+        ClaimValue = "department:slottets:basic"
+    };
+    public static readonly IdentityUserClaim<Guid> normal2UserSlottetsClaim = new()
+    {
+        Id = 1003,
+        UserId = normal2User.Id,
+        ClaimType = "permission",
+        ClaimValue = "department:skoven:basic"
+    };
+    public static readonly IdentityUserClaim<Guid> normal3UserSlottetsClaim = new()
+    {
+        Id = 1004,
+        UserId = normal3User.Id,
+        ClaimType = "permission",
+        ClaimValue = "department:skoven:basic"
+    };
+    public static readonly IdentityUserClaim<Guid> substitutUserSlottetsClaim = new()
+    {
+        Id = 1005,
+        UserId = substitutUser.Id,
+        ClaimType = "permission",
+        ClaimValue = "department:marken:basic"
+    };
+    public static readonly IdentityUserClaim<Guid> superUserSlottetsClaim = new()
+    {
+        Id = 1006,
+        UserId = superUser.Id,
+        ClaimType = "permission",
+        ClaimValue = "department:slottets:basic"
+    };
+
+    // Admin can view all departments
+    public static readonly IdentityUserClaim<Guid> adminUserAllDepartmentsClaim = new()
+    {
+        Id = 1007,
+        UserId = adminUser.Id,
+        ClaimType = "permission",
+        ClaimValue = "department:all:view"
+    };
+
     public static void UserClaimSeed(ModelBuilder modelBuilder)
     {
         _ = modelBuilder.Entity<IdentityUserClaim<Guid>>().HasData(
-            superUserPermissionClaim
+            superUserPermissionClaim,
+            normal1UserSlottetsClaim,
+            normal2UserSlottetsClaim,
+            normal3UserSlottetsClaim,
+            substitutUserSlottetsClaim,
+            superUserSlottetsClaim,
+            adminUserAllDepartmentsClaim
         );
     }
     #endregion
