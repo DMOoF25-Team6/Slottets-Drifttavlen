@@ -1,0 +1,149 @@
+@page "/staff-assignments"
+@using Domain.Enums
+
+<PageTitle>Staff Assignments</PageTitle>
+
+<section class="container-fluid p-3">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Staff Assignments</h2>
+    </div>
+
+    <div class="row mb-3">
+
+        <div class="col-md-3">
+            <label class="form-label">Shift</label>
+
+            <select class="form-select" @bind="_selectedShiftType">
+                <option value="@ShiftType.Day">Day</option>
+                <option value="@ShiftType.Evening">Evening</option>
+                <option value="@ShiftType.Night">Night</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Resident</label>
+
+            <select class="form-select">
+                <option value="">Select resident</option>
+
+                @foreach (var resident in _residents)
+                {
+                    <option value="@resident.Id">
+                        @resident.Initials - @resident.FirstName @resident.LastName
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Employee</label>
+
+            <select class="form-select" @bind="_selectedEmployeeId">
+                <option value="">Select employee</option>
+
+                @foreach (var employee in _employees)
+                {
+                    <option value="@employee.Id">
+                        @employee.Initials - @employee.FirstName @employee.LastName
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Date</label>
+
+            <input type="date" class="form-control" @bind="_selectedDate" />
+        </div>
+
+    </div>
+
+    <div class="mb-3">
+        <button type="button"
+                class="btn btn-outline-primary"
+                @onclick="LoadAssignmentsAsync">
+            Refresh
+        </button>
+    </div>
+
+    @if (_isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (_hasError)
+    {
+        <div class="alert alert-danger" role="alert">
+            Could not load staff assignments.
+
+            <button type="button"
+                    class="btn btn-sm btn-outline-danger ms-2"
+                    @onclick="LoadAssignmentsAsync">
+                Retry
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+
+            <table class="table table-hover table-striped align-middle">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>Resident</th>
+                        <th>Assigned Staff</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (!_assignments.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="text-muted text-center py-3">
+                                No staff assignments found for this shift and date.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var assignment in _assignments)
+                        {
+                            <tr>
+                                <td>@assignment.ResidentInitials</td>
+                                <td>@assignment.EmployeeName</td>
+
+                                <td>
+                                    <span class="badge bg-success">
+                                        Covered
+                                    </span>
+                                </td>
+
+                                <td class="text-end">
+                                    <button class="btn btn-outline-primary btn-sm me-1">
+                                        Edit
+                                    </button>
+
+                                    <button class="btn btn-outline-danger btn-sm">
+                                        Remove
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    }
+
+</section>

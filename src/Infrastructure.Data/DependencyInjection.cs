@@ -27,6 +27,7 @@ public static class DependencyInjection
         _ = services.AddScoped<IPhoneAssignmentRepository, PhoneAssignmentRepository>();
        _  = services.AddScoped<IStaffAssignmentRepository, StaffAssignmentRepository>();
         _ = services.AddScoped<IAuditRepository, AuditRepository>();
+       _ =  services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
         // Identity services
         _ = services.AddScoped<IRefreshTokenStore, RefreshTokenStore>();
