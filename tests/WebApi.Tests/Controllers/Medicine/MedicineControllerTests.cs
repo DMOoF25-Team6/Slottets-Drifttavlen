@@ -1,4 +1,4 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 
 
@@ -22,7 +22,9 @@ namespace WebApi.Tests.Controllers.Medicine;
 
 public class MedicineControllerTests(CustomWebApplicationFactory<Api.Program> factory) : IClassFixture<CustomWebApplicationFactory<Api.Program>>
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    // UC-007: data endpoints require authentication; use the authenticated test client.
+    private readonly HttpClient _client = factory.CreateAuthenticatedClient();
+    private readonly CustomWebApplicationFactory<Api.Program> _factory = factory;
 
     [Fact]
     public async Task GetMedicineStatus_ValidResidentId_ReturnsOk()
@@ -113,6 +115,25 @@ public class MedicineControllerTests(CustomWebApplicationFactory<Api.Program> fa
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
+    /// <summary>
+    /// UC-007 (REQ-F-005): Verifies that the [Authorize] attribute on
+    /// MedicineController returns 401 Unauthorized when no Bearer token is provided.
+    /// </summary>
+    [Fact]
+    public async Task GetMedicineStatus_WithoutAuthentication_Returns401()
+    {
+        // Arrange: a fresh client WITHOUT the Bearer token
+        HttpClient unauthenticatedClient = _factory.CreateClient();
+        Guid residentId = Guid.NewGuid();
+
+        // Act
+        HttpResponseMessage response = await unauthenticatedClient.GetAsync(
+            $"/Medicine/{residentId}",
+            TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
 
 }
 

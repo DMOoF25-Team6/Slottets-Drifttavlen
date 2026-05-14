@@ -1,9 +1,9 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-using Api.Controllers;
-
 using System.Security.Claims;
+
+using Api.Controllers;
 
 using Core.DTOs;
 using Core.Interfaces.Repositories;
@@ -63,8 +63,8 @@ public class ResidentControllerTests
 
         // Assert
         OkObjectResult okResult = Assert.IsType<OkObjectResult>(result.Result);
-        IEnumerable<ResidentResponseDto> value = Assert.IsAssignableFrom<IEnumerable<ResidentResponseDto>>(okResult.Value);
-        ResidentResponseDto[] residentDtos = value.ToArray();
+        IEnumerable<ResidentResponseDto> value = Assert.IsType<IEnumerable<ResidentResponseDto>>(okResult.Value, exactMatch: false);
+        ResidentResponseDto[] residentDtos = [.. value];
         Assert.Equal(2, residentDtos.Length);
         Assert.Equal(Department.Slottet, residentDtos[0].Department);
         Assert.Equal(Department.Skoven, residentDtos[1].Department);
@@ -226,7 +226,7 @@ public class ResidentControllerTests
         ActionResult<ResidentResponseDto> result = await _controller.Create(dto, CancellationToken.None);
 
         // Assert
-        Assert.IsType<ForbidResult>(result.Result);
+        _ = Assert.IsType<ForbidResult>(result.Result);
         _mockRepo.Verify(r => r.CreateAsync(It.IsAny<Resident>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -281,7 +281,7 @@ public class ResidentControllerTests
         ActionResult result = await _controller.Update(residentId, dto, CancellationToken.None);
 
         // Assert
-        Assert.IsType<ForbidResult>(result);
+        _ = Assert.IsType<ForbidResult>(result);
         _mockRepo.Verify(r => r.UpdateAsync(It.IsAny<Resident>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 

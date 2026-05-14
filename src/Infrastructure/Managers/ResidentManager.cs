@@ -6,7 +6,7 @@ using System.Net.Http.Json;
 using Core.DTOs;
 using Core.Interfaces.Managers;
 
-using Domain.Entities;
+using Domain.Enums;
 
 namespace Infrastructure.Managers;
 
@@ -39,7 +39,6 @@ public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiMana
         }
     }
 
-
     public async Task CreateRangeAsync(IEnumerable<ResidentCreateRequestDto> dtos, CancellationToken ct = default)
     {
         HttpResponseMessage response = await HttpClient.PostAsJsonAsync("residents/CreateRange", dtos, ct);
@@ -51,8 +50,6 @@ public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiMana
     #endregion create
 
     #region Methods read
-
-
     /// <summary>
     /// Gets a resident by their unique identifier.
     /// </summary>
@@ -85,6 +82,36 @@ public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiMana
     {
         IEnumerable<ResidentResponseDto>? response = await HttpClient.GetFromJsonAsync<IEnumerable<ResidentResponseDto>>("residents", ct);
         return response ?? [];
+    }
+
+    /// <summary>
+    /// Retrieves resident information for the specified departments asynchronously.
+    /// </summary>
+    /// <remarks>Each department in the provided list is queried separately. The method aggregates the results
+    /// from all successful queries into a single collection.</remarks>
+    /// <param name="departments">A list of departments for which to retrieve resident data. Each department in the list will be queried
+    /// individually.</param>
+    /// <param name="ct">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>A collection of resident response DTOs representing the residents associated with the specified departments. The
+    /// collection will be empty if no residents are found.</returns>
+    /// <exception cref="Exception">Thrown if the request to retrieve residents for any department fails.</exception>
+    public async Task<IEnumerable<ResidentResponseDto>> GetByDepartmentsAsync(IList<Department> departments, CancellationToken ct = default)
+    {
+        List<ResidentResponseDto> result = [];
+        foreach (Department department in departments)
+        {
+            HttpResponseMessage response = await HttpClient.GetAsync($"residents/department/{department}", ct);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to get residents for department {department}. Status code: {response.StatusCode}");
+            }
+            IEnumerable<ResidentResponseDto>? residents = await response.Content.ReadFromJsonAsync<IEnumerable<ResidentResponseDto>>(cancellationToken: ct);
+            if (residents is not null)
+            {
+                result.AddRange(residents);
+            }
+        }
+        return result;
     }
     #endregion
 
@@ -151,16 +178,6 @@ public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiMana
     /// Always thrown as this method is not implemented.
     /// </exception>
     public Task DeleteRangeAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task CreateAsync(Resident entity, CancellationToken ct = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task CreateRangeAsync(IEnumerable<Resident> entities, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

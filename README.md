@@ -12,6 +12,7 @@
 
 
 <a name="indholdsfortegnelse"></a>
+
 ## 📚 Indholdsfortegnelse
 
 - [Dokumentationsoversigt](#dokumentationsoversigt)
@@ -22,6 +23,7 @@
 - [Udvidelsesmuligheder](#udvidelsesmuligheder)
 - [Dokumentation](#dokumentation)
 - [Sikkerhed](#sikkerhed)
+- [Claims-baseret adgangskontrol](#claims-baseret-adgangskontrol)
 - [Kom i gang](#kom-i-gang)
 - [Adgang](#adgang)
 - [Vigtigt](#vigtigt)
@@ -108,11 +110,56 @@ Findes i `docs/`:
 ---
 
 <a name="sikkerhed"></a>
+
 ## 🔐 Sikkerhed
-- GDPR-compliant databehandling  
-- Kryptering af følsomme data  
-- Rollebaseret adgangskontrol  
-- Logging og sporbarhed  
+- GDPR-compliant databehandling
+- Kryptering af følsomme data
+- Rollebaseret adgangskontrol
+- Logging og sporbarhed
+
+---
+
+<a name="claims-baseret-adgangskontrol"></a>
+## 🛡️ Claims-baseret adgangskontrol
+
+Systemet anvender claims-baseret adgangskontrol for at styre adgang til funktioner og data. Claims tildeles brugere og roller under identitets-seeding og kontrolleres ved kørsel for at afgøre, hvilke handlinger en bruger må udføre.
+
+### Claim-struktur
+
+- **Claim Type:** `permission`
+- **Claim Value:** Struktureret som `ressource:scope:handling`, fx:
+  - `department:skoven:basic`
+  - `department:all:view`
+  - `manage:residents`
+
+### Eksempel: Adgang til afdeling
+
+For at se borgere i en bestemt afdeling (fx Skoven) skal brugeren have et claim med den relevante tilladelse:
+
+- **Påkrævet claim:** `permission = department:skoven:*` (eller mere specifikt `department:skoven:basic`)
+- Kun brugere med dette claim kan tilgå borgerdata for Skoven.
+
+#### Eksempel
+
+| Bruger       | Claim Value                | Kan se Skoven-borgere?      |
+|--------------|---------------------------|-----------------------------|
+| normal2User  | department:skoven:basic   | Ja                          |
+| normal3User  | department:skoven:basic   | Ja                          |
+| normal1User  | department:slottets:basic | Nej                         |
+| adminUser    | department:all:view       | Ja (alle afdelinger)        |
+
+### Sådan tjekkes claims
+
+Når en bruger forsøger at tilgå en beskyttet ressource (fx se borgere i Skoven), tjekker systemet for det nødvendige claim:
+
+- Hvis brugeren har `permission = department:skoven:*` eller et mere generelt claim som `department:all:view`, gives adgang.
+- Ellers nægtes adgang.
+
+### Udvidelse af claims
+
+For at tilføje nye tilladelser defineres nye claim-værdier efter det etablerede mønster og tildeles relevante brugere eller roller.
+
+Se `src/Infrastructure.Data/Persistent/Configurations/IdentitySeed.cs` for detaljer om claims-seeding.
 
 ---
 
@@ -212,9 +259,10 @@ I folder `tools/` findes eksempel på et script `start-dashboard.bat` som kan br
 ---
 
 <a name="for-udviklere"></a>
+
 ## 👨‍💻 For udviklere
 
-Struktur (Clean Architecture)
+### Struktur (Clean Architecture)
 src/
  ├── Core/
  ├── Domain/
@@ -224,10 +272,21 @@ tests/
 docs/
 
 ### Ansvar
-Core → Use cases & interfaces
-Domain → Forretningslogik
-Infrastructure → Database & eksterne services
+Core → Use cases & interfaces  
+Domain → Forretningslogik  
+Infrastructure → Database & eksterne services  
 WebUI → Frontend
+
+### Om pull.ps1
+
+Scriptet [`pull.ps1`](#e:\repos\other.dmoof25-team6.slottets-drifttavlen\pull.ps1-context) automatiserer følgende for udviklere:
+
+- Henter seneste kode fra main-branchen
+- Genstarter systemet i Docker (prod-profil)
+- Dropper og opretter databasen på ny (EF Core)
+- Sikrer at du altid arbejder på en frisk database og opdateret kodebase
+
+Dette sikrer et ensartet udviklingsmiljø og minimerer fejl pga. lokale forskelle.
 
 
 ---

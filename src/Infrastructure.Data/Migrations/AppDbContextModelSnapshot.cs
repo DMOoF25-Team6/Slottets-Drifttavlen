@@ -22,6 +22,38 @@ namespace Infrastructure.Data.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("Domain.Entities.AnonymizationCandidate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<Guid>("ResidentId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("RetentionPolicyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SuggestedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResidentId");
+
+                    b.HasIndex("RetentionPolicyId");
+
+                    b.ToTable("AnonymizationCandidates");
+                });
+
             modelBuilder.Entity("Domain.Entities.AuditEntry", b =>
                 {
                     b.Property<Guid>("Id")
@@ -53,39 +85,39 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("AuditEntries");
                 });
 
-                    modelBuilder.Entity("Domain.Entities.ChangeDetail", b =>
-                    {
-                        b.Property<Guid>("Id")
-                            .ValueGeneratedOnAdd()
-                            .HasColumnType("char(36)");
+            modelBuilder.Entity("Domain.Entities.ChangeDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
-                        b.Property<Guid>("AuditEntryId")
-                            .HasColumnType("char(36)");
+                    b.Property<Guid>("AuditEntryId")
+                        .HasColumnType("char(36)");
 
-                        b.Property<string>("Field")
-                            .IsRequired()
-                            .HasMaxLength(100)
-                            .HasColumnType("varchar(100)");
+                    b.Property<string>("Field")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
-                        b.Property<string>("NewValue")
-                            .IsRequired()
-                            .HasMaxLength(2000)
-                            .HasColumnType("varchar(2000)");
+                    b.Property<string>("NewValue")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
 
-                        b.Property<string>("OldValue")
-                            .IsRequired()
-                            .HasMaxLength(2000)
-                            .HasColumnType("varchar(2000)");
+                    b.Property<string>("OldValue")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
 
-                        b.HasKey("Id");
+                    b.HasKey("Id");
 
-                        b.HasIndex("AuditEntryId")
-                            .HasDatabaseName("IX_ChangeDetails_AuditEntryId");
+                    b.HasIndex("AuditEntryId")
+                        .HasDatabaseName("IX_ChangeDetails_AuditEntryId");
 
-                        b.ToTable("ChangeDetails");
-                    });
+                    b.ToTable("ChangeDetails");
+                });
 
-                    modelBuilder.Entity("Domain.Entities.Employee", b =>
+            modelBuilder.Entity("Domain.Entities.Employee", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -467,6 +499,150 @@ namespace Infrastructure.Data.Migrations
                             Initials = "LL",
                             LastName = "Larsen",
                             TrafficLightStatus = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("aa000001-0000-0000-0000-000000000001"),
+                            Department = 1,
+                            FirstName = "Mette",
+                            Initials = "MM",
+                            LastName = "Madsen",
+                            TrafficLightStatus = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("aa000001-0000-0000-0000-000000000002"),
+                            Department = 1,
+                            FirstName = "Niels",
+                            Initials = "NN",
+                            LastName = "Nielsen",
+                            TrafficLightStatus = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("aa000001-0000-0000-0000-000000000003"),
+                            Department = 1,
+                            FirstName = "Ole",
+                            Initials = "OO",
+                            LastName = "Olesen",
+                            TrafficLightStatus = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("aa000001-0000-0000-0000-000000000004"),
+                            Department = 1,
+                            FirstName = "Pia",
+                            Initials = "PP",
+                            LastName = "Petersen",
+                            TrafficLightStatus = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("aa000001-0000-0000-0000-000000000005"),
+                            Department = 1,
+                            FirstName = "Rasmus",
+                            Initials = "RR",
+                            LastName = "Rasmussen",
+                            TrafficLightStatus = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("aa000001-0000-0000-0000-000000000006"),
+                            Department = 1,
+                            FirstName = "Sofie",
+                            Initials = "SS",
+                            LastName = "Sørensen",
+                            TrafficLightStatus = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("aa000001-0000-0000-0000-000000000007"),
+                            Department = 1,
+                            FirstName = "Thomas",
+                            Initials = "TT",
+                            LastName = "Thomsen",
+                            TrafficLightStatus = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000001"),
+                            Department = 2,
+                            FirstName = "Ulla",
+                            Initials = "UU",
+                            LastName = "Ulrichsen",
+                            TrafficLightStatus = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000002"),
+                            Department = 2,
+                            FirstName = "Viggo",
+                            Initials = "VV",
+                            LastName = "Vestergaard",
+                            TrafficLightStatus = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000003"),
+                            Department = 2,
+                            FirstName = "Winnie",
+                            Initials = "WW",
+                            LastName = "Winther",
+                            TrafficLightStatus = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000004"),
+                            Department = 2,
+                            FirstName = "Xenia",
+                            Initials = "XX",
+                            LastName = "Xu",
+                            TrafficLightStatus = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000005"),
+                            Department = 2,
+                            FirstName = "Yvonne",
+                            Initials = "YY",
+                            LastName = "Yilmaz",
+                            TrafficLightStatus = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000006"),
+                            Department = 2,
+                            FirstName = "Zenia",
+                            Initials = "ZZ",
+                            LastName = "Zahle",
+                            TrafficLightStatus = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000007"),
+                            Department = 2,
+                            FirstName = "Bent",
+                            Initials = "BA",
+                            LastName = "Bagger",
+                            TrafficLightStatus = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000008"),
+                            Department = 2,
+                            FirstName = "Connie",
+                            Initials = "CO",
+                            LastName = "Christoffersen",
+                            TrafficLightStatus = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("bb000002-0000-0000-0000-000000000009"),
+                            Department = 2,
+                            FirstName = "Dagmar",
+                            Initials = "DA",
+                            LastName = "Damgaard",
+                            TrafficLightStatus = 0
                         });
                 });
 
@@ -604,6 +780,151 @@ namespace Infrastructure.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Domain.Entities.RetentionPolicy", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EffectiveFrom")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<TimeSpan>("LegalMinimum")
+                        .HasColumnType("time(6)");
+
+                    b.Property<TimeSpan>("RetentionPeriod")
+                        .HasColumnType("time(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Category")
+                        .IsUnique();
+
+                    b.ToTable("RetentionPolicies");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a1111111-0000-0000-0000-000000000001"),
+                            Category = 0,
+                            EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LegalMinimum = new TimeSpan(3650, 0, 0, 0, 0),
+                            RetentionPeriod = new TimeSpan(3650, 0, 0, 0, 0)
+                        },
+                        new
+                        {
+                            Id = new Guid("a1111111-0000-0000-0000-000000000002"),
+                            Category = 1,
+                            EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LegalMinimum = new TimeSpan(730, 0, 0, 0, 0),
+                            RetentionPeriod = new TimeSpan(1825, 0, 0, 0, 0)
+                        },
+                        new
+                        {
+                            Id = new Guid("a1111111-0000-0000-0000-000000000003"),
+                            Category = 2,
+                            EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LegalMinimum = new TimeSpan(365, 0, 0, 0, 0),
+                            RetentionPeriod = new TimeSpan(1095, 0, 0, 0, 0)
+                        },
+                        new
+                        {
+                            Id = new Guid("a1111111-0000-0000-0000-000000000004"),
+                            Category = 3,
+                            EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LegalMinimum = new TimeSpan(90, 0, 0, 0, 0),
+                            RetentionPeriod = new TimeSpan(180, 0, 0, 0, 0)
+                        },
+                        new
+                        {
+                            Id = new Guid("a1111111-0000-0000-0000-000000000005"),
+                            Category = 4,
+                            EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LegalMinimum = new TimeSpan(180, 0, 0, 0, 0),
+                            RetentionPeriod = new TimeSpan(365, 0, 0, 0, 0)
+                        },
+                        new
+                        {
+                            Id = new Guid("a1111111-0000-0000-0000-000000000006"),
+                            Category = 5,
+                            EffectiveFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LegalMinimum = new TimeSpan(7, 0, 0, 0, 0),
+                            RetentionPeriod = new TimeSpan(30, 0, 0, 0, 0)
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Entities.RetentionPolicyAudit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("ChangedByEmployeeId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<TimeSpan>("NewPeriod")
+                        .HasColumnType("time(6)");
+
+                    b.Property<TimeSpan>("PreviousPeriod")
+                        .HasColumnType("time(6)");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<Guid>("RetentionPolicyId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RetentionPolicyId");
+
+                    b.ToTable("RetentionPolicyAudits");
+                });
+
+            modelBuilder.Entity("Domain.Entities.SecurityIncident", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("DetectedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("InvestigationNotes")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<Guid?>("ReportedByEmployeeId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("ResolvedByEmployeeId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Severity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SecurityIncidents");
+                });
+
             modelBuilder.Entity("Domain.Entities.StaffAssignment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -695,6 +1016,9 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -709,15 +1033,15 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = new Guid("3a21f8e1-885b-4394-abf0-ed0baeea239b"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5e512519-0d57-4d68-8446-2f15fb1f61b7",
+                            ConcurrencyStamp = "3f2de00f-6d2c-4f3d-a4e6-0c0a0b1fbd1c",
                             Email = "PederRasmussen@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "PEDERRASMUSSEN@EXAMPLE.COM",
                             NormalizedUserName = "PEDERRASMUSSEN@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAED10IYlMSk0Zo9Ziy9rkLwKRcO/EIoCYZNxbmX2kfLEGz6KbzQBPrgZU17krbmwhxg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENTTirmPX3De5hmV/oT+Swwtap0kZ84qqwwOniU4UL53GHWkxgaySIGzevzhBBGmGw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ce07aced-1f7b-444b-8fec-8453be0ec305",
+                            SecurityStamp = "d7cefa32-0e20-4ccc-b2e3-e092b6fa4d6b",
                             TwoFactorEnabled = false,
                             UserName = "pederrasmussen@example.com"
                         },
@@ -725,15 +1049,15 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = new Guid("4711a300-711e-4132-86d4-cafd3f11deec"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e99796e9-147d-4294-8714-93b6c8304ae3",
+                            ConcurrencyStamp = "91ce28f7-0cde-4102-8822-410d6d51a011",
                             Email = "SanneJohansen@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "SANNEJOHANSEN@EXAMPLE.COM",
                             NormalizedUserName = "SANNEJOHANSEN@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHMgDpP0hWi9oEr/Bd7N6IbQIpF1eu/2CUMvS0jrd16E3usiYww7IicGKDMRwFPE0g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENF2JKDK/0VWrkQpjgbotpODUrbQnhHb9IStKVMqBGx0ddH1gxQcX0Kfbw0WZftMJg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4e3862cf-99b7-44c5-ae9a-3ae8b85c3651",
+                            SecurityStamp = "91b36f1f-fc24-43df-9c27-541cca61aaed",
                             TwoFactorEnabled = false,
                             UserName = "sannejohansen@example.com"
                         },
@@ -741,15 +1065,15 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = new Guid("30cffcf9-5784-4fa9-9c10-c013ef3faf16"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "693210df-1b1c-4cf6-8251-d4abedf89245",
+                            ConcurrencyStamp = "f67063f6-8396-4fda-acb9-f8828704a5b8",
                             Email = "ThorDanrsøn@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "THORDANRSØN@EXAMPLE.COM",
                             NormalizedUserName = "THORDANRSØN@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFj7xI+eiMTAw5ZWRaYp1WrX/+73TrtAxUtmRC43ArOji0z+8nH9OK6kkWUnt6/v6Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHhZqSVVwABEaci/cdKiZtNkgWYtLVqXbqFBCNZIV4dqfQDL16QCSrotswlj69SrUg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d05b04f7-552a-4124-8708-da4a03595f0c",
+                            SecurityStamp = "c3abc4c0-86fe-4ef7-b5e4-7ee983137035",
                             TwoFactorEnabled = false,
                             UserName = "thordanrsøn@example.com"
                         },
@@ -757,15 +1081,15 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = new Guid("37155b80-7111-422a-aba6-89d7070f1644"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "74416d35-0680-4d6c-8832-204358e38a5c",
+                            ConcurrencyStamp = "db2dea37-cbf4-41c1-bc59-73caee8a4e19",
                             Email = "PerNielsen@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "PERNIELSEN@EXAMPLE.COM",
                             NormalizedUserName = "PERNIELSEN@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAECiYZeqKwZFaE/Nr9qh/lI5qWT3J/aCb4zOYqHeZsS1fCDb/y1DXAzMxMbDxpXr1dA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBL8M5DmvJzuQHt9PpsMEkme+soEFK8FDtbeExPk01Mvs3RUnwJnGlsmfR3F9mMwWQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ab2452e6-f258-49c8-a623-a7d359b10ed7",
+                            SecurityStamp = "8f471647-de42-45a4-a1e7-19d2a64d4fad",
                             TwoFactorEnabled = false,
                             UserName = "pernielsen@example.com"
                         },
@@ -773,15 +1097,15 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = new Guid("b836e975-e775-48bc-8b84-5d2bdd5bd87a"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c28dda23-ba1d-44c9-958e-5abdea717e3d",
+                            ConcurrencyStamp = "464bbb79-d13e-4334-947f-623592a9e3ab",
                             Email = "AndersJensen@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ANDERSJENSEN@EXAMPLE.COM",
                             NormalizedUserName = "ANDERSJENSEN@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEH8uxgJYr49zJZPk9uiQFYsemk7CeaMrSYoQYxjbw696UOD4xe/kLa2C/buibjOj8w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDQ4ibv32SQaSnNOk25S6jkob7SqrXYx2X+SiwdNh7cGDwY+gAMdwjkYAGFs+jT1Ng==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b5c7777a-bfeb-4ee9-89f5-edc642819961",
+                            SecurityStamp = "e60422b7-3153-4119-b618-1fb81cfcba64",
                             TwoFactorEnabled = false,
                             UserName = "andersjensen@example.com"
                         },
@@ -789,17 +1113,33 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "edaa32e3-b6e5-4e4d-90c2-5daefe377990",
+                            ConcurrencyStamp = "8b5cdde3-1a6b-41d9-94b0-692680149979",
                             Email = "KasperHolm@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "KASPERHOLM@EXAMPLE.COM",
                             NormalizedUserName = "KASPERHOLM@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKvzkaA42TYs+jxK8QVZWBdiw2QRnRbHfikt/9AVxnDfPQrEXCq/l4IIMOyGOjYtpw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMPle04qWx0hcDeIBXXKVes08Cj6PAWCOsMFEJrpw9jM4Qnp9AIMTNdf+NSyULPGgw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "27fda1e1-eee9-4a54-908b-526bc7bf4324",
+                            SecurityStamp = "5e9a0fd8-e3f1-4d66-afe3-77e1e83a7446",
                             TwoFactorEnabled = false,
                             UserName = "kasperholm@example.com"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "c0ffee00-dead-beef-cafe-000000000001",
+                            Email = "dashboard@slottet.dk",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "DASHBOARD@SLOTTET.DK",
+                            NormalizedUserName = "DASHBOARD@SLOTTET.DK",
+                            PasswordHash = "AQAAAAEAACcQAAAAEEGYLbEVvDkMGpWxvBizSJSS95uMkciMO3NcZV2yi+7goH8chkCEacnfd4IcKtrBaQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "c0ffee00-dead-beef-cafe-000000000002",
+                            TwoFactorEnabled = false,
+                            UserName = "dashboard@slottet.dk"
                         });
                 });
 
@@ -931,8 +1271,14 @@ namespace Infrastructure.Data.Migrations
                         new
                         {
                             Id = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae"),
-                            Name = "user",
-                            NormalizedName = "USER"
+                            Name = "caretaker",
+                            NormalizedName = "CARETAKER"
+                        },
+                        new
+                        {
+                            Id = new Guid("d0a5b0a1-0000-4000-8000-000000000001"),
+                            Name = "dashboard",
+                            NormalizedName = "DASHBOARD"
                         });
                 });
 
@@ -962,24 +1308,17 @@ namespace Infrastructure.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            ClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
-                            ClaimValue = "CanViewMedicine",
+                            Id = 2,
+                            ClaimType = "permission",
+                            ClaimValue = "view:medicine",
                             RoleId = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae")
                         },
                         new
                         {
-                            Id = 2,
-                            ClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
-                            ClaimValue = "CanManageResidents",
-                            RoleId = new Guid("d1c9e8b5-3f4a-4c2e-9a1b-5e6f7a8b9c0d")
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
-                            ClaimValue = "CanViewMedicine",
-                            RoleId = new Guid("d1c9e8b5-3f4a-4c2e-9a1b-5e6f7a8b9c0d")
+                            Id = 1,
+                            ClaimType = "permission",
+                            ClaimValue = "manage:residents",
+                            RoleId = new Guid("fabc2277-7992-491b-ae4a-bc78f8de56aa")
                         });
                 });
 
@@ -1005,6 +1344,57 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("AspNetUserClaims", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1001,
+                            ClaimType = "permission",
+                            ClaimValue = "manage:residents",
+                            UserId = new Guid("4711a300-711e-4132-86d4-cafd3f11deec")
+                        },
+                        new
+                        {
+                            Id = 1002,
+                            ClaimType = "permission",
+                            ClaimValue = "department:slottet:basic",
+                            UserId = new Guid("30cffcf9-5784-4fa9-9c10-c013ef3faf16")
+                        },
+                        new
+                        {
+                            Id = 1003,
+                            ClaimType = "permission",
+                            ClaimValue = "department:skoven:basic",
+                            UserId = new Guid("37155b80-7111-422a-aba6-89d7070f1644")
+                        },
+                        new
+                        {
+                            Id = 1004,
+                            ClaimType = "permission",
+                            ClaimValue = "department:skoven:basic",
+                            UserId = new Guid("b836e975-e775-48bc-8b84-5d2bdd5bd87a")
+                        },
+                        new
+                        {
+                            Id = 1005,
+                            ClaimType = "permission",
+                            ClaimValue = "department:marken:basic",
+                            UserId = new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37")
+                        },
+                        new
+                        {
+                            Id = 1006,
+                            ClaimType = "permission",
+                            ClaimValue = "department:slottet:basic",
+                            UserId = new Guid("4711a300-711e-4132-86d4-cafd3f11deec")
+                        },
+                        new
+                        {
+                            Id = 1007,
+                            ClaimType = "permission",
+                            ClaimValue = "department:all:view",
+                            UserId = new Guid("3a21f8e1-885b-4394-abf0-ed0baeea239b")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
@@ -1047,6 +1437,36 @@ namespace Infrastructure.Data.Migrations
                         {
                             UserId = new Guid("3a21f8e1-885b-4394-abf0-ed0baeea239b"),
                             RoleId = new Guid("fabc2277-7992-491b-ae4a-bc78f8de56aa")
+                        },
+                        new
+                        {
+                            UserId = new Guid("4711a300-711e-4132-86d4-cafd3f11deec"),
+                            RoleId = new Guid("d1c9e8b5-3f4a-4c2e-9a1b-5e6f7a8b9c0d")
+                        },
+                        new
+                        {
+                            UserId = new Guid("30cffcf9-5784-4fa9-9c10-c013ef3faf16"),
+                            RoleId = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae")
+                        },
+                        new
+                        {
+                            UserId = new Guid("37155b80-7111-422a-aba6-89d7070f1644"),
+                            RoleId = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae")
+                        },
+                        new
+                        {
+                            UserId = new Guid("b836e975-e775-48bc-8b84-5d2bdd5bd87a"),
+                            RoleId = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae")
+                        },
+                        new
+                        {
+                            UserId = new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37"),
+                            RoleId = new Guid("ee697c76-947a-4fe2-8b14-40194c30bdae")
+                        },
+                        new
+                        {
+                            UserId = new Guid("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+                            RoleId = new Guid("d0a5b0a1-0000-4000-8000-000000000001")
                         });
                 });
 
@@ -1067,6 +1487,25 @@ namespace Infrastructure.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.AnonymizationCandidate", b =>
+                {
+                    b.HasOne("Domain.Entities.Resident", "Resident")
+                        .WithMany()
+                        .HasForeignKey("ResidentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.RetentionPolicy", "RetentionPolicy")
+                        .WithMany("Candidates")
+                        .HasForeignKey("RetentionPolicyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Resident");
+
+                    b.Navigation("RetentionPolicy");
                 });
 
             modelBuilder.Entity("Domain.Entities.ChangeDetail", b =>
@@ -1125,6 +1564,17 @@ namespace Infrastructure.Data.Migrations
                         .HasForeignKey("ResidentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.RetentionPolicyAudit", b =>
+                {
+                    b.HasOne("Domain.Entities.RetentionPolicy", "RetentionPolicy")
+                        .WithMany("AuditHistory")
+                        .HasForeignKey("RetentionPolicyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RetentionPolicy");
                 });
 
             modelBuilder.Entity("Domain.Entities.StaffAssignment", b =>
@@ -1197,15 +1647,15 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entities.Employee", b =>
-            {
-                b.Navigation("StaffAssignments");
-            });
-
             modelBuilder.Entity("Domain.Entities.AuditEntry", b =>
-            {
-                b.Navigation("ChangeDetails");
-        });
+                {
+                    b.Navigation("ChangeDetails");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Employee", b =>
+                {
+                    b.Navigation("StaffAssignments");
+                });
 
             modelBuilder.Entity("Domain.Entities.Resident", b =>
                 {
@@ -1216,6 +1666,13 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("Painkillers");
 
                     b.Navigation("StaffAssignments");
+                });
+
+            modelBuilder.Entity("Domain.Entities.RetentionPolicy", b =>
+                {
+                    b.Navigation("AuditHistory");
+
+                    b.Navigation("Candidates");
                 });
 #pragma warning restore 612, 618
         }

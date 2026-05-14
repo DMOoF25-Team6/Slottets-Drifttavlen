@@ -9,7 +9,9 @@ namespace WebApi.Tests.Controllers.PhoneAssignments;
 
 public class PhoneAssignmentsControllerIntegrationTests(CustomWebApplicationFactory<Api.Program> factory) : IClassFixture<CustomWebApplicationFactory<Api.Program>>
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    // UC-007: data endpoints require authentication; use the authenticated test client.
+    private readonly HttpClient _client = factory.CreateAuthenticatedClient();
+    private readonly CustomWebApplicationFactory<Api.Program> _factory = factory;
 
     [Fact]
     public async Task GetCurrentPhoneAssignmentsForActiveShift_ReturnsOk()
@@ -39,4 +41,23 @@ public class PhoneAssignmentsControllerIntegrationTests(CustomWebApplicationFact
                 cancellationToken: TestContext.Current.CancellationToken);
         Assert.NotNull(result);
     }
+    /// <summary>
+    /// UC-007 (REQ-F-005): Verifies that the [Authorize] attribute on
+    /// PhoneAssignmentsController returns 401 Unauthorized when no Bearer token is provided.
+    /// </summary>
+    [Fact]
+    public async Task GetCurrentPhoneAssignmentsForActiveShift_WithoutAuthentication_Returns401()
+    {
+        // Arrange: a fresh client WITHOUT the Bearer token
+        HttpClient unauthenticatedClient = _factory.CreateClient();
+
+        // Act
+        HttpResponseMessage response = await unauthenticatedClient.GetAsync(
+            "/PhoneAssignments/active-shift",
+            TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
 }

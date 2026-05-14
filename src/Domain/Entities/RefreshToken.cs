@@ -4,12 +4,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using Domain.Interfaces;
+
 namespace Domain.Entities;
 
 /// <summary>
 /// Represents a refresh token for a user, used for JWT authentication persistence.
 /// </summary>
-public class RefreshToken
+public class RefreshToken : IEntity
 {
     /// <summary>
     /// Primary key for the refresh token.
@@ -58,24 +60,4 @@ public class RefreshToken
     /// Navigation property to the user.
     /// </summary>
     public virtual User? User { get; set; }
-    /// <summary>
-    /// Sets the TokenHash property from a plaintext token using SHA-256.
-    /// </summary>
-    /// <param name="token">The plaintext token.</param>
-    public void SetTokenFromPlaintext(string token)
-    {
-        TokenHash = ComputeSha256Hash(token);
-    }
-
-    /// <summary>
-    /// Computes the SHA-256 hash of a given string and returns it as a hex string.
-    /// </summary>
-    /// <param name="input">The input string to hash.</param>
-    /// <returns>Hex-encoded SHA-256 hash.</returns>
-    public static string ComputeSha256Hash(string input)
-    {
-        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(input);
-        byte[] hash = System.Security.Cryptography.SHA256.HashData(bytes);
-        return string.Concat(hash.Select(b => b.ToString("x2")));
-    }
 }

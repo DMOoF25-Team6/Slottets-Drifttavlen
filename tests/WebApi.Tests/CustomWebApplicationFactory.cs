@@ -111,5 +111,21 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             _ = userManager.AddToRoleAsync(adminUser, adminRole).GetAwaiter().GetResult();
         }
     }
+
+    /// <summary>
+    /// Creates an HttpClient pre-configured with a Bearer token recognized by
+    /// MockJwtAuthHandler. Use this in integration tests that hit [Authorize]-protected
+    /// endpoints. The authenticated principal has role "admin" and email
+    /// "admin@example.com".
+    /// </summary>
+    /// <returns>An <see cref="HttpClient"/> with a default Authorization header set.</returns>
+    public HttpClient CreateAuthenticatedClient()
+    {
+        HttpClient client = CreateClient();
+        client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", "test-jwt-token");
+        return client;
+    }
     #endregion
 }
+

@@ -13,18 +13,16 @@ namespace WebApi.Tests.Mocks;
 /// <summary>
 /// Authentication handler that accepts the test token and sets admin identity for integration tests.
 /// </summary>
-public class MockJwtAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+[method: Obsolete("This constructor is required for the authentication handler. It is not intended to be used directly.")]
+/// <summary>
+/// Authentication handler that accepts the test token and sets admin identity for integration tests.
+/// </summary>
+public class MockJwtAuthHandler(
+    IOptionsMonitor<AuthenticationSchemeOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder,
+    ISystemClock clock) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder, clock)
 {
-    [Obsolete("This constructor is required for the authentication handler. It is not intended to be used directly.")]
-    public MockJwtAuthHandler(
-        IOptionsMonitor<AuthenticationSchemeOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder,
-        ISystemClock clock)
-        : base(options, logger, encoder, clock)
-    {
-    }
-
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         // Accept the test token as valid and set admin claims

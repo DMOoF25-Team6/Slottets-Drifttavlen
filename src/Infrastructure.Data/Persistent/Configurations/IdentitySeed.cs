@@ -1,8 +1,6 @@
 // Copyright (c) 2026 Team6. All rights reserved.
 // No warranty, explicit or implicit, provided.
 
-using System.Security.Claims;
-
 using Domain.Entities;
 
 using Microsoft.AspNetCore.Identity;
@@ -103,6 +101,20 @@ public static class IdentitySeed
         SecurityStamp = "5e9a0fd8-e3f1-4d66-afe3-77e1e83a7446"
     };
 
+    // UC-001: Read-only kiosk account used by unattended dashboard screens.
+    public static readonly User dashboardUser = new()
+    {
+        Id = Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+        UserName = "dashboard@slottet.dk",
+        NormalizedUserName = "DASHBOARD@SLOTTET.DK",
+        Email = "dashboard@slottet.dk",
+        NormalizedEmail = "DASHBOARD@SLOTTET.DK",
+        EmailConfirmed = true,
+        ConcurrencyStamp = "c0ffee00-dead-beef-cafe-000000000001",
+        PasswordHash = "AQAAAAEAACcQAAAAEEGYLbEVvDkMGpWxvBizSJSS95uMkciMO3NcZV2yi+7goH8chkCEacnfd4IcKtrBaQ==",
+        SecurityStamp = "c0ffee00-dead-beef-cafe-000000000002"
+    };
+
     #endregion
 
     #region Roles
@@ -124,37 +136,69 @@ public static class IdentitySeed
     public static readonly IdentityRole<Guid> careTakerRole = new()
     {
         Id = Guid.Parse("ee697c76-947a-4fe2-8b14-40194c30bdae"),
-        Name = "user",
-        NormalizedName = "USER"
+        Name = "caretaker",
+        NormalizedName = "CARETAKER"
+    };
+
+    // UC-001: Read-only role for unattended dashboard kiosk screens.
+    public static readonly IdentityRole<Guid> dashboardRole = new()
+    {
+        Id = Guid.Parse("d0a5b0a1-0000-4000-8000-000000000001"),
+        Name = "dashboard",
+        NormalizedName = "DASHBOARD"
     };
 
     #endregion
 
     #region Role Claims
+    public static readonly IdentityRoleClaim<Guid> adminClaim1 = new()
+    {
+        Id = 1,
+        RoleId = adminRole.Id,
+        ClaimType = "permission",
+        ClaimValue = "manage:residents"
+    };
 
     public static readonly IdentityRoleClaim<Guid> careTakerClaim1 = new()
     {
-        Id = 1,
-        RoleId = careTakerRole.Id,
-        ClaimType = ClaimTypes.Role,
-        ClaimValue = "CanViewMedicine"
-    };
-
-    public static readonly IdentityRoleClaim<Guid> adminClaim1 = new()
-    {
         Id = 2,
-        RoleId = superUserRole.Id,
-        ClaimType = ClaimTypes.Role,
-        ClaimValue = "CanManageResidents"
+        RoleId = careTakerRole.Id,
+        ClaimType = "permission",
+        ClaimValue = "view:medicine"
     };
 
-    public static readonly IdentityRoleClaim<Guid> superUserClaim1 = new()
-    {
-        Id = 3,
-        RoleId = superUserRole.Id,
-        ClaimType = ClaimTypes.Role,
-        ClaimValue = "CanViewMedicine"
-    };
+    //public static readonly IdentityRoleClaim<Guid> careTakerClaim1 = new()
+    //{
+    //    Id = 1,
+    //    RoleId = careTakerRole.Id,
+    //    ClaimType = ClaimTypes.Role,
+    //    ClaimValue = "CanViewMedicine"
+    //};
+
+    //public static readonly IdentityRoleClaim<Guid> adminClaim1 = new()
+    //{
+    //    Id = 2,
+    //    RoleId = superUserRole.Id,
+    //    ClaimType = ClaimTypes.Role,
+    //    ClaimValue = "CanManageResidents"
+    //};
+
+    //public static readonly IdentityRoleClaim<Guid> superUserClaim1 = new()
+    //{
+    //    Id = 3,
+    //    RoleId = superUserRole.Id,
+    //    ClaimType = ClaimTypes.Role,
+    //    ClaimValue = "CanViewMedicine"
+    //};
+
+    //// UC-001: Dashboard kiosk can view residents and medicine status (read-only).
+    //public static readonly IdentityRoleClaim<Guid> dashboardClaim1 = new()
+    //{
+    //    Id = 4,
+    //    RoleId = dashboardRole.Id,
+    //    ClaimType = ClaimTypes.Role,
+    //    ClaimValue = "CanViewMedicine"
+    //};
 
     #endregion
 
@@ -172,7 +216,8 @@ public static class IdentitySeed
             normal1User,
             normal2User,
             normal3User,
-            substitutUser);
+            substitutUser,
+            dashboardUser);
     }
 
     /// <summary>
@@ -185,11 +230,12 @@ public static class IdentitySeed
         _ = modelBuilder.Entity<IdentityRole<Guid>>().HasData(
             adminRole,
             superUserRole,
-            careTakerRole);
+            careTakerRole,
+            dashboardRole);
         _ = modelBuilder.Entity<IdentityRoleClaim<Guid>>().HasData(
             careTakerClaim1,
-            adminClaim1,
-            superUserClaim1);
+            adminClaim1
+        );
     }
 
     /// <summary>
@@ -203,9 +249,107 @@ public static class IdentitySeed
             {
                 UserId = adminUser.Id,
                 RoleId = adminRole.Id
+            },
+            new IdentityUserRole<Guid>
+            {
+                UserId = superUser.Id,
+                RoleId = superUserRole.Id
+            },
+            // Default role for regular employees is caretaker
+            new IdentityUserRole<Guid>
+            {
+                UserId = normal1User.Id,
+                RoleId = careTakerRole.Id
+            },
+            new IdentityUserRole<Guid>
+            {
+                UserId = normal2User.Id,
+                RoleId = careTakerRole.Id
+            },
+            new IdentityUserRole<Guid>
+            {
+                UserId = normal3User.Id,
+                RoleId = careTakerRole.Id
+            },
+            new IdentityUserRole<Guid>
+            {
+                UserId = substitutUser.Id,
+                RoleId = careTakerRole.Id
+            },
+            new IdentityUserRole<Guid>
+            {
+                UserId = dashboardUser.Id,
+                RoleId = dashboardRole.Id
             }
         );
     }
 
+
+    public static readonly IdentityUserClaim<Guid> superUserPermissionClaim = new()
+    {
+        Id = 1001,
+        UserId = superUser.Id,
+        ClaimType = "permission",
+        ClaimValue = "manage:residents"
+    };
+
+    // Department Slottet permission claims for all working users
+    public static readonly IdentityUserClaim<Guid> normal1UserSlottetClaim = new()
+    {
+        Id = 1002,
+        UserId = normal1User.Id,
+        ClaimType = "permission",
+        ClaimValue = "department:slottet:basic"
+    };
+    public static readonly IdentityUserClaim<Guid> normal2UserSkovenClaim = new()
+    {
+        Id = 1003,
+        UserId = normal2User.Id,
+        ClaimType = "permission",
+        ClaimValue = "department:skoven:basic"
+    };
+    public static readonly IdentityUserClaim<Guid> normal3UserSkovenClaim = new()
+    {
+        Id = 1004,
+        UserId = normal3User.Id,
+        ClaimType = "permission",
+        ClaimValue = "department:skoven:basic"
+    };
+    public static readonly IdentityUserClaim<Guid> substitutUsermarkenClaim = new()
+    {
+        Id = 1005,
+        UserId = substitutUser.Id,
+        ClaimType = "permission",
+        ClaimValue = "department:marken:basic"
+    };
+    public static readonly IdentityUserClaim<Guid> superUserSlottetClaim = new()
+    {
+        Id = 1006,
+        UserId = superUser.Id,
+        ClaimType = "permission",
+        ClaimValue = "department:slottet:basic"
+    };
+
+    // Admin can view all departments
+    public static readonly IdentityUserClaim<Guid> adminUserAllDepartmentsClaim = new()
+    {
+        Id = 1007,
+        UserId = adminUser.Id,
+        ClaimType = "permission",
+        ClaimValue = "department:all:view"
+    };
+
+    public static void UserClaimSeed(ModelBuilder modelBuilder)
+    {
+        _ = modelBuilder.Entity<IdentityUserClaim<Guid>>().HasData(
+            superUserPermissionClaim,
+            normal1UserSlottetClaim,
+            normal2UserSkovenClaim,
+            normal3UserSkovenClaim,
+            substitutUsermarkenClaim,
+            superUserSlottetClaim,
+            adminUserAllDepartmentsClaim
+        );
+    }
     #endregion
 }

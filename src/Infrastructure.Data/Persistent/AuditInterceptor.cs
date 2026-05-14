@@ -10,14 +10,9 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Infrastructure.Data.Persistent;
 
-public class AuditInterceptor : SaveChangesInterceptor
+public class AuditInterceptor(IEnumerable<AuditEntry>? auditEntries = null) : SaveChangesInterceptor
 {
-    private IEnumerable<AuditEntry>? _auditEntries;
-
-    public AuditInterceptor(IEnumerable<AuditEntry>? auditEntries = null)
-    {
-        _auditEntries = auditEntries;
-    }
+    private IEnumerable<AuditEntry>? _auditEntries = auditEntries;
 
     public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
     {
@@ -28,7 +23,7 @@ public class AuditInterceptor : SaveChangesInterceptor
 
         DateTime startTime = DateTime.UtcNow;
 
-        var auditEntries = eventData.Context.ChangeTracker
+        List<AuditEntry> auditEntries = [.. eventData.Context.ChangeTracker
             .Entries()
             .Where(e => (
                 e.Entity is not AuditEntry
@@ -41,8 +36,7 @@ public class AuditInterceptor : SaveChangesInterceptor
                 StartTimeUtc = startTime,
                 Metadata = $"{e.Entity.GetType().Name} - {e.State}",
                 UserId = GetUserIdFromToken(eventData.Context), // Get user from token
-            })
-            .ToList();
+            })];
 
         if (!auditEntries.Any())
         {

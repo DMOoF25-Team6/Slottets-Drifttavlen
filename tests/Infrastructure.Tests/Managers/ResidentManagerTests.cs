@@ -65,11 +65,11 @@ public class ResidentManagerTests
     public async Task CreateRangeAsync_ValidResidents_Success()
     {
         // Arrange
-        ResidentCreateRequestDto[] dtos = new[]
-        {
+        ResidentCreateRequestDto[] dtos =
+        [
             new ResidentCreateRequestDto { Initials = "JD", FirstName = "John", LastName = "Doe" },
             new ResidentCreateRequestDto { Initials = "AS", FirstName = "Alice", LastName = "Smith" }
-        };
+        ];
         using HttpResponseMessage response = new(HttpStatusCode.OK);
         _ = _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>(
@@ -118,11 +118,10 @@ public class ResidentManagerTests
     public async Task GetAllAsync_ResidentsExist_ReturnsAllResidents()
     {
         // Arrange
-        ResidentResponseDto[] expected = new[]
-        {
+        ResidentResponseDto[] expected = [
             new ResidentResponseDto { Id = Guid.NewGuid(), Initials = "JD", FirstName = "John", LastName = "Doe" },
             new ResidentResponseDto { Id = Guid.NewGuid(), Initials = "AS", FirstName = "Alice", LastName = "Smith" }
-        };
+        ];
         string json = System.Text.Json.JsonSerializer.Serialize(expected);
         using HttpResponseMessage response = new(HttpStatusCode.OK)
         {
@@ -201,7 +200,7 @@ public class ResidentManagerTests
     public async Task CreateRangeAsync_ApiReturnsError_ThrowsException()
     {
         // Arrange
-        ResidentCreateRequestDto[] dtos = new[] { new ResidentCreateRequestDto { Initials = "JD", FirstName = "John", LastName = "Doe" } };
+        ResidentCreateRequestDto[] dtos = [new ResidentCreateRequestDto { Initials = "JD", FirstName = "John", LastName = "Doe" }];
         using HttpResponseMessage response = new(HttpStatusCode.InternalServerError);
         _ = _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>(
@@ -318,13 +317,13 @@ public class ResidentManagerTests
     public async Task CreateAsync_MultipleConcurrentCalls_AllSucceed()
     {
         // Arrange
-        ResidentCreateRequestDto[] dtos = Enumerable.Range(0, 10).Select(i => new ResidentCreateRequestDto
+        ResidentCreateRequestDto[] dtos = [.. Enumerable.Range(0, 10).Select(i => new ResidentCreateRequestDto
         {
             Initials = $"U{i}",
             FirstName = $"User{i}",
             LastName = $"Test{i}",
             TrafficLightStatus = null
-        }).ToArray();
+        })];
         using HttpResponseMessage response = new(HttpStatusCode.OK);
         _ = _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>(

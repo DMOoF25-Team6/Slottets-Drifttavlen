@@ -7,6 +7,7 @@ using Core.Mappers;
 
 using Domain.Entities;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -28,6 +29,8 @@ namespace Api.Controllers;
 /// </code>
 /// </example>
 [ApiController]
+// UC-007: REQ-F-005 — Audit history requires authentication.
+[Authorize]
 [Route("[controller]")]
 public class AuditController(IAuditRepository auditRepository) : ControllerBase
 {

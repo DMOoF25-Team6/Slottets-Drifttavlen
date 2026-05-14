@@ -4,8 +4,11 @@
 using Core.Interfaces.Repositories;
 
 using Domain.Entities;
+using Domain.Enums;
 
 using Infrastructure.Data.Persistent;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data.Repositories;
 
@@ -21,4 +24,15 @@ namespace Infrastructure.Data.Repositories;
 
 public class ResidentRepository(AppDbContext context) : Repository<Resident>(context), IResidentRepository
 {
+    /// <summary>
+    /// Retrieves all residents belonging to a specific department.
+    /// </summary>
+    /// <param name="department">The department to filter residents by.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A list of residents in the specified department.</returns>
+    public async Task<IEnumerable<Resident>> GetAllAsync(Department department, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(department);
+        return await _dbSet.Where(r => r.Department == department).ToListAsync(cancellationToken);
+    }
 }

@@ -1,0 +1,132 @@
+@* UC-010 - Subject Access Request (GDPR Art. 15) — Admin only *@
+
+@page "/admin/gdpr/sar"
+@rendermode InteractiveServer
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "admin")]
+
+@using Core.DTOs.Sar
+
+<PageTitle>Subject Access Request</PageTitle>
+
+<main class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/admin/gdpr">GDPR</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Subject Access Request</li>
+        </ol>
+    </nav>
+
+    <h1 class="mb-4">Subject Access Request</h1>
+    <p class="text-muted mb-4">
+        Generate a GDPR Article 15 data export package for a resident.
+        The export contains all personal data within the selected scopes.
+    </p>
+
+    @if (!string.IsNullOrEmpty(_feedbackMessage))
+    {
+        <div class="alert @_feedbackClass alert-dismissible fade show" role="alert">
+            @_feedbackMessage
+            <button type="button" class="btn-close" @onclick="ClearFeedback"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Step 1 — Generate export</h5>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="_request" OnValidSubmit="GenerateAsync">
+                        <div class="mb-3">
+                            <label class="form-label">Resident ID</label>
+                            <input type="text" class="form-control" @bind="_residentIdText" placeholder="00000000-0000-0000-0000-000000000000" />
+                            <div class="form-text">Enter the resident's GUID identifier.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Data scopes</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="scopeNotes" @bind="_scopeNotes" />
+                                <label class="form-check-label" for="scopeNotes">Resident notes</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="scopeMedicine" @bind="_scopeMedicine" />
+                                <label class="form-check-label" for="scopeMedicine">Medicine logs (pseudonymized per §22)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="scopePainkiller" @bind="_scopePainkiller" />
+                                <label class="form-check-label" for="scopePainkiller">Painkiller records</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="scopeAudit" @bind="_scopeAudit" />
+                                <label class="form-check-label" for="scopeAudit">Audit history</label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" disabled="@(_isGenerating)">
+                            @if (_isGenerating)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                <span>Generating...</span>
+                            }
+                            else
+                            {
+                                <span>Generate export</span>
+                            }
+                        </button>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            @if (_generatedPackage is not null)
+            {
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Step 2 — Export ready</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-3">
+                            <dt class="col-sm-5">Export ID</dt>
+                            <dd class="col-sm-7"><code>@_generatedPackage.ExportId.ToString()[..8]…</code></dd>
+
+                            <dt class="col-sm-5">Generated</dt>
+                            <dd class="col-sm-7">@_generatedPackage.GeneratedAt.ToString("yyyy-MM-dd HH:mm 'UTC'")</dd>
+
+                            <dt class="col-sm-5">File name</dt>
+                            <dd class="col-sm-7"><code>@_generatedPackage.FileName</code></dd>
+                        </dl>
+
+                        <div class="alert alert-warning small">
+                            ⚠️ Verify the export contents before delivering to the data subject.
+                            Once delivered, mark the request as fulfilled to complete the audit trail.
+                        </div>
+
+                        <h6>Step 3 — Confirm delivery</h6>
+                        <p class="small text-muted">Mark this Subject Access Request as fulfilled after delivering the export to the resident or their representative.</p>
+                        <button class="btn btn-success" @onclick="MarkFulfilledAsync" disabled="@_isFulfilling">
+                            @if (_isFulfilling)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                <span>Marking fulfilled...</span>
+                            }
+                            else
+                            {
+                                <span>Mark as fulfilled</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center text-muted mt-5">
+                    <p>The generated export package will appear here.</p>
+                </div>
+            }
+        </div>
+    </div>
+</main>

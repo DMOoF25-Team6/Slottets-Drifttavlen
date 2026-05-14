@@ -7,6 +7,7 @@ using Core.Interfaces.Services;
 using Core.Mappers;
 
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Core.Services;
 
@@ -49,6 +50,18 @@ public class ResidentService(IResidentManager residentManager) : IResidentServic
     public async Task<IEnumerable<Resident>> GetAllAsync(CancellationToken ct = default)
     {
         IEnumerable<ResidentResponseDto> residents = await residentManager.GetAllAsync(ct);
+        return residents.Select(ResidentMapper.ToResident);
+    }
+
+    /// <summary>
+    /// Asynchronously retrieves residents belonging to the specified departments. This method allows filtering residents based on their department affiliation.
+    /// </summary>
+    /// <param name="departments">A list of departments for which to retrieve the associated residents. Cannot be null.</param>
+    /// <param name="ct">A cancellation token that can be used to cancel the asynchronous operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains an enumerable collection of residents corresponding to the specified departments.</returns>
+    public async Task<IEnumerable<Resident>> GetByDepartmentsAsync(IList<Department> departments, CancellationToken ct = default)
+    {
+        IEnumerable<ResidentResponseDto> residents = await residentManager.GetByDepartmentsAsync(departments, ct);
         return residents.Select(ResidentMapper.ToResident);
     }
 

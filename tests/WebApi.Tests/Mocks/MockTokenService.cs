@@ -12,15 +12,30 @@ namespace WebApi.Tests.Mocks;
 /// </summary>
 public class MockTokenService : ITokenService
 {
-    public string GenerateToken(User user, IList<string> roles)
-        => "test-jwt-token";
 
-    public static string GenerateRefreshToken()
-        => "test-refresh-token";
+    public Task<string> CreateJwtTokenAsync(User user, IList<string> roles, IList<System.Security.Claims.Claim> permissions, CancellationToken cancellationToken = default)
+        => Task.FromResult("test-jwt-token");
 
-    public static bool ValidateToken(string token, out string? userId)
+    public Task<RefreshToken> CreateRefreshTokenAsync(User user, string ipAddress, CancellationToken cancellationToken = default)
     {
-        userId = "test-user-id";
-        return token == "test-jwt-token";
+        const string refreshTokenValue = "test-refresh-token";
+        RefreshToken refreshToken = new()
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            TokenHash = $"hash-{refreshTokenValue}", // Must match ComputeSha256HashAsync
+            ExpiresAt = DateTime.UtcNow.AddDays(7),
+            CreatedAt = DateTime.UtcNow,
+            CreatedByIp = ipAddress,
+            User = user
+        };
+        // Optionally, if your system expects to return the raw token, you may need to expose it.
+        return Task.FromResult(refreshToken);
+    }
+
+    public Task<string> ComputeSha256HashAsync(string token, CancellationToken cancellationToken = default)
+    {
+        // Return a deterministic fake hash for testing
+        return Task.FromResult($"hash-{token}");
     }
 }

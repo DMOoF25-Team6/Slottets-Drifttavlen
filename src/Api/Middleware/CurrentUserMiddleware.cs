@@ -10,14 +10,9 @@ namespace Api.Middleware;
 /// <summary>
 /// Middleware that sets the CurrentUserId on AppDbContext from the authenticated user's claims.
 /// </summary>
-public class CurrentUserMiddleware
+public class CurrentUserMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-
-    public CurrentUserMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
+    private readonly RequestDelegate _next = next;
 
     public async Task InvokeAsync(HttpContext context, AppDbContext dbContext)
     {
