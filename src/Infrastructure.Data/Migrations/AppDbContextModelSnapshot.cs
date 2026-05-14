@@ -1357,7 +1357,7 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = 1002,
                             ClaimType = "permission",
-                            ClaimValue = "department:slottets:basic",
+                            ClaimValue = "department:slottet:basic",
                             UserId = new Guid("30cffcf9-5784-4fa9-9c10-c013ef3faf16")
                         },
                         new
@@ -1385,7 +1385,7 @@ namespace Infrastructure.Data.Migrations
                         {
                             Id = 1006,
                             ClaimType = "permission",
-                            ClaimValue = "department:slottets:basic",
+                            ClaimValue = "department:slottet:basic",
                             UserId = new Guid("4711a300-711e-4132-86d4-cafd3f11deec")
                         },
                         new

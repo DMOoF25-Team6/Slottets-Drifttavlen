@@ -13,7 +13,7 @@ using Domain.Enums;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace WebUI.Client.Components.Pages.Residents;
+namespace WebUI.Client.Components.Pages.Management.Residents;
 
 /// <summary>
 /// Administration page for managing residents (CRUD operations).
@@ -62,7 +62,7 @@ public partial class Residents : ComponentBase
     private bool _showFormModal;
     private bool _isEditing;
     private Guid _editingId;
-    private WebUI.Client.Models.ResidentFormModel _formModel = new();
+    private Models.ResidentFormModel _formModel = new();
     private string? _formError;
 
     // Delete modal state
@@ -145,7 +145,7 @@ public partial class Residents : ComponentBase
     {
         _isEditing = false;
         _editingId = Guid.Empty;
-        _formModel = new WebUI.Client.Models.ResidentFormModel
+        _formModel = new Models.ResidentFormModel
         {
             Department = Enum.TryParse<Department>(_selectedDepartment, out Department dept) ? dept : Department.Slottet
         };
@@ -157,7 +157,7 @@ public partial class Residents : ComponentBase
     {
         _isEditing = true;
         _editingId = resident.Id;
-        _formModel = new WebUI.Client.Models.ResidentFormModel
+        _formModel = new Models.ResidentFormModel
         {
             Initials = resident.Initials,
             FirstName = resident.FirstName,

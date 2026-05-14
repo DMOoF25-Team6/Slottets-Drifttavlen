@@ -78,6 +78,7 @@ gantt
 | uc-020      | Register medicine delivery (administration) | Gateway 13: Medicine Administration Management | REQ-F-001     |
 | uc-021      | Update medicine delivery (administration)   | Gateway 13: Medicine Administration Management | REQ-F-001     |
 | uc-022      | Delete medicine delivery (administration)   | Gateway 13: Medicine Administration Management | REQ-F-001     |
+| uc-023      | Add navigation bar to main layout           | Gateway 10: Status Bar                        | REQ-U-003     |
 
 ---
 

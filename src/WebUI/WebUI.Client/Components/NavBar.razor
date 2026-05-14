@@ -1,0 +1,29 @@
+@rendermode InteractiveWebAssembly
+@using Microsoft.AspNetCore.Components.Authorization
+
+<AuthorizeView>
+  <Authorized>
+    <header class="navbar navbar-expand-lg navbar-light bg-light">
+      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/">Slottet IT</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <!-- Dashboard Tabs by Department Claims -->
+              <NavItemDashboard />
+              <!-- Administration Tab for Admins only -->
+              <AuthorizeView Roles="admin" Context="adminContext">
+                <li class="nav-item">
+                  <NavLink class="nav-link" href="/residents" Match="NavLinkMatch.All">Administration</NavLink>
+                </li>
+              </AuthorizeView>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+  </Authorized>
+</AuthorizeView>
