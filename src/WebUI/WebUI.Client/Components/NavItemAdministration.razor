@@ -1,0 +1,29 @@
+@rendermode InteractiveWebAssembly
+@using Microsoft.AspNetCore.Components.Authorization
+@* @if (_isLoading)
+{
+  <LoadingSpinner />
+}
+else if (!string.IsNullOrEmpty(_errorMsg))
+{
+  <div class="alert alert-danger" role="alert">
+    Der opstod en fejl ved indlæsning af administrations links. Prøv igen.
+  </div>
+}
+else
+{ *@
+  <AuthorizeView Roles="admin" Context="adminContext">
+    <Authorized>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Administration
+      </a>
+      <ul class="dropdown-menu">
+        <li>
+          <NavLink class="dropdown-item" href="/management/residents" Match="NavLinkMatch.All">Beboere</NavLink>
+        </li>
+      </ul>
+    </li>
+    </Authorized>
+  </AuthorizeView>
+@* } *@
