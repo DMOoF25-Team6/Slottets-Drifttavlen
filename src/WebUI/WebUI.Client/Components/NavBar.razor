@@ -15,15 +15,21 @@
               <!-- Dashboard Tabs by Department Claims -->
               <NavItemDashboard />
               <!-- Administration Tab for Admins only -->
-              <AuthorizeView Roles="admin" Context="adminContext">
-                <li class="nav-item">
-                  <NavLink class="nav-link" href="/residents" Match="NavLinkMatch.All">Administration</NavLink>
-                </li>
-              </AuthorizeView>
+              <NavItemAdministration />
+            </ul>
+            <ul class="navbar-nav ms-auto">
+              <li>
+                <button class="nav-link btn btn-link" @onclick="Logout" style="cursor:pointer;">Log ud</button>
+              </li>
             </ul>
           </div>
         </div>
       </nav>
     </header>
   </Authorized>
+  <NotAuthorized>
+    <RedirectToLogin />
+  </NotAuthorized>
 </AuthorizeView>
+
+

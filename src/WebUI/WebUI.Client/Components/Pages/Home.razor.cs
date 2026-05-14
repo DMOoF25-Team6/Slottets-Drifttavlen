@@ -8,12 +8,14 @@ namespace WebUI.Client.Components.Pages;
 
 public partial class Home
 {
+    #region Injected Services
     [Inject]
     private NavigationManager Navigation { get; set; } = default!;
     [Inject]
     private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
     [Inject]
     private WebUI.Client.AuthService AuthService { get; set; } = default!;
+    #endregion
 
     private bool isInteractive = false;
     private System.Security.Claims.ClaimsPrincipal? user;
@@ -30,19 +32,4 @@ public partial class Home
             StateHasChanged();
         }
     }
-
-    private void Login()
-    {
-        if (isInteractive)
-        {
-            Navigation.NavigateTo("/login");
-        }
-    }
-
-    private async Task Logout()
-    {
-        await AuthService.LogoutAsync();
-        Navigation.NavigateTo("/");
-    }
-
 }
