@@ -293,41 +293,41 @@ public static class IdentitySeed
         ClaimValue = "manage:residents"
     };
 
-    // Department Slottets permission claims for all working users
-    public static readonly IdentityUserClaim<Guid> normal1UserSlottetsClaim = new()
+    // Department Slottet permission claims for all working users
+    public static readonly IdentityUserClaim<Guid> normal1UserSlottetClaim = new()
     {
         Id = 1002,
         UserId = normal1User.Id,
         ClaimType = "permission",
-        ClaimValue = "department:slottets:basic"
+        ClaimValue = "department:slottet:basic"
     };
-    public static readonly IdentityUserClaim<Guid> normal2UserSlottetsClaim = new()
+    public static readonly IdentityUserClaim<Guid> normal2UserSkovenClaim = new()
     {
         Id = 1003,
         UserId = normal2User.Id,
         ClaimType = "permission",
         ClaimValue = "department:skoven:basic"
     };
-    public static readonly IdentityUserClaim<Guid> normal3UserSlottetsClaim = new()
+    public static readonly IdentityUserClaim<Guid> normal3UserSkovenClaim = new()
     {
         Id = 1004,
         UserId = normal3User.Id,
         ClaimType = "permission",
         ClaimValue = "department:skoven:basic"
     };
-    public static readonly IdentityUserClaim<Guid> substitutUserSlottetsClaim = new()
+    public static readonly IdentityUserClaim<Guid> substitutUsermarkenClaim = new()
     {
         Id = 1005,
         UserId = substitutUser.Id,
         ClaimType = "permission",
         ClaimValue = "department:marken:basic"
     };
-    public static readonly IdentityUserClaim<Guid> superUserSlottetsClaim = new()
+    public static readonly IdentityUserClaim<Guid> superUserSlottetClaim = new()
     {
         Id = 1006,
         UserId = superUser.Id,
         ClaimType = "permission",
-        ClaimValue = "department:slottets:basic"
+        ClaimValue = "department:slottet:basic"
     };
 
     // Admin can view all departments
@@ -343,11 +343,11 @@ public static class IdentitySeed
     {
         _ = modelBuilder.Entity<IdentityUserClaim<Guid>>().HasData(
             superUserPermissionClaim,
-            normal1UserSlottetsClaim,
-            normal2UserSlottetsClaim,
-            normal3UserSlottetsClaim,
-            substitutUserSlottetsClaim,
-            superUserSlottetsClaim,
+            normal1UserSlottetClaim,
+            normal2UserSkovenClaim,
+            normal3UserSkovenClaim,
+            substitutUsermarkenClaim,
+            superUserSlottetClaim,
             adminUserAllDepartmentsClaim
         );
     }
