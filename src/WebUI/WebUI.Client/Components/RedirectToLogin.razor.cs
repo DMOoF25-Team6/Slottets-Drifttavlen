@@ -3,7 +3,7 @@
 
 using Microsoft.AspNetCore.Components;
 
-namespace WebUI.Client;
+namespace WebUI.Client.Components;
 
 public partial class RedirectToLogin : ComponentBase
 {
@@ -18,7 +18,7 @@ public partial class RedirectToLogin : ComponentBase
     /// </summary>
     /// <param name="firstRender">Indicates if this is the first render.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !hasRedirected)
         {
@@ -30,5 +30,6 @@ public partial class RedirectToLogin : ComponentBase
                 NavigationManager.NavigateTo($"login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}", forceLoad: true);
             }
         }
+        return Task.CompletedTask;
     }
 }
