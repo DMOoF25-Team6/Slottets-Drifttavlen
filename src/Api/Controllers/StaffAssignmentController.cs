@@ -1,5 +1,3 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
-//  No warranty, explicit or implicit, provided.
 using Core.DTOs;
 using Core.Interfaces.Services;
 
@@ -45,22 +43,16 @@ public class StaffAssignmentController(
     /// <summary>
     /// Gets all assignments for a shift and date.
     /// </summary>
-    [Authorize]
-    [HttpGet]
-
-    public async Task<ActionResult<IEnumerable<AssignmentOverviewDto>>>
-        GetAssignments(
-         [FromQuery] ShiftType shiftType,
-            [FromQuery] DateTime assignmentDate,
-            CancellationToken cancellationToken)
-
+    //[Authorize]
+    [HttpGet("list")]
+    public async Task<ActionResult<IEnumerable<AssignmentOverviewDto>>> GetAssignments(
+        int shiftType,
+        string assignmentDate)
     {
-
         IEnumerable<AssignmentOverviewDto> result =
-           await _service.GetAssignmentsByShiftAsync(
-               shiftType,
-               assignmentDate,
-               cancellationToken);
+            await _service.GetAssignmentsByShiftAsync(
+                (ShiftType)shiftType,
+                DateTime.Parse(assignmentDate));
 
         return Ok(result);
     }
@@ -68,11 +60,10 @@ public class StaffAssignmentController(
     /// <summary>
     /// Deletes an assignment.
     /// </summary>
-
     [Authorize]
     [HttpDelete("{assignmentId:guid}")]
     public async Task<IActionResult> DeleteAssignment(
-         Guid assignmentId,
+        Guid assignmentId,
         CancellationToken cancellationToken)
     {
         try
@@ -87,7 +78,6 @@ public class StaffAssignmentController(
         {
             return NotFound(ex.Message);
         }
-
     }
 
     /// <summary>
@@ -115,7 +105,6 @@ public class StaffAssignmentController(
             return NotFound(ex.Message);
         }
     }
-
 }
 
 
