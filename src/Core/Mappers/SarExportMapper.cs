@@ -20,4 +20,19 @@ public static class SarExportMapper
         GeneratedAt = generatedAt,
         FileName = fileName
     };
+
+    /// <summary>
+    /// Builds a SAR export package including the full Art. 15 JSON payload.
+    /// </summary>
+    public static SarExportPackageDto ToPackageDto(
+        Guid exportId,
+        DateTime generatedAt,
+        string fileName,
+        string payload) => new()
+    {
+        ExportId = exportId,
+        GeneratedAt = generatedAt,
+        FileName = fileName,
+        Payload = payload
+    };
 }

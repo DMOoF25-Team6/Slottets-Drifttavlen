@@ -191,6 +191,12 @@ TokenValidationParameters__Issuer=http://localhost
 TokenValidationParameters__Audience=http://localhost
 
 ExpireMinutes=60
+
+# UC-010 GDPR pseudonymisation salt (HMAC-SHA256 key).
+# Required by PseudonymizationService. MUST be kept outside source control and
+# rotated only in coordination with the Data Protection Officer; rotating
+# invalidates existing pseudonyms (Datatilsynet "Pseudonymisering og anonymisering").
+GDPR_PSEUDO_SALT=CHANGE_ME_TO_A_LONG_RANDOM_SECRET
 ```
 
 ### 3. Opret nødvendige mapper

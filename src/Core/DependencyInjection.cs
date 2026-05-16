@@ -38,6 +38,10 @@ public static class DependencyInjection
         _ = services.AddScoped<ISecurityIncidentService, SecurityIncidentService>();
         _ = services.AddScoped<ISubjectAccessRequestService, SubjectAccessRequestService>();
         _ = services.AddScoped<IArt33NotificationService, Art33NotificationService>();
+
+        // UC-010 pseudonymisation (GDPR Art. 4(5), Datatilsynet salt-separation guidance).
+        // Singleton because the salt is loaded once from configuration at startup.
+        _ = services.AddSingleton<IPseudonymizationService, PseudonymizationService>();
         return services;
     }
 }

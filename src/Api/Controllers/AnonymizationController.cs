@@ -3,6 +3,7 @@
 
 using Core.DTOs.Anonymization;
 using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
 using Core.Mappers;
 
 using Domain.Entities;
@@ -28,6 +29,9 @@ public class AnonymizationController : ControllerBase
     #region Fields
 
     private readonly IAnonymizationCandidateRepository _candidateRepository;
+    private readonly IResidentRepository _residentRepository;
+    private readonly IResidentNoteRepository _residentNoteRepository;
+    private readonly IPseudonymizationService _pseudonymizationService;
 
     #endregion
 
@@ -36,12 +40,20 @@ public class AnonymizationController : ControllerBase
     /// <summary>
     /// Initializes a new instance of the <see cref="AnonymizationController"/> class.
     /// </summary>
-    /// <param name="candidateRepository">The anonymization candidate repository.</param>
-    /// <exception cref="ArgumentNullException">The <paramref name="candidateRepository"/> parameter is <see langword="null"/>.</exception>
-    public AnonymizationController(IAnonymizationCandidateRepository candidateRepository)
+    public AnonymizationController(
+        IAnonymizationCandidateRepository candidateRepository,
+        IResidentRepository residentRepository,
+        IResidentNoteRepository residentNoteRepository,
+        IPseudonymizationService pseudonymizationService)
     {
         ArgumentNullException.ThrowIfNull(candidateRepository);
+        ArgumentNullException.ThrowIfNull(residentRepository);
+        ArgumentNullException.ThrowIfNull(residentNoteRepository);
+        ArgumentNullException.ThrowIfNull(pseudonymizationService);
         _candidateRepository = candidateRepository;
+        _residentRepository = residentRepository;
+        _residentNoteRepository = residentNoteRepository;
+        _pseudonymizationService = pseudonymizationService;
     }
 
     #endregion
@@ -83,16 +95,49 @@ public class AnonymizationController : ControllerBase
             return Conflict($"Candidate is in status {candidate.Status} and cannot be approved.");
         }
 
-        candidate.Status = AnonymizationStatus.Approved;
+        // Load the resident BEFORE we anonymise so we can produce a stable pseudonym.
+        Resident? resident = await _residentRepository.GetByIdAsync(candidate.ResidentId, cancellationToken);
+        if (resident is null)
+        {
+            return NotFound($"No resident found with id {candidate.ResidentId}; anonymisation cannot proceed.");
+        }
+
+        // GDPR Art. 17 (right to erasure) combined with Autorisationsloven §22:
+        //   - Directly identifying PII on the Resident row is replaced with a stable
+        //     pseudonym so existing FK relationships (MedicineRecord, PainkillerRecord)
+        //     remain intact for the 10-year medical journal retention.
+        //   - Free-text ResidentNote bodies are pseudonymised (Art. 4(5)) because
+        //     they may contain identifying narrative data; the timestamps are kept
+        //     for journal integrity.
+        //   - MedicineRecord and PainkillerRecord are NOT mutated: they reference
+        //     the pseudonymised Resident row and so are themselves pseudonymised by
+        //     transitivity, while preserving the §22-mandated drug-administration log.
+        string pseudonym = _pseudonymizationService.Pseudonymize(resident.Id.ToString());
+        string shortPseudonym = _pseudonymizationService.PseudonymizeShort(resident.Id.ToString());
+
+        resident.FirstName = $"ANON-{pseudonym[..8]}";
+        resident.LastName = "ANONYMISED";
+        resident.Initials = shortPseudonym;
+        await _residentRepository.UpdateAsync(resident, cancellationToken);
+
+        IEnumerable<ResidentNote> notes = await _residentNoteRepository.GetAllAsync(cancellationToken);
+        foreach (ResidentNote note in notes.Where(n => n.ResidentId == resident.Id))
+        {
+            note.Note = "[ANONYMISED]";
+            await _residentNoteRepository.UpdateAsync(note, cancellationToken);
+        }
+
+        candidate.Status = AnonymizationStatus.Completed;
         await _candidateRepository.UpdateAsync(candidate, cancellationToken);
 
-        // STUB: actual anonymization/pseudonymization of resident data happens in
-        // a follow-up branch. AuditInterceptor (UC-009) captures the status change.
+        // AuditInterceptor (UC-009) captures the Resident, ResidentNote, and
+        // AnonymizationCandidate row updates above on SaveChanges, providing the
+        // GDPR Art. 30 record-of-processing trail for this anonymisation event.
         AnonymizationResultDto result = new()
         {
             CandidateId = candidateId,
             CompletedAt = DateTime.UtcNow,
-            Outcome = "Approved (stub — anonymization scheduled)"
+            Outcome = $"Resident pseudonymised (pseudonym {shortPseudonym}); medical journal preserved per Autorisationsloven §22"
         };
         return Ok(result);
     }
