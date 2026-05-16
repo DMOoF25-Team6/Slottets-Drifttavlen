@@ -1,6 +1,8 @@
 name: Build and Test
 permissions:
+  contents: read
   issues: write
+  pull-requests: write
 on:
   push:
     branches: [ main, develop ]
@@ -64,11 +66,15 @@ jobs:
           if-no-files-found: warn
       - name: Notify committer on test failure
         if: failure() && github.event_name == 'pull_request'
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           script: |
             const pr = context.payload.pull_request;
-            if (pr) {
+            if (!pr) {
+              return;
+            }
+            try {
               const committer = pr.user.login;
               const message = `@${committer} :x: Tests failed for this pull request. Please check the logs and fix the issues.`;
               await github.rest.issues.createComment({
@@ -77,4 +83,10 @@ jobs:
                 issue_number: pr.number,
                 body: message
               });
+            } catch (error) {
+              // Do not mask the underlying test failure by also failing this notification step.
+              // Repository default workflow permissions may be set to read-only, in which case
+              // the GITHUB_TOKEN cannot post comments even when the workflow declares the scope.
+              // Owner can grant write access at: Settings -> Actions -> General -> Workflow permissions.
+              core.warning(`Could not post PR comment: ${error.message}`);
             }
