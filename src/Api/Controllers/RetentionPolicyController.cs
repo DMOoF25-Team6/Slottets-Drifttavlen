@@ -27,6 +27,7 @@ public class RetentionPolicyController : ControllerBase
     #region Fields
 
     private readonly IRetentionPolicyRepository _retentionPolicyRepository;
+    private readonly IRetentionPolicyAuditRepository _retentionPolicyAuditRepository;
 
     #endregion
 
@@ -36,11 +37,16 @@ public class RetentionPolicyController : ControllerBase
     /// Initializes a new instance of the <see cref="RetentionPolicyController"/> class.
     /// </summary>
     /// <param name="retentionPolicyRepository">The retention policy repository.</param>
-    /// <exception cref="ArgumentNullException">The <paramref name="retentionPolicyRepository"/> parameter is <see langword="null"/>.</exception>
-    public RetentionPolicyController(IRetentionPolicyRepository retentionPolicyRepository)
+    /// <param name="retentionPolicyAuditRepository">The retention policy audit repository.</param>
+    /// <exception cref="ArgumentNullException">A parameter is <see langword="null"/>.</exception>
+    public RetentionPolicyController(
+        IRetentionPolicyRepository retentionPolicyRepository,
+        IRetentionPolicyAuditRepository retentionPolicyAuditRepository)
     {
         ArgumentNullException.ThrowIfNull(retentionPolicyRepository);
+        ArgumentNullException.ThrowIfNull(retentionPolicyAuditRepository);
         _retentionPolicyRepository = retentionPolicyRepository;
+        _retentionPolicyAuditRepository = retentionPolicyAuditRepository;
     }
 
     #endregion
@@ -97,8 +103,17 @@ public class RetentionPolicyController : ControllerBase
 
         await _retentionPolicyRepository.UpdateAsync(policy, cancellationToken);
 
-        // AuditInterceptor (UC-009) automatically captures the change via SaveChanges
-        // RetentionPolicyAudit record creation is a future enhancement (separate repository)
+        RetentionPolicyAudit auditRecord = new()
+        {
+            Id = Guid.NewGuid(),
+            RetentionPolicyId = policy.Id,
+            ChangedByEmployeeId = changedByEmployeeId,
+            PreviousPeriod = previousPeriod,
+            NewPeriod = dto.RetentionPeriod,
+            ChangedAt = DateTime.UtcNow,
+            Reason = dto.Reason ?? string.Empty
+        };
+        await _retentionPolicyAuditRepository.CreateAsync(auditRecord, cancellationToken);
 
         return Ok(RetentionPolicyMapper.ToDto(policy));
     }

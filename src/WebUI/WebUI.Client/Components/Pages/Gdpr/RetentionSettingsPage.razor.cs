@@ -1,4 +1,4 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 
 using Core.DTOs.Retention;
@@ -8,7 +8,7 @@ using Domain.Enums;
 
 using Microsoft.AspNetCore.Components;
 
-namespace WebUI.Components.Pages.Gdpr;
+namespace WebUI.Client.Components.Pages.Gdpr;
 
 /// <summary>
 /// Retention Settings page — Admin configures GDPR retention periods (UC-010).

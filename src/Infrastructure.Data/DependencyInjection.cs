@@ -31,6 +31,7 @@ public static class DependencyInjection
 
         // UC-010 GDPR compliance repositories
         _ = services.AddScoped<IRetentionPolicyRepository, RetentionPolicyRepository>();
+        _ = services.AddScoped<IRetentionPolicyAuditRepository, RetentionPolicyAuditRepository>();
         _ = services.AddScoped<IAnonymizationCandidateRepository, AnonymizationCandidateRepository>();
         _ = services.AddScoped<ISecurityIncidentRepository, SecurityIncidentRepository>();
 
