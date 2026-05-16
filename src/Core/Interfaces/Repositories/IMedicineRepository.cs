@@ -10,9 +10,7 @@ namespace Core.Interfaces.Repositories;
 /// Core only knows about this interface.
 /// EF Core or DbContext lives in Infrastructure.
 /// </summary>
-public interface IMedicineRepository
+public interface IMedicineRepository : IRepository<MedicineRecord>
 {
-    //Task<MedicineStatusDto> GetMedicineStatusAsync(Guid residentId, CancellationToken cancellationToken = default);
-    //Task<PainkillerStatusDto> GetPainkillerStatusAsync(Guid residentId, CancellationToken cancellationToken = default);
     Task<IEnumerable<MedicineRecord>> GetMedicineStatusLast24HoursAsync(Guid residentId, CancellationToken cancellationToken = default);
 }
