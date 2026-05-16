@@ -1,4 +1,4 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 
 using Core.DTOs.Sar;
@@ -6,7 +6,7 @@ using Core.Interfaces.Services;
 
 using Microsoft.AspNetCore.Components;
 
-namespace WebUI.Components.Pages.Gdpr;
+namespace WebUI.Client.Components.Pages.Gdpr;
 
 /// <summary>
 /// Subject Access Request page — Admin generates GDPR Article 15 data exports (UC-010).

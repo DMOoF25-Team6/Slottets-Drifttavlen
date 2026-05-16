@@ -1,4 +1,4 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 
 using Core.DTOs.Security;
@@ -8,7 +8,7 @@ using Domain.Enums;
 
 using Microsoft.AspNetCore.Components;
 
-namespace WebUI.Components.Pages.Gdpr;
+namespace WebUI.Client.Components.Pages.Gdpr;
 
 /// <summary>
 /// Security Incidents page — Admin investigates, escalates, and closes security incidents (UC-010).
@@ -55,7 +55,6 @@ public partial class SecurityIncidentsPage : ComponentBase
         {
             IEnumerable<SecurityIncidentDto> result = await SecurityIncidentService.GetIncidentsAsync(CancellationToken.None);
             _incidents = [.. result];
-            // Re-select after reload if previous selection still exists
             if (_selectedIncident is not null)
             {
                 _selectedIncident = _incidents.FirstOrDefault(i => i.Id == _selectedIncident.Id);

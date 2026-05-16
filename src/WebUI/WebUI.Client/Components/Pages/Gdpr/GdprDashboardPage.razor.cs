@@ -1,11 +1,11 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 
 using Core.Interfaces.Services;
 
 using Microsoft.AspNetCore.Components;
 
-namespace WebUI.Components.Pages.Gdpr;
+namespace WebUI.Client.Components.Pages.Gdpr;
 
 /// <summary>
 /// GDPR Compliance Dashboard — central hub for Admin to access all UC-010 features.
@@ -26,6 +26,7 @@ public partial class GdprDashboardPage : ComponentBase
 
     private int _pendingCandidates;
     private int _openIncidents;
+    private string? _loadError;
 
     #endregion
 
@@ -54,11 +55,11 @@ public partial class GdprDashboardPage : ComponentBase
                 i.Status == Domain.Enums.IncidentStatus.Open ||
                 i.Status == Domain.Enums.IncidentStatus.UnderInvestigation);
         }
-        catch
+        catch (Exception ex)
         {
-            // Counters default to 0 if API unavailable — page still renders
             _pendingCandidates = 0;
             _openIncidents = 0;
+            _loadError = ex.Message;
         }
     }
 
