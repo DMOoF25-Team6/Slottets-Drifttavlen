@@ -43,7 +43,7 @@ public class StaffAssignmentController(
     /// <summary>
     /// Gets all assignments for a shift and date.
     /// </summary>
-    //[Authorize]
+    [Authorize]
     [HttpGet("list")]
     public async Task<ActionResult<IEnumerable<AssignmentOverviewDto>>> GetAssignments(
         int shiftType,

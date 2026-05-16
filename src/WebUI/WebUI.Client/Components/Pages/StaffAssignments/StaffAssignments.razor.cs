@@ -1,6 +1,8 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
+using System.Security.Claims;
 
+using Microsoft.AspNetCore.Components.Authorization;
 
 using Core.DTOs;
 using Core.Interfaces.Services;
@@ -27,6 +29,13 @@ public partial class StaffAssignments : ComponentBase
     private IHttpClientFactory HttpClientFactory { get; set; } = default!;
 
     [Inject]
+    private AuthenticationStateProvider AuthenticationStateProvider
+    {
+        get;
+        set;
+    } = default!;
+
+    [Inject]
     private IResidentService ResidentService { get; set; } = default!;
 
     // Stores the list of assignments shown by the component.
@@ -45,6 +54,7 @@ public partial class StaffAssignments : ComponentBase
 
     private Guid? _selectedEmployeeId;
 
+    private ClaimsPrincipal? _user;
 
     // Loads assignments based on the selected date and shift type.
     private async Task LoadAssignmentsAsync()
@@ -89,12 +99,15 @@ public partial class StaffAssignments : ComponentBase
         }
     }
 
+    // Method that loads employee data from the API
     private async Task LoadEmployeesAsync()
     {
         try
         {
             HttpClient client = HttpClientFactory.CreateClient("SlottetApi");
 
+            // Send a GET request to the "employees" endpoint
+            // and convert the JSON response into a collection of EmployeeDto object
             IEnumerable<EmployeeDto>? employees =
                 await client.GetFromJsonAsync<IEnumerable<EmployeeDto>>(
                     "employees");
@@ -108,12 +121,18 @@ public partial class StaffAssignments : ComponentBase
         }
     }
 
+    // Initializes the component by loading the current user's authentication state and fetching residents, employees, and assignments.
     protected override async Task OnInitializedAsync()
     {
+        // Get the current authentication state of the user
+        AuthenticationState authState =
+            await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        _user = authState.User;
+
         await LoadResidentsAsync();
         await LoadEmployeesAsync();
         await LoadAssignmentsAsync();
-
     }
 
 }
