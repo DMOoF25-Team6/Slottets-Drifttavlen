@@ -21,6 +21,7 @@ internal class Program
 
         // Token storage and authentication services (client-side).
         _ = builder.Services.AddScoped<TokenStorageService>();
+        _ = builder.Services.AddScoped<JwtAuthorizationMessageHandler>();
         _ = builder.Services.AddScoped<AuthService>();
 
         // The "CanManageResidents" policy allows access to resident management features for users with either:

@@ -52,9 +52,12 @@ public partial class StaffAssignments : ComponentBase
     private ShiftType _selectedShiftType= ShiftType.Day;
     private DateTime _selectedDate = DateTime.Today;
 
-    private Guid? _selectedEmployeeId;
+    private string? _selectedEmployeeId;
+    private string? _selectedResidentId;
 
     private ClaimsPrincipal? _user;
+
+    private string? _assignmentError;
 
     // Loads assignments based on the selected date and shift type.
     private async Task LoadAssignmentsAsync()
@@ -118,6 +121,59 @@ public partial class StaffAssignments : ComponentBase
         {
             _hasError = true;
             _employees = [];
+        }
+    }
+
+    // Creates a new staff assignment by sending a POST request to the API.
+    private async Task CreateAssignmentAsync()
+    {
+        _assignmentError =
+      $"Resident: {_selectedResidentId} | Employee: {_selectedEmployeeId}";
+
+        if (string.IsNullOrWhiteSpace(_selectedEmployeeId))
+        {
+            _assignmentError = "Please select a resident.";
+            return;
+        }
+
+        if (_selectedEmployeeId is null)
+        {
+            _assignmentError = "Please select an employee.";
+            return;
+        }
+
+       
+
+        try
+        {
+            HttpClient client = HttpClientFactory.CreateClient("SlottetApi");
+
+            StaffAssignmentDto dto = new()
+            {
+                ResidentId = Guid.Parse(_selectedResidentId!),
+                EmployeeId = Guid.Parse(_selectedEmployeeId!),
+                ShiftType = _selectedShiftType,
+                AssignmentDate = _selectedDate
+            };
+
+            HttpResponseMessage response =
+                await client.PostAsJsonAsync("staff-assignments", dto);
+
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadAssignmentsAsync();
+            }
+            else
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(error);
+
+                _hasError = true;
+            }
+        }
+        catch (Exception)
+        {
+            _hasError = true;
         }
     }
 

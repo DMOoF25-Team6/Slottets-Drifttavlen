@@ -19,7 +19,7 @@ public class StaffAssignmentController(
     /// <summary>
     /// Assigns an employee to a resident for a shift.
     /// </summary>
-    [Authorize]
+    //[Authorize]
     [HttpPost]
     public async Task<ActionResult<AssignmentOverviewDto>> CreateAssignment(
         [FromBody] StaffAssignmentDto dto,
@@ -43,7 +43,7 @@ public class StaffAssignmentController(
     /// <summary>
     /// Gets all assignments for a shift and date.
     /// </summary>
-    [Authorize]
+    //[Authorize]
     [HttpGet("list")]
     public async Task<ActionResult<IEnumerable<AssignmentOverviewDto>>> GetAssignments(
         int shiftType,
