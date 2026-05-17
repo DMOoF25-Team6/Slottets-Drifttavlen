@@ -33,6 +33,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
     public DbSet<AnonymizationCandidate> AnonymizationCandidates { get; set; }
     public DbSet<SecurityIncident> SecurityIncidents { get; set; }
     public DbSet<SubjectAccessRequest> SubjectAccessRequests { get; set; }
+    public DbSet<LoginAttempt> LoginAttempts { get; set; }
 
     // Identity-related DbSet for refresh tokens
     public DbSet<RefreshToken> RefreshTokens { get; set; }
@@ -65,6 +66,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
         _ = modelBuilder.ApplyConfiguration(new Configurations.EmployeeConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.RetentionPolicyConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.SubjectAccessRequestConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new Configurations.LoginAttemptConfiguration());
 
         _ = modelBuilder.Entity<MedicineStatusView>()
             .HasNoKey()

@@ -3,6 +3,7 @@
 
 using Core.DTOs;
 using Core.DTOs.Identity;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Mappers.Accounts;
 
@@ -27,8 +28,12 @@ public class AccountController(
     //RoleManager<IdentityRole<Guid>> roleManager,
     IRefreshTokenStore refreshTokenStore,
     //SignInManager<User> signInManager,
-    ITokenService tokenService) : ControllerBase
+    ITokenService tokenService,
+    ILoginAttemptRepository loginAttemptRepository,
+    IPseudonymizationService pseudonymizationService) : ControllerBase
 {
+    private readonly ILoginAttemptRepository _loginAttemptRepository = loginAttemptRepository;
+    private readonly IPseudonymizationService _pseudonymizationService = pseudonymizationService;
 
     /// <summary>
     /// Registers a new user Account.
@@ -163,17 +168,35 @@ public class AccountController(
             return BadRequest(new ErrorDto { ErrorMessages = ["Password skal udfyldes."] });
         }
 
+        // Record every authentication attempt (success and failure) to the
+        // LoginAttempts table so IncidentDetectionService can identify
+        // brute-force patterns and off-hours administrative access per UC-010
+        // and Datatilsynet "Logning af brugernes anvendelser af personoplysninger".
+        string clientIp = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
         User? user = await FindValidUserAsync(request.Email, request.Password);
+
         if (user == null)
         {
+            await RecordLoginAttemptAsync(
+                emailAttempted: request.Email,
+                userId: null,
+                succeeded: false,
+                ipAddress: clientIp,
+                failureReason: "InvalidCredentials");
             return Unauthorized(new ErrorDto { ErrorMessages = ["Ugyldig e-mail eller adgangskode."] });
         }
 
+        await RecordLoginAttemptAsync(
+            emailAttempted: request.Email,
+            userId: user.Id,
+            succeeded: true,
+            ipAddress: clientIp,
+            failureReason: string.Empty);
+
         string token = await tokenService.CreateJwtTokenAsync(user, await userManager.GetRolesAsync(user), await userManager.GetClaimsAsync(user));
 
-        // Generate refresh token
-        string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
-        RefreshToken refreshToken = await tokenService.CreateRefreshTokenAsync(user, ipAddress);
+        // Generate refresh token (reuse the same captured IP)
+        RefreshToken refreshToken = await tokenService.CreateRefreshTokenAsync(user, clientIp);
         await refreshTokenStore.SaveAsync(refreshToken, tokenService);
 
         LoginResponseDto response = new()
@@ -183,6 +206,46 @@ public class AccountController(
         };
 
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Persists a single authentication attempt. Failure to write the row must
+    /// never block the user-facing login response; defects in the audit pipeline
+    /// are reported via the exception filter but the HTTP outcome is preserved.
+    /// </summary>
+    private async Task RecordLoginAttemptAsync(
+        string emailAttempted,
+        Guid? userId,
+        bool succeeded,
+        string ipAddress,
+        string failureReason)
+    {
+        try
+        {
+            // Pseudonymize the normalised email; fall back to a sentinel so that
+            // attempts with empty input still produce a recordable hash.
+            string emailKey = string.IsNullOrWhiteSpace(emailAttempted)
+                ? "<empty>"
+                : emailAttempted.Trim().ToLowerInvariant();
+
+            LoginAttempt attempt = new()
+            {
+                Id = Guid.NewGuid(),
+                AttemptedAt = DateTime.UtcNow,
+                EmailHash = _pseudonymizationService.Pseudonymize(emailKey),
+                UserId = userId,
+                Succeeded = succeeded,
+                IpAddress = ipAddress,
+                FailureReason = failureReason
+            };
+            _ = await _loginAttemptRepository.CreateAsync(attempt);
+        }
+        catch
+        {
+            // Audit logging is best-effort: a transient DB error must not surface as
+            // a 500 to the user. The downstream IncidentDetectionService still has
+            // the AuditInterceptor trail to fall back on.
+        }
     }
 
     /// <summary>

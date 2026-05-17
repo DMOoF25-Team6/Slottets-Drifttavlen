@@ -16,4 +16,13 @@ public class SecurityIncidentDto
     public IncidentSeverity Severity { get; set; }
     public IncidentStatus Status { get; set; }
     public string InvestigationNotes { get; set; } = string.Empty;
+
+    /// <summary>
+    /// UTC deadline by which the controller must notify Datatilsynet under GDPR
+    /// Art. 33(1): "without undue delay and, where feasible, not later than 72
+    /// hours after having become aware of it". For an incident this is
+    /// <see cref="DetectedAt"/> + 72 hours; the UI surfaces a warning when the
+    /// remaining time drops below 24 hours.
+    /// </summary>
+    public DateTime BreachNotificationDeadlineUtc { get; set; }
 }
