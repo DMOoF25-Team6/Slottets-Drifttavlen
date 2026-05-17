@@ -328,8 +328,30 @@ Automatiserer:
 <a name="database-migration"></a>
 ## 🧪 Database migration
 
+```sh
 dotnet ef migrations add <name> --project src/Infrastructure.Data --startup-project src/Api
 dotnet ef database update --project src/Infrastructure.Data --startup-project src/Api
+```
+
+### UC-010 phase 3 schema changes
+
+After pulling this branch, the model contains a new nullable column
+`Resident.DischargedAt` and a new table `SubjectAccessRequests`. Generate
+the migration with:
+
+```sh
+dotnet ef migrations add Phase3_SubjectAccessRequestAndDischargedAt \
+    --project src/Infrastructure.Data --startup-project src/Api
+```
+
+Review the generated `Up`/`Down` methods (the `Up` should only `AddColumn`
+on `Residents` and `CreateTable` for `SubjectAccessRequests`; if anything
+else appears, ensure your local snapshot matches the merged branch before
+applying). Then apply to your environment with:
+
+```sh
+dotnet ef database update --project src/Infrastructure.Data --startup-project src/Api
+```
 
 
 <!-- MARKDOWN LINKS & IMAGES -->

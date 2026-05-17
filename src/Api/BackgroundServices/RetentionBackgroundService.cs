@@ -16,11 +16,17 @@ namespace Api.BackgroundServices;
 /// Runs once every 24 hours by default. Does NOT anonymise data directly; always
 /// requires Admin approval through the Anonymisation Queue.
 ///
-/// The "inactivity" trigger is computed as the most recent activity timestamp among
-/// ResidentNote.EditedAt, MedicineRecord.Timestamp and PainkillerRecord.GivenAt for
-/// each resident. If that timestamp is older than the retention period of the
-/// RetentionDataCategory.AnonymizationTrigger policy (default 90 days per UC-010
-/// "Default Retention Values"), an AnonymizationCandidate(Pending) record is created.
+/// Retention-trigger evaluation per resident (first match wins):
+///   1. <c>Resident.DischargedAt</c>: when set, the resident is considered eligible
+///      once <c>DischargedAt + RetentionPolicy.RetentionPeriod &lt; DateTime.UtcNow</c>.
+///      This is the canonical trigger described in UC-010 "Default Retention Values".
+///   2. Most recent activity across ResidentNote.EditedAt, MedicineRecord.Timestamp,
+///      and PainkillerRecord.GivenAt: used as a fallback for legacy rows lacking a
+///      DischargedAt value, so the scan still works on the existing data set.
+///
+/// A resident with neither a DischargedAt timestamp nor any recorded activity
+/// produces no triggering signal; Admin can still create a manual candidate via
+/// the UI for one-off anonymisation needs.
 ///
 /// References:
 ///   - GDPR Art. 5(1)(e): storage limitation.
@@ -132,12 +138,9 @@ public class RetentionBackgroundService : BackgroundService
                 continue;
             }
 
-            DateTime? lastActivity = ComputeLastActivityUtc(resident.Id, notes, medicines, painkillers);
-
-            // A resident with no recorded activity at all is treated as "no triggering
-            // signal" rather than "inactive forever"; Admin can still create a manual
-            // candidate via the UI if a one-off anonymisation is required.
-            if (lastActivity is null || lastActivity > cutoffUtc)
+            (DateTime triggerInstant, string triggerReason)? trigger =
+                EvaluateTrigger(resident, notes, medicines, painkillers, cutoffUtc, triggerPolicy);
+            if (trigger is null)
             {
                 continue;
             }
@@ -148,8 +151,7 @@ public class RetentionBackgroundService : BackgroundService
                 ResidentId = resident.Id,
                 RetentionPolicyId = triggerPolicy.Id,
                 SuggestedAt = DateTime.UtcNow,
-                Reason = $"No recorded activity since {lastActivity:yyyy-MM-dd} "
-                         + $"(retention period {triggerPolicy.RetentionPeriod.TotalDays:N0} days exceeded).",
+                Reason = trigger.Value.triggerReason,
                 Status = AnonymizationStatus.Pending
             };
             _ = await candidateRepository.CreateAsync(candidate, cancellationToken);
@@ -159,6 +161,46 @@ public class RetentionBackgroundService : BackgroundService
         _logger.LogInformation(
             "Retention scan completed. Loaded {PolicyCount} policies, evaluated {ResidentCount} residents, created {Created} candidates.",
             policies.Count(), residents.Count(), created);
+    }
+
+    /// <summary>
+    /// Evaluates whether the resident has crossed the retention threshold and, if so,
+    /// returns the instant that triggered eligibility together with a human-readable reason.
+    /// </summary>
+    /// <remarks>
+    /// Trigger precedence:
+    ///   1. <c>Resident.DischargedAt</c> when set (canonical UC-010 rule).
+    ///   2. Most recent activity timestamp (legacy fallback for residents without
+    ///      a DischargedAt value).
+    /// Returns <see langword="null"/> when neither signal indicates the cutoff has been
+    /// crossed; the resident is then ignored by this scan iteration.
+    /// </remarks>
+    private static (DateTime triggerInstant, string triggerReason)? EvaluateTrigger(
+        Resident resident,
+        IEnumerable<ResidentNote> notes,
+        IEnumerable<MedicineRecord> medicines,
+        IEnumerable<PainkillerRecord> painkillers,
+        DateTime cutoffUtc,
+        RetentionPolicy triggerPolicy)
+    {
+        int retentionDays = (int)triggerPolicy.RetentionPeriod.TotalDays;
+
+        if (resident.DischargedAt is DateTime discharged && discharged <= cutoffUtc)
+        {
+            string reason =
+                $"Discharged {discharged:yyyy-MM-dd}; retention period {retentionDays:N0} days elapsed.";
+            return (discharged, reason);
+        }
+
+        DateTime? lastActivity = ComputeLastActivityUtc(resident.Id, notes, medicines, painkillers);
+        if (lastActivity is DateTime activity && activity <= cutoffUtc)
+        {
+            string reason =
+                $"No recorded activity since {activity:yyyy-MM-dd} (retention period {retentionDays:N0} days exceeded).";
+            return (activity, reason);
+        }
+
+        return null;
     }
 
     /// <summary>

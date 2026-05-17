@@ -34,6 +34,7 @@ public static class DependencyInjection
         _ = services.AddScoped<IRetentionPolicyAuditRepository, RetentionPolicyAuditRepository>();
         _ = services.AddScoped<IAnonymizationCandidateRepository, AnonymizationCandidateRepository>();
         _ = services.AddScoped<ISecurityIncidentRepository, SecurityIncidentRepository>();
+        _ = services.AddScoped<ISubjectAccessRequestRepository, SubjectAccessRequestRepository>();
 
         // Identity services
         _ = services.AddScoped<IRefreshTokenStore, RefreshTokenStore>();

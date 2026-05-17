@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using System.Security.Claims;
 using System.Text.Json;
 
 using Core.DTOs.Sar;
@@ -34,6 +35,7 @@ public class SubjectAccessRequestController : ControllerBase
     private readonly IPainkillerRepository _painkillerRepository;
     private readonly IAuditRepository _auditRepository;
     private readonly IRetentionPolicyRepository _retentionPolicyRepository;
+    private readonly ISubjectAccessRequestRepository _sarRepository;
 
     #endregion
 
@@ -45,7 +47,8 @@ public class SubjectAccessRequestController : ControllerBase
         IMedicineRepository medicineRepository,
         IPainkillerRepository painkillerRepository,
         IAuditRepository auditRepository,
-        IRetentionPolicyRepository retentionPolicyRepository)
+        IRetentionPolicyRepository retentionPolicyRepository,
+        ISubjectAccessRequestRepository sarRepository)
     {
         ArgumentNullException.ThrowIfNull(residentRepository);
         ArgumentNullException.ThrowIfNull(residentNoteRepository);
@@ -53,12 +56,14 @@ public class SubjectAccessRequestController : ControllerBase
         ArgumentNullException.ThrowIfNull(painkillerRepository);
         ArgumentNullException.ThrowIfNull(auditRepository);
         ArgumentNullException.ThrowIfNull(retentionPolicyRepository);
+        ArgumentNullException.ThrowIfNull(sarRepository);
         _residentRepository = residentRepository;
         _residentNoteRepository = residentNoteRepository;
         _medicineRepository = medicineRepository;
         _painkillerRepository = painkillerRepository;
         _auditRepository = auditRepository;
         _retentionPolicyRepository = retentionPolicyRepository;
+        _sarRepository = sarRepository;
     }
 
     #endregion
@@ -188,6 +193,21 @@ public class SubjectAccessRequestController : ControllerBase
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         });
 
+        // Persist the SAR lifecycle for GDPR Art. 30 record-of-processing. The Id
+        // is the same value returned to the caller as ExportId, so the subsequent
+        // MarkFulfilled call can correlate without holding any session state.
+        SubjectAccessRequest sar = new()
+        {
+            Id = exportId,
+            ResidentId = resident.Id,
+            RequestedByEmployeeId = ResolveCurrentEmployeeId(),
+            RequestedAt = generatedAt,
+            ScopeOptions = string.Join(',', dto.ScopeOptions ?? []),
+            ExportFileName = fileName,
+            ExportGeneratedAt = generatedAt
+        };
+        _ = await _sarRepository.CreateAsync(sar, cancellationToken);
+
         SarExportPackageDto package = SarExportMapper.ToPackageDto(exportId, generatedAt, fileName, payload);
         return Ok(package);
     }
@@ -200,7 +220,7 @@ public class SubjectAccessRequestController : ControllerBase
     /// <returns><see langword="true"/> if the SAR was marked fulfilled.</returns>
     /// <remarks>POST /subjectaccessrequest/fulfilled</remarks>
     [HttpPost("fulfilled")]
-    public Task<ActionResult<bool>> MarkFulfilled(
+    public async Task<ActionResult<bool>> MarkFulfilled(
         [FromBody] SarFulfilledDto dto,
         CancellationToken cancellationToken)
     {
@@ -208,19 +228,48 @@ public class SubjectAccessRequestController : ControllerBase
 
         if (dto.SarId == Guid.Empty)
         {
-            return Task.FromResult<ActionResult<bool>>(BadRequest("SarId is required."));
+            return BadRequest("SarId is required.");
         }
 
-        // SAR fulfilment is currently recorded via AuditInterceptor (UC-009): the export
-        // generation and this fulfilment confirmation each produce an AuditEntry that
-        // preserves the chronology required by GDPR Art. 12(3) ("provide information on
-        // action taken... without undue delay and at the latest within one month").
-        //
-        // A dedicated SubjectAccessRequest entity (with FulfilledAt, FulfilledByEmployeeId,
-        // ExportFileName) is intentionally deferred until a schema migration is scheduled.
-        // The migration adds a new table and so must be coordinated with the database
-        // operator; see /docs/use-cases/uc-010-ensure-data-security-and-gdpr-compliance/.
-        return Task.FromResult<ActionResult<bool>>(Ok(true));
+        SubjectAccessRequest? sar = await _sarRepository.GetByIdAsync(dto.SarId, cancellationToken);
+        if (sar is null)
+        {
+            return NotFound($"No subject access request found with id {dto.SarId}.");
+        }
+
+        if (sar.FulfilledAt.HasValue)
+        {
+            // Idempotency: avoid silently overwriting an existing fulfilment timestamp,
+            // which would corrupt the GDPR Art. 12(3) compliance evidence.
+            return Conflict($"SAR {sar.Id} was already marked fulfilled at {sar.FulfilledAt:O}.");
+        }
+
+        sar.FulfilledAt = dto.FulfilledAt == default ? DateTime.UtcNow : dto.FulfilledAt;
+        sar.FulfilledByEmployeeId = ResolveCurrentEmployeeId();
+        await _sarRepository.UpdateAsync(sar, cancellationToken);
+
+        // AuditInterceptor (UC-009) captures this SaveChanges in the GDPR Art. 30
+        // record-of-processing trail; SubjectAccessRequest.FulfilledAt provides the
+        // primary evidence that the Art. 12(3) one-month deadline was respected.
+        return Ok(true);
+    }
+
+    /// <summary>
+    /// Returns the authenticated employee id from the JWT NameIdentifier claim, or
+    /// <see cref="Guid.Empty"/> if the claim is missing or malformed.
+    /// </summary>
+    /// <remarks>
+    /// The endpoint is protected by <c>[Authorize(Roles = "admin")]</c>, so an
+    /// authenticated principal is guaranteed; <see cref="Guid.Empty"/> only occurs in
+    /// integration tests where the mock auth handler omits the sub claim. Treating the
+    /// missing case as <see cref="Guid.Empty"/> rather than throwing keeps SAR
+    /// fulfilment resilient: the SAR row is still persisted with a traceable
+    /// AuditEntry rather than failing the user-facing request.
+    /// </remarks>
+    private Guid ResolveCurrentEmployeeId()
+    {
+        string? idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.TryParse(idClaim, out Guid id) ? id : Guid.Empty;
     }
 
     #endregion
