@@ -25,6 +25,20 @@ public class Resident : IEntity
     public TrafficLightStatus? TrafficLightStatus { get; set; }
     [Required]
     public Department Department { get; set; }
+
+    /// <summary>
+    /// UTC timestamp at which the resident was discharged from the care home, or
+    /// <see langword="null"/> while the resident is still active.
+    /// </summary>
+    /// <remarks>
+    /// Used by <c>RetentionBackgroundService</c> (UC-010) as the primary retention
+    /// trigger: residents with a non-null <see cref="DischargedAt"/> become candidates
+    /// for anonymisation once the configured retention period has elapsed. Aligns the
+    /// data model with the "DischargedAt + 90 days" rule documented in
+    /// <c>docs/use-cases/uc-010-ensure-data-security-and-gdpr-compliance/uc-010.usecase.da.md</c>.
+    /// </remarks>
+    public DateTime? DischargedAt { get; set; }
+
     public virtual ICollection<ResidentNote> Notes { get; set; } = [];
     public virtual ICollection<MedicineRecord> Medicines { get; set; } = [];
     public virtual ICollection<PainkillerRecord> Painkillers { get; set; } = [];
