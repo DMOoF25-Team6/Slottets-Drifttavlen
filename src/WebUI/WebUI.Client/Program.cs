@@ -17,6 +17,7 @@ internal class Program
         WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
         _ = builder.Services.AddInfrastructure(builder.Configuration);
         _ = builder.Services.AddScoped<TokenStorageService>();
+        _ = builder.Services.AddScoped<JwtAuthorizationMessageHandler>();
         _ = builder.Services.AddScoped<AuthService>();
         _ = builder.Services.AddAuthorizationCore();
         _ = builder.Services.AddCascadingAuthenticationState();

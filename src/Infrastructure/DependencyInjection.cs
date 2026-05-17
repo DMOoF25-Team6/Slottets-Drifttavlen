@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+
 using Core;
 using Core.Interfaces.Managers;
 using Core.Interfaces.Services;
@@ -34,6 +35,7 @@ public static class DependencyInjection
         {
             client.BaseAddress = new Uri(apiBaseUrl.EndsWith('/') ? apiBaseUrl : apiBaseUrl + "/");
         });
+            
 
         // CreateAccountAsync managers that contain business logic and coordinate between repositories and services
         _ = services.AddScoped<IResidentManager, ResidentManager>();
