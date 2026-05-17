@@ -24,6 +24,13 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     {
         Environment.SetEnvironmentVariable("TokenValidationParameters__IssuerSigningKey", "TestSecretKey12345678901234567890");
 
+        // UC-010: PseudonymizationService fails fast in its constructor when
+        // GDPR_PSEUDO_SALT is not configured (this is intentional for production
+        // to prevent silent fall-back to a weak hash). The test host injects a
+        // deterministic salt so DI can resolve the singleton without disabling
+        // the safety check elsewhere.
+        Environment.SetEnvironmentVariable("GDPR_PSEUDO_SALT", "TestSaltForCiAndIntegrationTests-DoNotUseInProduction");
+
         _ = builder.ConfigureAppConfiguration((context, config) =>
         {
             _ = config.AddInMemoryCollection(new Dictionary<string, string?>
@@ -31,7 +38,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 ["TokenValidationParameters:Issuer"] = "http://localhost",
                 ["TokenValidationParameters:Audience"] = "http://localhost",
                 ["TokenValidationParameters:IssuerSigningKey"] = "TestSecretKey12345678901234567890",
-                ["TokenValidationParameters__IssuerSigningKey"] = "TestSecretKey12345678901234567890"
+                ["TokenValidationParameters__IssuerSigningKey"] = "TestSecretKey12345678901234567890",
+                ["GDPR_PSEUDO_SALT"] = "TestSaltForCiAndIntegrationTests-DoNotUseInProduction"
             });
         });
 
