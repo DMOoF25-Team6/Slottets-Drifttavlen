@@ -176,6 +176,49 @@ public partial class SecurityIncidentsPage : ComponentBase
         _ => "bg-light text-dark"
     };
 
+    /// <summary>
+    /// Returns the Bootstrap badge class for the Art. 33 notification deadline countdown.
+    /// Once the incident has been notified or closed, the deadline is informational only.
+    /// </summary>
+    private static string GetDeadlineBadgeClass(TimeSpan remaining, IncidentStatus status)
+    {
+        if (status == IncidentStatus.BreachNotified || status == IncidentStatus.Closed)
+        {
+            return "bg-secondary";
+        }
+        if (remaining <= TimeSpan.Zero)
+        {
+            return "bg-danger";
+        }
+        if (remaining <= TimeSpan.FromHours(24))
+        {
+            return "bg-warning text-dark";
+        }
+        return "bg-info text-dark";
+    }
+
+    /// <summary>
+    /// Human-readable countdown to the GDPR Art. 33(1) 72-hour deadline.
+    /// </summary>
+    private static string FormatDeadline(TimeSpan remaining, IncidentStatus status)
+    {
+        if (status == IncidentStatus.BreachNotified)
+        {
+            return "Notified";
+        }
+        if (status == IncidentStatus.Closed)
+        {
+            return "Closed (no notification)";
+        }
+        if (remaining <= TimeSpan.Zero)
+        {
+            return $"OVERDUE by {Math.Abs(remaining.TotalHours):N0}h";
+        }
+        return remaining.TotalHours >= 1
+            ? $"{remaining.TotalHours:N0}h remaining"
+            : $"{remaining.TotalMinutes:N0}m remaining";
+    }
+
     private void ShowFeedback(string message, bool isError)
     {
         _feedbackMessage = message;

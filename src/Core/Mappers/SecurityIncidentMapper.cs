@@ -12,6 +12,13 @@ namespace Core.Mappers;
 /// </summary>
 public static class SecurityIncidentMapper
 {
+    /// <summary>
+    /// GDPR Art. 33(1) requires notification of a personal data breach without
+    /// undue delay and at the latest 72 hours after the controller becomes aware
+    /// of it. We treat <c>DetectedAt</c> as the awareness instant.
+    /// </summary>
+    private static readonly TimeSpan Art33NotificationWindow = TimeSpan.FromHours(72);
+
     public static SecurityIncidentDto ToDto(SecurityIncident entity) => new()
     {
         Id = entity.Id,
@@ -19,6 +26,7 @@ public static class SecurityIncidentMapper
         Type = entity.Type,
         Severity = entity.Severity,
         Status = entity.Status,
-        InvestigationNotes = entity.InvestigationNotes
+        InvestigationNotes = entity.InvestigationNotes,
+        BreachNotificationDeadlineUtc = entity.DetectedAt + Art33NotificationWindow
     };
 }

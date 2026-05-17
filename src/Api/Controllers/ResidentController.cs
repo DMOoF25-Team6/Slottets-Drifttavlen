@@ -227,6 +227,62 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
     }
 
     /// <summary>
+    /// Marks a resident as discharged, starting the GDPR retention countdown (UC-010).
+    /// </summary>
+    /// <param name="id">The unique identifier of the resident to discharge.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>The updated resident on success; <see cref="NotFoundResult"/> when the resident does not exist; <see cref="ConflictObjectResult"/> when the resident is already discharged.</returns>
+    /// <remarks>
+    /// Sets <c>Resident.DischargedAt = DateTime.UtcNow</c>. From that moment the
+    /// <c>RetentionBackgroundService</c> uses this timestamp instead of the
+    /// last-activity fallback when deciding whether to create an
+    /// <c>AnonymizationCandidate</c> per GDPR Art. 5(1)(e) storage limitation.
+    /// The operation is intentionally idempotent-on-state: a second discharge
+    /// returns 409 Conflict so the original discharge date — and therefore the
+    /// retention deadline — cannot be silently reset.
+    /// </remarks>
+    [Authorize(Policy = "CanManageResidents")]
+    [HttpPost("{id:guid}/discharge")]
+    public async Task<ActionResult<ResidentResponseDto>> Discharge(Guid id, CancellationToken cancellationToken)
+    {
+        Resident? resident = await _residentRepository.GetByIdAsync(id, cancellationToken);
+        if (resident is null)
+        {
+            return NotFound();
+        }
+
+        if (!UserCanManageDepartment(resident.Department))
+        {
+            return Forbid();
+        }
+
+        if (resident.DischargedAt.HasValue)
+        {
+            return Conflict(new ErrorDto
+            {
+                ErrorMessages =
+                [
+                    $"Resident is already discharged at {resident.DischargedAt:O}; "
+                    + "resetting the discharge date is not permitted (GDPR retention countdown integrity)."
+                ]
+            });
+        }
+
+        resident.DischargedAt = DateTime.UtcNow;
+        await _residentRepository.UpdateAsync(resident, cancellationToken);
+
+        ResidentResponseDto dto = new()
+        {
+            Id = resident.Id,
+            Initials = resident.Initials,
+            TrafficLightStatus = resident.TrafficLightStatus.HasValue ? (int)resident.TrafficLightStatus.Value : null,
+            Department = resident.Department,
+            Notes = []
+        };
+        return Ok(dto);
+    }
+
+    /// <summary>
     /// Returns <see langword="true"/> when the authenticated user may manage residents in <paramref name="department"/>.
     /// Users without a Department claim are unrestricted (admins). Users with a Department claim must match.
     /// </summary>

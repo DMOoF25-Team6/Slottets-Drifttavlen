@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260517085816_Phase4_LoginAttemptsAndUC010Schema")]
-    partial class Phase4_LoginAttemptsAndUC010Schema
+    [Migration("20260517090538_Phase3_FullGdprSchema")]
+    partial class Phase3_FullGdprSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -210,6 +210,47 @@ namespace Infrastructure.Data.Migrations
                             LastName = "Holm",
                             UserId = new Guid("48245a9c-f2a5-4e8f-9554-b6acc9206d37")
                         });
+                });
+
+            modelBuilder.Entity("Domain.Entities.LoginAttempt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("AttemptedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("EmailHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<string>("FailureReason")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<string>("IpAddress")
+                        .IsRequired()
+                        .HasMaxLength(45)
+                        .HasColumnType("varchar(45)");
+
+                    b.Property<bool>("Succeeded")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttemptedAt");
+
+                    b.HasIndex("EmailHash", "AttemptedAt");
+
+                    b.HasIndex("IpAddress", "AttemptedAt");
+
+                    b.ToTable("LoginAttempts");
                 });
 
             modelBuilder.Entity("Domain.Entities.MedicineRecord", b =>

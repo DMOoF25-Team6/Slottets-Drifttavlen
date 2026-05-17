@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Phase4_LoginAttemptsAndUC010Schema : Migration
+    public partial class Phase3_FullGdprSchema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,6 +16,27 @@ namespace Infrastructure.Data.Migrations
                 table: "Residents",
                 type: "datetime(6)",
                 nullable: true);
+
+            migrationBuilder.CreateTable(
+                name: "LoginAttempts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    AttemptedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    EmailHash = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    Succeeded = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    IpAddress = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    FailureReason = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LoginAttempts", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "SubjectAccessRequests",
@@ -242,6 +263,21 @@ namespace Infrastructure.Data.Migrations
                 value: null);
 
             migrationBuilder.CreateIndex(
+                name: "IX_LoginAttempts_AttemptedAt",
+                table: "LoginAttempts",
+                column: "AttemptedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LoginAttempts_EmailHash_AttemptedAt",
+                table: "LoginAttempts",
+                columns: new[] { "EmailHash", "AttemptedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LoginAttempts_IpAddress_AttemptedAt",
+                table: "LoginAttempts",
+                columns: new[] { "IpAddress", "AttemptedAt" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SubjectAccessRequests_FulfilledAt",
                 table: "SubjectAccessRequests",
                 column: "FulfilledAt");
@@ -255,6 +291,9 @@ namespace Infrastructure.Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "LoginAttempts");
+
             migrationBuilder.DropTable(
                 name: "SubjectAccessRequests");
 
