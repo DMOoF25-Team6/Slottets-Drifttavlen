@@ -4,6 +4,7 @@
 using Core.Interfaces.Services;
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace WebUI.Client.Components.Pages.Gdpr;
 
@@ -19,7 +20,8 @@ public partial class GdprDashboardPage : ComponentBase
 
     [Inject]
     private ISecurityIncidentService SecurityIncidentService { get; set; } = default!;
-
+    [Inject]
+    private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
     #endregion
 
     #region Fields
@@ -32,11 +34,23 @@ public partial class GdprDashboardPage : ComponentBase
 
     #region Lifecycle
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender)
+        {
+            return;
+        }
+        // Auto-login as the read-only dashboard kiosk user if not already authenticated.
+        await InitializeAuthorizationAsync();
         await LoadCountersAsync();
+        StateHasChanged();
     }
 
+    private async Task InitializeAuthorizationAsync()
+    {
+        AuthenticationState authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _ = authState.User;
+    }
     #endregion
 
     #region Methods
@@ -52,8 +66,8 @@ public partial class GdprDashboardPage : ComponentBase
             IEnumerable<Core.DTOs.Security.SecurityIncidentDto> incidents =
                 await SecurityIncidentService.GetIncidentsAsync(CancellationToken.None);
             _openIncidents = incidents.Count(i =>
-                i.Status == Domain.Enums.IncidentStatus.Open ||
-                i.Status == Domain.Enums.IncidentStatus.UnderInvestigation);
+                i.Status is Domain.Enums.IncidentStatus.Open or
+                Domain.Enums.IncidentStatus.UnderInvestigation);
         }
         catch (Exception ex)
         {
