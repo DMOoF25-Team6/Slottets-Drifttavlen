@@ -13,7 +13,7 @@ do {
     $elapsed += 2
     $status = docker compose --profile prod ps --format json 2>$null |
         ConvertFrom-Json |
-        Where-Object { $_.Service -match "db|mysql|postgres|mssql" } |
+        Where-Object { $_.Service -match "db|mysql|postgres|mssql|sqlserver" } |
         Select-Object -ExpandProperty Health -ErrorAction SilentlyContinue
 } while ($status -ne "healthy" -and $elapsed -lt $timeout)
 
