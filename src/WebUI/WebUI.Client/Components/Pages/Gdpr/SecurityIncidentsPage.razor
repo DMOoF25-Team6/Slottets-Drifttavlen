@@ -2,11 +2,13 @@
 
 @page "/admin/gdpr/incidents"
 @rendermode InteractiveAuto
-@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "admin")]
+@* @attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "admin")] *@
 
 @using Core.DTOs.Security
 @using Domain.Enums
 
+<AuthorizeView Roles="admin">
+  <Authorized>
 <PageTitle>Security Incidents</PageTitle>
 
 <main class="container mt-4">
@@ -154,3 +156,5 @@
         </div>
     }
 </main>
+</Authorized>
+</AuthorizeView>
