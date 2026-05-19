@@ -21,10 +21,11 @@ public class RetentionPolicyAudit : IEntity
     public Guid Id { get; set; }
 
     [Required]
-    [ForeignKey(nameof(RetentionPolicy))]
+    [ForeignKey(nameof(Domain.Entities.RetentionPolicy))]
     public Guid RetentionPolicyId { get; set; }
 
     [Required]
+    [ForeignKey(nameof(Domain.Entities.Employee))]
     public Guid ChangedByEmployeeId { get; set; }
 
     [Required]
