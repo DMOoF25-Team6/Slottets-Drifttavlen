@@ -99,12 +99,16 @@ public class Program
         WebApplication app = builder.Build();
 
         // Apply any pending migrations at startup
+        
         //using IServiceScope scope = app.Services.CreateScope();
-        //AppDbContext ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        //if (ctx.DatabaseController.IsRelational())
-        //{
-        //    ctx.DatabaseController.Migrate();
-        //}
+
+       // AppDbContext ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+       // if (ctx.Database.IsRelational())
+       // {
+        //    ctx.Database.Migrate();
+       // }
+        
 
         // Configure the HTTP request pipeline.
         //if (app.Environment.IsDevelopment())

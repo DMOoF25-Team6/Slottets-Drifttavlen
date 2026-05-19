@@ -19,7 +19,7 @@ public class StaffAssignmentController(
     /// <summary>
     /// Assigns an employee to a resident for a shift.
     /// </summary>
-    //[Authorize]
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<AssignmentOverviewDto>> CreateAssignment(
         [FromBody] StaffAssignmentDto dto,

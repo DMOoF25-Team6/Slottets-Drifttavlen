@@ -26,7 +26,7 @@ sequenceDiagram
     actor StaffMember as Staff Member
 
     participant StaffAssignmentsPage as Presentation Layer
-    participant StaffAssignmentService as Application Layer
+    participant StaffAssignmentService as Application(Core) Layer
 
     StaffMember->>+StaffAssignmentsPage: OpenShiftAssignments()
 
@@ -59,7 +59,7 @@ sequenceDiagram
 ### WebApi Layer → Infrastructure Layer (Data Access)
 ```mermaid
 sequenceDiagram
-    participant StaffAssignmentService as Application Layer
+    participant StaffAssignmentService as Application(Core) Layer
     participant StaffAssignmentManager as Infrastructure Layer
     participant WebApi as WebApi
 

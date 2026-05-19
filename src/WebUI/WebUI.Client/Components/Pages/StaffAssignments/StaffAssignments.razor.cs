@@ -178,17 +178,28 @@ public partial class StaffAssignments : ComponentBase
     }
 
     // Initializes the component by loading the current user's authentication state and fetching residents, employees, and assignments.
-    protected override async Task OnInitializedAsync()
+    // This method runs after the component has rendered on the screen
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Get the current authentication state of the user
+        // Only run this code on the first render to avoid infinite loops
+        if (!firstRender)
+        {
+            return;
+        }
+
+        // Get the current authentication state (logged-in user info)
         AuthenticationState authState =
             await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
+        // Save the logged-in user into the _user variable
         _user = authState.User;
 
+        // Load residents, employees, and assignments from the API
         await LoadResidentsAsync();
         await LoadEmployeesAsync();
         await LoadAssignmentsAsync();
-    }
 
+        // Refresh the UI after data has loaded
+        StateHasChanged();
+    }
 }

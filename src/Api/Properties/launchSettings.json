@@ -16,34 +16,31 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5051",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "MYSQL_USER": "root",
-        "MYSQL_PASSWORD": "yourpassword",
-        "MYSQL_HOST": "localhost",
-        "MYSQL_DATABASE": "yourdatabase"
       }
-    },
-    "https": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:7040;http://localhost:5051",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "MYSQL_USER": "root",
-        "MYSQL_PASSWORD": "yourpassword",
-        "MYSQL_HOST": "localhost",
-        "MYSQL_DATABASE": "yourdatabase"
-      }
-    },
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+    }
+  },
+  "https": {
+    "commandName": "Project",
+    "dotnetRunMessages": true,
+    "launchBrowser": true,
+    "launchUrl": "swagger",
+    "applicationUrl": "https://localhost:7040;http://localhost:5051",
+    "environmentVariables": {
+      "ASPNETCORE_ENVIRONMENT": "Development",
+      "MYSQL_USER": "root",
+      "MYSQL_PASSWORD": "yourpassword",
+      "MYSQL_HOST": "localhost",
+      "MYSQL_DATABASE": "yourdatabase"
+    }
+  },
+  "IIS Express": {
+    "commandName": "IISExpress",
+    "launchBrowser": true,
+    "launchUrl": "swagger",
+    "environmentVariables": {
+      "GDPR_PSEUDO_SALT": "testsalt123",
+      "ASPNETCORE_ENVIRONMENT": "Development"
     }
   }
 }
+

@@ -20,7 +20,7 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("employees")]
-//[Authorize]
+[Authorize]
 public class EmployeeController(
    IEmployeeRepository repository)
     : ControllerBase
