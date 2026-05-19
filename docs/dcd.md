@@ -48,6 +48,18 @@ classDiagram
       +GivenAt: DateTime
       +NextAllowedTime: DateTime
     }
+    class AnonymizationCandidate {
+      +Id: guid
+      +ResidentId: guid
+      +RetentionPolicyId: guid
+      +SuggestedAt: DateTime
+      +Reason: string
+      +Status: AnonymizationStatus
+    }
+    class User {
+      +UserName: string nullable
+
+    }
   }
 
   namespace Domain.Enums {
@@ -71,6 +83,10 @@ classDiagram
   Resident --* TrafficLightStatus : 
   MedicineRecord --> Resident : has
   PainkillerRecord --> Resident : has
+  AnonymizationCandidate --> Resident : candidateFor
+  AnonymizationCandidate --> RetentionPolicy : uses
+  AnonymizationCandidate --|> IEntity : implements
+  AnonymizationCandidate --> AnonymizationStatus : status
   %% Associations for Interfaces
 
   %% Interface Implementations
@@ -82,6 +98,7 @@ classDiagram
   ResidentNote --|> IEntity : implements
   MedicineRecord --|> IEntity : implements
   PainkillerRecord --|> IEntity : implements
+  RetentionPolicy --|> IEntity : implements
 
   %% Service Dependencies
 
