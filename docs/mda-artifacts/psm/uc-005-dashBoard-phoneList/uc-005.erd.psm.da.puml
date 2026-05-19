@@ -1,0 +1,128 @@
+@startuml
+
+' =============================================================
+' UC-005 Entity Relationship Diagram (PSM) - Dansk
+'
+' MDA-niveau: Platform Specific Model
+' Målplatform: MySQL (via EF Core 8)
+'
+' Udledt fra:
+' - uc-005.dm.pim.da.puml (PIM Domænemodel)
+' - uc-005.dcd.pim-marked.da.puml (marks)
+' - mappings/uc-005.mapping.pim-to-psm.da.md (Regler T1, T2, T3, T4, T5, T7, T8, T9)
+'
+' Dette ERD viser MySQL-database-skemaet som det vil blive
+' oprettet af EF Core-migrations fra PSM-entiteterne.
+'
+' Sporbarhed: Hver begrænsning her stammer fra en mapping-regel.
+'
+' Bemærk: Tabel- og kolonnenavne forbliver på engelsk i databasen
+' iht. EF Core-konventioner og projektets kodestandarder.
+' =============================================================
+
+title UC-005 Entity Relationship Diagram — MySQL-skema (PSM)
+
+skinparam shadowing false
+skinparam linetype ortho
+skinparam classBackgroundColor #F0E8F8
+skinparam classBorderColor #6B4C9A
+
+' --- TABELLER ---
+
+entity "Caregivers" as Caregivers <<tabel>> {
+    * **Id** : char(36) <<PK>>
+    --
+    * FirstName : varchar(100)
+    * LastName : varchar(100)
+}
+
+entity "Phones" as Phones <<tabel>> {
+    * **Number** : varchar(10) <<PK>>
+    --
+    (seed-data: 7 faste numre)
+}
+
+entity "PhoneAssignments" as Assignments <<tabel>> {
+    * **Id** : char(36) <<PK>>
+    --
+    * CaregiverId : char(36) <<FK>>
+    * PhoneNumber : varchar(10) <<FK>>
+    * ShiftType : varchar(10)
+    * AssignedAt : datetime(6)
+    --
+    <i>Indekser:</i>
+    UQ IX_PhoneAssignment_Phone_Shift
+        (PhoneNumber, ShiftType)
+    UQ IX_PhoneAssignment_Caregiver_Shift
+        (CaregiverId, ShiftType)
+}
+
+' --- RELATIONER ---
+
+Assignments }o--|| Caregivers : CaregiverId
+Assignments }o--|| Phones : PhoneNumber
+
+' --- NOTER ---
+
+note right of Caregivers
+    <b>Regler anvendt:</b>
+    T1: <<Persistent>> -> tabel Caregivers
+    T2: <<UniquelyIdentified>> + <<Identifier>>
+        -> PK Id (char(36) for Guid)
+    T3: <<RequiredValue>> -> NOT NULL
+    T4: <<BoundedLength>> -> varchar(100)
+end note
+
+note right of Phones
+    <b>Regler anvendt:</b>
+    T1: <<Persistent>> -> tabel Phones
+    T2: Number er PK (intet separat Id da ValueObject)
+    T4: <<BoundedLength>> -> varchar(10)
+    T7: <<ImmutableSet>> -> seed-migration med:
+        41522, 41523, 41524, 41525, 41526, 41527, 41529
+end note
+
+note bottom of Assignments
+    <b>Regler anvendt:</b>
+    T1: <<Persistent>> -> tabel PhoneAssignments
+    T2: <<UniquelyIdentified>> -> PK Id
+    T3: <<RequiredValue>> -> alle kolonner NOT NULL
+    T5: <<UniquePerCombination>> -> to sammensatte unikke indekser
+        HÅNDHÆVER: én plejer pr. telefon pr. vagt
+        HÅNDHÆVER: én telefon pr. plejer pr. vagt
+    T8: <<PersistedAsText>> på ShiftType -> varchar(10),
+        ikke int (undgår magiske tal i DB)
+    T9: <<ReferencedEntity>> -> CaregiverId, PhoneNumber FK'er
+        med ON DELETE RESTRICT (ingen cascade)
+end note
+
+note as N1
+    <b>MySQL-specifikt (PSM):</b>
+
+    - Guid gemt som char(36) (MySQL har ingen native UUID)
+    - DateTime gemt som datetime(6) for mikrosekund-præcision
+    - Enum gemt som varchar(10) iht. Regel T8 (PersistedAsText)
+    - Charset: utf8mb4 (default i EF Core 8)
+    - Engine: InnoDB (for FK-understøttelse)
+
+    <b>EF Core genererer:</b>
+    - Migration: Opretter tabeller, indekser, FK'er, seed-data
+    - Configuration: PhoneAssignmentConfiguration anvender
+      Fluent API-regler (HasIndex, HasConversion, HasOne)
+end note
+
+note as N2
+    <b>Hvad med Caregiver-Phone-relationen?</b>
+
+    Der er INGEN direkte association mellem Caregivers og
+    Phones. Relationen findes KUN gennem PhoneAssignments
+    — dette er den ophøjede relation fra Regel M3 (CIM-til-PIM).
+
+    En plejer kan have nul eller flere tildelinger over tid.
+    En telefon kan have nul eller flere tildelinger over tid.
+    Men på et hvilket som helst tidspunkt sikrer de unikke
+    begrænsninger højst én tildeling pr. (plejer, vagt) og
+    (telefon, vagt).
+end note
+
+@enduml

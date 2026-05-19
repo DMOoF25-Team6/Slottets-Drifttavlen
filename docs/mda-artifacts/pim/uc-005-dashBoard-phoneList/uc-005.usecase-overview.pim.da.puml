@@ -1,0 +1,78 @@
+@startuml
+
+' =============================================================
+' UC-005 Telefonliste-koordinering - Use Case Diagram (PIM) - Dansk
+'
+' MDA-niveau: Platform Independent Model
+' Perspektiv: Specifikation / Analyse
+'
+' Udledt fra CIM use case-oversigten ved at anvende mapping-reglerne
+' M1 (Forretningsaktør -> Systemaktør), M2 (Forretningsmål ->
+' Systembrugscase) og M4 (Implicit viden -> Eksplicit adfærd).
+'
+' Sammenlign med: ../../cim/uc-005-dashBoard-phoneList/uc-005.usecase-overview.cim.da.puml
+'
+' Forskelle fra CIM:
+' - "Plejer på vagt" bliver til "Plejer" (systemrolle)
+' - Ny aktør: Tidshændelse (introduceret af M1)
+' - Forretningsmål bliver til systeminteraktioner
+' - <<include>> viser delt valideringsadfærd
+' - Stadig INGEN teknologi, INGEN UI, INGEN platform
+' =============================================================
+
+title UC-005 Telefonliste-koordinering — Use Case-diagram (PIM)
+
+skinparam shadowing false
+skinparam usecaseBackgroundColor #E6F4FF
+skinparam actorBackgroundColor #FFF4E6
+skinparam packageStyle rectangle
+
+' --- Systemaktører (PIM-niveau: roller, ikke rigtige personer) ---
+actor "Plejer" as Plejer
+actor "Vagtansvarlig" as Koordinator
+actor "Tidshændelse" as Tidshaendelse <<system>>
+
+' --- Systemafgrænsning ---
+package "Telefonkoordineringssystem" <<System>> #F0F0F0 {
+
+    usecase "Vis telefonliste\nfor aktiv vagt" as UC_View
+    usecase "Tildel plejernavn\ntil telefon" as UC_Assign
+    usecase "Ryd tildeling" as UC_Clear
+    usecase "Opdatér telefonliste\nautomatisk" as UC_Refresh
+    usecase "Validér tildeling\nmod forretningsregler" as UC_Validate
+
+}
+
+' --- Aktør-til-brugscase associations ---
+Plejer --> UC_View
+Plejer --> UC_Assign
+Plejer --> UC_Clear
+Koordinator --> UC_View
+Tidshaendelse --> UC_Refresh
+
+' --- Brugscase-relationer ---
+UC_Assign ..> UC_Validate : <<include>>
+UC_Clear ..> UC_Validate : <<include>>
+UC_Refresh ..> UC_View : <<include>>
+
+note bottom of "Telefonkoordineringssystem"
+    <b>Transformation fra CIM:</b>
+    Regel M1: "Plejer på vagt" -> "Plejer" (systemrolle)
+    Regel M1: Ny aktør "Tidshændelse" introduceret
+    Regel M2: Forretningsmål mapped til systeminteraktioner
+    Regel M4: Implicit validering gjort eksplicit som separat brugscase
+
+    <b>Stadig IKKE inkluderet (PSM-anliggender):</b>
+    - Ingen UI-elementer (intet "klik", "formular", "skærm")
+    - Ingen teknologi (ingen .NET, ingen REST, ingen database)
+    - Ingen persistens-strategi
+    - Ingen specifikke datatyper
+
+    <b>Bemærkning om "Tidshændelse":</b>
+    Denne aktør findes KUN på PIM/PSM-niveau. Den repræsenterer
+    systemets interne evne til at reagere på tid der går.
+    I CIM findes en sådan aktør ikke — automatisk opdatering er
+    et systemanliggende, ikke et forretningsanliggende.
+end note
+
+@enduml

@@ -1,0 +1,166 @@
+@startuml
+
+' =============================================================
+' UC-005 Design Class Diagram (PSM) - English
+'
+' MDA Level: Platform Specific Model
+' Perspective: Specification / Design
+' Target Platform: .NET 8 + Blazor + EF Core 8 + MySQL +
+'                  Clean Architecture
+'
+' Derived from:
+' - uc-005.dcd.pim.puml (the unmarked PIM)
+' - uc-005.dcd.pim-marked.puml (marks)
+' - mappings/uc-005.mapping.pim-to-psm.md (transformation rules)
+'
+' Each element below can be traced to a specific transformation
+' rule (T1-T14) in the PIM-to-PSM mapping document.
+' =============================================================
+
+title UC-005 Design Class Diagram — Phone List Coordination (PSM)
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+
+' --- DOMAIN LAYER (from Rule T1: <<Persistent>>) ---
+package "Domain" <<Layer>> #E8F4FD {
+
+    interface "IEntity" <<interface>> {
+        +Id : Guid
+    }
+
+    class "PhoneAssignment" <<entity>> {
+        +Id : Guid
+        +CaregiverId : Guid
+        +PhoneNumber : string
+        +ShiftType : ShiftType
+        +AssignedAt : DateTime
+    }
+
+    enum "ShiftType" <<enumeration>> {
+        Day
+        Evening
+        Night
+    }
+
+    PhoneAssignment ..|> IEntity : implements
+    PhoneAssignment --> ShiftType : has
+}
+
+' --- CORE LAYER ---
+package "Core" <<Layer>> #FFF4E6 {
+
+    class "PhoneAssignmentDto" <<DTO>> {
+        +PhoneNumber : string
+        +ShiftType : ShiftType
+        +AssignedStaffName : string
+    }
+
+    interface "IPhoneAssignmentManager" <<interface>> {
+        +GetCurrentPhoneAssignmentsForActiveShift(ct) : Task<PhoneAssignmentDto[]>
+    }
+
+    interface "IPhoneAssignmentService" <<interface>> {
+        +GetCurrentPhoneAssignmentsForActiveShiftAsync(ct) : Task<PhoneAssignmentDto[]>
+        +AssignPhoneAsync(req, ct) : Task<PhoneAssignmentDto>
+        +ClearAssignmentAsync(phoneNumber, shiftType, ct) : Task
+    }
+
+    class "PhoneAssignmentService" <<service>> {
+        -_phoneAssignmentManager : IPhoneAssignmentManager
+        +GetCurrentPhoneAssignmentsForActiveShiftAsync(ct) : Task<PhoneAssignmentDto[]>
+        +AssignPhoneAsync(req, ct) : Task<PhoneAssignmentDto>
+        +ClearAssignmentAsync(phoneNumber, shiftType, ct) : Task
+    }
+
+    class "PhoneAssignmentMapper" <<mapper>> {
+        +ToDto(entity : PhoneAssignment) : PhoneAssignmentDto
+        +ToDtos(entities) : IEnumerable<PhoneAssignmentDto>
+    }
+
+    PhoneAssignmentService ..|> IPhoneAssignmentService : implements
+    PhoneAssignmentService --> IPhoneAssignmentManager : uses
+    PhoneAssignmentMapper ..> PhoneAssignmentDto : creates
+}
+
+' --- INFRASTRUCTURE LAYER ---
+package "Infrastructure" <<Layer>> #E8F8E8 {
+
+    class "PhoneAssignmentManager" <<manager>> {
+        -_repository : IPhoneAssignmentRepository
+        +GetCurrentPhoneAssignmentsForActiveShift(ct) : Task<PhoneAssignmentDto[]>
+    }
+
+    PhoneAssignmentManager ..|> IPhoneAssignmentManager : implements
+}
+
+' --- INFRASTRUCTURE.DATA LAYER ---
+package "Infrastructure.Data" <<Layer>> #F0E8F8 {
+
+    interface "IPhoneAssignmentRepository" <<interface>> {
+        +GetByShiftTypeAsync(shiftType, ct) : Task<PhoneAssignment[]>
+        +GetDtoByShiftTypeAsync(shiftType, ct) : Task<PhoneAssignmentDto[]>
+        +AddAsync(entity, ct) : Task
+        +RemoveAsync(phoneNumber, shiftType, ct) : Task
+    }
+
+    class "PhoneAssignmentRepository" <<repository>> {
+        -_dbContext : AppDbContext
+        +GetByShiftTypeAsync(shiftType, ct) : Task<PhoneAssignment[]>
+        +GetDtoByShiftTypeAsync(shiftType, ct) : Task<PhoneAssignmentDto[]>
+        +AddAsync(entity, ct) : Task
+        +RemoveAsync(phoneNumber, shiftType, ct) : Task
+    }
+
+    class "PhoneAssignmentConfiguration" <<configuration>> {
+        +Configure(builder : EntityTypeBuilder<PhoneAssignment>) : void
+    }
+
+    class "AppDbContext" <<dbcontext>> {
+        +PhoneAssignments : DbSet<PhoneAssignment>
+        +Users : DbSet<User>
+    }
+
+    PhoneAssignmentRepository ..|> IPhoneAssignmentRepository : implements
+    PhoneAssignmentRepository --> AppDbContext : uses
+    AppDbContext --> PhoneAssignment : manages
+    PhoneAssignmentConfiguration ..> PhoneAssignment : configures
+}
+
+' --- WEB API LAYER ---
+package "WebApi" <<Layer>> #FDE8E8 {
+
+    class "PhoneAssignmentsController" <<controller>> {
+        -_phoneAssignmentService : IPhoneAssignmentService
+        +GetCurrentPhoneAssignmentsForActiveShift() : ActionResult<PhoneAssignmentDto[]>
+        +Assign(request : AssignPhoneRequest) : ActionResult<PhoneAssignmentDto>
+        +Clear(phoneNumber : string, shiftType : ShiftType) : IActionResult
+    }
+
+    class "PhoneListRefreshService" <<hostedservice>> {
+        -_scopeFactory : IServiceScopeFactory
+        -_interval : TimeSpan = 60s
+        +ExecuteAsync(stoppingToken) : Task
+    }
+
+    PhoneAssignmentsController --> IPhoneAssignmentService : depends on
+    PhoneListRefreshService --> IPhoneAssignmentService : depends on
+}
+
+note bottom of "WebApi"
+    Clean Architecture dependency direction:
+    Dependencies point INWARD toward Domain.
+    WebApi and Infrastructure depend on Core abstractions,
+    never on each other's concrete types.
+
+    Trace to mapping rules:
+    Rule T10 -> 4-layer chain
+    Rule T11 -> ApiController
+    Rule T12 -> HttpGet
+    Rule T13 -> HttpPost / HttpDelete
+    Rule T14 -> BackgroundService (60s)
+end note
+
+@enduml

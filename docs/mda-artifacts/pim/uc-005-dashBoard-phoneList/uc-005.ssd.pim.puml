@@ -1,0 +1,97 @@
+@startuml
+
+' =============================================================
+' UC-005 System Sequence Diagram (PIM) - English
+'
+' MDA Level: Platform Independent Model
+' Perspective: Specification / Analysis
+'
+' Derived from PIM use case by applying mapping rule M2 (Goal -> Use Case)
+' and M4 (Implicit Knowledge -> Explicit System Behavior).
+'
+' Compare with: uc-005.usecase.pim.md
+'
+' This SSD shows the system as a BLACK BOX. We see only:
+' - Actors
+' - Messages crossing the system boundary
+' - System responses
+'
+' We do NOT see internal classes, services, or implementation.
+' Those appear in the PSM Sequence Diagram.
+'
+' Notice: No HTTP, no JSON, no REST, no SQL. Messages are
+' abstract system operations. Parameters use PIM types only.
+' =============================================================
+
+title UC-005 System Sequence Diagram — Phone List Coordination (PIM)
+
+skinparam shadowing false
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceLifeLineBorderColor #4682B4
+skinparam sequenceBoxBorderColor #4682B4
+
+actor "Caregiver" as Caregiver
+participant "Phone Coordination\nSystem" as System <<system>>
+actor "System Time Event" as TimeEvent
+
+== View Phone List for Active Shift ==
+
+Caregiver -> System : getPhoneListForActiveShift()
+activate System
+System --> Caregiver : phoneList : List<PhoneAssignment>
+deactivate System
+
+== Assign Caregiver Name to Phone ==
+
+Caregiver -> System : selectShift(shiftType : ShiftType)
+activate System
+System --> Caregiver : phoneList : List<PhoneAssignment>
+deactivate System
+
+Caregiver -> System : assignPhone(phoneNumber : String,\ncaregiverName : String,\nshiftType : ShiftType)
+activate System
+
+alt assignment valid
+    System --> Caregiver : assignmentConfirmed : PhoneAssignment
+else shift not selected (Rule M5)
+    System --> Caregiver : error : ShiftTypeRequired
+else business rule violation (Rule M5)
+    System --> Caregiver : error : RuleViolation
+else persistence failed
+    System --> Caregiver : error : PersistenceFailed
+end
+
+deactivate System
+
+== Clear Assignment ==
+
+Caregiver -> System : clearAssignment(phoneNumber : String,\nshiftType : ShiftType)
+activate System
+System --> Caregiver : clearConfirmed
+deactivate System
+
+== Automatic Refresh (Time-Triggered) ==
+
+TimeEvent -> System : refreshPhoneList()
+activate System
+System --> TimeEvent : phoneList : List<PhoneAssignment>
+deactivate System
+
+note over System
+    <b>System as black box (PIM-level):</b>
+
+    The system's internal structure is NOT shown here.
+    No services, no managers, no repositories.
+    Those concerns are PSM (platform-specific).
+
+    <b>Message types are PIM-generic:</b>
+    - String, ShiftType, List<T> — platform-independent
+    - NO HTTP, NO JSON, NO REST verbs
+    - NO async/Task — those are platform constructs
+
+    <b>System Time Event is an internal actor (Rule M1):</b>
+    It represents the system's capability to react to time.
+    In CIM there is no such actor.
+end note
+
+@enduml
