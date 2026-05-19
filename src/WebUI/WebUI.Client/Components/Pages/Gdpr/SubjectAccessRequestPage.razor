@@ -2,10 +2,11 @@
 
 @page "/admin/gdpr/sar"
 @rendermode InteractiveAuto
-@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "admin")]
+@* @attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "admin")] *@
 
 @using Core.DTOs.Sar
-
+<AuthorizeView Roles="admin">
+  <Authorized>
 <PageTitle>Subject Access Request</PageTitle>
 
 <main class="container mt-4">
@@ -38,7 +39,7 @@
                     <h5 class="mb-0">Step 1 — Generate export</h5>
                 </div>
                 <div class="card-body">
-                    <EditForm Model="_request" OnValidSubmit="GenerateAsync">
+                    <EditForm Model="_request" OnValidSubmit="GenerateAsync" Context="form">
                         <div class="mb-3">
                             <label class="form-label">Resident ID</label>
                             <input type="text" class="form-control" @bind="_residentIdText" placeholder="00000000-0000-0000-0000-000000000000" />
@@ -130,3 +131,5 @@
         </div>
     </div>
 </main>
+</Authorized>
+</AuthorizeView>

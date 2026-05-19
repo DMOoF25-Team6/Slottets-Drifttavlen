@@ -60,7 +60,7 @@ public class StaffAssignmentController(
     /// <summary>
     /// Deletes an assignment.
     /// </summary>
-    [Authorize]
+    [Authorize(Roles = "admin")]
     [HttpDelete("{assignmentId:guid}")]
     public async Task<IActionResult> DeleteAssignment(
         Guid assignmentId,
@@ -83,7 +83,7 @@ public class StaffAssignmentController(
     /// <summary>
     /// Updates an existing staff assignment.
     /// </summary>
-    [Authorize]
+    [Authorize(Roles = "admin")]
     [HttpPut("{assignmentId:guid}")]
     public async Task<ActionResult<AssignmentOverviewDto>> UpdateAssignment(
         Guid assignmentId,

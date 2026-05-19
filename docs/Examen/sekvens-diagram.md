@@ -2,9 +2,9 @@
 
 ## Description
 
-Dette sekvensdiagram beskriver dataflowet under et vagtskifte, hvor en medarbejder ser aktuelle opgaver og opdaterer en borger/beboerstatus i systemet.
+Disse sekvensdiagrammer beskriver dataflowet ved et vagtskifte  og opdaterer en borger/beboerstatus i systemet.
 
-Diagrammet viser, hvordan frontend, API, tjenester, repositories og database interagerer under processen.
+Diagrammerne viser, hvordan frontend, API, tjenester, repositories og database interagerer under processen.
 
 Flowet følger den systemarkitektur, der blev anvendt i projektet:
 - Blazor WebUI frontend
@@ -15,7 +15,7 @@ Flowet følger den systemarkitektur, der blev anvendt i projektet:
 
 ---
 
-## Mermaid Sequence Diagram
+## Mermaid Sequence Diagram -Shift Flow
 
 
 ## Presentation → Application
@@ -57,36 +57,51 @@ sequenceDiagram
 
 
 ### WebApi Layer → Infrastructure Layer (Data Access)
+
 ```mermaid
 sequenceDiagram
     participant StaffAssignmentService as Application(Core) Layer
-    participant StaffAssignmentManager as Infrastructure Layer
+    participant StaffAssignmentInfrastructure as Infrastructure Layer
+    participant StaffAssignmentManager as Infrastructure.Data Layer
     participant WebApi as WebApi
 
-    StaffAssignmentService->>StaffAssignmentManager: GetAssignments(shiftDto)
+    %% GET ASSIGNMENTS
+    StaffAssignmentService->>StaffAssignmentInfrastructure: GetAssignments(shiftDto)
+
+    StaffAssignmentInfrastructure->>StaffAssignmentManager: GetAssignments(shiftDto)
 
     StaffAssignmentManager->>WebApi: GET /staff-assignments/list
 
-    alt Success
+     alt Success
         WebApi-->>StaffAssignmentManager: 200 OK (AssignmentOverviewDto[])
-        StaffAssignmentManager-->>StaffAssignmentService: AssignmentOverviewDto[]
+        StaffAssignmentManager-->>StaffAssignmentInfrastructure: AssignmentOverviewDto[]
+        StaffAssignmentInfrastructure-->>StaffAssignmentService: AssignmentOverviewDto[]
+    
 
-    else Error
+     else Error
         WebApi-->>StaffAssignmentManager: 4xx/5xx (Error)
-        StaffAssignmentManager-->>StaffAssignmentService: Error(message)
+        StaffAssignmentManager-->>StaffAssignmentInfrastructure: Error(message)
+        StaffAssignmentInfrastructure-->>StaffAssignmentService: Error(message)
     end
 
-    StaffAssignmentService->>StaffAssignmentManager: CreateAssignment(staffAssignmentDto)
+    %% CREATE ASSIGNMENT
+    StaffAssignmentService->>StaffAssignmentInfrastructure: CreateAssignment(staffAssignmentDto)
+
+    StaffAssignmentInfrastructure->>StaffAssignmentManager: CreateAssignment(staffAssignmentDto)
 
     StaffAssignmentManager->>WebApi: POST /staff-assignments
 
     alt Success
         WebApi-->>StaffAssignmentManager: 200 OK (AssignmentOverviewDto)
-        StaffAssignmentManager-->>StaffAssignmentService: AssignmentOverviewDto
+        StaffAssignmentManager-->>StaffAssignmentInfrastructure: AssignmentOverviewDto
+        StaffAssignmentInfrastructure-->>StaffAssignmentService: AssignmentOverviewDto
+
+     
 
     else ValidationError
         WebApi-->>StaffAssignmentManager: 400 BadRequest
-        StaffAssignmentManager-->>StaffAssignmentService: Error(message)
+        StaffAssignmentManager-->>StaffAssignmentInfrastructure: Error(message)
+        StaffAssignmentInfrastructure-->>StaffAssignmentService: Error(message)
     end
 ```
 ---
@@ -99,6 +114,16 @@ sequenceDiagram
 - DTO’er anvendes på tværs af arkitektoniske lag.
 - Beskyttede endpoints kræver JWT authentication og authorization.
 - Arkitekturen følger Clean Architecture dependency direction.
+
+---
+
+
+
+## Sequence Diagram — Update Resident Status Flow
+
+
+
+
 
 ## Compliance
 - Følger Clean Architecture-principper.

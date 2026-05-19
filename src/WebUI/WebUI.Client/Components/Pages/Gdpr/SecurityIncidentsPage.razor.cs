@@ -7,6 +7,7 @@ using Core.Interfaces.Services;
 using Domain.Enums;
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace WebUI.Client.Components.Pages.Gdpr;
 
@@ -22,6 +23,8 @@ public partial class SecurityIncidentsPage : ComponentBase
 
     [Inject]
     private ISecurityIncidentService SecurityIncidentService { get; set; } = default!;
+    [Inject]
+    private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
     #endregion
 
@@ -39,9 +42,27 @@ public partial class SecurityIncidentsPage : ComponentBase
 
     #region Lifecycle
 
-    protected override async Task OnInitializedAsync()
+    /// <inheritdoc />
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender)
+        {
+            return;
+        }
+        // Ensure the WASM auth state has been materialised from localStorage before
+        // invoking API calls, so JwtAuthorizationMessageHandler can attach the
+        // Bearer token. OnInitializedAsync would run during InteractiveAuto's
+        // server pre-render where JS interop is unavailable and every API call
+        // returns 401. Mirrors the pattern established by GdprDashboardPage.
+        await InitializeAuthorizationAsync();
         await LoadIncidentsAsync();
+        StateHasChanged();
+    }
+
+    private async Task InitializeAuthorizationAsync()
+    {
+        AuthenticationState authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _ = authState.User;
     }
 
     #endregion

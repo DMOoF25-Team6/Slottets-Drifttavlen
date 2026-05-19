@@ -2,11 +2,12 @@
 
 @page "/admin/gdpr/retention"
 @rendermode InteractiveAuto
-@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "admin")]
+@* @attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "admin")] *@
 
 @using Core.DTOs.Retention
 @using Domain.Enums
-
+<AuthorizeView Roles="admin">
+  <Authorized>
 <PageTitle>Retention Settings</PageTitle>
 
 <main class="container mt-4">
@@ -105,3 +106,5 @@
         </div>
     }
 </main>
+</Authorized>
+</AuthorizeView>
