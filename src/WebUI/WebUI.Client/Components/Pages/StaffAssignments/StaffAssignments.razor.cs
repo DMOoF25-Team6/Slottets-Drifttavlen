@@ -159,24 +159,16 @@ public partial class StaffAssignments : ComponentBase
                 AssignmentDate = _selectedDate
             };
 
-            // Send a POST request when creating a new assignment.
-            HttpResponseMessage response;
-
-            if (_editingAssignmentId is null)
-            {
-                response =
-                    await client.PostAsJsonAsync(
+            // Send a POST request when creating a new assignment,
+            // or a PUT request when updating an existing assignment.
+            HttpResponseMessage response =
+                _editingAssignmentId is null
+                    ? await client.PostAsJsonAsync(
                         "staff-assignments",
-                        dto);
-            }
-            else
-            {
-                // Send a PUT request when updating an existing assignment.
-                response =
-                    await client.PutAsJsonAsync(
+                        dto)
+                    : await client.PutAsJsonAsync(
                         $"staff-assignments/{_editingAssignmentId}",
                         dto);
-            }
             if (response.IsSuccessStatusCode)
             {
                 await LoadAssignmentsAsync();
@@ -224,7 +216,7 @@ public partial class StaffAssignments : ComponentBase
                 _hasError = true;
             }
         }
-        catch (Exception)
+        catch (HttpRequestException)
         {
             _hasError = true;
         }
