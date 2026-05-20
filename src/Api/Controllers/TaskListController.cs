@@ -2,9 +2,9 @@
 //  No warranty, explicit or implicit, provided.
 
 using Core.Interfaces.Repositories;
-using Core.Interfaces.Services;
 using Core.Mappers;
 
+using Domain.Entities;
 using Domain.Enums;
 
 using Microsoft.AspNetCore.Mvc;
@@ -13,19 +13,14 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class TaskListController : ControllerBase
+public class TaskListController(ITaskListRepository taskListRepository) : ControllerBase
 {
-    private readonly ITaskListRepository _taskListRepository;
-
-    public TaskListController(ITaskListRepository taskListRepository)
-    {
-        _taskListRepository = taskListRepository;
-    }
+    private readonly ITaskListRepository _taskListRepository = taskListRepository;
 
     [HttpGet("dashboard/{department}")]
     public async Task<IActionResult> GetDashboardTasksByDepartment(Department department, CancellationToken cancellationToken = default)
     {
-        var tasks = await _taskListRepository.GetDashboardTasksByDepartmentAsync(department, cancellationToken);
+        IEnumerable<TaskList> tasks = await _taskListRepository.GetDashboardTasksByDepartmentAsync(department, cancellationToken);
         return Ok(tasks.Select(t => t.ToTaskListDto()));
     }
 }

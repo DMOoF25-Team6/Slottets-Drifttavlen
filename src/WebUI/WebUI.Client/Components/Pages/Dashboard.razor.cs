@@ -3,8 +3,6 @@
 
 using Core.DTOs;
 using Core.Interfaces.Managers;
-using Core.Interfaces.Services;
-using Core.Services;
 
 using Domain.Entities;
 using Domain.Enums;
@@ -24,7 +22,7 @@ public partial class Dashboard
     private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
     [Inject]
-    private ITaskListManager taskListManager { get; set; } = default!;
+    private ITaskListManager TaskListManager { get; set; } = default!;
     #endregion
     #region Fields
 
@@ -100,7 +98,7 @@ public partial class Dashboard
 
         tasks = Department == null
             ? []
-            : await taskListManager.GetDashboardTasksByDepartmentAsync(parsedDepartment);
+            : await TaskListManager.GetDashboardTasksByDepartmentAsync(parsedDepartment);
 
         _isLoading = false;
         StateHasChanged();

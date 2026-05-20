@@ -140,10 +140,9 @@ public class IncidentDetectionService : BackgroundService
             scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 
         List<SecurityIncident> existingOpen =
-            (await incidentRepository.GetAllAsync(cancellationToken))
-                .Where(i => i.Status == IncidentStatus.Open ||
-                            i.Status == IncidentStatus.UnderInvestigation)
-                .ToList();
+            [.. (await incidentRepository.GetAllAsync(cancellationToken))
+                .Where(i => i.Status is IncidentStatus.Open or
+                            IncidentStatus.UnderInvestigation)];
 
         int created = 0;
         created += await DetectRepeatedAuditFailuresAsync(
@@ -168,14 +167,13 @@ public class IncidentDetectionService : BackgroundService
     {
         DateTime windowStart = DateTime.UtcNow - _lookbackWindow;
         List<AuditEntry> failuresInWindow =
-            (await auditRepository.GetAllAsync(cancellationToken))
-                .Where(a => !a.Succeeded && a.StartTimeUtc >= windowStart)
-                .ToList();
+            [.. (await auditRepository.GetAllAsync(cancellationToken))
+                .Where(a => !a.Succeeded && a.StartTimeUtc >= windowStart)];
 
         int created = 0;
-        var byUser = failuresInWindow.GroupBy(a => a.UserId)
+        IEnumerable<IGrouping<Guid, AuditEntry>> byUser = failuresInWindow.GroupBy(a => a.UserId)
             .Where(g => g.Count() >= RepeatedAuditFailureThreshold);
-        foreach (var group in byUser)
+        foreach (IGrouping<Guid, AuditEntry>? group in byUser)
         {
             bool alreadyOpen = existingOpen.Any(i =>
                 i.Type == TypeRepeatedFailures && i.ReportedByEmployeeId == group.Key);
@@ -210,14 +208,13 @@ public class IncidentDetectionService : BackgroundService
     {
         DateTime windowStart = DateTime.UtcNow - _bruteForceWindow;
         List<LoginAttempt> failuresInWindow =
-            (await loginAttemptRepository.GetAllAsync(cancellationToken))
-                .Where(a => !a.Succeeded && a.AttemptedAt >= windowStart)
-                .ToList();
+            [.. (await loginAttemptRepository.GetAllAsync(cancellationToken))
+                .Where(a => !a.Succeeded && a.AttemptedAt >= windowStart)];
 
         int created = 0;
 
         // Group by email hash first (catches credential-stuffing against one account)
-        foreach (var group in failuresInWindow.GroupBy(a => a.EmailHash)
+        foreach (IGrouping<string, LoginAttempt>? group in failuresInWindow.GroupBy(a => a.EmailHash)
                                               .Where(g => g.Count() >= FailedLoginBruteForceThreshold))
         {
             string fingerprint = $"email:{group.Key}";
@@ -243,7 +240,7 @@ public class IncidentDetectionService : BackgroundService
         }
 
         // Then by source IP (catches spraying across many accounts from one host)
-        foreach (var group in failuresInWindow.GroupBy(a => a.IpAddress)
+        foreach (IGrouping<string, LoginAttempt>? group in failuresInWindow.GroupBy(a => a.IpAddress)
                                               .Where(g => g.Count() >= FailedLoginBruteForceThreshold))
         {
             string fingerprint = $"ip:{group.Key}";
@@ -280,9 +277,8 @@ public class IncidentDetectionService : BackgroundService
     {
         DateTime windowStart = DateTime.UtcNow - _lookbackWindow;
         List<LoginAttempt> recentSuccesses =
-            (await loginAttemptRepository.GetAllAsync(cancellationToken))
-                .Where(a => a.Succeeded && a.UserId.HasValue && a.AttemptedAt >= windowStart)
-                .ToList();
+            [.. (await loginAttemptRepository.GetAllAsync(cancellationToken))
+                .Where(a => a.Succeeded && a.UserId.HasValue && a.AttemptedAt >= windowStart)];
 
         int created = 0;
         foreach (LoginAttempt attempt in recentSuccesses)
@@ -335,12 +331,11 @@ public class IncidentDetectionService : BackgroundService
     {
         DateTime windowStart = DateTime.UtcNow - _massExportWindow;
         List<SubjectAccessRequest> recent =
-            (await sarRepository.GetAllAsync(cancellationToken))
-                .Where(s => s.RequestedAt >= windowStart)
-                .ToList();
+            [.. (await sarRepository.GetAllAsync(cancellationToken))
+                .Where(s => s.RequestedAt >= windowStart)];
 
         int created = 0;
-        foreach (var group in recent.GroupBy(s => s.RequestedByEmployeeId)
+        foreach (IGrouping<Guid, SubjectAccessRequest>? group in recent.GroupBy(s => s.RequestedByEmployeeId)
                                     .Where(g => g.Count() >= MassExportThreshold))
         {
             bool alreadyOpen = existingOpen.Any(i =>
@@ -380,7 +375,7 @@ public class IncidentDetectionService : BackgroundService
             return true;
         }
         int hour = localTime.Hour;
-        return hour >= OffHoursStartHour || hour < OffHoursEndHour;
+        return hour is >= OffHoursStartHour or < OffHoursEndHour;
     }
 
     #endregion
