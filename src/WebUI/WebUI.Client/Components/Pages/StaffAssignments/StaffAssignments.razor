@@ -66,11 +66,15 @@
                 @onclick="LoadAssignmentsAsync">
             Refresh
         </button>
-        <button type="button"
-                class="btn btn-primary ms-2"
-                @onclick="CreateAssignmentAsync">
-            Assign
-        </button>
+        <AuthorizeView Roles="admin">
+            <Authorized>
+                <button type="button"
+                        class="btn btn-primary ms-2"
+                        @onclick="SaveAssignmentAsync">
+                    @(_editingAssignmentId is not null ? "Update" : "Assign")
+                </button>
+            </Authorized>
+        </AuthorizeView>
         @if (_assignmentError is not null)
         {
             <div class="alert alert-warning mt-2">
@@ -139,13 +143,23 @@
                                 </td>
 
                                 <td class="text-end">
-                                    <button class="btn btn-outline-primary btn-sm me-1">
-                                        Edit
-                                    </button>
 
-                                    <button class="btn btn-outline-danger btn-sm">
-                                        Remove
-                                    </button>
+                                    <AuthorizeView Roles="admin">
+                                        <Authorized>
+
+                                            <button class="btn btn-outline-primary btn-sm me-1"
+                                                    @onclick="() => EditAssignment(assignment)">
+                                                Edit
+                                            </button>
+
+                                            <button class="btn btn-outline-danger btn-sm"
+                                                    @onclick="() => RemoveAssignmentAsync(assignment.AssignmentId)">
+                                                Remove
+                                            </button>
+
+                                        </Authorized>
+                                    </AuthorizeView>
+
                                 </td>
                             </tr>
                         }

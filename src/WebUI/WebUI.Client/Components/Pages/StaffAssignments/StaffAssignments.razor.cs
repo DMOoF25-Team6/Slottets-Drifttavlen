@@ -59,6 +59,12 @@ public partial class StaffAssignments : ComponentBase
 
     private string? _assignmentError;
 
+    // Stores the ID of the assignment currently being edited.
+    private Guid? _editingAssignmentId;
+
+    // Indicates whether the page is currently editing an assignment.
+   // private bool _isEditing;
+
     // Loads assignments based on the selected date and shift type.
     private async Task LoadAssignmentsAsync()
     {
@@ -124,13 +130,12 @@ public partial class StaffAssignments : ComponentBase
         }
     }
 
-    // Creates a new staff assignment by sending a POST request to the API.
-    private async Task CreateAssignmentAsync()
+    // Creates or updates a nstaff assignment depending on edit state
+    private async Task SaveAssignmentAsync()
     {
-        _assignmentError =
-      $"Resident: {_selectedResidentId} | Employee: {_selectedEmployeeId}";
+      
 
-        if (string.IsNullOrWhiteSpace(_selectedEmployeeId))
+        if (string.IsNullOrWhiteSpace(_selectedResidentId))
         {
             _assignmentError = "Please select a resident.";
             return;
@@ -141,8 +146,6 @@ public partial class StaffAssignments : ComponentBase
             _assignmentError = "Please select an employee.";
             return;
         }
-
-       
 
         try
         {
@@ -156,12 +159,30 @@ public partial class StaffAssignments : ComponentBase
                 AssignmentDate = _selectedDate
             };
 
-            HttpResponseMessage response =
-                await client.PostAsJsonAsync("staff-assignments", dto);
+            // Send a POST request when creating a new assignment.
+            HttpResponseMessage response;
 
+            if (_editingAssignmentId is null)
+            {
+                response =
+                    await client.PostAsJsonAsync(
+                        "staff-assignments",
+                        dto);
+            }
+            else
+            {
+                // Send a PUT request when updating an existing assignment.
+                response =
+                    await client.PutAsJsonAsync(
+                        $"staff-assignments/{_editingAssignmentId}",
+                        dto);
+            }
             if (response.IsSuccessStatusCode)
             {
                 await LoadAssignmentsAsync();
+
+                // Reset edit mode after successful save.
+                _editingAssignmentId = null;
             }
             else
             {
@@ -177,18 +198,82 @@ public partial class StaffAssignments : ComponentBase
         }
     }
 
-    // Initializes the component by loading the current user's authentication state and fetching residents, employees, and assignments.
-    protected override async Task OnInitializedAsync()
+
+    // Removes an existing staff assignment by sending a DELETE request to the API.
+    // If the deletion succeeds, the assignment overview is refreshed automatically.
+    private async Task RemoveAssignmentAsync(Guid assignmentId)
     {
-        // Get the current authentication state of the user
+        try
+        {
+            // Create a configured HTTP client for communicating with the API.
+            HttpClient client =
+                HttpClientFactory.CreateClient("SlottetApi");
+
+            // Send a DELETE request to the API using the assignment ID.
+            HttpResponseMessage response =
+                await client.DeleteAsync(
+                    $"staff-assignments/{assignmentId}");
+
+            // Reload the assignment overview if the deletion succeeds.
+            if (response.IsSuccessStatusCode)
+            {
+                await LoadAssignmentsAsync();
+            }
+            else
+            {
+                _hasError = true;
+            }
+        }
+        catch (Exception)
+        {
+            _hasError = true;
+        }
+    }
+
+
+    // Loads an existing assignment into the form for editing.
+    private void EditAssignment(AssignmentOverviewDto assignment)
+    {
+        // Store the ID of the assignment currently being edited.
+        _editingAssignmentId = assignment.AssignmentId;
+
+       
+
+        // Populate the form fields with existing assignment values.
+        _selectedResidentId = assignment.ResidentId.ToString();
+        _selectedEmployeeId = assignment.EmployeeId.ToString();
+
+        // Convert the shift type string back to enum value.
+        _selectedShiftType =
+            Enum.Parse<ShiftType>(assignment.ShiftType);
+
+        // Load the assignment date into the date picker.
+        _selectedDate = assignment.AssignmentDate;
+    }
+
+    // Initializes the component by loading the current user's authentication state and fetching residents, employees, and assignments.
+    // This method runs after the component has rendered on the screen
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Only run this code on the first render to avoid infinite loops
+        if (!firstRender)
+        {
+            return;
+        }
+
+        // Get the current authentication state (logged-in user info)
         AuthenticationState authState =
             await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
+        // Save the logged-in user into the _user variable
         _user = authState.User;
 
+        // Load residents, employees, and assignments from the API
         await LoadResidentsAsync();
         await LoadEmployeesAsync();
         await LoadAssignmentsAsync();
-    }
 
+        // Refresh the UI after data has loaded
+        StateHasChanged();
+    }
 }
