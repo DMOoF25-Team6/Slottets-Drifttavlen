@@ -1,0 +1,101 @@
+@startuml
+
+' =============================================================
+' UC-005 Domæneordbog (CIM) - Dansk
+'
+' MDA-niveau: Computation Independent Model
+' Perspektiv: Forretning / Konceptualisering
+'
+' Dette diagram definerer FORRETNINGSBEGREBERNE på Slottet
+' ved hjælp af UML klasse-notation. Det er IKKE en datamodel
+' — der er ingen typer, ingen IDs, ingen metoder. Hver kasse
+' er et begreb der findes i den virkelige verden på Slottet,
+' uafhængigt af et IT-system.
+'
+' Bemærk: Der er ingen "Telefontildeling"-entitet her. Det er
+' en system-konstruktion der opstår i PIM. I det rigtige domæne
+' BÆRER en plejer simpelthen en arbejdstelefon på en vagt.
+' =============================================================
+
+title UC-005 Domæneordbog — Telefonliste-koordinering (CIM)
+
+skinparam classBackgroundColor #FFF9E6
+skinparam classBorderColor #B8860B
+skinparam shadowing false
+skinparam classFontStyle bold
+skinparam classAttributeFontSize 12
+
+' --- Centrale domænebegreber ---
+class "Plejer" as Plejer {
+    Medarbejder der yder pleje
+    til beboere på en vagt
+}
+
+class "Vagt" as Vagt {
+    En arbejdsperiode på Slottet
+    Typer: Dag, Aften, Nat
+}
+
+class "Arbejdstelefon" as Telefon {
+    En fysisk telefon som plejerne
+    bruger til kommunikation på stedet
+    Numrene er faste og tilhører
+    bostedet, ikke personer
+}
+
+class "Beboer" as Beboer {
+    En person der modtager pleje
+    på Slottet
+}
+
+class "Slottet" as Slottet {
+    Døgnbemandet bosted for borgere
+    med særlige behov
+}
+
+' --- Domænerelationer (forretningssprog, ikke systemsprog) ---
+Plejer "1..*" -- "1" Vagt : arbejder på >
+Plejer "1" -- "0..1" Telefon : bærer på vagt >
+Plejer "1..*" -- "1..*" Beboer : plejer >
+Slottet "1" *-- "1..*" Plejer : ansætter
+Slottet "1" *-- "7" Telefon : ejer
+Slottet "1" *-- "1..*" Beboer : huser
+
+note bottom of Telefon
+    <b>Faste telefonnumre på Slottet:</b>
+    41522, 41523, 41524, 41525, 41526, 41527, 41529
+
+    Disse numre tilhører <i>Slottet</i>, ikke personer.
+    En plejer bærer en telefon <i>under</i> en vagt,
+    men selve telefonen bliver på Slottet.
+end note
+
+note bottom of Vagt
+    <b>Vagttyper:</b>
+    - Dag
+    - Aften
+    - Nat
+
+    En vagt definerer <i>hvornår</i> arbejdet foregår.
+    Hver plejer arbejder på én vagt ad gangen.
+end note
+
+note as N1
+    <b>Hvad denne ordbog IKKE indeholder:</b>
+
+    Ingen "Telefontildeling" — det er en system-konstruktion
+    der opstår i PIM. I den virkelige verden findes der kun
+    en relation: en plejer bærer en arbejdstelefon på en vagt.
+    Ingen tredje "ting" eksisterer.
+
+    Ingen datatyper (Guid, String, int) — det er
+    platformsspecifikt og hører til PSM.
+
+    Ingen metoder eller operationer — begreber <i>gør</i> ikke
+    ting, de <i>er</i> ting.
+
+    Ingen primærnøgler eller fremmednøgler — det er
+    databasebekymringer der hører til PSM.
+end note
+
+@enduml

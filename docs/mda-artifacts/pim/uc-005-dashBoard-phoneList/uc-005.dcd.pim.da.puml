@@ -1,0 +1,126 @@
+@startuml
+
+' =============================================================
+' UC-005 Design Class Diagram (PIM) - Dansk
+'
+' MDA-niveau: Platform Independent Model
+' Perspektiv: Specifikation / Analyse (Design uden platform)
+'
+' Udledt fra:
+' - uc-005.dm.pim.da.puml (entiteter)
+' - uc-005.ssd.pim.da.puml (systemoperationer)
+' - uc-005.oc.pim.da.md (operationskontrakter)
+'
+' Dette DCD viser systemets INDVENDIGE struktur på PIM-niveau.
+' Det tildeler ansvar til klasser ved hjælp af GRASP-mønstre
+' (Information Expert, Controller, Pure Fabrication) men binder
+' sig IKKE til nogen platform, framework eller lagdelt arkitektur.
+'
+' Sammenlign med PSM DCD som tilføjer:
+' - .NET-typer (Guid, Task<T>, IEnumerable<T>)
+' - Clean Architecture-lag (Domain, Core, Infrastructure, osv.)
+' - EF Core-entiteter og DbContext
+' - REST-controllere og HTTP-semantik
+' - Dependency injection-interfaces
+' =============================================================
+
+title UC-005 Design Class Diagram — Telefonliste-koordinering (PIM)
+
+skinparam classBackgroundColor #E6F4FF
+skinparam classBorderColor #4682B4
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+' --- Entiteter (fra PIM Domænemodel) ---
+
+class "Plejer" as Plejer <<entitet>> {
+    + id : UUID
+    + fornavn : String
+    + efternavn : String
+}
+
+class "Telefon" as Telefon <<entitet>> {
+    + nummer : String
+}
+
+class "Telefontildeling" as Tildeling <<entitet>> {
+    + id : UUID
+    + tildeltTidspunkt : DateTime
+    --
+    + hentTelefonnummer() : String
+    + hentPlejernavn() : String
+    + hentVagttype() : Vagttype
+}
+
+enum "Vagttype" as Vagttype <<enumeration>> {
+    Dag
+    Aften
+    Nat
+}
+
+' --- Systemoperationer (fra Operationskontrakter) ---
+
+class "Telefonkoordineringssystem" as System <<system>> {
+    + hentTelefonlisteForAktivVagt() : List<Telefontildeling>
+    + vælgVagt(vagttype : Vagttype) : List<Telefontildeling>
+    + tildelTelefon(telefonnummer : String,\n  plejernavn : String,\n  vagttype : Vagttype) : Telefontildeling
+    + rydTildeling(telefonnummer : String,\n  vagttype : Vagttype) : void
+    + opdaterTelefonliste() : List<Telefontildeling>
+}
+
+' --- Domæne-associationer ---
+Tildeling "1" --> "1" Plejer : tildelt til
+Tildeling "1" --> "1" Telefon : for telefon
+Tildeling "1" --> "1" Vagttype : på vagt
+
+' --- Systemkomposition ---
+System "1" o-- "0..*" Tildeling : håndterer
+System "1" *-- "7" Telefon : ejer
+System "1" o-- "0..*" Plejer : kender
+
+' --- Noter ---
+note right of System
+    <b>GRASP: Controller-mønster</b>
+    Telefonkoordineringssystem fungerer som indgangspunkt
+    for alle systemoperationer fra eksterne aktører.
+
+    <b>Én operation pr. OC-kontrakt:</b>
+    Hver metode svarer til én operationskontrakt
+    i uc-005.oc.pim.da.md.
+end note
+
+note bottom of Tildeling
+    <b>GRASP: Information Expert</b>
+    Telefontildeling ejer viden om hvem der bærer
+    hvilken telefon på hvilken vagt. Den eksponerer
+    den viden via getter-operationer.
+end note
+
+note as N1
+    <b>PIM-niveau designbegrænsninger:</b>
+
+    - Alle typer er platformuafhængige (UUID, String, DateTime, List<T>)
+    - Ingen async-semantik (PIM er synkron specifikation)
+    - Ingen persistens-anliggender (ingen repositories, ingen DbContext)
+    - Ingen arkitektoniske lag (Clean Architecture er PSM-niveau)
+    - Ingen interfaces til DI (introduceres kun når PSM kræver det)
+
+    Marks til PIM-til-PSM-transformation tilføjes i
+    separat fil: uc-005.dcd.pim-marked.da.puml
+end note
+
+note as N2
+    <b>Hvad med Slottet?</b>
+
+    Slottet findes i CIM som forretningsdomænets kontekst.
+    På PIM-niveau er Slottet implicit — det ER systemet.
+    Telefonkoordineringssystem repræsenterer Slottets
+    evne til at koordinere telefoner.
+
+    Hvis flere bosteder skulle modelleres, ville Slottet
+    genoptræde som en entitet. For UC-005's enkeltbosted-
+    scope er det ikke nødvendigt.
+end note
+
+@enduml

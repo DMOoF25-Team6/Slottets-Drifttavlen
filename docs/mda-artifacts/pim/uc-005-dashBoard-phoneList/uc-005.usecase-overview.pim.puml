@@ -1,0 +1,78 @@
+@startuml
+
+' =============================================================
+' UC-005 Phone List Coordination - Use Case Diagram (PIM)
+'
+' MDA Level: Platform Independent Model
+' Perspective: Specification / Analysis
+'
+' Derived from CIM use case overview by applying mapping rules
+' M1 (Business Actor -> System Actor) and M2 (Business Goal ->
+' System Use Case) and M4 (Implicit Knowledge -> Explicit Behavior).
+'
+' Compare with: ../../cim/uc-005-dashBoard-phoneList/uc-005.usecase-overview.cim.puml
+'
+' Differences from CIM:
+' - "Caregiver on Shift" becomes "Caregiver" (system role)
+' - New actor: System Time Event (introduced by M1)
+' - Business goals become system interactions
+' - <<include>> shows shared validation behavior
+' - Still NO technology, NO UI, NO platform
+' =============================================================
+
+title UC-005 Phone List Coordination — Use Case Diagram (PIM)
+
+skinparam shadowing false
+skinparam usecaseBackgroundColor #E6F4FF
+skinparam actorBackgroundColor #FFF4E6
+skinparam packageStyle rectangle
+
+' --- System actors (PIM-level: roles, not real persons) ---
+actor "Caregiver" as Caregiver
+actor "Shift Coordinator" as Coordinator
+actor "System Time Event" as TimeEvent <<system>>
+
+' --- System boundary ---
+package "Phone Coordination System" <<System>> #F0F0F0 {
+
+    usecase "View phone list\nfor active shift" as UC_View
+    usecase "Assign caregiver name\nto phone" as UC_Assign
+    usecase "Clear assignment" as UC_Clear
+    usecase "Refresh phone list\nautomatically" as UC_Refresh
+    usecase "Validate assignment\nagainst business rules" as UC_Validate
+
+}
+
+' --- Actor-to-use-case associations ---
+Caregiver --> UC_View
+Caregiver --> UC_Assign
+Caregiver --> UC_Clear
+Coordinator --> UC_View
+TimeEvent --> UC_Refresh
+
+' --- Use case relationships ---
+UC_Assign ..> UC_Validate : <<include>>
+UC_Clear ..> UC_Validate : <<include>>
+UC_Refresh ..> UC_View : <<include>>
+
+note bottom of "Phone Coordination System"
+    <b>Transformation from CIM:</b>
+    Rule M1: "Caregiver on Shift" -> "Caregiver" (system role)
+    Rule M1: New actor "System Time Event" introduced
+    Rule M2: Business goals mapped to system interactions
+    Rule M4: Implicit validation made explicit as separate use case
+
+    <b>Still NOT included (PSM concerns):</b>
+    - No UI elements (no "click", "form", "screen")
+    - No technology (no .NET, no REST, no database)
+    - No persistence strategy
+    - No specific data types
+
+    <b>Note on "System Time Event":</b>
+    This actor exists ONLY at PIM/PSM level. It represents
+    the system's internal capability to react to time passing.
+    In CIM there is no such actor — automatic refresh is a
+    system concern, not a business concern.
+end note
+
+@enduml

@@ -1,0 +1,105 @@
+@startuml
+
+' =============================================================
+' UC-005 Domain Model (PIM) - English
+'
+' MDA Level: Platform Independent Model
+' Perspective: Specification / Analysis
+'
+' Derived from CIM domain glossary by applying mapping rules
+' M3 (Domain Relationship -> System Entity) and M5 (Business
+' Rule -> System Constraint).
+'
+' Compare with: ../../cim/uc-005-dashBoard-phoneList/uc-005.domain-glossary.cim.puml
+'
+' Key transformation: The CIM relationship "Caregiver carries
+' Work Phone on Shift" is elevated to a system-level entity
+' PhoneAssignment, because the system must REMEMBER assignments
+' (a relationship cannot be stored — only entities can).
+'
+' Types are GENERIC (UUID, String, Enum) — NOT platform-specific
+' (Guid, string, int). Those appear only in PSM.
+' =============================================================
+
+title UC-005 Domain Model — Phone List Coordination (PIM)
+
+skinparam classBackgroundColor #E6F4FF
+skinparam classBorderColor #4682B4
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+' --- Entities (system-level concepts) ---
+
+class "Caregiver" as Caregiver {
+    + id : UUID
+    + firstName : String
+    + lastName : String
+}
+
+class "Phone" as Phone {
+    + number : String
+}
+
+class "PhoneAssignment" as Assignment <<system entity>> {
+    + id : UUID
+    + assignedAt : DateTime
+}
+
+enum "ShiftType" as ShiftType <<enumeration>> {
+    Day
+    Evening
+    Night
+}
+
+' --- Associations ---
+Assignment "1" --> "1" Caregiver : assigned to
+Assignment "1" --> "1" Phone : for phone
+Assignment "1" --> "1" ShiftType : during shift
+
+' --- Constraints (from Rule M5) ---
+note right of Assignment
+    <b>Invariants (Rule M5):</b>
+    - One PhoneAssignment per (Phone, ShiftType) combination
+    - One PhoneAssignment per (Caregiver, ShiftType) combination
+    - Phone.number must belong to the fixed set
+    - ShiftType is closed enumeration
+end note
+
+note bottom of Assignment
+    <b>Why PhoneAssignment exists (Rule M3):</b>
+
+    In CIM, there is only a relationship: "Caregiver carries
+    Phone on Shift". A relationship cannot be stored, audited,
+    or queried over time.
+
+    In PIM, the relationship is elevated to a system entity
+    because the system must:
+    - REMEMBER assignments persistently
+    - AUDIT who assigned what and when
+    - QUERY assignments by shift, by phone, by caregiver
+    - CLEAR assignments without affecting underlying concepts
+
+    This is a classic CIM -> PIM elevation.
+end note
+
+note as N1
+    <b>Notice: GENERIC types only</b>
+
+    Types here are platform-independent:
+    - UUID (not Guid)
+    - String (not C# string)
+    - DateTime (not DateTimeOffset)
+    - Enumeration (concept, not C# enum)
+
+    Platform-specific types appear in PSM.
+end note
+
+note as N2
+    <b>Notice: NO data not relevant to UC-005</b>
+
+    Slottet and Resident exist in CIM but do not participate in
+    phone coordination. They appear in other PIMs (e.g. UC-001
+    Dashboard for residents). PIM is per-use-case scoped.
+end note
+
+@enduml

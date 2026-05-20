@@ -1,0 +1,87 @@
+@startuml
+
+' =============================================================
+' UC-005 Design Class Diagram WITH MARKS (PIM)
+'
+' MDA Level: Platform Independent Model (Marked)
+' Marks are abstract CATEGORIES, not concrete values.
+' Concrete values (URLs, lengths, intervals) belong in PSM.
+'
+' Mark vocabulary is documented in:
+'   uc-005.dcd.pim-marked.legend.md (companion document)
+' =============================================================
+
+title UC-005 Design Class Diagram WITH MARKS (PIM)
+
+skinparam classBackgroundColor #FFF4E6
+skinparam classBorderColor #B8860B
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' --- Marked entities ---
+
+class "Caregiver" as Caregiver <<entity>> <<Persistent>> <<UniquelyIdentified>> {
+    + id : UUID
+    + firstName : String
+    + lastName : String
+}
+
+class "Phone" as Phone <<entity>> <<Persistent>> <<ImmutableSet>> {
+    + number : String
+}
+
+class "PhoneAssignment" as Assignment <<entity>> <<Persistent>> <<Auditable>> <<UniquelyIdentified>> {
+    + id : UUID
+    + assignedAt : DateTime
+}
+
+enum "ShiftType" as ShiftType <<enumeration>> <<PersistedAsText>> {
+    Day
+    Evening
+    Night
+}
+
+' --- Marked system ---
+
+class "PhoneCoordinationSystem" as System <<system>> <<LayeredResponsibility>> {
+    + getPhoneListForActiveShift() <<QueryOperation>> <<RestExposed>>
+    + selectShift() <<QueryOperation>> <<RestExposed>>
+    + assignPhone() <<CommandOperation>> <<RestExposed>>
+    + clearAssignment() <<CommandOperation>> <<RestExposed>>
+    + refreshPhoneList() <<PeriodicallyExecuted>>
+}
+
+' --- Associations ---
+Assignment "1" --> "1" Caregiver
+Assignment "1" --> "1" Phone
+Assignment "1" --> "1" ShiftType
+System "1" o-- "0..*" Assignment
+System "1" *-- "7" Phone
+System "1" o-- "0..*" Caregiver
+
+note bottom of Assignment
+    PhoneAssignment carries marks:
+    Persistent, Auditable, UniquelyIdentified.
+    Mappings turn these into a stored,
+    audit-logged entity with its own identity.
+end note
+
+note bottom of System
+    The system is marked LayeredResponsibility.
+    Mappings decompose it into the target
+    platform's architectural layers
+    (presentation, application, domain, persistence).
+end note
+
+legend bottom
+    <b>Mark vocabulary is documented separately in:</b>
+    uc-005.dcd.pim-marked.legend.md
+
+    Marks here are abstract categories only.
+    Concrete platform values (URLs, lengths, timer intervals)
+    are decided by the PIM-to-PSM mapping and live in the PSM.
+endlegend
+
+@enduml

@@ -1,0 +1,145 @@
+@startuml
+
+' =============================================================
+' UC-005 Sequence Diagram (PSM) - English
+'
+' MDA Level: Platform Specific Model
+' Target Platform: .NET 8 + Blazor + EF Core 8 + MySQL +
+'                  Clean Architecture
+'
+' Derived from:
+' - uc-005.ssd.pim.puml (PIM System Sequence Diagram)
+' - uc-005.dcd.pim-marked.puml (marks)
+' - mappings/uc-005.mapping.pim-to-psm.md (Rule T10: LayeredResponsibility)
+'
+' This SD shows what happens INSIDE the system that was a black
+' box in the PIM SSD. The single PIM "System" participant
+' decomposes into the full Clean Architecture chain.
+'
+' Trace: Each message here corresponds to a method call between
+' classes shown in uc-005.dcd.psm.puml.
+' =============================================================
+
+title UC-005 Sequence Diagram — Phone List Coordination (PSM)
+
+skinparam shadowing false
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceLifeLineBorderColor #4682B4
+skinparam sequenceBoxBorderColor #4682B4
+
+actor "Caregiver" as User
+participant "Browser\n(Blazor WASM)" as Browser
+participant "PhoneAssignments\nController" as Controller <<controller>>
+participant "PhoneAssignment\nService" as Service <<service>>
+participant "PhoneAssignment\nManager" as Manager <<manager>>
+participant "PhoneAssignment\nRepository" as Repository <<repository>>
+database "AppDbContext\n(MySQL)" as Db <<database>>
+
+== View Phone List for Active Shift ==
+
+User -> Browser : opens PhoneList view
+activate Browser
+
+Browser -> Controller : GET /api/phone-assignments/active
+activate Controller
+
+Controller -> Service : GetCurrentPhoneAssignmentsForActiveShiftAsync(ct)
+activate Service
+
+Service -> Manager : GetCurrentPhoneAssignmentsForActiveShift(ct)
+activate Manager
+
+Manager -> Repository : GetDtoByShiftTypeAsync(activeShift, ct)
+activate Repository
+
+Repository -> Db : SELECT * FROM PhoneAssignments\nWHERE ShiftType = @shift
+activate Db
+Db --> Repository : rows
+deactivate Db
+
+Repository --> Manager : PhoneAssignmentDto[]
+deactivate Repository
+
+Manager --> Service : PhoneAssignmentDto[]
+deactivate Manager
+
+Service --> Controller : PhoneAssignmentDto[]
+deactivate Service
+
+Controller --> Browser : 200 OK\n[PhoneAssignmentDto]
+deactivate Controller
+
+Browser --> User : displays phone list
+deactivate Browser
+
+== Assign Caregiver Name to Phone ==
+
+User -> Browser : enters name, leaves field
+activate Browser
+
+Browser -> Controller : POST /api/phone-assignments\n{phoneNumber, caregiverName, shiftType}
+activate Controller
+
+Controller -> Service : AssignPhoneAsync(request, ct)
+activate Service
+
+Service -> Manager : (validation logic)
+activate Manager
+
+Manager -> Repository : AddAsync(entity, ct)
+activate Repository
+
+Repository -> Db : INSERT INTO PhoneAssignments\n(Id, CaregiverId, PhoneNumber, ShiftType, AssignedAt)
+activate Db
+
+alt success
+    Db --> Repository : 1 row affected
+    deactivate Db
+    Repository --> Manager : PhoneAssignment
+    deactivate Repository
+    Manager --> Service : PhoneAssignmentDto
+    deactivate Manager
+    Service --> Controller : PhoneAssignmentDto
+    deactivate Service
+    Controller --> Browser : 200 OK\nPhoneAssignmentDto
+    deactivate Controller
+    Browser --> User : shows confirmation
+else unique constraint violation\n(Rule T5)
+    Db --> Repository : DbUpdateException
+    Repository --> Manager : throws
+    Manager --> Service : throws
+    Service --> Controller : throws RuleViolationException
+    Controller --> Browser : 409 Conflict
+    Browser --> User : shows error
+end
+
+deactivate Browser
+
+== Automatic Refresh (PeriodicallyExecuted, Rule T14) ==
+
+participant "PhoneListRefresh\nService" as Background <<hostedservice>>
+
+note over Background : Timer fires every 60s\n(from Rule T14)
+
+Background -> Service : GetCurrentPhoneAssignmentsForActiveShiftAsync(ct)
+activate Service
+note right : Same call chain as\n"View Phone List" above
+
+Service -> Manager : ...
+activate Manager
+Manager -> Repository : ...
+activate Repository
+Repository -> Db : SELECT ...
+activate Db
+Db --> Repository : rows
+deactivate Db
+Repository --> Manager : PhoneAssignmentDto[]
+deactivate Repository
+Manager --> Service : PhoneAssignmentDto[]
+deactivate Manager
+Service --> Background : PhoneAssignmentDto[]
+deactivate Service
+
+note over Background : Pushed to subscribers via\nSignalR (out of UC-005 scope)
+
+@enduml
