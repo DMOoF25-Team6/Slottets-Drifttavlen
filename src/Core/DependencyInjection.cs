@@ -7,6 +7,8 @@ using Core.Interfaces.Services;
 using Core.Providers;
 using Core.Services;
 
+using Domain.Entities;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Core;
@@ -21,6 +23,7 @@ public static class DependencyInjection
         _ = services.AddScoped<IMedicineStatusService, MedicineStatusService>();
         _ = services.AddScoped<IPhoneAssignmentService, PhoneAssignmentService>();
         _ = services.AddScoped<IAccountService, AccountService>();
+        _ = services.AddScoped<ITaskListService, TaskListService>();
 
         // Other services
         _ = services.AddScoped<IDatabaseConnectionService, DatabaseConnectionService>();

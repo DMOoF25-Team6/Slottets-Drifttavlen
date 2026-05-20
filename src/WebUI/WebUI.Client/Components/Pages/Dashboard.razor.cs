@@ -1,6 +1,11 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
+using Core.DTOs;
+using Core.Interfaces.Managers;
+using Core.Interfaces.Services;
+using Core.Services;
+
 using Domain.Entities;
 using Domain.Enums;
 
@@ -17,6 +22,9 @@ public partial class Dashboard
 
     [Inject]
     private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+
+    [Inject]
+    private ITaskListManager taskListManager { get; set; } = default!;
     #endregion
     #region Fields
 
@@ -33,6 +41,8 @@ public partial class Dashboard
 
     [Parameter]
     public string? Department { get; set; }
+
+    private IEnumerable<TaskListDto> tasks = [];
     #endregion
     #region Lifecycle
     // JS interop (localStorage) is only available after the component is rendered interactively
@@ -88,8 +98,14 @@ public partial class Dashboard
             })]
         })];
 
+        tasks = Department == null
+            ? []
+            : await taskListManager.GetDashboardTasksByDepartmentAsync(parsedDepartment);
+
         _isLoading = false;
         StateHasChanged();
     }
+
+
     #endregion
 }
