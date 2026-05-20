@@ -44,7 +44,7 @@ public static class DependencyInjection
         _ = services.AddScoped<IDatabaseService, Services.DatabaseService>();
 
         // Staff assignment services
-        _ = services.AddScoped<IStaffAssignmentService, StaffAssignmentService>();
+        _ = services.AddScoped<IStaffAssignmentService, StaffAssignmentManager>();
 
         //
         _ = services.AddKeyedScoped<IEnumerable<AuditEntry>>("Audit", (_, _) => []);
