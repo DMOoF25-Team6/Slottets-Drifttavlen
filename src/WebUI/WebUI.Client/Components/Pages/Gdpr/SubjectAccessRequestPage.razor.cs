@@ -49,10 +49,25 @@ public partial class SubjectAccessRequestPage : ComponentBase
         }
 
         List<string> scopes = [];
-        if (_scopeNotes) scopes.Add("Notes");
-        if (_scopeMedicine) scopes.Add("Medicine");
-        if (_scopePainkiller) scopes.Add("Painkiller");
-        if (_scopeAudit) scopes.Add("Audit");
+        if (_scopeNotes)
+        {
+            scopes.Add("Notes");
+        }
+
+        if (_scopeMedicine)
+        {
+            scopes.Add("Medicine");
+        }
+
+        if (_scopePainkiller)
+        {
+            scopes.Add("Painkiller");
+        }
+
+        if (_scopeAudit)
+        {
+            scopes.Add("Audit");
+        }
 
         if (scopes.Count == 0)
         {

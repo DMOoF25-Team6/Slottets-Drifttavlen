@@ -9,15 +9,19 @@
 @using Domain.Entities
 @using WebUI.Client.Components.Layout
 @using WebUI.Client.Components.Residents
+@using WebUI.Client.Components.TaskList
 @inject Core.Interfaces.Services.IResidentService ResidentService
 
 <PageTitle>Dashboard</PageTitle>
 <section aria-label="Resident Overview" class="container-fluid h-100">
   <div class="row h-100 g-2">
-    <section class="col-12 col-md-2 order-1 order-md-2">
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-md-4 g-2">
-        <p>Indsæt phonelist og task list</p>
-      </div>
+        <section class="col-12 col-md-2 order-1 order-md-2 d-flex">
+
+      
+        
+          <TaskList Tasks="tasks"/>
+        
+      
     </section>
     <div class="col-12 col-md-10 h-100 order-1 order-md-2">
       <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-2 h-100">

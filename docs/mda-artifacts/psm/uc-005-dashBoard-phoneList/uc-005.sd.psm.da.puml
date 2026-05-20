@@ -1,0 +1,148 @@
+@startuml
+
+' =============================================================
+' UC-005 Sequence Diagram (PSM) - Dansk
+'
+' MDA-niveau: Platform Specific Model
+' Målplatform: .NET 8 + Blazor + EF Core 8 + MySQL +
+'              Clean Architecture
+'
+' Udledt fra:
+' - uc-005.ssd.pim.da.puml (PIM System Sequence Diagram)
+' - uc-005.dcd.pim-marked.da.puml (marks)
+' - mappings/uc-005.mapping.pim-to-psm.da.md (Regel T10: LayeredResponsibility)
+'
+' Dette SD viser hvad der sker INDE i systemet som var en sort
+' boks i PIM SSD. Den enkelte PIM "System"-participant nedbrydes
+' i hele Clean Architecture-kæden.
+'
+' Sporbarhed: Hver besked her svarer til et metodekald mellem
+' klasser vist i uc-005.dcd.psm.da.puml.
+'
+' Bemærk: Klassenavne forbliver på engelsk i koden iht. projektets
+' kodestandarder.
+' =============================================================
+
+title UC-005 Sequence Diagram — Telefonliste-koordinering (PSM)
+
+skinparam shadowing false
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceLifeLineBorderColor #4682B4
+skinparam sequenceBoxBorderColor #4682B4
+
+actor "Plejer" as User
+participant "Browser\n(Blazor WASM)" as Browser
+participant "PhoneAssignments\nController" as Controller <<controller>>
+participant "PhoneAssignment\nService" as Service <<service>>
+participant "PhoneAssignment\nManager" as Manager <<manager>>
+participant "PhoneAssignment\nRepository" as Repository <<repository>>
+database "AppDbContext\n(MySQL)" as Db <<database>>
+
+== Vis telefonliste for aktiv vagt ==
+
+User -> Browser : åbner PhoneList-visning
+activate Browser
+
+Browser -> Controller : GET /api/phone-assignments/active
+activate Controller
+
+Controller -> Service : GetCurrentPhoneAssignmentsForActiveShiftAsync(ct)
+activate Service
+
+Service -> Manager : GetCurrentPhoneAssignmentsForActiveShift(ct)
+activate Manager
+
+Manager -> Repository : GetDtoByShiftTypeAsync(activeShift, ct)
+activate Repository
+
+Repository -> Db : SELECT * FROM PhoneAssignments\nWHERE ShiftType = @shift
+activate Db
+Db --> Repository : rækker
+deactivate Db
+
+Repository --> Manager : PhoneAssignmentDto[]
+deactivate Repository
+
+Manager --> Service : PhoneAssignmentDto[]
+deactivate Manager
+
+Service --> Controller : PhoneAssignmentDto[]
+deactivate Service
+
+Controller --> Browser : 200 OK\n[PhoneAssignmentDto]
+deactivate Controller
+
+Browser --> User : viser telefonliste
+deactivate Browser
+
+== Tildel plejernavn til telefon ==
+
+User -> Browser : indtaster navn, forlader felt
+activate Browser
+
+Browser -> Controller : POST /api/phone-assignments\n{phoneNumber, caregiverName, shiftType}
+activate Controller
+
+Controller -> Service : AssignPhoneAsync(request, ct)
+activate Service
+
+Service -> Manager : (valideringslogik)
+activate Manager
+
+Manager -> Repository : AddAsync(entity, ct)
+activate Repository
+
+Repository -> Db : INSERT INTO PhoneAssignments\n(Id, CaregiverId, PhoneNumber, ShiftType, AssignedAt)
+activate Db
+
+alt succes
+    Db --> Repository : 1 række påvirket
+    deactivate Db
+    Repository --> Manager : PhoneAssignment
+    deactivate Repository
+    Manager --> Service : PhoneAssignmentDto
+    deactivate Manager
+    Service --> Controller : PhoneAssignmentDto
+    deactivate Service
+    Controller --> Browser : 200 OK\nPhoneAssignmentDto
+    deactivate Controller
+    Browser --> User : viser bekræftelse
+else unik begrænsning overtrådt\n(Regel T5)
+    Db --> Repository : DbUpdateException
+    Repository --> Manager : kaster
+    Manager --> Service : kaster
+    Service --> Controller : kaster RuleViolationException
+    Controller --> Browser : 409 Conflict
+    Browser --> User : viser fejl
+end
+
+deactivate Browser
+
+== Automatisk opdatering (PeriodicallyExecuted, Regel T14) ==
+
+participant "PhoneListRefresh\nService" as Background <<hostedservice>>
+
+note over Background : Timer fyrer hvert 60. sekund\n(fra Regel T14)
+
+Background -> Service : GetCurrentPhoneAssignmentsForActiveShiftAsync(ct)
+activate Service
+note right : Samme kaldekæde som\n"Vis telefonliste" ovenfor
+
+Service -> Manager : ...
+activate Manager
+Manager -> Repository : ...
+activate Repository
+Repository -> Db : SELECT ...
+activate Db
+Db --> Repository : rækker
+deactivate Db
+Repository --> Manager : PhoneAssignmentDto[]
+deactivate Repository
+Manager --> Service : PhoneAssignmentDto[]
+deactivate Manager
+Service --> Background : PhoneAssignmentDto[]
+deactivate Service
+
+note over Background : Skubbes til abonnenter via\nSignalR (uden for UC-005's scope)
+
+@enduml

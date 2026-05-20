@@ -1,0 +1,87 @@
+@startuml
+
+' =============================================================
+' UC-005 Design Class Diagram MED MARKS (PIM) - Dansk
+'
+' MDA-niveau: Platform Independent Model (Markeret)
+' Marks er abstrakte KATEGORIER, ikke konkrete værdier.
+' Konkrete værdier (URL'er, længder, intervaller) hører til PSM.
+'
+' Mark-ordbog er dokumenteret i:
+'   uc-005.dcd.pim-marked.legend.da.md (ledsagedokument)
+' =============================================================
+
+title UC-005 Design Class Diagram MED MARKS (PIM)
+
+skinparam classBackgroundColor #FFF4E6
+skinparam classBorderColor #B8860B
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' --- Markerede entiteter ---
+
+class "Plejer" as Plejer <<entitet>> <<Persistent>> <<UniquelyIdentified>> {
+    + id : UUID
+    + fornavn : String
+    + efternavn : String
+}
+
+class "Telefon" as Telefon <<entitet>> <<Persistent>> <<ImmutableSet>> {
+    + nummer : String
+}
+
+class "Telefontildeling" as Tildeling <<entitet>> <<Persistent>> <<Auditable>> <<UniquelyIdentified>> {
+    + id : UUID
+    + tildeltTidspunkt : DateTime
+}
+
+enum "Vagttype" as Vagttype <<enumeration>> <<PersistedAsText>> {
+    Dag
+    Aften
+    Nat
+}
+
+' --- Markeret system ---
+
+class "Telefonkoordineringssystem" as System <<system>> <<LayeredResponsibility>> {
+    + hentTelefonlisteForAktivVagt() <<QueryOperation>> <<RestExposed>>
+    + vælgVagt() <<QueryOperation>> <<RestExposed>>
+    + tildelTelefon() <<CommandOperation>> <<RestExposed>>
+    + rydTildeling() <<CommandOperation>> <<RestExposed>>
+    + opdaterTelefonliste() <<PeriodicallyExecuted>>
+}
+
+' --- Associationer ---
+Tildeling "1" --> "1" Plejer
+Tildeling "1" --> "1" Telefon
+Tildeling "1" --> "1" Vagttype
+System "1" o-- "0..*" Tildeling
+System "1" *-- "7" Telefon
+System "1" o-- "0..*" Plejer
+
+note bottom of Tildeling
+    Telefontildeling bærer marks:
+    Persistent, Auditable, UniquelyIdentified.
+    Mappings gør disse til en gemt,
+    audit-logget entitet med egen identitet.
+end note
+
+note bottom of System
+    Systemet er markeret LayeredResponsibility.
+    Mappings nedbryder det i målplatformens
+    arkitektoniske lag (præsentation, applikation,
+    domæne, persistens).
+end note
+
+legend bottom
+    <b>Mark-ordbog er dokumenteret separat i:</b>
+    uc-005.dcd.pim-marked.legend.da.md
+
+    Marks her er kun abstrakte kategorier.
+    Konkrete platform-værdier (URL'er, længder, timer-intervaller)
+    afgøres af PIM-til-PSM-mappingen og lever i PSM.
+endlegend
+
+@enduml

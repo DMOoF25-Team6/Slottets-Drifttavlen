@@ -1,0 +1,125 @@
+@startuml
+
+' =============================================================
+' UC-005 Entity Relationship Diagram (PSM) - English
+'
+' MDA Level: Platform Specific Model
+' Target Platform: MySQL (via EF Core 8)
+'
+' Derived from:
+' - uc-005.dm.pim.puml (PIM Domain Model)
+' - uc-005.dcd.pim-marked.puml (marks)
+' - mappings/uc-005.mapping.pim-to-psm.md (Rules T1, T2, T3, T4, T5, T7, T8, T9)
+'
+' This ERD shows the MySQL database schema as it will be
+' created by EF Core migrations from the PSM entities.
+'
+' Trace: Each constraint here originates in a mapping rule.
+' =============================================================
+
+title UC-005 Entity Relationship Diagram — MySQL Schema (PSM)
+
+skinparam shadowing false
+skinparam linetype ortho
+skinparam classBackgroundColor #F0E8F8
+skinparam classBorderColor #6B4C9A
+
+' --- TABLES ---
+
+entity "Caregivers" as Caregivers <<table>> {
+    * **Id** : char(36) <<PK>>
+    --
+    * FirstName : varchar(100)
+    * LastName : varchar(100)
+}
+
+entity "Phones" as Phones <<table>> {
+    * **Number** : varchar(10) <<PK>>
+    --
+    (seed data: 7 fixed numbers)
+}
+
+entity "PhoneAssignments" as Assignments <<table>> {
+    * **Id** : char(36) <<PK>>
+    --
+    * CaregiverId : char(36) <<FK>>
+    * PhoneNumber : varchar(10) <<FK>>
+    * ShiftType : varchar(10)
+    * AssignedAt : datetime(6)
+    --
+    <i>Indexes:</i>
+    UQ IX_PhoneAssignment_Phone_Shift
+        (PhoneNumber, ShiftType)
+    UQ IX_PhoneAssignment_Caregiver_Shift
+        (CaregiverId, ShiftType)
+}
+
+' --- RELATIONSHIPS ---
+
+Assignments }o--|| Caregivers : CaregiverId
+Assignments }o--|| Phones : PhoneNumber
+
+' --- NOTES ---
+
+note right of Caregivers
+    <b>Rules applied:</b>
+    T1: <<Persistent>> -> table Caregivers
+    T2: <<UniquelyIdentified>> + <<Identifier>>
+        -> PK Id (char(36) for Guid)
+    T3: <<RequiredValue>> -> NOT NULL
+    T4: <<BoundedLength>> -> varchar(100)
+end note
+
+note right of Phones
+    <b>Rules applied:</b>
+    T1: <<Persistent>> -> table Phones
+    T2: Number is PK (no separate Id since ValueObject)
+    T4: <<BoundedLength>> -> varchar(10)
+    T7: <<ImmutableSet>> -> seed migration with:
+        41522, 41523, 41524, 41525, 41526, 41527, 41529
+end note
+
+note bottom of Assignments
+    <b>Rules applied:</b>
+    T1: <<Persistent>> -> table PhoneAssignments
+    T2: <<UniquelyIdentified>> -> PK Id
+    T3: <<RequiredValue>> -> all columns NOT NULL
+    T5: <<UniquePerCombination>> -> two composite unique indexes
+        ENFORCES: one caregiver per phone per shift
+        ENFORCES: one phone per caregiver per shift
+    T8: <<PersistedAsText>> on ShiftType -> varchar(10),
+        not int (avoids magic numbers in DB)
+    T9: <<ReferencedEntity>> -> CaregiverId, PhoneNumber FKs
+        with ON DELETE RESTRICT (no cascade)
+end note
+
+note as N1
+    <b>MySQL specifics (PSM):</b>
+
+    - Guid stored as char(36) (MySQL has no native UUID)
+    - DateTime stored as datetime(6) for microsecond precision
+    - Enum stored as varchar(10) per Rule T8 (PersistedAsText)
+    - Charset: utf8mb4 (default in EF Core 8)
+    - Engine: InnoDB (for FK support)
+
+    <b>EF Core generates:</b>
+    - Migration: Create tables, indexes, FKs, seed data
+    - Configuration: PhoneAssignmentConfiguration applies
+      Fluent API rules (HasIndex, HasConversion, HasOne)
+end note
+
+note as N2
+    <b>What about the Caregiver-Phone relationship?</b>
+
+    There is NO direct association between Caregivers and
+    Phones. The relationship exists ONLY through
+    PhoneAssignments — this is the elevated relationship
+    from Rule M3 (CIM-to-PIM).
+
+    A caregiver can have zero or more assignments over time.
+    A phone can have zero or more assignments over time.
+    But at any moment, the unique constraints ensure at most
+    one assignment per (caregiver, shift) and (phone, shift).
+end note
+
+@enduml

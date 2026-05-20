@@ -1,0 +1,69 @@
+@startuml
+
+' =============================================================
+' UC-005 Drifttavlen - Telefonliste-koordinering
+' Use Case Oversigt (CIM) - Dansk
+'
+' MDA-niveau: Computation Independent Model
+' Perspektiv: Forretning / Konceptualisering
+'
+' Dette diagram beskriver forretningsbehovet på Slottet med
+' rent domænesprog. Intet system, ingen IT, ingen teknologi.
+' Ord som "drifttavle" og "telefonliste" er domæneord brugt
+' af personalet på Slottet.
+' =============================================================
+
+title UC-005 Drifttavlen — Telefonliste-koordinering (CIM)
+
+skinparam shadowing false
+skinparam usecaseBackgroundColor #FFF9E6
+skinparam actorBackgroundColor #E8F4FD
+skinparam packageStyle rectangle
+
+' --- Forretningsaktører (rigtige roller på bostedet) ---
+actor "Plejepersonale\npå vagt" as Plejer
+actor "Vagtansvarlig" as Koordinator
+
+' --- Forretningsdomænets afgrænsning ---
+package "Slottet — Telefonkoordinering pr. vagt" <<Forretningsdomæne>> #F8F8F8 {
+
+    usecase "Se hvilken medarbejder der bærer\nhvilken arbejdstelefon på vagten" as UC1
+    usecase "Tage ansvar for en\narbejdstelefon på min vagt" as UC2
+    usecase "Aflevere min arbejdstelefon\nved vagtens afslutning" as UC3
+    usecase "Identificere hvilken medarbejder der\nskal kontaktes om en beboer" as UC4
+
+}
+
+' --- Forretningsrelationer ---
+Plejer --> UC1
+Plejer --> UC2
+Plejer --> UC3
+Koordinator --> UC1
+Koordinator --> UC4
+
+note bottom of "Slottet — Telefonkoordinering pr. vagt"
+    <b>Forretningskontekst:</b>
+    Slottet er et døgnbemandet bosted for borgere med
+    særlige behov. Plejepersonalet arbejder i dag-, aften-
+    eller nattevagter. På hver vagt bæres faste arbejdstelefoner
+    af bestemte medarbejdere, så kolleger og beboere kan
+    nå den rette person.
+
+    <b>I dag (papirbaseret):</b>
+    Tildelingen af telefoner til medarbejdere noteres på et
+    papirbaseret overlapsskema. Svært at holde opdateret;
+    let at miste; ingen historik.
+
+    <b>Forretningsregler:</b>
+    - Telefonnumre er faste: 41522, 41523, 41524, 41525, 41526, 41527, 41529
+    - Hver telefon bæres af én medarbejder pr. vagt
+    - Vagttyper: Dag, Aften, Nat
+    - Telefonlisten er til identifikation — ikke en kontaktliste
+
+    <b>Hvad denne CIM IKKE indeholder:</b>
+    Intet system, ingen skærme, ingen indtastningsfelter, ingen knapper.
+    Det er anliggender for PIM (platformuafhængig model)
+    og PSM (platformsspecifik model).
+end note
+
+@enduml

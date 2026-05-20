@@ -1,0 +1,99 @@
+@startuml
+
+' =============================================================
+' UC-005 System Sequence Diagram (PIM) - Dansk
+'
+' MDA-niveau: Platform Independent Model
+' Perspektiv: Specifikation / Analyse
+'
+' Udledt fra PIM use case ved at anvende mapping-regel M2
+' (Mål -> Brugscase) og M4 (Implicit viden -> Eksplicit
+' systemadfærd).
+'
+' Sammenlign med: uc-005.usecase.pim.da.md
+'
+' Dette SSD viser systemet som en SORT BOKS. Vi ser kun:
+' - Aktører
+' - Beskeder der krydser systemafgrænsningen
+' - Systemets svar
+'
+' Vi ser IKKE indvendige klasser, services eller implementering.
+' Det optræder i PSM Sequence Diagram.
+'
+' Bemærk: Ingen HTTP, ingen JSON, ingen REST, ingen SQL.
+' Beskeder er abstrakte systemoperationer. Parametre bruger
+' kun PIM-typer.
+' =============================================================
+
+title UC-005 System Sequence Diagram — Telefonliste-koordinering (PIM)
+
+skinparam shadowing false
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceLifeLineBorderColor #4682B4
+skinparam sequenceBoxBorderColor #4682B4
+
+actor "Plejer" as Plejer
+participant "Telefonkoordinerings-\nsystem" as System <<system>>
+actor "Tidshændelse" as Tidshaendelse
+
+== Vis telefonliste for aktiv vagt ==
+
+Plejer -> System : hentTelefonlisteForAktivVagt()
+activate System
+System --> Plejer : telefonliste : List<Telefontildeling>
+deactivate System
+
+== Tildel plejernavn til telefon ==
+
+Plejer -> System : vælgVagt(vagttype : Vagttype)
+activate System
+System --> Plejer : telefonliste : List<Telefontildeling>
+deactivate System
+
+Plejer -> System : tildelTelefon(telefonnummer : String,\nplejernavn : String,\nvagttype : Vagttype)
+activate System
+
+alt tildeling gyldig
+    System --> Plejer : tildelingBekræftet : Telefontildeling
+else vagttype ikke valgt (Regel M5)
+    System --> Plejer : fejl : VagttypeKræves
+else forretningsregel overtrådt (Regel M5)
+    System --> Plejer : fejl : RegelOvertrædelse
+else persistens fejlede
+    System --> Plejer : fejl : PersistensFejlede
+end
+
+deactivate System
+
+== Ryd tildeling ==
+
+Plejer -> System : rydTildeling(telefonnummer : String,\nvagttype : Vagttype)
+activate System
+System --> Plejer : rydBekræftet
+deactivate System
+
+== Automatisk opdatering (tidsstyret) ==
+
+Tidshaendelse -> System : opdaterTelefonliste()
+activate System
+System --> Tidshaendelse : telefonliste : List<Telefontildeling>
+deactivate System
+
+note over System
+    <b>System som sort boks (PIM-niveau):</b>
+
+    Systemets indvendige struktur vises IKKE her.
+    Ingen services, ingen managers, ingen repositories.
+    Det er PSM-anliggender (platformsspecifikke).
+
+    <b>Beskedtyper er PIM-generiske:</b>
+    - String, Vagttype, List<T> — platformuafhængige
+    - INGEN HTTP, INGEN JSON, INGEN REST-verber
+    - INGEN async/Task — det er platformkonstruktioner
+
+    <b>Tidshændelse er en intern aktør (Regel M1):</b>
+    Den repræsenterer systemets evne til at reagere på tid.
+    I CIM findes ingen sådan aktør.
+end note
+
+@enduml

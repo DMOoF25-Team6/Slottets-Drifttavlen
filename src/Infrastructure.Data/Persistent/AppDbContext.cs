@@ -25,6 +25,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
     public DbSet<PhoneAssignment> PhoneAssignments { get; set; }
     public DbSet<StaffAssignment> StaffAssignments { get; set; }
     public DbSet<Employee> Employees { get; set; }
+    public DbSet<TaskList> TaskLists { get; set; }
 
 
     // UC-010 GDPR compliance entities
@@ -67,6 +68,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
         _ = modelBuilder.ApplyConfiguration(new Configurations.RetentionPolicyConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.SubjectAccessRequestConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.LoginAttemptConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new Configurations.TaskListConfiguration());
 
         _ = modelBuilder.Entity<MedicineStatusView>()
             .HasNoKey()

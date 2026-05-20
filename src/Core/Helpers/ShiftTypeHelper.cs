@@ -1,9 +1,11 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-namespace Domain.Enums;
+using Domain.Enums;
 
-public static class ShiftTypeExtensions
+namespace Core.Helpers;
+
+public static class ShiftTypeHelper
 {
     public static string ToDanishString(this ShiftType shiftType)
     {

@@ -112,17 +112,11 @@ public class StaffAssignmentManager(
         CancellationToken cancellationToken = default)
     {
         // Find the assignment by ID
+        // Stop if assignment does not exist
         StaffAssignment? assignment =
             await _repository.GetByIdAsync(
                 assignmentId,
-                cancellationToken);
-
-        // Stop if assignment does not exist
-        if (assignment is null)
-        {
-            throw new KeyNotFoundException("Assignment not found.");
-        }
-
+                cancellationToken) ?? throw new KeyNotFoundException("Assignment not found.");
         assignment.ResidentId = dto.ResidentId;
         assignment.EmployeeId = dto.EmployeeId;
         assignment.ShiftType = dto.ShiftType;

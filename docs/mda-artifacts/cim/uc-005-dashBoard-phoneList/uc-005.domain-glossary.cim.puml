@@ -1,0 +1,100 @@
+@startuml
+
+' =============================================================
+' UC-005 Domain Glossary (CIM) - English
+'
+' MDA Level: Computation Independent Model
+' Perspective: Business / Conceptualization
+'
+' This diagram defines the BUSINESS CONCEPTS at Slottet using
+' UML class notation. It is NOT a data model — there are no
+' types, no IDs, no methods. Each box is a concept that exists
+' in the real world at Slottet, regardless of any IT system.
+'
+' Notice: There is no "PhoneAssignment" entity here. That is a
+' system construct that emerges in the PIM. In the real domain,
+' a Caregiver simply CARRIES a Work Phone on a Shift.
+' =============================================================
+
+title UC-005 Domain Glossary — Phone List Coordination (CIM)
+
+skinparam classBackgroundColor #FFF9E6
+skinparam classBorderColor #B8860B
+skinparam shadowing false
+skinparam classFontStyle bold
+skinparam classAttributeFontSize 12
+
+' --- Core domain concepts ---
+class "Caregiver" as Caregiver {
+    A staff member who provides
+    care to residents during a shift
+}
+
+class "Shift" as Shift {
+    A working period at Slottet
+    Types: Day, Evening, Night
+}
+
+class "Work Phone" as Phone {
+    A physical phone used by caregivers
+    for communication on the premises
+    Numbers are fixed and assigned
+    to the facility, not to people
+}
+
+class "Resident" as Resident {
+    A person receiving care
+    at Slottet
+}
+
+class "Slottet" as Slottet {
+    24-hour residential care facility
+    for residents with special needs
+}
+
+' --- Domain relationships (business language, not system-speak) ---
+Caregiver "1..*" -- "1" Shift : works on >
+Caregiver "1" -- "0..1" Phone : carries during shift >
+Caregiver "1..*" -- "1..*" Resident : cares for >
+Slottet "1" *-- "1..*" Caregiver : employs
+Slottet "1" *-- "7" Phone : owns
+Slottet "1" *-- "1..*" Resident : houses
+
+note bottom of Phone
+    <b>Fixed phone numbers at Slottet:</b>
+    41522, 41523, 41524, 41525, 41526, 41527, 41529
+
+    These numbers belong to <i>Slottet</i>, not to people.
+    A Caregiver carries a phone <i>during</i> a shift,
+    but the phone itself stays at Slottet.
+end note
+
+note bottom of Shift
+    <b>Shift types:</b>
+    - Day
+    - Evening
+    - Night
+
+    A shift defines <i>when</i> work happens.
+    Each Caregiver works one Shift at a time.
+end note
+
+note as N1
+    <b>What this glossary does NOT contain:</b>
+
+    No "PhoneAssignment" — that is a system construct
+    that appears in PIM. In the real world there is only
+    a relationship: a Caregiver carries a Work Phone
+    during a Shift. No third "thing" exists.
+
+    No data types (Guid, String, int) — those are
+    platform-specific and appear in PSM.
+
+    No methods or operations — concepts don't <i>do</i>
+    things, they <i>are</i> things.
+
+    No primary keys or foreign keys — these are
+    database concerns that appear in PSM.
+end note
+
+@enduml

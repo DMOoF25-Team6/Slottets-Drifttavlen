@@ -1,0 +1,68 @@
+@startuml
+
+' =============================================================
+' UC-005 Operations Board - Phone List Coordination
+' Use Case Overview (CIM)
+'
+' MDA Level: Computation Independent Model
+' Perspective: Business / Conceptualization
+'
+' This diagram captures the business need at Slottet residential
+' care facility, using only domain language. No system, no IT,
+' no technology references. Terms like "operations board" and
+' "phone list" are domain terms used by the staff at Slottet.
+' =============================================================
+
+title UC-005 Operations Board — Phone List Coordination (CIM)
+
+skinparam shadowing false
+skinparam usecaseBackgroundColor #FFF9E6
+skinparam actorBackgroundColor #E8F4FD
+skinparam packageStyle rectangle
+
+' --- Business actors (real roles at the residential care facility) ---
+actor "Caregiver\non Shift" as Caregiver
+actor "Shift Coordinator" as Coordinator
+
+' --- Business domain boundary ---
+package "Slottet — Shift Phone Coordination" <<Business Domain>> #F8F8F8 {
+
+    usecase "See which caregiver carries\nwhich work phone for this shift" as UC1
+    usecase "Take responsibility for a\nwork phone during my shift" as UC2
+    usecase "Release my work phone\nat end of shift" as UC3
+    usecase "Identify which caregiver to\ncontact for a resident concern" as UC4
+
+}
+
+' --- Business relationships ---
+Caregiver --> UC1
+Caregiver --> UC2
+Caregiver --> UC3
+Coordinator --> UC1
+Coordinator --> UC4
+
+note bottom of "Slottet — Shift Phone Coordination"
+    <b>Business context:</b>
+    Slottet is a 24-hour residential care facility for residents
+    with special needs. Caregivers work in Day, Evening, or Night
+    shifts. During each shift, fixed work phones are carried by
+    specific caregivers so that colleagues and residents can
+    reach the right person.
+
+    <b>Today (paper-based):</b>
+    Phone-to-caregiver assignments are tracked on a paper handover
+    form. Hard to keep current; easy to lose; no history.
+
+    <b>Domain rules:</b>
+    - Phone numbers are fixed: 41522, 41523, 41524, 41525, 41526, 41527, 41529
+    - Each phone is carried by one caregiver per shift
+    - Shifts: Day, Evening, Night
+    - The phone list is for identification — not a contact list
+
+    <b>What this CIM does NOT contain:</b>
+    No system, no screens, no input fields, no save buttons.
+    Those are platform-independent and platform-specific concerns
+    handled in PIM and PSM.
+end note
+
+@enduml

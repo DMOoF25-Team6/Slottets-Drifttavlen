@@ -1,0 +1,39 @@
+<section class="card w-100">
+    <header class="card-header">
+        <h6 class="mb-0">Opgaver</h6>
+    </header>
+
+    <div class="card-body overflow-auto p-2">
+        @if (!Tasks.Any())
+        {
+            <p class="small text-muted mb-0">Ingen aktive opgaver.</p>
+        }
+        else
+        {
+            @foreach (var task in Tasks)
+            {
+                <div class="border-bottom py-2">
+                    <div class="d-flex justify-content-between align-items-start gap-2">
+                        <div>
+                            <strong class="small">@task.Title</strong>
+
+                            <div class="small text-muted">
+                                @task.Description
+                            </div>
+
+                            <div class="small text-muted">
+                                @task.DueTime.ToString("dd/MM HH:mm")
+                            </div>
+                        </div>
+
+                        <span class="badge bg-warning text-dark">
+                            @task.TaskListStatus
+                        </span>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</section>
+
+

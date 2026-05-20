@@ -1,0 +1,126 @@
+@startuml
+
+' =============================================================
+' UC-005 Design Class Diagram (PIM) - English
+'
+' MDA Level: Platform Independent Model
+' Perspective: Specification / Analysis (Design without platform)
+'
+' Derived from:
+' - uc-005.dm.pim.puml (entities)
+' - uc-005.ssd.pim.puml (system operations)
+' - uc-005.oc.pim.md (operation contracts)
+'
+' This DCD shows the system's INTERNAL structure at PIM level.
+' It assigns responsibilities to classes using GRASP patterns
+' (Information Expert, Controller, Pure Fabrication) but does NOT
+' commit to any platform, framework, or layered architecture.
+'
+' Compare with PSM DCD which adds:
+' - .NET types (Guid, Task<T>, IEnumerable<T>)
+' - Clean Architecture layers (Domain, Core, Infrastructure, etc.)
+' - EF Core entities and DbContext
+' - REST controllers and HTTP semantics
+' - Dependency injection interfaces
+' =============================================================
+
+title UC-005 Design Class Diagram — Phone List Coordination (PIM)
+
+skinparam classBackgroundColor #E6F4FF
+skinparam classBorderColor #4682B4
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+' --- Entities (from PIM Domain Model) ---
+
+class "Caregiver" as Caregiver <<entity>> {
+    + id : UUID
+    + firstName : String
+    + lastName : String
+}
+
+class "Phone" as Phone <<entity>> {
+    + number : String
+}
+
+class "PhoneAssignment" as Assignment <<entity>> {
+    + id : UUID
+    + assignedAt : DateTime
+    --
+    + getPhoneNumber() : String
+    + getCaregiverName() : String
+    + getShiftType() : ShiftType
+}
+
+enum "ShiftType" as ShiftType <<enumeration>> {
+    Day
+    Evening
+    Night
+}
+
+' --- System operations (from Operation Contracts) ---
+
+class "PhoneCoordinationSystem" as System <<system>> {
+    + getPhoneListForActiveShift() : List<PhoneAssignment>
+    + selectShift(shiftType : ShiftType) : List<PhoneAssignment>
+    + assignPhone(phoneNumber : String,\n  caregiverName : String,\n  shiftType : ShiftType) : PhoneAssignment
+    + clearAssignment(phoneNumber : String,\n  shiftType : ShiftType) : void
+    + refreshPhoneList() : List<PhoneAssignment>
+}
+
+' --- Domain associations ---
+Assignment "1" --> "1" Caregiver : assigned to
+Assignment "1" --> "1" Phone : for phone
+Assignment "1" --> "1" ShiftType : during shift
+
+' --- System composition ---
+System "1" o-- "0..*" Assignment : manages
+System "1" *-- "7" Phone : owns
+System "1" o-- "0..*" Caregiver : knows
+
+' --- Notes ---
+note right of System
+    <b>GRASP: Controller pattern</b>
+    PhoneCoordinationSystem acts as the entry point
+    for all system operations from external actors.
+
+    <b>One operation per OC contract:</b>
+    Each method corresponds to one Operation Contract
+    in uc-005.oc.pim.md.
+end note
+
+note bottom of Assignment
+    <b>GRASP: Information Expert</b>
+    PhoneAssignment owns the knowledge of who carries
+    which phone on which shift. It exposes that
+    knowledge via getter operations.
+end note
+
+note as N1
+    <b>PIM-level design constraints:</b>
+
+    - All types are platform-independent (UUID, String, DateTime, List<T>)
+    - No async semantics (PIM is synchronous specification)
+    - No persistence concerns (no repositories, no DbContext)
+    - No architectural layers (Clean Architecture is PSM-level)
+    - No interfaces for DI (introduced only when needed by PSM)
+
+    Marks for PIM-to-PSM transformation are added in a
+    separate file: uc-005.dcd.pim-marked.puml
+end note
+
+note as N2
+    <b>What about Slottet?</b>
+
+    Slottet exists in CIM as the business domain context.
+    At PIM level, Slottet is implicit — it IS the system.
+    The PhoneCoordinationSystem represents Slottet's
+    capability to coordinate phones.
+
+    If multiple facilities were modeled, Slottet would
+    reappear as an entity. For UC-005 single-facility
+    scope, it is not needed.
+end note
+
+@enduml

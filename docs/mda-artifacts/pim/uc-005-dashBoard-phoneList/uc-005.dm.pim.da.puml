@@ -1,0 +1,105 @@
+@startuml
+
+' =============================================================
+' UC-005 Domænemodel (PIM) - Dansk
+'
+' MDA-niveau: Platform Independent Model
+' Perspektiv: Specifikation / Analyse
+'
+' Udledt fra CIM domæneordbogen ved at anvende mapping-reglerne
+' M3 (Domænerelation -> Systementitet) og M5 (Forretningsregel
+' -> Systembegrænsning).
+'
+' Sammenlign med: ../../cim/uc-005-dashBoard-phoneList/uc-005.domain-glossary.cim.da.puml
+'
+' Central transformation: CIM-relationen "Plejer bærer
+' arbejdstelefon på vagt" ophøjes til en systementitet
+' Telefontildeling, fordi systemet skal HUSKE tildelinger
+' (en relation kan ikke gemmes — kun entiteter kan).
+'
+' Typer er GENERISKE (UUID, String, Enum) — IKKE platformsspecifikke
+' (Guid, string, int). De optræder kun i PSM.
+' =============================================================
+
+title UC-005 Domænemodel — Telefonliste-koordinering (PIM)
+
+skinparam classBackgroundColor #E6F4FF
+skinparam classBorderColor #4682B4
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+' --- Entiteter (system-niveau begreber) ---
+
+class "Plejer" as Plejer {
+    + id : UUID
+    + fornavn : String
+    + efternavn : String
+}
+
+class "Telefon" as Telefon {
+    + nummer : String
+}
+
+class "Telefontildeling" as Tildeling <<systementitet>> {
+    + id : UUID
+    + tildeltTidspunkt : DateTime
+}
+
+enum "Vagttype" as Vagttype <<enumeration>> {
+    Dag
+    Aften
+    Nat
+}
+
+' --- Associationer ---
+Tildeling "1" --> "1" Plejer : tildelt til
+Tildeling "1" --> "1" Telefon : for telefon
+Tildeling "1" --> "1" Vagttype : på vagt
+
+' --- Begrænsninger (fra Regel M5) ---
+note right of Tildeling
+    <b>Invarianter (Regel M5):</b>
+    - Én Telefontildeling pr. (Telefon, Vagttype)-kombination
+    - Én Telefontildeling pr. (Plejer, Vagttype)-kombination
+    - Telefon.nummer skal tilhøre det faste sæt
+    - Vagttype er lukket enumeration
+end note
+
+note bottom of Tildeling
+    <b>Hvorfor Telefontildeling eksisterer (Regel M3):</b>
+
+    I CIM findes der kun en relation: "Plejer bærer telefon
+    på vagt". En relation kan ikke gemmes, auditeres eller
+    forespørges over tid.
+
+    I PIM ophøjes relationen til en systementitet fordi
+    systemet skal:
+    - HUSKE tildelinger vedvarende
+    - AUDITERE hvem der tildelte hvad og hvornår
+    - FORESPØRGE tildelinger pr. vagt, pr. telefon, pr. plejer
+    - RYDDE tildelinger uden at påvirke underliggende begreber
+
+    Dette er en klassisk CIM -> PIM-elevation.
+end note
+
+note as N1
+    <b>Bemærk: KUN generiske typer</b>
+
+    Typer her er platformuafhængige:
+    - UUID (ikke Guid)
+    - String (ikke C# string)
+    - DateTime (ikke DateTimeOffset)
+    - Enumeration (begreb, ikke C# enum)
+
+    Platformsspecifikke typer optræder i PSM.
+end note
+
+note as N2
+    <b>Bemærk: INGEN data uden for UC-005's scope</b>
+
+    Slottet og Beboer findes i CIM, men deltager ikke i
+    telefonkoordinering. De optræder i andre PIM'er (fx UC-001
+    Drifttavle for beboere). PIM er use-case-afgrænset.
+end note
+
+@enduml
