@@ -7,7 +7,7 @@ using Core.Interfaces.Services;
 using Domain.Entities;
 
 using Infrastructure.Data.Repositories;
-using Infrastructure.Services;
+using Infrastructure.Managers;
 
 using Microsoft.Extensions.DependencyInjection;
 
