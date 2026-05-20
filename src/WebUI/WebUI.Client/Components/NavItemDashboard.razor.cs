@@ -37,9 +37,11 @@ public partial class NavItemDashboard
         AuthenticationState authState = await AuthStateProvider.GetAuthenticationStateAsync();
         ClaimsPrincipal user = authState.User;
         if (user.Identity is not { IsAuthenticated: true })
+        {
             return;
+        }
 
-        List<Claim> claims = user.Claims.ToList();
+        List<Claim> claims = [.. user.Claims];
         foreach (Claim claim in claims)
         {
             Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
@@ -54,11 +56,19 @@ public partial class NavItemDashboard
         else
         {
             if (claims.Any(c => c.Type == "Permission" && c.Value.StartsWith("department:slottet:")))
+            {
                 dashboardLinks.Add(("Slottet", "/dashboard/slottet"));
+            }
+
             if (claims.Any(c => c.Type == "Permission" && c.Value.StartsWith("department:marken:")))
+            {
                 dashboardLinks.Add(("Marken", "/dashboard/marken"));
+            }
+
             if (claims.Any(c => c.Type == "Permission" && c.Value.StartsWith("department:skoven:")))
+            {
                 dashboardLinks.Add(("Skoven", "/dashboard/skoven"));
+            }
         }
         _isLoading = false;
         StateHasChanged();

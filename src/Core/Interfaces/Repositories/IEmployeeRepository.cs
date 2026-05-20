@@ -5,10 +5,6 @@ using Domain.Entities;
 
 namespace Core.Interfaces.Repositories;
 
-public interface IEmployeeRepository
+public interface IEmployeeRepository : IRepository<Employee>
 {
-    Task<IEnumerable<Employee>> GetAllAsync(
-        CancellationToken cancellationToken = default(CancellationToken));
-        
-
 }

@@ -11,28 +11,28 @@ namespace Infrastructure.Data.Persistent.Configurations;
 
 public class TaskListConfiguration : IEntityTypeConfiguration<TaskList>
 {
-        public void Configure(EntityTypeBuilder<TaskList> builder)
-        {
+    public void Configure(EntityTypeBuilder<TaskList> builder)
+    {
 
-        builder.ToTable("TaskLists");
+        _ = builder.ToTable("TaskLists");
 
-        builder.HasKey(t => t.Id);
+        _ = builder.HasKey(t => t.Id);
 
-        builder.Property(t => t.Title)
+        _ = builder.Property(t => t.Title)
                 .IsRequired()
                 .HasMaxLength(50);
-        builder.Property(t => t.Description)
+        _ = builder.Property(t => t.Description)
                 .HasMaxLength(200);
-        builder.Property(t => t.TaskStatus)
+        _ = builder.Property(t => t.TaskStatus)
                 .IsRequired();
-        builder.Property(t => t.DueTime)
+        _ = builder.Property(t => t.DueTime)
                 .IsRequired();
-        builder.Property(t => t.Department)
+        _ = builder.Property(t => t.Department)
                 .IsRequired();
         SeedingData(builder);
-        }
+    }
 
-    public void SeedingData(EntityTypeBuilder<TaskList> builder)
+    public static void SeedingData(EntityTypeBuilder<TaskList> builder)
     {
         _ = builder.HasData(
             new TaskList

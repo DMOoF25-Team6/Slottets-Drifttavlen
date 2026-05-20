@@ -38,7 +38,7 @@ public class AuditInterceptor(IEnumerable<AuditEntry>? auditEntries = null) : Sa
                 UserId = GetUserIdFromToken(eventData.Context), // Get user from token
             })];
 
-        if (!auditEntries.Any())
+        if (auditEntries.Count == 0)
         {
             return await base.SavingChangesAsync(eventData, result, cancellationToken);
         }
