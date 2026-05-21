@@ -855,9 +855,118 @@ namespace Core.DTOs.Security {
       <<static>>
       +ToTaskListDto(taskList: TaskList): TaskListDto
     }
-
   }
 
+  namespace Core.Mappers.Accounts {
+    class RegistrationMapper {
+      <<static>>
+      +ToUserEntity(request: RegisterRequestDto): User
+    }
+  }
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %% Application Providers
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  namespace Core.Providers {
+    class DatabaseConnectionStateProvider {
+      <<class>>
+      +StateChanged: Action?
+      +IsConnected: bool
+      +SetConnectionState(isConnected: bool): void
+    }
+  }
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %% Application Services
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  namespace Core.Services {
+    class AccountService {
+      +CreateAccountAsync(registrationRequestDto: RegisterRequestDto): Task<RegistrationResponseDto>
+      +LoginAsync(loginRequestDto: LoginRequestDto): Task<ILoginResult>
+      +RefreshTokenAsync(refreshTokenRequestDto: RefreshTokenRequestDto): Task<RefreshTokenResponseDto>
+      +LogoutAsync(logoutRequestDto: LogoutRequestDto): Task<ILogoutResult>
+    }
+
+    class AnonymizationService {
+      +GetCandidatesAsync(cancellationToken: CancellationToken): Task<IEnumerable<AnonymizationCandidateDto>>
+      +ApproveAnonymizationAsync(candidateId: guid, cancellationToken: CancellationToken): Task<AnonymizationResultDto>
+      +RejectAnonymizationAsync(candidateId: guid, reason: string, cancellationToken: CancellationToken): Task<bool>
+    }
+
+    class Art33NotificationService {
+      +SendNotificationAsync(incidentId: guid, dpoEmail: string, cancellationToken: CancellationToken): Task<bool>
+    }
+
+    class AuditService {
+      +LogAsync(entityName: string, changeType: string, changedBy: string Nullable, description: string): Task
+      +GetRecentAsync(limit: int Nullable, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntryDto>>
+      +GetByEntityNameAsync(entityName: string, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntryDto>>
+      +GetWithDetailsAsync(id: guid, cancellationToken: CancellationToken): Task<AuditEntryDto Nullable>
+    }
+
+    class DatabaseConnectionService {
+      +CheckDatabaseConnectionAsync(): Task
+    }
+
+    class MedicineStatusService {
+      +GetMedicineStatusAsync(residentId: guid, cancellationToken: CancellationToken): Task<MedicineStatusDto Nullable>
+      +GetPainkillerStatusAsync(residentId: guid, cancellationToken: CancellationToken): Task<PainkillerStatusDto Nullable>
+    }
+
+    class PhoneAssignmentService {
+      +GetCurrentPhoneAssignmentsForActiveShiftAsync(cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignmentDto>>
+    }
+
+    class PseudonymizationService {
+      +Pseudonymize(identifier: string): string
+      +PseudonymizeShort(identifier: string): string
+    }
+
+    class ResidentNoteService {
+      +GetAllByResidentIdAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<ResidentNoteDto>>
+      +AddAsync(residentId: guid, noteText: string, cancellationToken: CancellationToken): Task<bool>
+      +UpdateAsync(noteId: guid, newText: string, cancellationToken: CancellationToken): Task<bool>
+      +DeleteAsync(noteId: guid, cancellationToken: CancellationToken): Task<bool>
+    }
+
+    class ResidentService {
+      +GetByIdAsync(id: guid, ct: CancellationToken): Task<Resident Nullable>
+      +GetAllAsync(ct: CancellationToken): Task<IEnumerable<Resident>>
+      +GetByDepartmentsAsync(departments: IList<Department>, ct: CancellationToken): Task<IEnumerable<Resident>>
+      +CreateAsync(dto: ResidentCreateRequestDto, ct: CancellationToken): Task
+      +UpdateAsync(id: guid, resident: ResidentUpdateRequestDto, ct: CancellationToken): Task
+      +DeleteAsync(id: guid, ct: CancellationToken): Task
+    }
+
+    class RetentionPolicyService {
+      +GetPoliciesAsync(cancellationToken: CancellationToken): Task<IEnumerable<RetentionPolicyDto>>
+      +UpdateRetentionPolicyAsync(dto: UpdateRetentionPolicyDto, changedByEmployeeId: guid, cancellationToken: CancellationToken): Task<RetentionPolicyDto>
+    }
+
+    class SecurityIncidentService {
+      +GetIncidentsAsync(cancellationToken: CancellationToken): Task<IEnumerable<SecurityIncidentDto>>
+      +EscalateIncidentAsync(incidentId: guid, isBreach: bool, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+      +AddInvestigationNotesAsync(dto: AddInvestigationNotesDto, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+      +CloseIncidentAsync(incidentId: guid, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+    }
+
+    class SubjectAccessRequestService {
+      +GenerateExportAsync(dto: SarExportRequestDto, cancellationToken: CancellationToken): Task<SarExportPackageDto>
+      +MarkFulfilledAsync(dto: SarFulfilledDto, cancellationToken: CancellationToken): Task<bool>
+    }
+
+    class TaskListService {
+      +GetAvailableTasksByDepartmentAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<TaskListDto>>
+    }
+
+    class TokenService {
+      +CreateJwtTokenAsync(user: User, roles: IList<string>, permissions: IList<Claim>, cancellationToken: CancellationToken): Task<string>
+      +CreateRefreshTokenAsync(user: User, ipAddress: string, cancellationToken: CancellationToken): Task<RefreshToken>
+      +ComputeSha256HashAsync(token: string, cancellationToken: CancellationToken): Task<string>
+    }
+  }
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %% Domain Associations
@@ -1073,6 +1182,27 @@ namespace Core.DTOs.Security {
 
   IDatabaseConnectionStateProvider --> DataConnection : IsConnected
 
+  %% Service class associations
+  AccountService --> IAccountManager : delegates
+  AnonymizationService --> IAnonymizationManager : delegates
+  Art33NotificationService --> ILogger : logs
+  AuditService --> IAuditManager : delegates
+  DatabaseConnectionService --> IDatabaseConnectionManager : delegates
+  MedicineStatusService --> IMedicineStatusManager : delegates
+  PhoneAssignmentService --> IPhoneAssignmentManager : delegates
+  PseudonymizationService --> IConfiguration : configuration
+  ResidentNoteService --> IResidentNoteManager : delegates
+  ResidentService --> IResidentManager : delegates
+  RetentionPolicyService --> IRetentionPolicyManager : delegates
+  SecurityIncidentService --> ISecurityIncidentManager : delegates
+  SecurityIncidentService --> IArt33NotificationService : delegates
+  SubjectAccessRequestService --> ISubjectAccessRequestManager : delegates
+  TaskListService --> ITaskListManager : delegates
+  TokenService --> IConfiguration : configuration
+  TokenService --> ILogger : logs
+  TokenService --> User : CreateJwtTokenAsync
+  TokenService --> RefreshToken : CreateRefreshTokenAsync
+
   %% Repository associations
   IAnonymizationCandidateRepository --> AnonymizationCandidate : Repository
   IAuditRepository --> AuditEntry : GetRecentAsync
@@ -1106,6 +1236,8 @@ namespace Core.DTOs.Security {
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   AnonymizationCandidateMapper --> AnonymizationCandidate : ToDto
   AnonymizationCandidateMapper --> AnonymizationCandidateDto : ToDto
+  RegistrationMapper --> RegisterRequestDto : ToUserEntity
+  RegistrationMapper --> User : ToUserEntity
   AuditMapper --> AuditEntry : ToDto
   AuditMapper --> AuditEntryDto : ToDto
   AuditMapper --> AuditEntry : ToDtos
