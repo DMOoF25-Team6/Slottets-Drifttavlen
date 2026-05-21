@@ -1,0 +1,287 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+
+package "Domain.Enums" {
+  enum AnonymizationStatus {
+    Suggested
+    Approved
+    Rejected
+    Anonymized
+  }
+  enum DbConnectionState {
+    Online
+    Offline
+    Reconnecting
+    Unknown
+  }
+  enum Department {
+    Slottet
+    Skoven
+    Marken
+  }
+  enum IncidentSeverity {
+    Low
+    Medium
+    High
+    Critical
+  }
+  enum IncidentStatus {
+    Open
+    UnderInvestigation
+    Closed
+    Escalated
+    BreachNotified
+  }
+  enum RetentionDataCategory {
+    MedicineLogs
+    ResidentNotes
+    AuditLogs
+    LoginLogs
+    InactiveUsers
+    AnonymizationTrigger
+  }
+  enum ShiftType {
+    Day
+    Evening
+    Night
+  }
+  enum TrafficLightStatus {
+    Green
+    Yellow
+    Red
+  }
+  enum TaskListStatus {
+    Success
+    InProgress
+  }
+}
+
+package "Domain.Interfaces" {
+  interface IEntity {
+    +Id: guid
+  }
+}
+
+package "Domain.Entities" {
+  class AnonymizationCandidate {
+    +Id: guid
+    +ResidentId: guid
+    +RetentionPolicyId: guid
+    +SuggestedAt: DateTime
+    +Reason: string
+    +Status: AnonymizationStatus
+  }
+  class AuditEntry {
+    +Id: guid
+    +Metadata: string
+    +StartTimeUtc: DateTime
+    +EndTimeUtc: DateTime
+    +Succeeded: bool
+    +UserId: guid
+    +ErrorMessage: string
+  }
+  class ChangeDetail {
+    +Id: guid
+    +Field: string
+    +OldValue: string
+    +NewValue: string
+    +AuditEntryId: guid
+  }
+  class Employee {
+    +Id: guid
+    +FirstName: string
+    +LastName: string
+    +Initials: string
+    +UserId: guid
+    +Department: Department
+    *StaffAssignments: ICollection<StaffAssignment>
+    *User: User
+  }
+  class LoginAttempt {
+    +Id: guid
+    +AttemptedAt: DateTime
+    +EmailHash: string
+    +UserId: guid
+    +Timestamp: DateTime
+    +Succeeded: bool
+    +IpAddress: string
+  }
+  class MedicineRecord {
+    +Id: guid
+    +ResidentId: guid
+    +MedicineName: string
+    +Timestamp: DateTime
+    +Given: bool
+  }
+  class PainkillerRecord {
+    +Id: guid
+    +ResidentId: guid
+    +Type: string
+    +GivenAt: DateTime
+    +NextAllowedTime: DateTime
+  }
+  class PhoneAssignment {
+    +Id: guid
+    +CaregiverId: guid
+    +PhoneNumber: string
+    +ShiftType: string
+  }
+  class RefreshToken {
+    +Id: guid
+    +UserId: guid
+    +TokenHash: string
+    +ExpiresAt: DateTime
+    +CreatedAt: DateTime
+    +RevokedAt: DateTime Nullable
+    +CreatedByIp: string Nullable
+    +RevokedByIp: string Nullable
+    +RevokedReason: string Nullable
+    *User: User
+  }
+  class Resident {
+    +Id: guid
+    +Initials: string
+    +FirstName: string
+    +LastName: string
+    +TrafficLightStatus: TrafficLightStatus
+    +Department: Department
+    +DischargedAt: DateTime Nullable
+    *Notes: ICollection<ResidentNote>
+    *Medicines: ICollection<ResidentMedicine>
+    *Painkillers: ICollection<ResidentPainkiller>
+    *StaffAssignments: ICollection<StaffAssignment>
+  }
+  class ResidentNote {
+    +Id: guid
+    +Note: string
+    +CreatedAt: DateTime
+    +EditedAt: DateTime Nullable
+    +ResidentId: guid
+  }
+  class RetentionPolicy {
+    +Id: guid
+    +Category: RetentionDataCategory
+    +RetentionPeriod: TimeSpan
+    +LegalMinimum: TimeSpan
+    +EffectiveFrom: TimeDate
+    *AuditHistory: ICollection<RetentionPolicyAudit>
+    *Candidates: ICollection<AnonymizationCandidate>
+  }
+  class RetentionPolicyAudit {
+    +Id: guid
+    +RetentionPolicyId: guid
+    +ChangedByEmployeeId: guid
+  }
+  class SecurityIncident {
+    +Id: guid
+    +DetectedAt: DateTime
+    +Type: string
+    +Severity: IncidentSeverity
+    +Status: IncidentStatus
+    +InvestigationNotes: string
+    +ReportedByEmployeeId: guid Nullable
+    +ResolvedByEmployeeId: guid Nullable
+  }
+  class StaffAssignment {
+    +Id: guid
+    +ResidentId: guid
+    +EmployeeId: guid
+    +ShiftType: ShiftType
+    +AssignmentDate: DateTime
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime Nullable
+    *Resident: Resident
+    *Employee: Employee
+  }
+  class SubjectAccessRequest {
+    +Id: guid
+    +ResidentId: guid
+    +RequestedByEmployeeId: guid
+    +RequestedAt: DateTime
+    +ScopeOptions: string
+    +ExportFileName: string
+    +ExportGeneratedAt: DateTime
+    +FulfilledAt: DateTime Nullable
+    +FulfilledByEmployeeId: guid Nullable
+  }
+  class TaskList {
+    +Id: guid
+    +Title: string
+    +Description: string
+    +TaskStatus: TaskListStatus
+    +DueTime: DateTime
+    +Department: Department
+  }
+  class User {
+    +Id: guid
+  }
+}
+
+package "Domain.UiModels" {
+  class DataConnection {
+    +State: DbConnectionState
+    +LastChecked: DateTime Nullable
+    +ErrorMessage: string
+  }
+}
+
+AnonymizationCandidate --> AnonymizationStatus : Status
+AnonymizationCandidate --> User : ResidentId
+AnonymizationCandidate --> RetentionDataCategory : RetentionPolicyId
+AuditEntry --> User : UserId
+ChangeDetail --> AuditEntry : AuditEntryId
+Employee --> Department : Department
+Employee --> User : UserId
+Employee --> StaffAssignment : StaffAssignments
+LoginAttempt --> User : UserId
+MedicineRecord --> Resident : ResidentId
+PainkillerRecord --> Resident : ResidentId
+PhoneAssignment --> Employee : CaregiverId
+RefreshToken --> User : UserId
+Resident --> Department : Department
+Resident --> TrafficLightStatus : TrafficLightStatus
+Resident --> ResidentNote : Notes
+Resident --> MedicineRecord : Medicines
+Resident --> PainkillerRecord : Painkillers
+Resident --> StaffAssignment : StaffAssignments
+ResidentNote --> Resident : ResidentId
+RetentionPolicy --> RetentionDataCategory : Category
+RetentionPolicy --> RetentionPolicyAudit : AuditHistory
+RetentionPolicy --> AnonymizationCandidate : Candidates
+RetentionPolicyAudit --> RetentionPolicy : RetentionPolicyId
+RetentionPolicyAudit --> Employee : ChangedByEmployeeId
+SecurityIncident --> IncidentSeverity : Severity
+SecurityIncident --> IncidentStatus : Status
+SecurityIncident --> Employee : ReportedByEmployeeId
+SecurityIncident --> Employee : ResolvedByEmployeeId
+StaffAssignment --> Resident : ResidentId
+StaffAssignment --> Employee : EmployeeId
+StaffAssignment --> ShiftType : ShiftType
+SubjectAccessRequest --> Resident : ResidentId
+SubjectAccessRequest --> Employee : RequestedByEmployeeId
+SubjectAccessRequest --> Employee : FulfilledByEmployeeId
+TaskList --> TaskListStatus : TaskStatus
+TaskList --> Department : Department
+DataConnection --> DbConnectionState : State
+
+AnonymizationCandidate --|> IEntity
+AuditEntry --|> IEntity
+ChangeDetail --|> IEntity
+Employee --|> IEntity
+LoginAttempt --|> IEntity
+MedicineRecord --|> IEntity
+PainkillerRecord --|> IEntity
+PhoneAssignment --|> IEntity
+RefreshToken --|> IEntity
+Resident --|> IEntity
+ResidentNote --|> IEntity
+RetentionPolicy --|> IEntity
+RetentionPolicyAudit --|> IEntity
+SecurityIncident --|> IEntity
+StaffAssignment --|> IEntity
+SubjectAccessRequest --|> IEntity
+TaskList --|> IEntity
+User --|> IEntity
+
+@enduml

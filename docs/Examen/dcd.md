@@ -174,27 +174,6 @@ classDiagram
       +EditedAt: DateTime Nullable
       +ResidentId: guid
     }
-    class SubjectAccessRequest {
-      +Id: guid
-      +ResidentId: guid
-      +RequestedByEmployeeId: guid
-      +RequestedAt: DateTime
-      +ScopeOptions: string
-      +ExportFileName: string
-      +ExportGeneratedAt: DateTime
-      +FulfilledAt: DateTime Nullable
-      +FulfilledByEmployeeId: guid Nullable
-    }
-    class SecurityIncident {
-      +Id: guid
-      +DetectedAt: DateTime
-      +Type: string
-      +Severity: IncidentSeverity
-      +Status: IncidentStatus
-      +InvestigationNotes: string
-      +ReportedByEmployeeId: guid Nullable
-      +ResolvedByEmployeeId: guid Nullable
-    }
     class RetentionPolicy {
       +Id: guid
       +Category: RetentionDataCategory
@@ -209,8 +188,15 @@ classDiagram
       +RetentionPolicyId: guid
       +ChangedByEmployeeId: guid
     }
-    class User {
+    class SecurityIncident {
       +Id: guid
+      +DetectedAt: DateTime
+      +Type: string
+      +Severity: IncidentSeverity
+      +Status: IncidentStatus
+      +InvestigationNotes: string
+      +ReportedByEmployeeId: guid Nullable
+      +ResolvedByEmployeeId: guid Nullable
     }
     class StaffAssignment {
       +Id: guid
@@ -222,6 +208,20 @@ classDiagram
       +UpdatedAt: DateTime Nullable
       *Resident: Resident
       *Employee: Employee
+    }
+    class SubjectAccessRequest {
+      +Id: guid
+      +ResidentId: guid
+      +RequestedByEmployeeId: guid
+      +RequestedAt: DateTime
+      +ScopeOptions: string
+      +ExportFileName: string
+      +ExportGeneratedAt: DateTime
+      +FulfilledAt: DateTime Nullable
+      +FulfilledByEmployeeId: guid Nullable
+    }
+    class User {
+      +Id: guid
     }
   }
 
@@ -714,8 +714,6 @@ namespace Core.DTOs.Security {
     }
   }
 
-
-
   namespace Core.Interfaces.Repositories {
     class IRepository~TEntity~ {
       <<interface>>
@@ -783,77 +781,214 @@ namespace Core.DTOs.Security {
     }
   }
 
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %% Application Mappers
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  namespace Core.Mappers {
+    class AnonymizationCandidateMapper {
+      <<static>>
+      +ToDto(entity: AnonymizationCandidate): AnonymizationCandidateDto
+    }
+
+    class AuditMapper {
+      <<static>>
+      +ToDto(entity: AuditEntry, userName: string): AuditEntryDto
+      +ToDtos(entities: IEnumerable<AuditEntry>): IEnumerable<AuditEntryDto>
+    }
+
+    class ChangeDetailMapper {
+      <<static>>
+      +ToDto(entity: ChangeDetail): ChangeDetailDto
+      +ToDtos(entities: IEnumerable<ChangeDetail>): IEnumerable<ChangeDetailDto>
+    }
+
+    class MedicineMapper {
+      <<static>>
+      +ToMedicineStatusDto(residentId: guid, records: IEnumerable<MedicineRecord>): MedicineStatusDto
+    }
+
+    class PainKillerMapper {
+      <<static>>
+      +ToPainkillerStatusDto(residentId: guid, records: IEnumerable<PainkillerRecord>): PainkillerStatusDto
+    }
+
+    class PhoneAssignmentMapper {
+      <<static>>
+      +ToDto(entity: PhoneAssignment): PhoneAssignmentDto
+      +ToDtos(entities: IEnumerable<PhoneAssignment>): IEnumerable<PhoneAssignmentDto>
+    }
+
+    class ResidentMapper {
+      +ToResident(dto: ResidentResponseDto): Resident
+      +ToResidentResponseDto(entity: Resident): ResidentResponseDto
+      +ToResidentNoteDto(note: ResidentNote): ResidentNoteDto
+      +ToResident(dto: ResidentCreateRequestDto): Resident
+      +ToResidentNote(dto: ResidentNoteDto): ResidentNote
+    }
+
+    class ResidentNoteMapper {
+      <<static>>
+      +ToDto(entity: ResidentNote): ResidentNoteDto
+      +ToDtos(entities: IEnumerable<ResidentNote>): IEnumerable<ResidentNoteDto>
+      +ToNewEntity(residentId: guid, noteText: string): ResidentNote
+    }
+
+    class RetentionPolicyMapper {
+      <<static>>
+      +ToDto(entity: RetentionPolicy): RetentionPolicyDto
+      +ToAuditDto(entity: RetentionPolicyAudit): RetentionPolicyAuditDto
+    }
+
+    class SarExportMapper {
+      <<static>>
+      +ToPackageDto(exportId: guid, generatedAt: DateTime, fileName: string): SarExportPackageDto
+      +ToPackageDto(exportId: guid, generatedAt: DateTime, fileName: string, payload: string): SarExportPackageDto
+    }
+
+    class SecurityIncidentMapper {
+      <<static>>
+      +ToDto(entity: SecurityIncident): SecurityIncidentDto
+    }
+
+    class TaskListMapper {
+      <<static>>
+      +ToTaskListDto(taskList: TaskList): TaskListDto
+    }
+
+  }
 
 
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %% Domain Associations
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
   %% Associations
   AnonymizationCandidate --> AnonymizationStatus : Status
-  AnonymizationCandidate --> User : ResidentId
-  AnonymizationCandidate --> RetentionDataCategory : RetentionPolicyId
+  
+  AnonymizationCandidate -- User : ResidentId
+  AnonymizationCandidate -- RetentionDataCategory : RetentionPolicyId
 
   AuditEntry --> User : UserId
 
-  ChangeDetail --> AuditEntry : AuditEntryId
+  ChangeDetail "*" o-- "1" AuditEntry : AuditEntryId
+  Employee "*" o-- "1" User : UserId
+  LoginAttempt "*" o-- "1" User : UserId
+  MedicineRecord "*" o-- "1" Resident : ResidentId
+  PainkillerRecord "*" o-- "1" Resident : ResidentId
+  PhoneAssignment "*" o-- "1" Employee : CaregiverId
+  RefreshToken "*" o-- "1" User : UserId
+  Resident "*" o-- "1" ResidentNote : Notes
+  Resident "*" o-- "1" MedicineRecord : Medicines
+  Resident "*" o-- "1" PainkillerRecord : Painkillers
+  Resident "*" o-- "1" StaffAssignment : StaffAssignments
+  ResidentNote "*" o-- "1" Resident : ResidentId
+  RetentionPolicyAudit "*" o-- "1" RetentionPolicy : RetentionPolicyId
+  RetentionPolicyAudit "*" o-- "1" Employee : ChangedByEmployeeId
+  SecurityIncident "*" o-- "1" Employee : ReportedByEmployeeId
+  SecurityIncident "*" o-- "1" Employee : ResolvedByEmployeeId
+  StaffAssignment "*" o-- "1" Resident : ResidentId
+  StaffAssignment "*" o-- "1" Employee : EmployeeId
 
-  Employee --> Department : Department
-  Employee --> User : UserId
-  Employee --> StaffAssignment : StaffAssignments
+  SubjectAccessRequest "*" o-- "1" Resident : ResidentId
+  SubjectAccessRequest "*" o-- "1" Employee : RequestedByEmployeeId
+  SubjectAccessRequest "*" o-- "1" Employee : FulfilledByEmployeeId
 
-  LoginAttempt --> User : UserId
+  %% Enumeration associations
+  AnonymizationCandidate "1..*" *-- "1" AnonymizationStatus : Status
+  Employee "*" *-- "1" Department : Department
+  Employee "0..*" *-- "0..*" StaffAssignment : StaffAssignments
+  Resident "*" *-- "1" Department : Department
+  Resident "*" *-- "1" TrafficLightStatus : TrafficLightStatus
+  RetentionPolicy "*" *-- "1" RetentionDataCategory : Category
+  SecurityIncident "*" *-- "1" IncidentSeverity : Severity
+  SecurityIncident "*" *-- "1" IncidentStatus : Status
+  StaffAssignment "*" *-- "1" ShiftType : ShiftType
 
-  SubjectAccessRequest --> Resident : ResidentId
-  SubjectAccessRequest --> Employee : RequestedByEmployeeId
-  SubjectAccessRequest --> Employee : FulfilledByEmployeeId
+  %% Realization (Interface Implementation)
+  AnonymizationCandidate --|> IEntity : implements
+  AuditEntry --|> IEntity : implements
+  ChangeDetail --|> IEntity : implements
+  Employee --|> IEntity : implements
+  LoginAttempt --|> IEntity : implements
+  MedicineRecord --|> IEntity : implements
+  PainkillerRecord --|> IEntity : implements
+  PhoneAssignment --|> IEntity : implements
+  RefreshToken --|> IEntity : implements
+  Resident --|> IEntity : implements
+  ResidentNote --|> IEntity : implements
+  RetentionPolicy --|> IEntity : implements
+  RetentionPolicyAudit --|> IEntity : implements
+  SecurityIncident --|> IEntity : implements
+  StaffAssignment --|> IEntity : implements
+  SubjectAccessRequest --|> IEntity : implements
+  TaskList --|> IEntity : implements
+  User --|> IEntity : implements
 
-  SecurityIncident --> Employee : ReportedByEmployeeId
-  SecurityIncident --> Employee : ResolvedByEmployeeId
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %% Application DTO Implementsations
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  DeleteUserResponseDto --|> IDeleteResult : implements
+  LoginResponseDto --|> ILoginResult : implements
+  LogoutResponseDto --|> ILogoutResult : implements
+  ErrorDto --|> ILoginResult : implements
+  ErrorDto --|> ILogoutResult : implements
+  ErrorDto --|> IDeleteResult : implements
 
-  Resident --> Department : Department
-  Resident --> TrafficLightStatus : TrafficLightStatus
-  Resident --> ResidentNote : Notes
-  Resident --> MedicineRecord : Medicines
-  Resident --> PainkillerRecord : Painkillers
-  Resident --> StaffAssignment : StaffAssignments
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %% Application DTO Associations
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  EmployeeDto *-- Department : Department
+  ResidentResponseDto *-- TrafficLightStatus : TrafficLightStatus
+  RetentionPolicyDto *-- RetentionDataCategory : Category
 
-  MedicineRecord --> Resident : ResidentId
-  PainkillerRecord --> Resident : ResidentId
-  PhoneAssignment --> Employee : CaregiverId
-  ResidentNote --> Resident : ResidentId
-  ResidentResponseDto --> ResidentNote : Notes
-  MedicineStatusDto --> MedicineEntryDto : Entries
-  AuditEntryDto --> ChangeDetailDto : ChangeDetails
-  ApproveAnonymizationDto --> AnonymizationCandidate : CandidateId
-  SarExportRequestDto --> Resident : ResidentId
-  SarFulfilledDto --> SubjectAccessRequest : SarId
+  MedicineStatusDto --|> MedicineEntryDto : Entries
+  ResidentCreateRequestDto --|> TrafficLightStatus : TrafficLightStatus
+  ResidentCreateRequestDto --|> Department : Department
+  ResidentUpdateRequestDto --|> TrafficLightStatus : TrafficLightStatus
+  ResidentUpdateRequestDto --|> Department : Department
+  ResidentResponseDto --|> ResidentNote : Notes
+  TaskListDto --|> TaskListStatus : TaskListStatus
+  TaskListDto --|> Department : Department
 
-  RetentionPolicyDto --> RetentionDataCategory : Category
-
-  UpdateRetentionPolicyDto --> RetentionDataCategory : Category
-
-  RetentionPolicy --> RetentionDataCategory : Category
-  RetentionPolicy --> RetentionPolicyAudit : AuditHistory
-  RetentionPolicy --> AnonymizationCandidate : Candidates
-
-  RetentionPolicyAudit --> RetentionPolicy : RetentionPolicyId
-  RetentionPolicyAudit --> Employee : ChangedByEmployeeId
-
+  ApproveAnonymizationDto --|> AnonymizationCandidate : CandidateId
+  AuditEntryDto --|> ChangeDetailDto : ChangeDetails
   RetentionPolicyAuditDto --> RetentionPolicy : RetentionPolicyId
   RetentionPolicyAuditDto --> Employee : ChangedByEmployeeId
+  SarExportRequestDto --|> Resident : ResidentId
+  SarFulfilledDto --|> SubjectAccessRequest : SarId
+  UpdateRetentionPolicyDto --> RetentionDataCategory : Category
 
-  StaffAssignment --> Resident : ResidentId
-  StaffAssignment --> Employee : EmployeeId
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %% Application Interface Associations
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %% Realization (Interface Implementation)
+  IRepository~TEntity~ --|> ICRUD~TEntity~ : extends
+  IAuditRepository --|> IRepository~AuditEntry~ : extends
+  IAnonymizationCandidateRepository --|> IRepository~AnonymizationCandidate~ : extends
+  IEmployeeRepository --|> IRepository~Employee~ : extends
+  ILoginAttemptRepository --|> IRepository~LoginAttempt~ : extends
+  IMedicineRepository --|> IRepository~MedicineRecord~ : extends
+  IPainkillerRepository --|> IRepository~PainkillerRecord~ : extends
+  IPhoneAssignmentRepository --|> IRepository~PhoneAssignment~ : extends
+  IResidentNoteRepository --|> IRepository~ResidentNote~ : extends
+  IResidentRepository --|> IRepository~Resident~ : extends
+  IRetentionPolicyAuditRepository --|> IRepository~RetentionPolicyAudit~ : extends
+  IRetentionPolicyRepository --|> IRepository~RetentionPolicy~ : extends
+  ISecurityIncidentRepository --|> IRepository~SecurityIncident~ : extends
+  IStaffAssignmentRepository --|> IRepository~StaffAssignment~ : extends
+  ISubjectAccessRequestRepository --|> IRepository~SubjectAccessRequest~ : extends
+  ITaskListRepository --|> IRepository~TaskList~ : extends
+  IUserRepository --|> IRepository~User~ : extends
 
-  ShiftTypeHelper --> ShiftType : ToDanishString
-
-  %% Service associations
+  IAccountService --> ILoginResult : LoginAsync
+  IAccountService --> ILogoutResult : LogoutAsync
   IAccountService --> RegisterRequestDto : CreateAccountAsync
   IAccountService --> RegistrationResponseDto : CreateAccountAsync
   IAccountService --> LoginRequestDto : LoginAsync
-  IAccountService --> ILoginResult : LoginAsync
   IAccountService --> RefreshTokenRequestDto : RefreshTokenAsync
   IAccountService --> RefreshTokenResponseDto : RefreshTokenAsync
   IAccountService --> LogoutRequestDto : LogoutAsync
-  IAccountService --> ILogoutResult : LogoutAsync
 
   IAnonymizationService --> AnonymizationCandidateDto : GetCandidatesAsync
   IAnonymizationService --> AnonymizationResultDto : ApproveAnonymizationAsync
@@ -937,7 +1072,6 @@ namespace Core.DTOs.Security {
   ITaskListManager --> TaskListDto : GetDashboardTasksByDepartmentAsync
 
   IDatabaseConnectionStateProvider --> DataConnection : IsConnected
-  DataConnection --> DbConnectionState : State
 
   %% Repository associations
   IAnonymizationCandidateRepository --> AnonymizationCandidate : Repository
@@ -967,44 +1101,56 @@ namespace Core.DTOs.Security {
   ITaskListRepository --> Department : GetDashboardTasksByDepartmentAsync
   IUserRepository --> User : Repository
 
-  %% Realization (Interface Implementation)
-  AnonymizationCandidate --|> IEntity : implements
-  AuditEntry --|> IEntity : implements
-  ChangeDetail --|> IEntity : implements
-  Employee --|> IEntity : implements
-  LoginAttempt --|> IEntity : implements
-  SubjectAccessRequest --|> IEntity : implements
-  SecurityIncident --|> IEntity : implements
-  Resident --|> IEntity : implements
-  User --|> IEntity : implements
-  PhoneAssignment --|> IEntity : implements
-  ResidentNote --|> IEntity : implements
-  RetentionPolicy --|> IEntity : implements
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %% Application Mappers
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  AnonymizationCandidateMapper --> AnonymizationCandidate : ToDto
+  AnonymizationCandidateMapper --> AnonymizationCandidateDto : ToDto
+  AuditMapper --> AuditEntry : ToDto
+  AuditMapper --> AuditEntryDto : ToDto
+  AuditMapper --> AuditEntry : ToDtos
+  AuditMapper --> AuditEntryDto : ToDtos
+  ChangeDetailMapper --> ChangeDetail : ToDto
+  ChangeDetailMapper --> ChangeDetailDto : ToDto
+  ChangeDetailMapper --> ChangeDetail : ToDtos
+  ChangeDetailMapper --> ChangeDetailDto : ToDtos
+  MedicineMapper --> MedicineRecord : ToMedicineStatusDto
+  MedicineMapper --> MedicineStatusDto : ToMedicineStatusDto
+  MedicineMapper --> MedicineEntryDto : ToMedicineStatusDto
+  PainKillerMapper --> PainkillerRecord : ToPainkillerStatusDto
+  PainKillerMapper --> PainkillerStatusDto : ToPainkillerStatusDto
+  PhoneAssignmentMapper --> PhoneAssignment : ToDto
+  PhoneAssignmentMapper --> PhoneAssignmentDto : ToDto
+  PhoneAssignmentMapper --> PhoneAssignment : ToDtos
+  PhoneAssignmentMapper --> PhoneAssignmentDto : ToDtos
+  ResidentMapper --> ResidentResponseDto : ToResident
+  ResidentMapper --> Resident : ToResident
+  ResidentMapper --> Resident : ToResidentResponseDto
+  ResidentMapper --> ResidentResponseDto : ToResidentResponseDto
+  ResidentMapper --> ResidentNote : ToResidentNoteDto
+  ResidentMapper --> ResidentNoteDto : ToResidentNoteDto
+  ResidentMapper --> ResidentCreateRequestDto : ToResident
+  ResidentMapper --> ResidentNoteDto : ToResidentNote
+  ResidentMapper --> ResidentNote : ToResidentNote
+  ResidentNoteMapper --> ResidentNote : ToDto
+  ResidentNoteMapper --> ResidentNoteDto : ToDto
+  ResidentNoteMapper --> ResidentNote : ToDtos
+  ResidentNoteMapper --> ResidentNoteDto : ToDtos
+  ResidentNoteMapper --> ResidentNote : ToNewEntity
+  RetentionPolicyMapper --> RetentionPolicy : ToDto
+  RetentionPolicyMapper --> RetentionPolicyDto : ToDto
+  RetentionPolicyMapper --> RetentionPolicyAudit : ToAuditDto
+  RetentionPolicyMapper --> RetentionPolicyAuditDto : ToAuditDto
+  SarExportMapper --> SarExportPackageDto : ToPackageDto
+  SecurityIncidentMapper --> SecurityIncident : ToDto
+  SecurityIncidentMapper --> SecurityIncidentDto : ToDto
+  TaskListMapper --> TaskList : ToTaskListDto
+  TaskListMapper --> TaskListDto : ToTaskListDto
 
-  DeleteUserResponseDto --|> IDeleteResult : implements
-  LoginResponseDto --|> ILoginResult : implements
-  LogoutResponseDto --|> ILogoutResult : implements
+  ShiftTypeHelper --> ShiftType : ToDanishString
 
-  ErrorDto --|> ILoginResult : implements
-  ErrorDto --|> ILogoutResult : implements
-  ErrorDto --|> IDeleteResult : implements
+  %% Service associations
 
-  IRepository~TEntity~ --|> ICRUD~TEntity~ : extends
-  IAuditRepository --|> IRepository~AuditEntry~ : extends
-  IAnonymizationCandidateRepository --|> IRepository~AnonymizationCandidate~ : extends
-  IEmployeeRepository --|> IRepository~Employee~ : extends
-  ILoginAttemptRepository --|> IRepository~LoginAttempt~ : extends
-  IMedicineRepository --|> IRepository~MedicineRecord~ : extends
-  IPainkillerRepository --|> IRepository~PainkillerRecord~ : extends
-  IPhoneAssignmentRepository --|> IRepository~PhoneAssignment~ : extends
-  IResidentNoteRepository --|> IRepository~ResidentNote~ : extends
-  IResidentRepository --|> IRepository~Resident~ : extends
-  IRetentionPolicyAuditRepository --|> IRepository~RetentionPolicyAudit~ : extends
-  IRetentionPolicyRepository --|> IRepository~RetentionPolicy~ : extends
-  ISecurityIncidentRepository --|> IRepository~SecurityIncident~ : extends
-  IStaffAssignmentRepository --|> IRepository~StaffAssignment~ : extends
-  ISubjectAccessRequestRepository --|> IRepository~SubjectAccessRequest~ : extends
-  ITaskListRepository --|> IRepository~TaskList~ : extends
-  IUserRepository --|> IRepository~User~ : extends
+  DataConnection --> DbConnectionState : State
 
 ```

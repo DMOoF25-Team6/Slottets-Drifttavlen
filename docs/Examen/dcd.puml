@@ -1,0 +1,860 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+
+package "Domain.Enums" {
+  enum AnonymizationStatus {
+    Suggested
+    Approved
+    Rejected
+    Anonymized
+  }
+  enum DbConnectionState {
+    Online
+    Offline
+    Reconnecting
+    Unknown
+  }
+  enum Department {
+    Slottet
+    Skoven
+    Marken
+  }
+  enum IncidentSeverity {
+    Low
+    Medium
+    High
+    Critical
+  }
+  enum IncidentStatus {
+    Open
+    UnderInvestigation
+    Closed
+    Escalated
+    BreachNotified
+  }
+  enum RetentionDataCategory {
+    MedicineLogs
+    ResidentNotes
+    AuditLogs
+    LoginLogs
+    InactiveUsers
+    AnonymizationTrigger
+  }
+  enum ShiftType {
+    Day
+    Evening
+    Night
+  }
+  enum TrafficLightStatus {
+    Green
+    Yellow
+    Red
+  }
+  enum TaskListStatus {
+    Success
+    InProgress
+  }
+}
+
+package "Domain.Interfaces" {
+  interface IEntity {
+    +Id: guid
+  }
+}
+
+package "Domain.Entities" {
+  class AnonymizationCandidate {
+    +Id: guid
+    +ResidentId: guid
+    +RetentionPolicyId: guid
+    +SuggestedAt: DateTime
+    +Reason: string
+    +Status: AnonymizationStatus
+  }
+  class AuditEntry {
+    +Id: guid
+    +Metadata: string
+    +StartTimeUtc: DateTime
+    +EndTimeUtc: DateTime
+    +Succeeded: bool
+    +UserId: guid
+    +ErrorMessage: string
+  }
+  class ChangeDetail {
+    +Id: guid
+    +Field: string
+    +OldValue: string
+    +NewValue: string
+    +AuditEntryId: guid
+  }
+  class Employee {
+    +Id: guid
+    +FirstName: string
+    +LastName: string
+    +Initials: string
+    +UserId: guid
+    +Department: Department
+    *StaffAssignments: ICollection<StaffAssignment>
+    *User: User
+  }
+  class LoginAttempt {
+    +Id: guid
+    +AttemptedAt: DateTime
+    +EmailHash: string
+    +UserId: guid
+    +Timestamp: DateTime
+    +Succeeded: bool
+    +IpAddress: string
+  }
+  class MedicineRecord {
+    +Id: guid
+    +ResidentId: guid
+    +MedicineName: string
+    +Timestamp: DateTime
+    +Given: bool
+  }
+  class PainkillerRecord {
+    +Id: guid
+    +ResidentId: guid
+    +Type: string
+    +GivenAt: DateTime
+    +NextAllowedTime: DateTime
+  }
+  class PhoneAssignment {
+    +Id: guid
+    +CaregiverId: guid
+    +PhoneNumber: string
+    +ShiftType: string
+  }
+  class RefreshToken {
+    +Id: guid
+    +UserId: guid
+    +TokenHash: string
+    +ExpiresAt: DateTime
+    +CreatedAt: DateTime
+    +RevokedAt: DateTime Nullable
+    +CreatedByIp: string Nullable
+    +RevokedByIp: string Nullable
+    +RevokedReason: string Nullable
+    *User: User
+  }
+  class Resident {
+    +Id: guid
+    +Initials: string
+    +FirstName: string
+    +LastName: string
+    +TrafficLightStatus: TrafficLightStatus
+    +Department: Department
+    +DischargedAt: DateTime Nullable
+    *Notes: ICollection<ResidentNote>
+    *Medicines: ICollection<ResidentMedicine>
+    *Painkillers: ICollection<ResidentPainkiller>
+    *StaffAssignments: ICollection<StaffAssignment>
+  }
+  class ResidentNote {
+    +Id: guid
+    +Note: string
+    +CreatedAt: DateTime
+    +EditedAt: DateTime Nullable
+    +ResidentId: guid
+  }
+  class RetentionPolicy {
+    +Id: guid
+    +Category: RetentionDataCategory
+    +RetentionPeriod: TimeSpan
+    +LegalMinimum: TimeSpan
+    +EffectiveFrom: TimeDate
+    *AuditHistory: ICollection<RetentionPolicyAudit>
+    *Candidates: ICollection<AnonymizationCandidate>
+  }
+  class RetentionPolicyAudit {
+    +Id: guid
+    +RetentionPolicyId: guid
+    +ChangedByEmployeeId: guid
+  }
+  class SecurityIncident {
+    +Id: guid
+    +DetectedAt: DateTime
+    +Type: string
+    +Severity: IncidentSeverity
+    +Status: IncidentStatus
+    +InvestigationNotes: string
+    +ReportedByEmployeeId: guid Nullable
+    +ResolvedByEmployeeId: guid Nullable
+  }
+  class StaffAssignment {
+    +Id: guid
+    +ResidentId: guid
+    +EmployeeId: guid
+    +ShiftType: ShiftType
+    +AssignmentDate: DateTime
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime Nullable
+    *Resident: Resident
+    *Employee: Employee
+  }
+  class SubjectAccessRequest {
+    +Id: guid
+    +ResidentId: guid
+    +RequestedByEmployeeId: guid
+    +RequestedAt: DateTime
+    +ScopeOptions: string
+    +ExportFileName: string
+    +ExportGeneratedAt: DateTime
+    +FulfilledAt: DateTime Nullable
+    +FulfilledByEmployeeId: guid Nullable
+  }
+  class User {
+    +Id: guid
+  }
+}
+
+package "Domain.UiModels" {
+  class DataConnection {
+    +State: DbConnectionState
+    +LastChecked: DateTime Nullable
+    +ErrorMessage: string
+  }
+}
+
+package "Core.DTOs" {
+  class AddResidentNoteDto {
+    +ResidentId: guid
+    +NoteText: string
+  }
+  class AssignmentOverviewDto {
+    +AssignmentId: guid
+    +ResidentId: guid
+    +ResidentInitials: string
+    +EmployeeId: guid
+    +EmployeeName: string
+    +ShiftType: string
+    +AssignmentDate: DateTime
+  }
+  class EmployeeDto {
+    +Id: guid
+    +FirstName: string
+    +LastName: string
+    +Initials: string
+    +Department: Department
+  }
+  class EditResidentNoteDto {
+    +ResidentId: guid
+    +ResidentNoteId: guid
+    +NewNoteText: string
+  }
+  class ErrorDto {
+    +ErrorMessages: IEnumerable<string> Nullable
+  }
+  class ResidentNoteDto {
+    +Id: guid
+    +Note: string
+    +Timestamp: DateTime
+    +Initials: string
+  }
+  class ResidentCreateRequestDto {
+    +Initials: string
+    +FirstName: string
+    +LastName: string
+    +TrafficLightStatus: TrafficLightStatus Nullable
+    +Department: Department
+  }
+  class ResidentUpdateRequestDto {
+    +Initials: string
+    +FirstName: string
+    +LastName: string
+    +TrafficLightStatus: TrafficLightStatus Nullable
+    +Department: Department
+  }
+  class ResidentResponseDto {
+    +Id: guid
+    +Initials: string
+    +FirstName: string
+    +LastName: string
+    +TrafficLightStatus: int Nullable
+    +Notes: List<ResidentNoteDto>
+    +Department: Department
+  }
+  class StaffAssignmentDto {
+    +ResidentId: guid
+    +EmployeeId: guid
+    +ShiftType: ShiftType
+    +AssignmentDate: DateTime
+  }
+  class PhoneAssignmentDto {
+    +PhoneNumber: string
+    +ShiftType: string
+    +ShiftTypeEnum: ShiftType
+    +AssignedStaffName: string
+  }
+  class MedicineEntryDto {
+    +Name: string
+    +Timestamp: DateTime
+    +Given: bool
+  }
+  class MedicineStatusDto {
+    +ResidentId: guid
+    +Entries: List<MedicineEntryDto>
+  }
+  class PainkillerStatusDto {
+    +ResidentId: guid
+    +Types: IEnumerable<string>
+    +NextAllowedTime: DateTime
+  }
+  class TaskListDto {
+    +Id: guid
+    +Title: string
+    +Description: string
+    +TaskListStatus: TaskListStatus
+    +DueTime: DateTime
+    +Department: Department
+  }
+}
+
+package "Core.DTOs.Anonymization" {
+  class AnonymizationCandidateDto {
+    +Id: guid
+    +ResidentId: guid
+    +RetentionPolicyId: guid
+    +SuggestedAt: DateTime
+    +Reason: string
+    +Status: AnonymizationStatus
+  }
+  class AnonymizationResultDto {
+    +CandidateId: guid
+    +CompletedAt: DateTime
+    +Outcome: string
+  }
+  class ApproveAnonymizationDto {
+    +CandidateId: guid
+  }
+}
+
+package "Core.DTOs.Audit" {
+  class AuditEntryDto {
+    +Id: guid
+    +EventTimeUtc: DateTime
+    +RegisteredTimeUtc: DateTime
+    +Entity: string
+    +ChangeType: string
+    +Description: string
+    +UserId: guid
+    +UserName: string
+    +Succeeded: bool
+    +ChangeDetails: IEnumerable<ChangeDetailDto>
+  }
+  class ChangeDetailDto {
+    +Id: guid
+    +Field: string
+    +OldValue: string
+    +NewValue: string
+  }
+}
+
+package "Core.DTOs.Identity" {
+  class DeleteUserRequestDto {
+    +UserId: string
+  }
+  class DeleteUserResponseDto {
+    +IsSuccessful: bool
+  }
+  class GetUserIdByEmailRequestDto {
+    +Email: string
+  }
+  class LoginRequestDto {
+    +Email: string
+    +Password: string
+  }
+  class LoginResponseDto {
+    +Token: string
+    +RefreshToken: string Nullable
+  }
+  class LogoutRequestDto {
+    +RefreshToken: string
+  }
+  class LogoutResponseDto {
+    +IsSuccessful: bool
+  }
+  class RefreshTokenRequestDto {
+    +RefreshToken: string Nullable
+  }
+  class RefreshTokenResponseDto {
+    +JwtToken: string Nullable
+    +RefreshToken: string Nullable
+    +ErrorMessages: IEnumerable<string> Nullable
+  }
+  class RegisterRequestDto {
+    +Email: string
+    +Password: string
+  }
+  class RegistrationResponseDto {
+    +IsSuccessful: bool
+    +ErrorMessages: IEnumerable<string>
+  }
+}
+
+package "Core.DTOs.Retention" {
+  class RetentionPolicyDto {
+    +Id: guid
+    +Category: RetentionDataCategory
+    +RetentionPeriod: TimeSpan
+    +LegalMinimum: TimeSpan
+    +EffectiveFrom: DateTime
+  }
+  class RetentionPolicyAuditDto {
+    +Id: guid
+    +RetentionPolicyId: guid
+    +ChangedByEmployeeId: guid
+    +PreviousPeriod: TimeSpan
+    +NewPeriod: TimeSpan
+    +ChangedAt: DateTime
+    +Reason: string
+  }
+  class UpdateRetentionPolicyDto {
+    +Category: RetentionDataCategory
+    +RetentionPeriod: TimeSpan
+    +Reason: string
+  }
+}
+
+package "Core.DTOs.Sar" {
+  class SarExportRequestDto {
+    +ResidentId: guid
+    +ScopeOptions: string[]
+  }
+  class SarExportPackageDto {
+    +ExportId: guid
+    +GeneratedAt: DateTime
+    +FileName: string
+    +Payload: string
+  }
+  class SarFulfilledDto {
+    +SarId: guid
+    +FulfilledAt: DateTime
+  }
+}
+
+package "Core.DTOs.Security" {
+  class AddInvestigationNotesDto {
+    +IncidentId: guid
+    +Notes: string
+  }
+  class EscalateIncidentDto {
+    +IncidentId: guid
+    +IsBreach: bool
+  }
+  class SecurityIncidentDto {
+    +Id: guid
+    +DetectedAt: DateTime
+    +Type: string
+    +Severity: IncidentSeverity
+    +Status: IncidentStatus
+    +InvestigationNotes: string
+    +BreachNotificationDeadlineUtc: DateTime
+  }
+}
+
+package "Core.Helpers" {
+  class ShiftTypeHelper <<static>> {
+    +ToDanishString(shiftType: ShiftType): string
+  }
+}
+
+package "Core.Interfaces.Dto.Identity" {
+  interface IDeleteResult
+  interface ILoginResult
+  interface ILogoutResult
+}
+
+package "Core.Interfaces.Services" {
+  interface IAccountService {
+    +CreateAccountAsync(registrationRequestDto: RegisterRequestDto): Task<RegistrationResponseDto>
+    +LoginAsync(loginRequestDto: LoginRequestDto): Task<ILoginResult>
+    +RefreshTokenAsync(refreshTokenRequestDto: RefreshTokenRequestDto): Task<RefreshTokenResponseDto>
+    +LogoutAsync(logoutRequestDto: LogoutRequestDto): Task<ILogoutResult>
+  }
+  interface IAnonymizationService {
+    +GetCandidatesAsync(cancellationToken: CancellationToken): Task<IEnumerable<AnonymizationCandidateDto>>
+    +ApproveAnonymizationAsync(candidateId: guid, cancellationToken: CancellationToken): Task<AnonymizationResultDto>
+    +RejectAnonymizationAsync(candidateId: guid, reason: string, cancellationToken: CancellationToken): Task<bool>
+  }
+  interface IArt33NotificationService {
+    +SendNotificationAsync(incidentId: guid, dpoEmail: string, cancellationToken: CancellationToken): Task<bool>
+  }
+  interface IAuditService {
+    +LogAsync(entityName: string, changeType: string, changedBy: string Nullable, description: string): Task
+    +GetRecentAsync(limit: int Nullable, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntryDto>>
+    +GetByEntityNameAsync(entityName: string, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntryDto>>
+    +GetWithDetailsAsync(id: guid, cancellationToken: CancellationToken): Task<AuditEntryDto Nullable>
+  }
+  interface IDatabaseConnectionService {
+    +CheckDatabaseConnectionAsync(): Task
+  }
+  interface IDatabaseService {
+    +IsConnected(): bool
+  }
+  interface IMedicineStatusService {
+    +GetMedicineStatusAsync(residentId: guid, cancellationToken: CancellationToken): Task<MedicineStatusDto Nullable>
+    +GetPainkillerStatusAsync(residentId: guid, cancellationToken: CancellationToken): Task<PainkillerStatusDto Nullable>
+  }
+  interface IPhoneAssignmentService {
+    +GetCurrentPhoneAssignmentsForActiveShiftAsync(cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignmentDto>>
+  }
+  interface IPseudonymizationService {
+    +Pseudonymize(identifier: string): string
+    +PseudonymizeShort(identifier: string): string
+  }
+  interface IRefreshTokenStore {
+    +GetByTokenAsync(token: string, tokenService: ITokenService, cancellationToken: CancellationToken): Task<RefreshToken Nullable>
+    +RevokeAsync(token: string, tokenService: ITokenService, cancellationToken: CancellationToken): Task
+    +SaveAsync(token: RefreshToken, tokenService: ITokenService, cancellationToken: CancellationToken): Task
+  }
+  interface IResidentNoteService {
+    +AddAsync(residentId: guid, noteText: string, cancellationToken: CancellationToken): Task<bool>
+    +DeleteAsync(noteId: guid, cancellationToken: CancellationToken): Task<bool>
+    +UpdateAsync(noteId: guid, newText: string, cancellationToken: CancellationToken): Task<bool>
+    +GetAllByResidentIdAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<ResidentNoteDto>>
+  }
+  interface IResidentService {
+    +CreateAsync(dto: ResidentCreateRequestDto, ct: CancellationToken): Task
+    +DeleteAsync(id: guid, cancellationToken: CancellationToken): Task
+    +GetAllAsync(ct: CancellationToken): Task<IEnumerable<Resident>>
+    +GetByDepartmentsAsync(departments: IList<Department>, ct: CancellationToken): Task<IEnumerable<Resident>>
+    +GetByIdAsync(id: guid, ct: CancellationToken): Task<Resident Nullable>
+    +UpdateAsync(id: guid, resident: ResidentUpdateRequestDto, ct: CancellationToken): Task
+  }
+  interface IRetentionPolicyService {
+    +GetPoliciesAsync(cancellationToken: CancellationToken): Task<IEnumerable<RetentionPolicyDto>>
+    +UpdateRetentionPolicyAsync(dto: UpdateRetentionPolicyDto, changedByEmployeeId: guid, cancellationToken: CancellationToken): Task<RetentionPolicyDto>
+  }
+  interface ISecurityIncidentService {
+    +GetIncidentsAsync(cancellationToken: CancellationToken): Task<IEnumerable<SecurityIncidentDto>>
+    +EscalateIncidentAsync(incidentId: guid, isBreach: bool, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+    +AddInvestigationNotesAsync(dto: AddInvestigationNotesDto, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+    +CloseIncidentAsync(incidentId: guid, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+  }
+  interface IStaffAssignmentService {
+    +AssignAsync(dto: StaffAssignmentDto, cancellationToken: CancellationToken): Task<AssignmentOverviewDto>
+    +GetAssignmentsByShiftAsync(shiftType: ShiftType, assignmentDate: DateTime, cancellationToken: CancellationToken): Task<IEnumerable<AssignmentOverviewDto>>
+    +DeleteAssignmentAsync(assigmentId: guid, cancellationToken: CancellationToken): Task
+    +UpdateAssignmentAsync(assignmentId: guid, dto: StaffAssignmentDto, cancellationToken: CancellationToken): Task<AssignmentOverviewDto>
+  }
+  interface ISubjectAccessRequestService {
+    +GenerateExportAsync(dto: SarExportRequestDto, cancellationToken: CancellationToken): Task<SarExportPackageDto>
+    +MarkFulfilledAsync(dto: SarFulfilledDto, cancellationToken: CancellationToken): Task<bool>
+  }
+  interface ITaskListService {
+    +GetAvailableTasksByDepartmentAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<TaskListDto>>
+  }
+  interface ITokenService {
+    +CreateJwtTokenAsync(user: User, roles: IList<string>, permissions: IList<Claim>, cancellationToken: CancellationToken): Task<string>
+    +ComputeSha256HashAsync(token: string, cancellationToken: CancellationToken): Task<string>
+    +CreateRefreshTokenAsync(user: User, ipAddress: string, cancellationToken: CancellationToken): Task<RefreshToken>
+  }
+}
+
+package "Core.Interfaces.Managers" {
+  interface IAccountManager {
+    +CreateAccountAsync(registrationRequestDto: RegisterRequestDto): Task<RegistrationResponseDto>
+    +LoginAsync(loginRequestDto: LoginRequestDto): Task<ILoginResult>
+    +LogoutAsync(logoutRequestDto: LogoutRequestDto): Task<ILogoutResult>
+    +RefreshTokenAsync(refreshTokenRequestDto: RefreshTokenRequestDto): Task<RefreshTokenResponseDto>
+  }
+  interface IAnonymizationManager {
+    +GetCandidatesAsync(cancellationToken: CancellationToken): Task<IEnumerable<AnonymizationCandidateDto>>
+    +ApproveAnonymizationAsync(candidateId: guid, cancellationToken: CancellationToken): Task<AnonymizationResultDto>
+    +RejectAnonymizationAsync(candidateId: guid, reason: string, cancellationToken: CancellationToken): Task<bool>
+  }
+  interface IAuditManager {
+    +GetRecentAsync(limit: int Nullable, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntryDto>>
+    +GetByEntityNameAsync(entityName: string, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntryDto>>
+    +GetWithDetailsAsync(id: guid, cancellationToken: CancellationToken): Task<AuditEntryDto Nullable>
+  }
+  interface IDatabaseConnectionManager {
+    +CheckAndUpdateConnectionStateAsync(): Task
+  }
+  interface IEmployeeManager {
+    +GetAllAsync(cancellationToken: CancellationToken): Task<IEnumerable<EmployeeDto>>
+  }
+  interface IMedicineRecordManager {
+  }
+  interface IMedicineStatusManager {
+    +GetMedicineStatusAsync(residentId: guid, cancellationToken: CancellationToken): Task<MedicineStatusDto Nullable>
+    +GetPainkillerStatusAsync(residentId: guid, cancellationToken: CancellationToken): Task<PainkillerStatusDto Nullable>
+  }
+  interface IPhoneAssignmentManager {
+    +GetCurrentPhoneAssignmentsForActiveShift(cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignmentDto>>
+  }
+  interface IResidentManager {
+    +CreateAsync(dto: ResidentCreateRequestDto, ct: CancellationToken): Task
+    +CreateRangeAsync(dtos: IEnumerable<ResidentCreateRequestDto>, ct: CancellationToken): Task
+    +DeleteAsync(id: guid, ct: CancellationToken): Task
+    +DeleteRangeAsync(ids: IEnumerable<guid>, ct: CancellationToken): Task
+    +GetAllAsync(ct: CancellationToken): Task<IEnumerable<ResidentResponseDto>>
+    +GetByIdAsync(id: guid, ct: CancellationToken): Task<ResidentResponseDto Nullable>
+    +GetByDepartmentsAsync(departments: IList<Department>, ct: CancellationToken): Task<IEnumerable<ResidentResponseDto>>
+    +UpdateAsync(id: guid, dto: ResidentUpdateRequestDto, ct: CancellationToken): Task
+    +UpdateRangeAsync(dtos: IEnumerable<ResidentUpdateRequestDto>, ct: CancellationToken): Task
+  }
+  interface IResidentNoteManager {
+    +GetAllByResidentIdAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<ResidentNoteDto>>
+    +AddAsync(residentId: guid, noteText: string, cancellationToken: CancellationToken): Task<bool>
+    +UpdateAsync(noteId: guid, newText: string, cancellationToken: CancellationToken): Task<bool>
+    +DeleteAsync(noteId: guid, cancellationToken: CancellationToken): Task<bool>
+  }
+  interface IRetentionPolicyManager {
+    +GetPoliciesAsync(cancellationToken: CancellationToken): Task<IEnumerable<RetentionPolicyDto>>
+    +UpdateRetentionPolicyAsync(dto: UpdateRetentionPolicyDto, changedByEmployeeId: guid, cancellationToken: CancellationToken): Task<RetentionPolicyDto>
+  }
+  interface ISecurityIncidentManager {
+    +GetIncidentsAsync(cancellationToken: CancellationToken): Task<IEnumerable<SecurityIncidentDto>>
+    +EscalateIncidentAsync(incidentId: guid, isBreach: bool, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+    +AddInvestigationNotesAsync(dto: AddInvestigationNotesDto, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+    +CloseIncidentAsync(incidentId: guid, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+  }
+  interface ISubjectAccessRequestManager {
+    +GenerateExportAsync(dto: SarExportRequestDto, cancellationToken: CancellationToken): Task<SarExportPackageDto>
+    +MarkFulfilledAsync(dto: SarFulfilledDto, cancellationToken: CancellationToken): Task<bool>
+  }
+  interface ITaskListManager {
+    +GetDashboardTasksByDepartmentAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<TaskListDto>>
+  }
+}
+
+package "Core.Interfaces.Providers" {
+  interface IDatabaseConnectionStateProvider {
+    +IsConnected: bool
+    +SetConnectionState(isConnected: bool): void
+    +StateChanged: Action
+  }
+}
+
+package "Core.Interfaces.Repositories" {
+  interface IRepository<TEntity>
+  interface IAuditRepository {
+    +GetRecentAsync(limit: int Nullable, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntry>>
+    +GetByEntityNameAsync(entityName: string, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntry>>
+    +GetWithDetailsAsync(id: guid, cancellationToken: CancellationToken): Task<AuditEntry Nullable>
+  }
+  interface IEmployeeRepository
+  interface ILoginAttemptRepository
+  interface IMedicineRepository {
+    +GetMedicineStatusLast24HoursAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<MedicineRecord>>
+  }
+  interface IPainkillerRepository {
+    +GetPainkillerStatusLast24HoursAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<PainkillerRecord>>
+  }
+  interface IPhoneAssignmentRepository {
+    +GetByShiftTypeAsync(shiftType: ShiftType, cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignment>>
+    +GetDtoByShiftTypeAsync(shiftType: ShiftType, cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignmentDto>>
+  }
+  interface IResidentNoteRepository
+  interface IResidentRepository {
+    +GetAllAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<Resident>>
+  }
+  interface IRetentionPolicyAuditRepository
+  interface IRetentionPolicyRepository
+  interface ISecurityIncidentRepository
+  interface IStaffAssignmentRepository {
+    +GetByResidentAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<StaffAssignment>>
+    +GetByShiftAsync(shiftType: ShiftType, assignmentDate: DateTime, cancellationToken: CancellationToken): Task<IEnumerable<StaffAssignment>>
+    +GetExistingAssignmentAsync(residentId: guid, employeeId: guid, shiftType: ShiftType, assignmentDate: DateTime, cancellationToken: CancellationToken): Task<StaffAssignment Nullable>
+    +GetByIdWithDetailsAsync(assignmentId: guid, cancellationToken: CancellationToken): Task<StaffAssignment Nullable>
+  }
+  interface ISubjectAccessRequestRepository
+  interface ITaskListRepository {
+    +GetDashboardTasksByDepartmentAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<TaskList>>
+  }
+  interface IUserRepository
+  interface IAnonymizationCandidateRepository
+}
+
+'"""' Associations
+AnonymizationCandidate --> AnonymizationStatus : Status
+AnonymizationCandidate --> User : ResidentId
+AnonymizationCandidate --> RetentionDataCategory : RetentionPolicyId
+AuditEntry --> User : UserId
+ChangeDetail --> AuditEntry : AuditEntryId
+Employee --> Department : Department
+Employee --> User : UserId
+Employee --> StaffAssignment : StaffAssignments
+LoginAttempt --> User : UserId
+SubjectAccessRequest --> Resident : ResidentId
+SubjectAccessRequest --> Employee : RequestedByEmployeeId
+SubjectAccessRequest --> Employee : FulfilledByEmployeeId
+SecurityIncident --> Employee : ReportedByEmployeeId
+SecurityIncident --> Employee : ResolvedByEmployeeId
+Resident --> Department : Department
+Resident --> TrafficLightStatus : TrafficLightStatus
+Resident --> ResidentNote : Notes
+Resident --> MedicineRecord : Medicines
+Resident --> PainkillerRecord : Painkillers
+Resident --> StaffAssignment : StaffAssignments
+MedicineRecord --> Resident : ResidentId
+PainkillerRecord --> Resident : ResidentId
+PhoneAssignment --> Employee : CaregiverId
+ResidentNote --> Resident : ResidentId
+ResidentResponseDto --> ResidentNote : Notes
+MedicineStatusDto --> MedicineEntryDto : Entries
+AuditEntryDto --> ChangeDetailDto : ChangeDetails
+ApproveAnonymizationDto --> AnonymizationCandidate : CandidateId
+SarExportRequestDto --> Resident : ResidentId
+SarFulfilledDto --> SubjectAccessRequest : SarId
+RetentionPolicyDto --> RetentionDataCategory : Category
+UpdateRetentionPolicyDto --> RetentionDataCategory : Category
+RetentionPolicy --> RetentionDataCategory : Category
+RetentionPolicy --> RetentionPolicyAudit : AuditHistory
+RetentionPolicy --> AnonymizationCandidate : Candidates
+RetentionPolicyAudit --> RetentionPolicy : RetentionPolicyId
+RetentionPolicyAudit --> Employee : ChangedByEmployeeId
+RetentionPolicyAuditDto --> RetentionPolicy : RetentionPolicyId
+RetentionPolicyAuditDto --> Employee : ChangedByEmployeeId
+StaffAssignment --> Resident : ResidentId
+StaffAssignment --> Employee : EmployeeId
+ShiftTypeHelper --> ShiftType : ToDanishString
+
+IAccountService --> RegisterRequestDto : CreateAccountAsync
+IAccountService --> RegistrationResponseDto : CreateAccountAsync
+IAccountService --> LoginRequestDto : LoginAsync
+IAccountService --> ILoginResult : LoginAsync
+IAccountService --> RefreshTokenRequestDto : RefreshTokenAsync
+IAccountService --> RefreshTokenResponseDto : RefreshTokenAsync
+IAccountService --> LogoutRequestDto : LogoutAsync
+IAccountService --> ILogoutResult : LogoutAsync
+IAnonymizationService --> AnonymizationCandidateDto : GetCandidatesAsync
+IAnonymizationService --> AnonymizationResultDto : ApproveAnonymizationAsync
+IArt33NotificationService --> SecurityIncidentDto : SendNotificationAsync
+IAuditService --> AuditEntryDto : GetRecentAsync
+IAuditService --> AuditEntryDto : GetByEntityNameAsync
+IAuditService --> AuditEntryDto : GetWithDetailsAsync
+IAuditService --> ChangeDetailDto : GetWithDetailsAsync
+IDatabaseConnectionService --> DataConnection : CheckDatabaseConnectionAsync
+IDatabaseService --> DataConnection : IsConnected
+IMedicineStatusService --> MedicineStatusDto : GetMedicineStatusAsync
+IMedicineStatusService --> PainkillerStatusDto : GetPainkillerStatusAsync
+IPhoneAssignmentService --> PhoneAssignmentDto : GetCurrentPhoneAssignmentsForActiveShiftAsync
+IPseudonymizationService --> User : Pseudonymize
+IRefreshTokenStore --> RefreshToken : GetByTokenAsync
+IRefreshTokenStore --> RefreshToken : RevokeAsync
+IRefreshTokenStore --> RefreshToken : SaveAsync
+IRefreshTokenStore --> ITokenService : GetByTokenAsync
+IRefreshTokenStore --> ITokenService : RevokeAsync
+IRefreshTokenStore --> ITokenService : SaveAsync
+IResidentNoteService --> ResidentNoteDto : GetAllByResidentIdAsync
+IResidentNoteService --> ResidentNote : AddAsync
+IResidentNoteService --> ResidentNote : UpdateAsync
+IResidentNoteService --> ResidentNote : DeleteAsync
+IResidentService --> ResidentCreateRequestDto : CreateAsync
+IResidentService --> ResidentUpdateRequestDto : UpdateAsync
+IResidentService --> Resident : GetAllAsync
+IResidentService --> Resident : GetByDepartmentsAsync
+IResidentService --> Resident : GetByIdAsync
+IRetentionPolicyService --> RetentionPolicyDto : GetPoliciesAsync
+IRetentionPolicyService --> UpdateRetentionPolicyDto : UpdateRetentionPolicyAsync
+ISecurityIncidentService --> SecurityIncidentDto : GetIncidentsAsync
+ISecurityIncidentService --> SecurityIncidentDto : EscalateIncidentAsync
+ISecurityIncidentService --> SecurityIncidentDto : AddInvestigationNotesAsync
+ISecurityIncidentService --> SecurityIncidentDto : CloseIncidentAsync
+ISecurityIncidentService --> AddInvestigationNotesDto : AddInvestigationNotesAsync
+IStaffAssignmentService --> StaffAssignmentDto : AssignAsync
+IStaffAssignmentService --> AssignmentOverviewDto : AssignAsync
+IStaffAssignmentService --> AssignmentOverviewDto : GetAssignmentsByShiftAsync
+IStaffAssignmentService --> AssignmentOverviewDto : DeleteAssignmentAsync
+IStaffAssignmentService --> AssignmentOverviewDto : UpdateAssignmentAsync
+ISubjectAccessRequestService --> SarExportRequestDto : GenerateExportAsync
+ISubjectAccessRequestService --> SarExportPackageDto : GenerateExportAsync
+ISubjectAccessRequestService --> SarFulfilledDto : MarkFulfilledAsync
+ITaskListService --> TaskListDto : GetAvailableTasksByDepartmentAsync
+ITokenService --> User : CreateJwtTokenAsync
+ITokenService --> RefreshToken : CreateRefreshTokenAsync
+
+IResidentNoteManager --> ResidentNoteDto : GetAllByResidentIdAsync
+IResidentNoteManager --> ResidentNote : AddAsync
+IResidentNoteManager --> ResidentNote : UpdateAsync
+IResidentNoteManager --> ResidentNote : DeleteAsync
+IRetentionPolicyManager --> RetentionPolicyDto : GetPoliciesAsync
+IRetentionPolicyManager --> UpdateRetentionPolicyDto : UpdateRetentionPolicyAsync
+ISecurityIncidentManager --> SecurityIncidentDto : GetIncidentsAsync
+ISecurityIncidentManager --> SecurityIncidentDto : EscalateIncidentAsync
+ISecurityIncidentManager --> SecurityIncidentDto : AddInvestigationNotesAsync
+ISecurityIncidentManager --> SecurityIncidentDto : CloseIncidentAsync
+ISecurityIncidentManager --> AddInvestigationNotesDto : AddInvestigationNotesAsync
+ISubjectAccessRequestManager --> SarExportRequestDto : GenerateExportAsync
+ISubjectAccessRequestManager --> SarExportPackageDto : GenerateExportAsync
+ISubjectAccessRequestManager --> SarFulfilledDto : MarkFulfilledAsync
+ITaskListManager --> TaskListDto : GetDashboardTasksByDepartmentAsync
+IDatabaseConnectionStateProvider --> DataConnection : IsConnected
+DataConnection --> DbConnectionState : State
+
+IAnonymizationCandidateRepository --> AnonymizationCandidate : Repository
+IAuditRepository --> AuditEntry : GetRecentAsync
+IAuditRepository --> ChangeDetail : GetWithDetailsAsync
+IEmployeeRepository --> Employee : Repository
+ILoginAttemptRepository --> LoginAttempt : Repository
+IMedicineRepository --> MedicineRecord : Repository
+IMedicineRepository --> Resident : GetMedicineStatusLast24HoursAsync
+IPainkillerRepository --> PainkillerRecord : Repository
+IPainkillerRepository --> Resident : GetPainkillerStatusLast24HoursAsync
+IPhoneAssignmentRepository --> PhoneAssignment : Repository
+IPhoneAssignmentRepository --> PhoneAssignmentDto : GetDtoByShiftTypeAsync
+IPhoneAssignmentRepository --> ShiftType : GetByShiftTypeAsync
+IResidentNoteRepository --> ResidentNote : Repository
+IResidentRepository --> Resident : Repository
+IResidentRepository --> Department : GetAllAsync
+IRetentionPolicyAuditRepository --> RetentionPolicyAudit : Repository
+IRetentionPolicyRepository --> RetentionPolicy : Repository
+ISecurityIncidentRepository --> SecurityIncident : Repository
+IStaffAssignmentRepository --> StaffAssignment : Repository
+IStaffAssignmentRepository --> Resident : GetByResidentAsync
+IStaffAssignmentRepository --> Employee : GetExistingAssignmentAsync
+IStaffAssignmentRepository --> ShiftType : GetByShiftAsync
+ISubjectAccessRequestRepository --> SubjectAccessRequest : Repository
+ITaskListRepository --> TaskList : Repository
+ITaskListRepository --> Department : GetDashboardTasksByDepartmentAsync
+IUserRepository --> User : Repository
+
+AnonymizationCandidate --|> IEntity
+AuditEntry --|> IEntity
+ChangeDetail --|> IEntity
+Employee --|> IEntity
+LoginAttempt --|> IEntity
+MedicineRecord --|> IEntity
+PainkillerRecord --|> IEntity
+PhoneAssignment --|> IEntity
+RefreshToken --|> IEntity
+Resident --|> IEntity
+ResidentNote --|> IEntity
+RetentionPolicy --|> IEntity
+RetentionPolicyAudit --|> IEntity
+SecurityIncident --|> IEntity
+StaffAssignment --|> IEntity
+SubjectAccessRequest --|> IEntity
+User --|> IEntity
+TaskList --|> IEntity
+
+DeleteUserResponseDto --|> IDeleteResult
+LoginResponseDto --|> ILoginResult
+LogoutResponseDto --|> ILogoutResult
+ErrorDto --|> ILoginResult
+ErrorDto --|> ILogoutResult
+ErrorDto --|> IDeleteResult
+
+"IRepository<TEntity>" <|-- IAuditRepository
+"IRepository<TEntity>" <|-- IAnonymizationCandidateRepository
+"IRepository<TEntity>" <|-- IEmployeeRepository
+"IRepository<TEntity>" <|-- ILoginAttemptRepository
+"IRepository<TEntity>" <|-- IMedicineRepository
+"IRepository<TEntity>" <|-- IPainkillerRepository
+"IRepository<TEntity>" <|-- IPhoneAssignmentRepository
+"IRepository<TEntity>" <|-- IResidentNoteRepository
+"IRepository<TEntity>" <|-- IResidentRepository
+"IRepository<TEntity>" <|-- IRetentionPolicyAuditRepository
+"IRepository<TEntity>" <|-- IRetentionPolicyRepository
+"IRepository<TEntity>" <|-- ISecurityIncidentRepository
+"IRepository<TEntity>" <|-- IStaffAssignmentRepository
+"IRepository<TEntity>" <|-- ISubjectAccessRequestRepository
+"IRepository<TEntity>" <|-- ITaskListRepository
+"IRepository<TEntity>" <|-- IUserRepository
+
+@enduml

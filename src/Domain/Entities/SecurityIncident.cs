@@ -2,6 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 using Domain.Enums;
 using Domain.Interfaces;
@@ -37,7 +38,8 @@ public class SecurityIncident : IEntity
     [MaxLength(2000)]
     public string InvestigationNotes { get; set; } = string.Empty;
 
+    [ForeignKey(nameof(Domain.Entities.Employee))]
     public Guid? ReportedByEmployeeId { get; set; }
-
+    [ForeignKey(nameof(Domain.Entities.Employee))]
     public Guid? ResolvedByEmployeeId { get; set; }
 }
