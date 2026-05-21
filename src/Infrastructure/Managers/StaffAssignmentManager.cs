@@ -8,13 +8,13 @@ using Core.Interfaces.Services;
 using Domain.Entities;
 using Domain.Enums;
 
-namespace Infrastructure.Services;
+namespace Infrastructure.Managers;
 
 /// <summary>
 /// Service for creating, retrieving, and deleting staff assignments.
 /// </summary>
 
-public class StaffAssignmentService(
+public class StaffAssignmentManager(
     IStaffAssignmentRepository repository)
     : IStaffAssignmentService
 

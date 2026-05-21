@@ -25,34 +25,46 @@ Flowet følger den systemarkitektur, der blev anvendt i projektet:
 sequenceDiagram
     actor StaffMember as Staff Member
 
-    participant StaffAssignmentsPage as Presentation Layer
-    participant StaffAssignmentService as Application(Core) Layer
+    participant PresentationLayer as Presentation Layer
+    participant ApplicationLayer as Application(Core) Layer
 
-    StaffMember->>+StaffAssignmentsPage: OpenShiftAssignments()
+    %% LOAD SHIFT OVERVIEW
+    StaffMember->>+PresentationLayer: OpenShiftOverview()
 
-    StaffAssignmentsPage->>+StaffAssignmentService: GetAssignments(shiftDto)
+    PresentationLayer->>+ApplicationLayer: GetAssignmentsByShift(shiftDto)
 
     alt Success
-        StaffAssignmentService-->>StaffAssignmentsPage: AssignmentOverviewDto[]
+        ApplicationLayer-->>PresentationLayer: AssignmentOverviewDto[]
+
+        PresentationLayer-->>StaffMember: Display resident assignments and information
 
     else NoAssignmentsFound
-        StaffAssignmentService-->>StaffAssignmentsPage: EmptyResult()
+        ApplicationLayer-->>PresentationLayer: EmptyResult()
+
+        PresentationLayer-->>StaffMember: Show empty shift overview
 
     else DataAccessError
-        StaffAssignmentService-->>StaffAssignmentsPage: Error(message)
+        ApplicationLayer-->>PresentationLayer: Error(message)
+
+        PresentationLayer-->>StaffMember: Display error message
     end
 
-    StaffMember->>+StaffAssignmentsPage: CreateAssignment()
+    %% UPDATE RESIDENT INFORMATION
+    StaffMember->>+PresentationLayer: UpdateResident()
 
-    StaffAssignmentsPage->>+StaffAssignmentService: CreateAssignment(staffAssignmentDto)
+    PresentationLayer->>+ApplicationLayer: UpdateResident(residentUpdateDto)
 
     alt Success
-        StaffAssignmentService-->>StaffAssignmentsPage: AssignmentOverviewDto
-        StaffAssignmentsPage-->>StaffAssignmentsPage: RefreshAssignmentOverview()
+        ApplicationLayer-->>PresentationLayer: UpdateConfirmed()
+
+        PresentationLayer-->>StaffMember: Display updated resident overview
 
     else ValidationError
-        StaffAssignmentService-->>StaffAssignmentsPage: Error(message)
+        ApplicationLayer-->>PresentationLayer: Error(message)
+
+        PresentationLayer-->>StaffMember: Display validation error
     end
+   
 ```
 
 
@@ -60,70 +72,64 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant StaffAssignmentService as Application(Core) Layer
-    participant StaffAssignmentInfrastructure as Infrastructure Layer
-    participant StaffAssignmentManager as Infrastructure.Data Layer
-    participant WebApi as WebApi
+    participant ApplicationLayer as Application(Core) Layer
+    participant InfrastructureLayer as Infrastructure Layer
+    participant InfrastructureDataLayer as Infrastructure.Data Layer
+    participant WebApi
 
-    %% GET ASSIGNMENTS
-    StaffAssignmentService->>StaffAssignmentInfrastructure: GetAssignments(shiftDto)
+    %% LOAD SHIFT OVERVIEW
+    ApplicationLayer->>+InfrastructureLayer: GetAssignmentsByShift(shiftDto)
 
-    StaffAssignmentInfrastructure->>StaffAssignmentManager: GetAssignments(shiftDto)
+    InfrastructureLayer->>+InfrastructureDataLayer: GetAssignmentsByShift(shiftDto)
 
-    StaffAssignmentManager->>WebApi: GET /staff-assignments/list
-
-     alt Success
-        WebApi-->>StaffAssignmentManager: 200 OK (AssignmentOverviewDto[])
-        StaffAssignmentManager-->>StaffAssignmentInfrastructure: AssignmentOverviewDto[]
-        StaffAssignmentInfrastructure-->>StaffAssignmentService: AssignmentOverviewDto[]
-    
-
-     else Error
-        WebApi-->>StaffAssignmentManager: 4xx/5xx (Error)
-        StaffAssignmentManager-->>StaffAssignmentInfrastructure: Error(message)
-        StaffAssignmentInfrastructure-->>StaffAssignmentService: Error(message)
-    end
-
-    %% CREATE ASSIGNMENT
-    StaffAssignmentService->>StaffAssignmentInfrastructure: CreateAssignment(staffAssignmentDto)
-
-    StaffAssignmentInfrastructure->>StaffAssignmentManager: CreateAssignment(staffAssignmentDto)
-
-    StaffAssignmentManager->>WebApi: POST /staff-assignments
+    InfrastructureDataLayer->>+WebApi: GET /staff-assignments/list
 
     alt Success
-        WebApi-->>StaffAssignmentManager: 200 OK (AssignmentOverviewDto)
-        StaffAssignmentManager-->>StaffAssignmentInfrastructure: AssignmentOverviewDto
-        StaffAssignmentInfrastructure-->>StaffAssignmentService: AssignmentOverviewDto
+        WebApi-->>InfrastructureDataLayer: 200 OK (AssignmentOverviewDto[])
 
-     
+        InfrastructureDataLayer-->>InfrastructureLayer: AssignmentOverviewDto[]
+
+        InfrastructureLayer-->>ApplicationLayer: AssignmentOverviewDto[]
+
+    else Error
+        WebApi-->>InfrastructureDataLayer: 4xx/5xx (Error)
+
+        InfrastructureDataLayer-->>InfrastructureLayer: Error(message)
+
+        InfrastructureLayer-->>ApplicationLayer: Error(message)
+    end
+
+    %% UPDATE RESIDENT INFORMATION
+    ApplicationLayer->>+InfrastructureLayer: UpdateResident(residentUpdateDto)
+
+    InfrastructureLayer->>+InfrastructureDataLayer: UpdateResident(residentUpdateDto)
+
+    InfrastructureDataLayer->>+WebApi: PUT /residents/{id}
+
+    alt Success
+        WebApi-->>InfrastructureDataLayer: 204 NoContent
+
+        InfrastructureDataLayer-->>InfrastructureLayer: UpdateCompleted()
+
+        InfrastructureLayer-->>ApplicationLayer: UpdateCompleted()
 
     else ValidationError
-        WebApi-->>StaffAssignmentManager: 400 BadRequest
-        StaffAssignmentManager-->>StaffAssignmentInfrastructure: Error(message)
-        StaffAssignmentInfrastructure-->>StaffAssignmentService: Error(message)
+        WebApi-->>InfrastructureDataLayer: 400 BadRequest
+
+        InfrastructureDataLayer-->>InfrastructureLayer: Error(message)
+
+        InfrastructureLayer-->>ApplicationLayer: Error(message)
     end
 ```
 ---
 
 ## Notes
-- Scope: indlæsning og opdatering af staff assignments under vagtskifte.
-- Presentation Layer anmoder om assignment-data og viser aktuelle ansvarsområder.
-- Staff assignments opdateres gennem WebApi-laget.
-- Infrastrukturkommunikation abstraheres gennem manager-klasser.
-- DTO’er anvendes på tværs af arkitektoniske lag.
-- Beskyttede endpoints kræver JWT authentication og authorization.
-- Arkitekturen følger Clean Architecture dependency direction.
-
----
-
-
-
-## Sequence Diagram — Update Resident Status Flow
-
-
-
-
+- Scope: dataflow ved vagtskifte samt opdatering af borgerinformation i systemet.
+- Presentation Layer håndterer visning af vagtoversigt og residentinformation.
+- Application Layer behandler assignment-data og residentopdateringer.
+- WebApi-laget eksponerer endpoints til hentning og opdatering af data.
+- Infrastruktur- og data lag håndterer persistence og kommunikation med databasen.
+- DTO er anvendes til dataoverførsel mellem arkitekturens lag.
 
 ## Compliance
 - Følger Clean Architecture-principper.
