@@ -6,7 +6,7 @@ using System.Net.Http.Json;
 using Core.DTOs;
 using Core.Interfaces.Managers;
 
-namespace Infrastructure.Services;
+namespace Infrastructure.Managers;
 
 /// <summary>
 /// Provides operations for managing phone assignments by communicating with the backend API over HTTP.

@@ -1,12 +1,4 @@
 @startuml
-title dcd for application layer
-' Increase horizontal space between columns of classes
-skinparam linetype polyline
-' Increase vertical space between rows of classes
-skinparam ranksep 100 
-' Prevent overlapping arrows on the same path
-skinparam pathHoverColor red
-
 skinparam classAttributeIconSize 0
 left to right direction
 
@@ -133,21 +125,6 @@ package "Core.DTOs" {
     +DueTime: DateTime
     +Department: Department
   }
-  ' FORCED HORIZONTAL ALIGNMENT VIA HIDDEN LINKS
-  AddResidentNoteDto -[hidden]right- AssignmentOverviewDto
-  AssignmentOverviewDto -[hidden]right- EmployeeDto
-  EmployeeDto -[hidden]right- EditResidentNoteDto
-  EditResidentNoteDto -[hidden]right- ErrorDto
-  ErrorDto -[hidden]right- MedicineEntryDto
-  MedicineEntryDto -[hidden]right- MedicineStatusDto
-  MedicineStatusDto -[hidden]right- PainkillerStatusDto
-  PainkillerStatusDto -[hidden]right- PhoneAssignmentDto
-  PhoneAssignmentDto -[hidden]right- ResidentCreateRequestDto
-  ResidentCreateRequestDto -[hidden]right- ResidentNoteDto
-  ResidentNoteDto -[hidden]right- ResidentResponseDto
-  ResidentResponseDto -[hidden]right- ResidentUpdateRequestDto
-  ResidentUpdateRequestDto -[hidden]right- StaffAssignmentDto
-  StaffAssignmentDto -[hidden]right- TaskListDto  
 }
 
 package "Core.DTOs.Identity" {
@@ -464,194 +441,62 @@ package "Core.Interfaces.Managers" {
 
 package "Core.Interfaces.Repositories" {
   interface IRepository~TEntity~
-  interface ICRUD~TEntity~ {
-    +CreateAsync(entity: TEntity, cancellationToken: CancellationToken): Task<TEntity>
-    +CreateRangeAsync(entities: IEnumerable<TEntity>, cancellationToken: CancellationToken): Task<IEnumerable<TEntity>>
-    +GetByIdAsync(id: guid, cancellationToken: CancellationToken): Task<TEntity Nullable>
-    +GetAllAsync(cancellationToken: CancellationToken): Task<IEnumerable<TEntity>>
-    +UpdateAsync(entity: TEntity, cancellationToken: CancellationToken): Task
-    +UpdateRangeAsync(entities: IEnumerable<TEntity>, cancellationToken: CancellationToken): Task
-    +DeleteAsync(entity: TEntity, cancellationToken: CancellationToken): Task
-    +DeleteRangeAsync(entities: IEnumerable<TEntity>, cancellationToken: CancellationToken): Task
-  }
-  interface IAuditRepository {
-    +GetRecentAsync(limit: int Nullable, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntry>>
-    +GetByEntityNameAsync(entityName: string, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntry>>
-    +GetWithDetailsAsync(id: guid, cancellationToken: CancellationToken): Task<AuditEntry Nullable>
-  }
+  interface IAuditRepository
   interface IAnonymizationCandidateRepository
   interface IEmployeeRepository
   interface ILoginAttemptRepository
-  interface IMedicineRepository {
-    +GetMedicineStatusLast24HoursAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<MedicineRecord>>
-  }
-  interface IPainkillerRepository {
-    +GetPainkillerStatusLast24HoursAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<PainkillerRecord>>
-  }
-  interface IPhoneAssignmentRepository {
-    +GetByShiftTypeAsync(shiftType: ShiftType, cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignment>>
-    +GetDtoByShiftTypeAsync(shiftType: ShiftType, cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignmentDto>>
-  }
+  interface IMedicineRepository
+  interface IPainkillerRepository
+  interface IPhoneAssignmentRepository
   interface IResidentNoteRepository
-  interface IResidentRepository {
-    +GetAllAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<Resident>>
-  }
+  interface IResidentRepository
   interface IRetentionPolicyAuditRepository
   interface IRetentionPolicyRepository
   interface ISecurityIncidentRepository
-  interface IStaffAssignmentRepository {
-    +GetByResidentAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<StaffAssignment>>
-    +GetByShiftAsync(shiftType: ShiftType, assignmentDate: DateTime, cancellationToken: CancellationToken): Task<IEnumerable<StaffAssignment>>
-    +GetExistingAssignmentAsync(residentId: guid, employeeId: guid, shiftType: ShiftType, assignmentDate: DateTime, cancellationToken: CancellationToken): Task<StaffAssignment Nullable>
-    +GetByIdWithDetailsAsync(assignmentId: guid, cancellationToken: CancellationToken): Task<StaffAssignment Nullable>
-  }
+  interface IStaffAssignmentRepository
   interface ISubjectAccessRequestRepository
-  interface ITaskListRepository {
-    +GetDashboardTasksByDepartmentAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<TaskList>>
-  }
+  interface ITaskListRepository
   interface IUserRepository
 }
 
 package "Core.Services" {
-  class AccountService {
-    -_AccountManager: IAccountManager
-    +CreateAccountAsync(registrationRequestDto: RegisterRequestDto): Task<RegistrationResponseDto>
-    +RefreshTokenAsync(refreshTokenRequestDto: RefreshTokenRequestDto): Task<RefreshTokenResponseDto>
-    +LoginAsync(loginRequestDto: LoginRequestDto): Task<ILoginResult>
-    +LogoutAsync(logoutRequestDto: LogoutRequestDto): Task<ILogoutResult>
-  }
-  class AnonymizationService {
-    -_anonymizationManager: IAnonymizationManager
-    +GetCandidatesAsync(cancellationToken: CancellationToken): Task<IEnumerable<AnonymizationCandidateDto>>
-    +ApproveAnonymizationAsync(candidateId: guid, cancellationToken: CancellationToken): Task<AnonymizationResultDto>
-    +RejectAnonymizationAsync(candidateId: guid, reason: string, cancellationToken: CancellationToken): Task<bool>
-  }
-  class Art33NotificationService {
-    -_logger: ILogger<Art33NotificationService>
-    +SendNotificationAsync(incidentId: guid, dpoEmail: string, cancellationToken: CancellationToken): Task<bool>
-  }
-  class AuditService {
-    -_auditManager: IAuditManager
-    +GetRecentAsync(limit: int Nullable, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntryDto>>
-    +GetByEntityNameAsync(entityName: string, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntryDto>>
-    +GetWithDetailsAsync(id: guid, cancellationToken: CancellationToken): Task<AuditEntryDto Nullable>
-    +LogAsync(entityName: string, changeType: string, changedBy: string Nullable, description: string): Task
-  }
-  class DatabaseConnectionService {
-    +CheckDatabaseConnectionAsync(): Task
-  }
-  class MedicineStatusService {
-    -_medicineStatusManager: IMedicineStatusManager
-    +GetMedicineStatusAsync(residentId: guid, cancellationToken: CancellationToken): Task<MedicineStatusDto Nullable>
-    +GetPainkillerStatusAsync(residentId: guid, cancellationToken: CancellationToken): Task<PainkillerStatusDto Nullable>
-  }
-  class PhoneAssignmentService {
-    -_phoneAssignmentManager: IPhoneAssignmentManager
-    +GetCurrentPhoneAssignmentsForActiveShiftAsync(cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignmentDto>>
-  }
-  class ResidentNoteService {
-    -_residentNoteManager: IResidentNoteManager
-    +GetAllByResidentIdAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<ResidentNoteDto>>
-    +AddAsync(residentId: guid, noteText: string, cancellationToken: CancellationToken): Task<bool>
-    +UpdateAsync(noteId: guid, newText: string, cancellationToken: CancellationToken): Task<bool>
-    +DeleteAsync(noteId: guid, cancellationToken: CancellationToken): Task<bool>
-  }
-  class ResidentService {
-    +GetByIdAsync(id: guid, ct: CancellationToken): Task<Resident Nullable>
-    +GetAllAsync(ct: CancellationToken): Task<IEnumerable<Resident>>
-    +GetByDepartmentsAsync(departments: IList<Department>, ct: CancellationToken): Task<IEnumerable<Resident>>
-    +CreateAsync(dto: ResidentCreateRequestDto, ct: CancellationToken): Task
-    +UpdateAsync(id: guid, resident: ResidentUpdateRequestDto, ct: CancellationToken): Task
-    +DeleteAsync(id: guid, ct: CancellationToken): Task
-  }
-  class RetentionPolicyService {
-    -_retentionPolicyManager: IRetentionPolicyManager
-    +GetPoliciesAsync(cancellationToken: CancellationToken): Task<IEnumerable<RetentionPolicyDto>>
-    +UpdateRetentionPolicyAsync(dto: UpdateRetentionPolicyDto, changedByEmployeeId: guid, cancellationToken: CancellationToken): Task<RetentionPolicyDto>
-  }
-  class SecurityIncidentService {
-    -_securityIncidentManager: ISecurityIncidentManager
-    -_art33NotificationService: IArt33NotificationService
-    +GetIncidentsAsync(cancellationToken: CancellationToken): Task<IEnumerable<SecurityIncidentDto>>
-    +EscalateIncidentAsync(incidentId: guid, isBreach: bool, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
-    +AddInvestigationNotesAsync(dto: AddInvestigationNotesDto, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
-    +CloseIncidentAsync(incidentId: guid, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
-  }
-  class SubjectAccessRequestService {
-    -_subjectAccessRequestManager: ISubjectAccessRequestManager
-    +GenerateExportAsync(dto: SarExportRequestDto, cancellationToken: CancellationToken): Task<SarExportPackageDto>
-    +MarkFulfilledAsync(dto: SarFulfilledDto, cancellationToken: CancellationToken): Task<bool>
-  }
-  class TaskListService {
-    -_taskListManager: ITaskListManager
-    +GetAvailableTasksByDepartmentAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<TaskListDto>>
-  }
-  class TokenService {
-    -configuration: IConfiguration
-    -logger: ILogger<TokenService>
-    +CreateJwtTokenAsync(user: User, roles: IList<string>, permissions: IList<Claim>, cancellationToken: CancellationToken): Task<string>
-    +CreateRefreshTokenAsync(user: User, ipAddress: string, cancellationToken: CancellationToken): Task<RefreshToken>
-    +ComputeSha256HashAsync(token: string, cancellationToken: CancellationToken): Task<string>
-  }
+  class AccountService
+  class AnonymizationService
+  class Art33NotificationService
+  class AuditService
+  class DatabaseConnectionService
+  class MedicineStatusService
+  class PhoneAssignmentService
+  class ResidentNoteService
+  class ResidentService
+  class RetentionPolicyService
+  class SecurityIncidentService
+  class SubjectAccessRequestService
+  class TaskListService
+  class TokenService
 }
 
 package "Core.Providers" {
-  class DatabaseConnectionStateProvider {
-    -_isConnected: bool
-    +IsConnected: bool
-    +StateChanged: Action
-    +SetConnectionState(isConnected: bool): void
-  }
+  class DatabaseConnectionStateProvider
 }
 
 package "Core.Mappers" {
-  class AnonymizationCandidateMapper <<static>> {
-    +ToDto(entity: AnonymizationCandidate): AnonymizationCandidateDto
-  }
-  class AuditMapper <<static>> {
-    +ToDto(entity: AuditEntry, userName: string): AuditEntryDto
-    +ToDtos(entities: IEnumerable<AuditEntry>): IEnumerable<AuditEntryDto>
-  }
-  class ChangeDetailMapper <<static>> {
-    +ToDto(entity: ChangeDetail): ChangeDetailDto
-    +ToDtos(entities: IEnumerable<ChangeDetail>): IEnumerable<ChangeDetailDto>
-  }
-  class MedicineMapper <<static>> {
-    +ToMedicineStatusDto(residentId: guid, records: IEnumerable<MedicineRecord>): MedicineStatusDto
-  }
-  class PhoneAssignmentMapper <<static>> {
-    +ToDto(entity: PhoneAssignment): PhoneAssignmentDto
-    +ToDtos(entities: IEnumerable<PhoneAssignment>): IEnumerable<PhoneAssignmentDto>
-  }
-  class PainKillerMapper <<static>> {
-    +ToPainkillerStatusDto(residentId: guid, records: IEnumerable<PainkillerRecord>): PainkillerStatusDto
-  }
-  class ResidentMapper <<static>> {
-    +ToResident(dto: ResidentResponseDto): Resident
-    +ToResident(dto: ResidentCreateRequestDto): Resident
-    +ToResidentResponseDto(entity: Resident): ResidentResponseDto
-    +ToResidentNoteDto(note: ResidentNote): ResidentNoteDto
-    +ToResidentNote(dto: ResidentNoteDto): ResidentNote
-  }
-  class RetentionPolicyMapper <<static>> {
-    +ToDto(entity: RetentionPolicy): RetentionPolicyDto
-    +ToAuditDto(entity: RetentionPolicyAudit): RetentionPolicyAuditDto
-  }
-  class SecurityIncidentMapper <<static>> {
-    +ToDto(entity: SecurityIncident): SecurityIncidentDto
-  }
-  class TaskListMapper <<static>> {
-    +ToTaskListDto(taskList: TaskList): TaskListDto
-  }
+  class AnonymizationCandidateMapper <<static>>
+  class AuditMapper <<static>>
+  class ChangeDetailMapper <<static>>
+  class MedicineMapper <<static>>
+  class PhoneAssignmentMapper <<static>>
+  class PainKillerMapper <<static>>
+  class ResidentMapper <<static>>
+  class RetentionPolicyMapper <<static>>
+  class SecurityIncidentMapper <<static>>
+  class TaskListMapper <<static>>
 }
 
 package "Core.Helpers" {
-  class ShiftTypeHelper <<static>> {
-    +ToDanishString(shiftType: ShiftType): string
-  }
+  class ShiftTypeHelper <<static>>
 }
 
-"ICRUD~TEntity~" <|-- "IRepository~TEntity~"
 "IRepository~TEntity~" <|-- IAuditRepository
 "IRepository~TEntity~" <|-- IAnonymizationCandidateRepository
 "IRepository~TEntity~" <|-- IEmployeeRepository
@@ -809,11 +654,5 @@ UpdateRetentionPolicyDto --> RetentionDataCategory : Category
 SecurityIncidentDto --> IncidentSeverity : Severity
 SecurityIncidentDto --> IncidentStatus : Status
 StaffAssignmentDto --> ShiftType : ShiftType
-
-note as N1
-Split diagram entry point.
-See:
-- dcd-domain.puml
-end note
 
 @enduml

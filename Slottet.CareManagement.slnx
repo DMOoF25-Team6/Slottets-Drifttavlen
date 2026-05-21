@@ -1,5 +1,13 @@
 <Solution>
   <Folder Name="/Solution Items/">
+    <File Path="docs/Examen/dcd-application.puml" />
+    <File Path="docs/Examen/dcd-domain.puml" />
+    <File Path="docs/Examen/dcd-index.md" />
+    <File Path="docs/Examen/dcd-interfaces.puml" />
+    <File Path="docs/Examen/dcd.md" />
+    <File Path="docs/Examen/dcd.puml" />
+    <File Path="docs/Examen/deployment-diagram.md" />
+    <File Path="docs/Examen/sekvens-diagram.md" />
     <File Path="README.md" />
     <File Path="TestResults/CoverageReport/Latest/Html/index.html" />
   </Folder>
