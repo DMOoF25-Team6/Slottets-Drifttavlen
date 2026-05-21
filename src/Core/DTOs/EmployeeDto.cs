@@ -17,5 +17,4 @@ public class EmployeeDto
 
     public Department Department { get; set; }
 
-
 }

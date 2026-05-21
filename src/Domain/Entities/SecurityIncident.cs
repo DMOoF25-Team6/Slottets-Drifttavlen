@@ -37,7 +37,8 @@ public class SecurityIncident : IEntity
     [MaxLength(2000)]
     public string InvestigationNotes { get; set; } = string.Empty;
 
+    [ForeignKey(nameof(Domain.Entities.Employee))]
     public Guid? ReportedByEmployeeId { get; set; }
-
+    [ForeignKey(nameof(Domain.Entities.Employee))]
     public Guid? ResolvedByEmployeeId { get; set; }
 }

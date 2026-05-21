@@ -1,0 +1,295 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+
+package "Core.DTOs" {
+  class AddResidentNoteDto {
+    +ResidentId: guid
+    +NoteText: string
+  }
+  class AssignmentOverviewDto {
+    +AssignmentId: guid
+    +ResidentId: guid
+    +ResidentInitials: string
+    +EmployeeId: guid
+    +EmployeeName: string
+    +ShiftType: string
+    +AssignmentDate: DateTime
+  }
+  class EmployeeDto {
+    +Id: guid
+    +FirstName: string
+    +LastName: string
+    +Initials: string
+    +Department: Department
+  }
+  class EditResidentNoteDto {
+    +ResidentId: guid
+    +ResidentNoteId: guid
+    +NewNoteText: string
+  }
+  class ErrorDto {
+    +ErrorMessages: IEnumerable<string> Nullable
+  }
+  class ResidentNoteDto {
+    +Id: guid
+    +Note: string
+    +Timestamp: DateTime
+    +Initials: string
+  }
+  class ResidentCreateRequestDto {
+    +Initials: string
+    +FirstName: string
+    +LastName: string
+    +TrafficLightStatus: TrafficLightStatus Nullable
+    +Department: Department
+  }
+  class ResidentUpdateRequestDto {
+    +Initials: string
+    +FirstName: string
+    +LastName: string
+    +TrafficLightStatus: TrafficLightStatus Nullable
+    +Department: Department
+  }
+  class ResidentResponseDto {
+    +Id: guid
+    +Initials: string
+    +FirstName: string
+    +LastName: string
+    +TrafficLightStatus: int Nullable
+    +Notes: List<ResidentNoteDto>
+    +Department: Department
+  }
+  class StaffAssignmentDto {
+    +ResidentId: guid
+    +EmployeeId: guid
+    +ShiftType: ShiftType
+    +AssignmentDate: DateTime
+  }
+  class PhoneAssignmentDto {
+    +PhoneNumber: string
+    +ShiftType: string
+    +ShiftTypeEnum: ShiftType
+    +AssignedStaffName: string
+  }
+  class MedicineEntryDto {
+    +Name: string
+    +Timestamp: DateTime
+    +Given: bool
+  }
+  class MedicineStatusDto {
+    +ResidentId: guid
+    +Entries: List<MedicineEntryDto>
+  }
+  class PainkillerStatusDto {
+    +ResidentId: guid
+    +Types: IEnumerable<string>
+    +NextAllowedTime: DateTime
+  }
+  class TaskListDto {
+    +Id: guid
+    +Title: string
+    +Description: string
+    +TaskListStatus: TaskListStatus
+    +DueTime: DateTime
+    +Department: Department
+  }
+}
+
+package "Core.DTOs.Anonymization" {
+  class AnonymizationCandidateDto {
+    +Id: guid
+    +ResidentId: guid
+    +RetentionPolicyId: guid
+    +SuggestedAt: DateTime
+    +Reason: string
+    +Status: AnonymizationStatus
+  }
+  class AnonymizationResultDto {
+    +CandidateId: guid
+    +CompletedAt: DateTime
+    +Outcome: string
+  }
+  class ApproveAnonymizationDto {
+    +CandidateId: guid
+  }
+}
+
+package "Core.DTOs.Audit" {
+  class AuditEntryDto {
+    +Id: guid
+    +EventTimeUtc: DateTime
+    +RegisteredTimeUtc: DateTime
+    +Entity: string
+    +ChangeType: string
+    +Description: string
+    +UserId: guid
+    +UserName: string
+    +Succeeded: bool
+    +ChangeDetails: IEnumerable<ChangeDetailDto>
+  }
+  class ChangeDetailDto {
+    +Id: guid
+    +Field: string
+    +OldValue: string
+    +NewValue: string
+  }
+}
+
+package "Core.DTOs.Identity" {
+  class DeleteUserRequestDto {
+    +UserId: string
+  }
+  class DeleteUserResponseDto {
+    +IsSuccessful: bool
+  }
+  class GetUserIdByEmailRequestDto {
+    +Email: string
+  }
+  class LoginRequestDto {
+    +Email: string
+    +Password: string
+  }
+  class LoginResponseDto {
+    +Token: string
+    +RefreshToken: string Nullable
+  }
+  class LogoutRequestDto {
+    +RefreshToken: string
+  }
+  class LogoutResponseDto {
+    +IsSuccessful: bool
+  }
+  class RefreshTokenRequestDto {
+    +RefreshToken: string Nullable
+  }
+  class RefreshTokenResponseDto {
+    +JwtToken: string Nullable
+    +RefreshToken: string Nullable
+    +ErrorMessages: IEnumerable<string> Nullable
+  }
+  class RegisterRequestDto {
+    +Email: string
+    +Password: string
+  }
+  class RegistrationResponseDto {
+    +IsSuccessful: bool
+    +ErrorMessages: IEnumerable<string>
+  }
+}
+
+package "Core.DTOs.Retention" {
+  class RetentionPolicyDto {
+    +Id: guid
+    +Category: RetentionDataCategory
+    +RetentionPeriod: TimeSpan
+    +LegalMinimum: TimeSpan
+    +EffectiveFrom: DateTime
+  }
+  class RetentionPolicyAuditDto {
+    +Id: guid
+    +RetentionPolicyId: guid
+    +ChangedByEmployeeId: guid
+    +PreviousPeriod: TimeSpan
+    +NewPeriod: TimeSpan
+    +ChangedAt: DateTime
+    +Reason: string
+  }
+  class UpdateRetentionPolicyDto {
+    +Category: RetentionDataCategory
+    +RetentionPeriod: TimeSpan
+    +Reason: string
+  }
+}
+
+package "Core.DTOs.Sar" {
+  class SarExportRequestDto {
+    +ResidentId: guid
+    +ScopeOptions: string[]
+  }
+  class SarExportPackageDto {
+    +ExportId: guid
+    +GeneratedAt: DateTime
+    +FileName: string
+    +Payload: string
+  }
+  class SarFulfilledDto {
+    +SarId: guid
+    +FulfilledAt: DateTime
+  }
+}
+
+package "Core.DTOs.Security" {
+  class AddInvestigationNotesDto {
+    +IncidentId: guid
+    +Notes: string
+  }
+  class EscalateIncidentDto {
+    +IncidentId: guid
+    +IsBreach: bool
+  }
+  class SecurityIncidentDto {
+    +Id: guid
+    +DetectedAt: DateTime
+    +Type: string
+    +Severity: IncidentSeverity
+    +Status: IncidentStatus
+    +InvestigationNotes: string
+    +BreachNotificationDeadlineUtc: DateTime
+  }
+}
+
+package "Core.DTOs.Tasks" {
+  class TaskListDto {
+    +Id: guid
+    +Title: string
+    +Description: string
+    +TaskListStatus: TaskListStatus
+    +DueTime: DateTime
+    +Department: Department
+  }
+}
+
+package "Core.Helpers" {
+  class ShiftTypeHelper <<static>> {
+    +ToDanishString(shiftType: ShiftType): string
+  }
+}
+
+AddResidentNoteDto --> Resident : ResidentId
+AssignmentOverviewDto --> Resident : ResidentId
+AssignmentOverviewDto --> Employee : EmployeeId
+AssignmentOverviewDto --> ShiftType : ShiftType
+EmployeeDto --> Department : Department
+EditResidentNoteDto --> ResidentNoteDto : ResidentNoteId
+ResidentResponseDto --> ResidentNoteDto : Notes
+ResidentCreateRequestDto --> TrafficLightStatus : TrafficLightStatus
+ResidentCreateRequestDto --> Department : Department
+ResidentUpdateRequestDto --> TrafficLightStatus : TrafficLightStatus
+ResidentUpdateRequestDto --> Department : Department
+StaffAssignmentDto --> ShiftType : ShiftType
+StaffAssignmentDto --> Resident : ResidentId
+StaffAssignmentDto --> Employee : EmployeeId
+PhoneAssignmentDto --> ShiftType : ShiftTypeEnum
+MedicineStatusDto --> MedicineEntryDto : Entries
+PainkillerStatusDto --> Resident : ResidentId
+TaskListDto --> TaskListStatus : TaskListStatus
+TaskListDto --> Department : Department
+AnonymizationCandidateDto --> AnonymizationStatus : Status
+AnonymizationCandidateDto --> RetentionPolicy : RetentionPolicyId
+AnonymizationResultDto --> AnonymizationCandidateDto : CandidateId
+ApproveAnonymizationDto --> AnonymizationCandidateDto : CandidateId
+AuditEntryDto --> ChangeDetailDto : ChangeDetails
+RetentionPolicyDto --> RetentionDataCategory : Category
+RetentionPolicyAuditDto --> Employee : ChangedByEmployeeId
+RetentionPolicyAuditDto --> RetentionPolicy : RetentionPolicyId
+UpdateRetentionPolicyDto --> RetentionDataCategory : Category
+SarExportRequestDto --> Resident : ResidentId
+SarFulfilledDto --> SubjectAccessRequest : SarId
+AddInvestigationNotesDto --> SecurityIncident : IncidentId
+EscalateIncidentDto --> SecurityIncident : IncidentId
+SecurityIncidentDto --> IncidentSeverity : Severity
+SecurityIncidentDto --> IncidentStatus : Status
+ShiftTypeHelper --> ShiftType : ToDanishString
+
+@enduml
