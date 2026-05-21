@@ -1,0 +1,580 @@
+@startuml
+title dcd for infrastructure layer
+skinparam classAttributeIconSize 0
+left to right direction
+skinparam linetype polyline
+skinparam ranksep 100
+skinparam pathHoverColor red
+
+package "Core.Interfaces" {
+  interface ICRUD~TEntity~ <<Core>>
+}
+
+package "Core.Interfaces.Services" {
+  interface IAccountService <<Core>>
+  interface IAnonymizationService
+  interface IArt33NotificationService
+  interface IAuditService
+  interface IDatabaseConnectionService
+  interface IMedicineStatusService
+  interface IPhoneAssignmentService
+  interface IRetentionPolicyService
+  interface ISecurityIncidentService
+  interface ISubjectAccessRequestService
+  interface ITaskListService
+  interface ITokenService
+  interface IResidentNoteService
+  interface IResidentService
+}
+
+package "Core.Interfaces.Repositories" {
+  interface IRepository~TEntity~
+  interface IAuditRepository {
+    +GetRecentAsync(limit: int Nullable, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntry>>
+    +GetByEntityNameAsync(entityName: string, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntry>>
+    +GetWithDetailsAsync(id: guid, cancellationToken: CancellationToken): Task<AuditEntry Nullable>
+  }
+  interface IAnonymizationCandidateRepository
+  interface IEmployeeRepository
+  interface ILoginAttemptRepository
+  interface IMedicineRepository {
+    +GetMedicineStatusLast24HoursAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<MedicineRecord>>
+  }
+  interface IPainkillerRepository {
+    +GetPainkillerStatusLast24HoursAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<PainkillerRecord>>
+  }
+  interface IPhoneAssignmentRepository {
+    +GetByShiftTypeAsync(shiftType: ShiftType, cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignment>>
+    +GetDtoByShiftTypeAsync(shiftType: ShiftType, cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignmentDto>>
+  }
+  interface IResidentNoteRepository
+  interface IResidentRepository {
+    +GetAllAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<Resident>>
+  }
+  interface IRetentionPolicyAuditRepository
+  interface IRetentionPolicyRepository
+  interface ISecurityIncidentRepository
+  interface IStaffAssignmentRepository {
+    +GetByResidentAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<StaffAssignment>>
+    +GetByShiftAsync(shiftType: ShiftType, assignmentDate: DateTime, cancellationToken: CancellationToken): Task<IEnumerable<StaffAssignment>>
+    +GetExistingAssignmentAsync(residentId: guid, employeeId: guid, shiftType: ShiftType, assignmentDate: DateTime, cancellationToken: CancellationToken): Task<StaffAssignment Nullable>
+    +GetByIdWithDetailsAsync(assignmentId: guid, cancellationToken: CancellationToken): Task<StaffAssignment Nullable>
+  }
+  interface ISubjectAccessRequestRepository
+  interface ITaskListRepository {
+    +GetDashboardTasksByDepartmentAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<TaskList>>
+  }
+  interface IUserRepository
+}
+
+package "Core.Interfaces.Managers" {
+  interface IAccountManager {
+    +CreateAccountAsync(registrationRequestDto: RegisterRequestDto): Task<RegistrationResponseDto>
+    +LoginAsync(loginRequestDto: LoginRequestDto): Task<ILoginResult>
+    +LogoutAsync(logoutRequestDto: LogoutRequestDto): Task<ILogoutResult>
+    +RefreshTokenAsync(refreshTokenRequestDto: RefreshTokenRequestDto): Task<RefreshTokenResponseDto>
+  }
+
+package "Infrastructure.Data.Persistent.Views" {
+  class MedicineStatusView <<view>>
+  class PainkillerStatusView <<view>>
+  class ResidentNoteView <<view>>
+  class PhoneAssignmentView <<view>>
+}
+  interface IAnonymizationManager {
+    +GetCandidatesAsync(cancellationToken: CancellationToken): Task<IEnumerable<AnonymizationCandidateDto>>
+    +ApproveAnonymizationAsync(candidateId: guid, cancellationToken: CancellationToken): Task<AnonymizationResultDto>
+    +RejectAnonymizationAsync(candidateId: guid, reason: string, cancellationToken: CancellationToken): Task<bool>
+  }
+
+package "Infrastructure.Data.Services" {
+  class DatabaseService {
+    +IsConnected(): bool
+  }
+  class RefreshTokenStore {
+    +GetByTokenAsync(token: string, tokenService: ITokenService, cancellationToken: CancellationToken): Task<RefreshToken Nullable>
+    +RevokeAsync(token: string, tokenService: ITokenService, cancellationToken: CancellationToken): Task
+    +SaveAsync(token: RefreshToken, tokenService: ITokenService, cancellationToken: CancellationToken): Task
+  }
+}
+  interface IAuditManager {
+    +GetRecentAsync(limit: int Nullable, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntryDto>>
+    +GetByEntityNameAsync(entityName: string, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntryDto>>
+    +GetWithDetailsAsync(id: guid, cancellationToken: CancellationToken): Task<AuditEntryDto Nullable>
+  }
+  interface IDatabaseConnectionManager {
+    +CheckAndUpdateConnectionStateAsync(): Task
+  }
+  interface IEmployeeManager {
+    +GetAllAsync(cancellationToken: CancellationToken): Task<IEnumerable<EmployeeDto>>
+  }
+  interface IMedicineRecordManager {
+  }
+  interface IMedicineStatusManager {
+    +GetMedicineStatusAsync(residentId: guid, cancellationToken: CancellationToken): Task<MedicineStatusDto Nullable>
+    +GetPainkillerStatusAsync(residentId: guid, cancellationToken: CancellationToken): Task<PainkillerStatusDto Nullable>
+  }
+  interface IPhoneAssignmentManager {
+    +GetCurrentPhoneAssignmentsForActiveShift(cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignmentDto>>
+  }
+  interface IResidentManager {
+    +CreateAsync(dto: ResidentCreateRequestDto, ct: CancellationToken): Task
+    +CreateRangeAsync(dtos: IEnumerable<ResidentCreateRequestDto>, ct: CancellationToken): Task
+    +DeleteAsync(id: guid, ct: CancellationToken): Task
+    +DeleteRangeAsync(ids: IEnumerable<guid>, ct: CancellationToken): Task
+    +GetAllAsync(ct: CancellationToken): Task<IEnumerable<ResidentResponseDto>>
+    +GetByIdAsync(id: guid, ct: CancellationToken): Task<ResidentResponseDto Nullable>
+    +GetByDepartmentsAsync(departments: IList<Department>, ct: CancellationToken): Task<IEnumerable<ResidentResponseDto>>
+    +UpdateAsync(id: guid, dto: ResidentUpdateRequestDto, ct: CancellationToken): Task
+    +UpdateRangeAsync(dtos: IEnumerable<ResidentUpdateRequestDto>, ct: CancellationToken): Task
+  }
+  interface IResidentNoteManager {
+    +GetAllByResidentIdAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<ResidentNoteDto>>
+    +AddAsync(residentId: guid, noteText: string, cancellationToken: CancellationToken): Task<bool>
+    +UpdateAsync(noteId: guid, newText: string, cancellationToken: CancellationToken): Task<bool>
+    +DeleteAsync(noteId: guid, cancellationToken: CancellationToken): Task<bool>
+  }
+  interface IRetentionPolicyManager {
+    +GetPoliciesAsync(cancellationToken: CancellationToken): Task<IEnumerable<RetentionPolicyDto>>
+    +UpdateRetentionPolicyAsync(dto: UpdateRetentionPolicyDto, changedByEmployeeId: guid, cancellationToken: CancellationToken): Task<RetentionPolicyDto>
+  }
+  interface ISecurityIncidentManager {
+    +GetIncidentsAsync(cancellationToken: CancellationToken): Task<IEnumerable<SecurityIncidentDto>>
+    +EscalateIncidentAsync(incidentId: guid, isBreach: bool, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+    +AddInvestigationNotesAsync(dto: AddInvestigationNotesDto, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+    +CloseIncidentAsync(incidentId: guid, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+  }
+  interface ISubjectAccessRequestManager {
+    +GenerateExportAsync(dto: SarExportRequestDto, cancellationToken: CancellationToken): Task<SarExportPackageDto>
+    +MarkFulfilledAsync(dto: SarFulfilledDto, cancellationToken: CancellationToken): Task<bool>
+  }
+  interface ITaskListManager {
+    +GetDashboardTasksByDepartmentAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<TaskListDto>>
+  }
+}
+
+package "Infrastructure.Managers" {
+  class AccountManager {
+    -_httpClient: HttpClient
+    +CreateAccountAsync(registrationRequestDto: RegisterRequestDto): Task<RegistrationResponseDto>
+    +LoginAsync(loginRequestDto: LoginRequestDto): Task<ILoginResult>
+    +LogoutAsync(logoutRequestDto: LogoutRequestDto): Task<ILogoutResult>
+    +RefreshTokenAsync(refreshTokenRequestDto: RefreshTokenRequestDto): Task<RefreshTokenResponseDto>
+  }
+  class AnonymizationManager {
+    -_httpClient: HttpClient
+    +GetCandidatesAsync(cancellationToken: CancellationToken): Task<IEnumerable<AnonymizationCandidateDto>>
+    +ApproveAnonymizationAsync(candidateId: guid, cancellationToken: CancellationToken): Task<AnonymizationResultDto>
+    +RejectAnonymizationAsync(candidateId: guid, reason: string, cancellationToken: CancellationToken): Task<bool>
+  }
+  class AuditManager {
+    -_httpClient: HttpClient
+    +GetRecentAsync(limit: int Nullable, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntryDto>>
+    +GetByEntityNameAsync(entityName: string, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntryDto>>
+    +GetWithDetailsAsync(id: guid, cancellationToken: CancellationToken): Task<AuditEntryDto Nullable>
+  }
+  class DatabaseConnectionManager {
+    -_httpClient: HttpClient
+    -_httpClientFactory: IHttpClientFactory
+    -_stateProvider: IDatabaseConnectionStateProvider
+    +CheckAndUpdateConnectionStateAsync(): Task
+  }
+  class EmployeeManager {
+    -_httpClient: HttpClient
+    +GetAllAsync(cancellationToken: CancellationToken): Task<IEnumerable<EmployeeDto>>
+  }
+  class HttpApiManagerBase <<abstract>> {
+    #HttpClient: HttpClient
+  }
+  class MedicineRecordManager {
+    -_httpClient: HttpClient
+  }
+  class MedicineStatusManager {
+    -_httpClient: HttpClient
+    +GetMedicineStatusAsync(residentId: guid, cancellationToken: CancellationToken): Task<MedicineStatusDto Nullable>
+    +GetPainkillerStatusAsync(residentId: guid, cancellationToken: CancellationToken): Task<PainkillerStatusDto Nullable>
+  }
+  class PhoneAssignmentManager {
+    -_httpClient: HttpClient
+    +GetCurrentPhoneAssignmentsForActiveShift(cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignmentDto>>
+  }
+  class ResidentManager {
+    +CreateAsync(dto: ResidentCreateRequestDto, ct: CancellationToken): Task
+    +CreateRangeAsync(dtos: IEnumerable<ResidentCreateRequestDto>, ct: CancellationToken): Task
+    +DeleteAsync(id: guid, ct: CancellationToken): Task
+    +DeleteRangeAsync(ids: IEnumerable<guid>, ct: CancellationToken): Task
+    +GetAllAsync(ct: CancellationToken): Task<IEnumerable<ResidentResponseDto>>
+    +GetByIdAsync(id: guid, ct: CancellationToken): Task<ResidentResponseDto Nullable>
+    +GetByDepartmentsAsync(departments: IList<Department>, ct: CancellationToken): Task<IEnumerable<ResidentResponseDto>>
+    +UpdateAsync(id: guid, dto: ResidentUpdateRequestDto, ct: CancellationToken): Task
+    +UpdateRangeAsync(dtos: IEnumerable<ResidentUpdateRequestDto>, ct: CancellationToken): Task
+  }
+  class ResidentNoteManager {
+    -_httpClient: HttpClient
+    +GetAllByResidentIdAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<ResidentNoteDto>>
+    +AddAsync(residentId: guid, noteText: string, cancellationToken: CancellationToken): Task<bool>
+    +UpdateAsync(noteId: guid, newText: string, cancellationToken: CancellationToken): Task<bool>
+    +DeleteAsync(noteId: guid, cancellationToken: CancellationToken): Task<bool>
+  }
+  class RetentionPolicyManager {
+    -_httpClient: HttpClient
+    +GetPoliciesAsync(cancellationToken: CancellationToken): Task<IEnumerable<RetentionPolicyDto>>
+    +UpdateRetentionPolicyAsync(dto: UpdateRetentionPolicyDto, changedByEmployeeId: guid, cancellationToken: CancellationToken): Task<RetentionPolicyDto>
+  }
+  class SecurityIncidentManager {
+    -_httpClient: HttpClient
+    +GetIncidentsAsync(cancellationToken: CancellationToken): Task<IEnumerable<SecurityIncidentDto>>
+    +EscalateIncidentAsync(incidentId: guid, isBreach: bool, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+    +AddInvestigationNotesAsync(dto: AddInvestigationNotesDto, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+    +CloseIncidentAsync(incidentId: guid, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+  }
+  class StaffAssignmentManager {
+    -_repository: IStaffAssignmentRepository
+    +AssignAsync(dto: StaffAssignmentDto, cancellationToken: CancellationToken): Task<AssignmentOverviewDto>
+    +GetAssignmentsByShiftAsync(shiftType: ShiftType, assignmentDate: DateTime, cancellationToken: CancellationToken): Task<IEnumerable<AssignmentOverviewDto>>
+    +DeleteAssignmentAsync(assignmentId: guid, cancellationToken: CancellationToken): Task
+    +UpdateAssignmentAsync(assignmentId: guid, dto: StaffAssignmentDto, cancellationToken: CancellationToken): Task<AssignmentOverviewDto>
+  }
+  class SubjectAccessRequestManager {
+    -_httpClient: HttpClient
+    +GenerateExportAsync(dto: SarExportRequestDto, cancellationToken: CancellationToken): Task<SarExportPackageDto>
+    +MarkFulfilledAsync(dto: SarFulfilledDto, cancellationToken: CancellationToken): Task<bool>
+  }
+  class TaskListManager {
+    -_httpClient: HttpClient
+    +GetDashboardTasksByDepartmentAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<TaskListDto>>
+  }
+}
+
+package "Infrastructure.Data.Persistent" {
+  class AppDbContext {
+    +CurrentUserId: guid
+    +Residents: DbSet<Resident>
+    +ResidentNotes: DbSet<ResidentNote>
+    +MedicineRecord: DbSet<MedicineRecord>
+    +PainkillerRecord: DbSet<PainkillerRecord>
+    +PhoneAssignments: DbSet<PhoneAssignment>
+    +StaffAssignments: DbSet<StaffAssignment>
+    +Employees: DbSet<Employee>
+    +TaskLists: DbSet<TaskList>
+    +RetentionPolicies: DbSet<RetentionPolicy>
+    +RetentionPolicyAudits: DbSet<RetentionPolicyAudit>
+    +AnonymizationCandidates: DbSet<AnonymizationCandidate>
+    +SecurityIncidents: DbSet<SecurityIncident>
+    +SubjectAccessRequests: DbSet<SubjectAccessRequest>
+    +LoginAttempts: DbSet<LoginAttempt>
+    +RefreshTokens: DbSet<RefreshToken>
+    +AuditEntries: DbSet<AuditEntry>
+    +ChangeDetails: DbSet<ChangeDetail>
+  }
+  class AuditInterceptor {
+    -_auditEntries: IEnumerable<AuditEntry>
+  }
+}
+
+package "Infrastructure.Data.Repositories" {
+  class Repository~TEntity~ {
+    #_context: AppDbContext
+    #_dbSet: DbSet<TEntity>
+    +CreateAsync(entity: TEntity, cancellationToken: CancellationToken): Task<TEntity>
+    +CreateRangeAsync(entities: IEnumerable<TEntity>, cancellationToken: CancellationToken): Task<IEnumerable<TEntity>>
+    +GetByIdAsync(id: guid, cancellationToken: CancellationToken): Task<TEntity Nullable>
+    +GetAllAsync(cancellationToken: CancellationToken): Task<IEnumerable<TEntity>>
+    +UpdateAsync(entity: TEntity, cancellationToken: CancellationToken): Task
+    +UpdateRangeAsync(entities: IEnumerable<TEntity>, cancellationToken: CancellationToken): Task
+    +DeleteAsync(entity: TEntity, cancellationToken: CancellationToken): Task
+    +DeleteRangeAsync(entities: IEnumerable<TEntity>, cancellationToken: CancellationToken): Task
+  }
+  class AnonymizationCandidateRepository
+  class AuditRepository {
+    +GetRecentAsync(limit: int Nullable, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntry>>
+    +GetByEntityNameAsync(entityName: string, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntry>>
+    +GetWithDetailsAsync(id: guid, cancellationToken: CancellationToken): Task<AuditEntry Nullable>
+  }
+  class EmployeeRepository
+  class LoginAttemptRepository
+  class MedicineRepository {
+    +GetMedicineStatusLast24HoursAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<MedicineRecord>>
+  }
+  class PainKillerRepository {
+    +GetPainkillerStatusLast24HoursAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<PainkillerRecord>>
+  }
+  class PhoneAssignmentRepository {
+    +GetByShiftTypeAsync(shiftType: ShiftType, cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignment>>
+    +GetDtoByShiftTypeAsync(shiftType: ShiftType, cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignmentDto>>
+  }
+  class ResidentRepository {
+    +GetAllAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<Resident>>
+  }
+  class ResidentNoteRepository
+  class RetentionPolicyAuditRepository
+  class RetentionPolicyRepository
+  class SecurityIncidentRepository
+  class StaffAssignmentRepository {
+    +GetByResidentAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<StaffAssignment>>
+    +GetByShiftAsync(shiftType: ShiftType, assignmentDate: DateTime, cancellationToken: CancellationToken): Task<IEnumerable<StaffAssignment>>
+    +GetExistingAssignmentAsync(residentId: guid, employeeId: guid, shiftType: ShiftType, assignmentDate: DateTime, cancellationToken: CancellationToken): Task<StaffAssignment Nullable>
+    +GetByIdWithDetailsAsync(assignmentId: guid, cancellationToken: CancellationToken): Task<StaffAssignment Nullable>
+  }
+  class SubjectAccessRequestRepository
+  class TaskListRepository {
+    +GetDashboardTasksByDepartmentAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<TaskList>>
+  }
+  class UserRepository
+}
+
+package "Infrastructure.Data.Persistent.Configurations" {
+  class ChangeDetailConfiguration
+  class EmployeeConfiguration
+  class LoginAttemptConfiguration
+  class MedicineRecordConfiguration
+  class PainkillerRecordConfiguration
+  class RefreshTokenConfiguration
+  class ResidentConfiguration
+  class ResidentNoteConfiguration
+  class RetentionPolicyConfiguration
+  class SubjectAccessRequestConfiguration
+  class TaskListConfiguration
+}
+
+package "Infrastructure.Data" {
+  class DependencyInjection {
+    +AddInfrastructureData(services: IServiceCollection): IServiceCollection
+  }
+}
+
+package "Infrastructure" {
+  class DependencyInjection {
+    +AddInfrastructure(services: IServiceCollection, configuration: IConfiguration): IServiceCollection
+  }
+}
+
+"IRepository~TEntity~" <|-- IAuditRepository
+"IRepository~TEntity~" <|-- IAnonymizationCandidateRepository
+"IRepository~TEntity~" <|-- IEmployeeRepository
+"IRepository~TEntity~" <|-- ILoginAttemptRepository
+"IRepository~TEntity~" <|-- IMedicineRepository
+"IRepository~TEntity~" <|-- IPainkillerRepository
+"IRepository~TEntity~" <|-- IPhoneAssignmentRepository
+"IRepository~TEntity~" <|-- IResidentNoteRepository
+"IRepository~TEntity~" <|-- IResidentRepository
+"IRepository~TEntity~" <|-- IRetentionPolicyAuditRepository
+"IRepository~TEntity~" <|-- IRetentionPolicyRepository
+"IRepository~TEntity~" <|-- ISecurityIncidentRepository
+"IRepository~TEntity~" <|-- IStaffAssignmentRepository
+"IRepository~TEntity~" <|-- ISubjectAccessRequestRepository
+"IRepository~TEntity~" <|-- ITaskListRepository
+"IRepository~TEntity~" <|-- IUserRepository
+"ICRUD~TEntity~" <|-- "IRepository~TEntity~"
+
+IAccountService <|.. AccountManager
+IAnonymizationService <|.. AnonymizationManager
+IAuditService <|.. AuditManager
+IDatabaseConnectionService <|.. DatabaseConnectionManager
+IEmployeeManager <|.. EmployeeManager
+IMedicineStatusService <|.. MedicineStatusManager
+IPhoneAssignmentService <|.. PhoneAssignmentManager
+IResidentManager <|.. ResidentManager
+IResidentNoteService <|.. ResidentNoteManager
+IRetentionPolicyService <|.. RetentionPolicyManager
+ISecurityIncidentService <|.. SecurityIncidentManager
+IStaffAssignmentService <|.. StaffAssignmentManager
+ISubjectAccessRequestService <|.. SubjectAccessRequestManager
+ITaskListService <|.. TaskListManager
+IAccountManager <|.. AccountManager
+IAnonymizationManager <|.. AnonymizationManager
+IAuditManager <|.. AuditManager
+IDatabaseConnectionManager <|.. DatabaseConnectionManager
+IEmployeeManager <|.. EmployeeManager
+IMedicineStatusManager <|.. MedicineStatusManager
+IPhoneAssignmentManager <|.. PhoneAssignmentManager
+IResidentManager <|.. ResidentManager
+IResidentNoteManager <|.. ResidentNoteManager
+IRetentionPolicyManager <|.. RetentionPolicyManager
+ISecurityIncidentManager <|.. SecurityIncidentManager
+IStaffAssignmentManager <|.. StaffAssignmentManager
+ISubjectAccessRequestManager <|.. SubjectAccessRequestManager
+ITaskListManager <|.. TaskListManager
+"IRepository~TEntity~" <|-- IAuditRepository
+"IRepository~TEntity~" <|-- IAnonymizationCandidateRepository
+"IRepository~TEntity~" <|-- IEmployeeRepository
+"IRepository~TEntity~" <|-- ILoginAttemptRepository
+"IRepository~TEntity~" <|-- IMedicineRepository
+"IRepository~TEntity~" <|-- IPainkillerRepository
+"IRepository~TEntity~" <|-- IPhoneAssignmentRepository
+"IRepository~TEntity~" <|-- IResidentNoteRepository
+"IRepository~TEntity~" <|-- IResidentRepository
+"IRepository~TEntity~" <|-- IRetentionPolicyAuditRepository
+"IRepository~TEntity~" <|-- IRetentionPolicyRepository
+"IRepository~TEntity~" <|-- ISecurityIncidentRepository
+"IRepository~TEntity~" <|-- IStaffAssignmentRepository
+"IRepository~TEntity~" <|-- ISubjectAccessRequestRepository
+"IRepository~TEntity~" <|-- ITaskListRepository
+"IRepository~TEntity~" <|-- IUserRepository
+"ICRUD~TEntity~" <|-- "IRepository~TEntity~"
+
+AccountManager --> IHttpClientFactory : CreateClient
+AnonymizationManager --> IHttpClientFactory : CreateClient
+AuditManager --> IHttpClientFactory : CreateClient
+DatabaseConnectionManager --> IHttpClientFactory : CreateClient
+DatabaseConnectionManager --> IDatabaseConnectionStateProvider : updates
+EmployeeManager --> IHttpClientFactory : CreateClient
+MedicineStatusManager --> IHttpClientFactory : CreateClient
+PhoneAssignmentManager --> IHttpClientFactory : CreateClient
+ResidentManager --> IHttpClientFactory : CreateClient
+ResidentNoteManager --> IHttpClientFactory : CreateClient
+RetentionPolicyManager --> IHttpClientFactory : CreateClient
+SecurityIncidentManager --> IHttpClientFactory : CreateClient
+StaffAssignmentManager --> IStaffAssignmentRepository : uses
+SubjectAccessRequestManager --> IHttpClientFactory : CreateClient
+TaskListManager --> IHttpClientFactory : CreateClient
+HttpApiManagerBase --> IHttpClientFactory : CreateClient
+
+"Repository~TEntity~" <|-- ResidentRepository
+"Repository~TEntity~" <|-- StaffAssignmentRepository
+"Repository~TEntity~" <|-- AuditRepository
+"Repository~TEntity~" <|-- MedicineRepository
+"Repository~TEntity~" <|-- PainKillerRepository
+"Repository~TEntity~" <|-- PhoneAssignmentRepository
+"Repository~TEntity~" <|-- TaskListRepository
+"Repository~TEntity~" <|-- RetentionPolicyRepository
+"Repository~TEntity~" <|-- RetentionPolicyAuditRepository
+"Repository~TEntity~" <|-- AnonymizationCandidateRepository
+"Repository~TEntity~" <|-- SecurityIncidentRepository
+"Repository~TEntity~" <|-- SubjectAccessRequestRepository
+"Repository~TEntity~" <|-- LoginAttemptRepository
+"Repository~TEntity~" <|-- EmployeeRepository
+"Repository~TEntity~" <|-- UserRepository
+
+AppDbContext --> AuditInterceptor : uses
+AppDbContext --> "IdentityDbContext<User, IdentityRole<Guid>, Guid>" : generalization
+AppDbContext "1" *-- "0..*" Resident : Residents
+AppDbContext "1" *-- "0..*" ResidentNote : ResidentNotes
+AppDbContext "1" *-- "0..*" MedicineRecord : MedicineRecord
+AppDbContext "1" *-- "0..*" PainkillerRecord : PainkillerRecord
+AppDbContext "1" *-- "0..*" PhoneAssignment : PhoneAssignments
+AppDbContext "1" *-- "0..*" StaffAssignment : StaffAssignments
+AppDbContext "1" *-- "0..*" Employee : Employees
+AppDbContext "1" *-- "0..*" TaskList : TaskLists
+AppDbContext "1" *-- "0..*" RetentionPolicy : RetentionPolicies
+AppDbContext "1" *-- "0..*" RetentionPolicyAudit : RetentionPolicyAudits
+AppDbContext "1" *-- "0..*" AnonymizationCandidate : AnonymizationCandidates
+AppDbContext "1" *-- "0..*" SecurityIncident : SecurityIncidents
+AppDbContext "1" *-- "0..*" SubjectAccessRequest : SubjectAccessRequests
+AppDbContext "1" *-- "0..*" LoginAttempt : LoginAttempts
+AppDbContext "1" *-- "0..*" RefreshToken : RefreshTokens
+AppDbContext "1" *-- "0..*" AuditEntry : AuditEntries
+AppDbContext "1" *-- "0..*" ChangeDetail : ChangeDetails
+
+AppDbContext ..> ResidentConfiguration : applies
+AppDbContext ..> RefreshTokenConfiguration : applies
+AppDbContext ..> ResidentNoteConfiguration : applies
+AppDbContext ..> MedicineRecordConfiguration : applies
+AppDbContext ..> PainkillerRecordConfiguration : applies
+AppDbContext ..> ChangeDetailConfiguration : applies
+AppDbContext ..> EmployeeConfiguration : applies
+AppDbContext ..> RetentionPolicyConfiguration : applies
+AppDbContext ..> SubjectAccessRequestConfiguration : applies
+AppDbContext ..> LoginAttemptConfiguration : applies
+AppDbContext ..> TaskListConfiguration : applies
+
+AuditInterceptor ..> AuditEntry : creates
+AuditInterceptor ..> ChangeDetail : creates
+AuditInterceptor ..> DbContext : uses
+AuditInterceptor ..> SaveChangesInterceptor : generalization
+AuditInterceptor --> AuditEntry : _auditEntries
+
+ResidentRepository --> AppDbContext : uses
+ResidentRepository --> Resident : manages
+StaffAssignmentRepository --> AppDbContext : uses
+StaffAssignmentRepository --> StaffAssignment : manages
+AuditRepository --> AppDbContext : uses
+AuditRepository --> AuditEntry : manages
+MedicineRepository --> AppDbContext : uses
+MedicineRepository --> MedicineRecord : manages
+PainKillerRepository --> AppDbContext : uses
+PainKillerRepository --> PainkillerRecord : manages
+PhoneAssignmentRepository --> AppDbContext : uses
+PhoneAssignmentRepository --> PhoneAssignment : manages
+TaskListRepository --> AppDbContext : uses
+TaskListRepository --> TaskList : manages
+RetentionPolicyRepository --> AppDbContext : uses
+RetentionPolicyRepository --> RetentionPolicy : manages
+RetentionPolicyAuditRepository --> AppDbContext : uses
+RetentionPolicyAuditRepository --> RetentionPolicyAudit : manages
+AnonymizationCandidateRepository --> AppDbContext : uses
+AnonymizationCandidateRepository --> AnonymizationCandidate : manages
+SecurityIncidentRepository --> AppDbContext : uses
+SecurityIncidentRepository --> SecurityIncident : manages
+SubjectAccessRequestRepository --> AppDbContext : uses
+SubjectAccessRequestRepository --> SubjectAccessRequest : manages
+LoginAttemptRepository --> AppDbContext : uses
+LoginAttemptRepository --> LoginAttempt : manages
+EmployeeRepository --> AppDbContext : uses
+EmployeeRepository --> Employee : manages
+UserRepository --> AppDbContext : uses
+UserRepository --> User : manages
+
+ResidentConfiguration ..> "EntityTypeConfiguration<Resident>" : realization
+EmployeeConfiguration ..> "EntityTypeConfiguration<Employee>" : realization
+TaskListConfiguration ..> "EntityTypeConfiguration<TaskList>" : realization
+RefreshTokenConfiguration ..> "EntityTypeConfiguration<RefreshToken>" : realization
+MedicineRecordConfiguration ..> "EntityTypeConfiguration<MedicineRecord>" : realization
+PainkillerRecordConfiguration ..> "EntityTypeConfiguration<PainkillerRecord>" : realization
+ResidentNoteConfiguration ..> "EntityTypeConfiguration<ResidentNote>" : realization
+ChangeDetailConfiguration ..> "EntityTypeConfiguration<ChangeDetail>" : realization
+SubjectAccessRequestConfiguration ..> "EntityTypeConfiguration<SubjectAccessRequest>" : realization
+LoginAttemptConfiguration ..> "EntityTypeConfiguration<LoginAttempt>" : realization
+RetentionPolicyConfiguration ..> "EntityTypeConfiguration<RetentionPolicy>" : realization
+
+ResidentConfiguration --> Resident : seeds
+EmployeeConfiguration --> Employee : seeds
+TaskListConfiguration --> TaskList : seeds
+MedicineRecordConfiguration --> MedicineRecord : seeds
+ResidentNoteConfiguration --> ResidentNote : seeds
+RetentionPolicyConfiguration --> RetentionPolicy : seeds
+ChangeDetailConfiguration --> AuditEntry : relates
+SubjectAccessRequestConfiguration --> SubjectAccessRequest : configures
+LoginAttemptConfiguration --> LoginAttempt : configures
+RefreshTokenConfiguration --> RefreshToken : configures
+PainkillerRecordConfiguration --> PainkillerRecord : configures
+
+Resident --> Department : Department
+Resident --> TrafficLightStatus : TrafficLightStatus
+Employee --> Department : Department
+TaskList --> Department : Department
+TaskList --> TaskListStatus : TaskStatus
+PhoneAssignment --> ShiftType : ShiftType
+AnonymizationCandidate --> AnonymizationStatus : Status
+RetentionPolicy --> RetentionDataCategory : Category
+SecurityIncident --> IncidentSeverity : Severity
+SecurityIncident --> IncidentStatus : Status
+StaffAssignment --> ShiftType : ShiftType
+RefreshToken --> User : User
+AuditEntry --> User : UserId
+AuditEntry --> ChangeDetail : ChangeDetails
+ChangeDetail --> AuditEntry : AuditEntryId
+ResidentNote --> Resident : ResidentId
+MedicineRecord --> Resident : ResidentId
+PainkillerRecord --> Resident : ResidentId
+StaffAssignment --> Resident : ResidentId
+StaffAssignment --> Employee : EmployeeId
+SubjectAccessRequest --> Resident : ResidentId
+AnonymizationCandidate --> Resident : ResidentId
+AnonymizationCandidate --> RetentionPolicy : RetentionPolicyId
+RetentionPolicyAudit --> RetentionPolicy : RetentionPolicyId
+RetentionPolicyAudit --> Employee : ChangedByEmployeeId
+SecurityIncident --> Employee : ReportedByEmployeeId
+SecurityIncident --> Employee : ResolvedByEmployeeId
+LoginAttempt --> User : UserId
+PhoneAssignment --> User : CaregiverId
+IHttpClientFactory ..> HttpClient : creates
+
+note as N1
+Full Infrastructure layer split:
+- src/Infrastructure (HTTP managers)
+- src/Infrastructure.Data (EF repositories)
+See also dcd-core.puml and dcd-domain.puml.
+end note
+
+@enduml

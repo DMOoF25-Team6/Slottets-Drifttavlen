@@ -1,0 +1,385 @@
+@startuml
+title dcd for infrastructure.data layer
+skinparam classAttributeIconSize 0
+left to right direction
+skinparam linetype polyline
+skinparam ranksep 100
+skinparam pathHoverColor red
+
+package "Core.Interfaces.Repositories" {
+  interface IRepository<TEntity> <<Core>>
+  interface IAuditRepository <<Core>> 
+  interface IAnonymizationCandidateRepository <<Core>>
+  interface IEmployeeRepository <<Core>>
+  interface ILoginAttemptRepository <<Core>>
+  interface IMedicineRepository <<Core>>
+  interface IPainkillerRepository <<Core>>
+  interface IPhoneAssignmentRepository <<Core>>
+  interface IResidentNoteRepository <<Core>>
+  interface IResidentRepository <<Core>> 
+  interface IRetentionPolicyAuditRepository <<Core>>
+  interface IRetentionPolicyRepository <<Core>>
+  interface ISecurityIncidentRepository <<Core>>
+  interface IStaffAssignmentRepository <<Core>>
+  interface ISubjectAccessRequestRepository <<Core>>
+  interface ITaskListRepository <<Core>>
+  interface IUserRepository <<Core>>
+}
+
+package "Infrastructure.Data" {
+  class DependencyInjection {
+    +AddInfrastructureData(services: IServiceCollection): IServiceCollection
+  }
+}
+
+package "Infrastructure.Data.Services" {
+  class DatabaseService {
+    +IsConnected(): bool
+  }
+  class RefreshTokenStore {
+    -dbContext: AppDbContext
+    +GetByTokenAsync(token: string, tokenService: ITokenService, cancellationToken: CancellationToken): Task<RefreshToken Nullable>
+    +RevokeAsync(token: string, tokenService: ITokenService, cancellationToken: CancellationToken): Task
+    +SaveAsync(token: RefreshToken, tokenService: ITokenService, cancellationToken: CancellationToken): Task
+  }
+}
+
+package "Infrastructure.Data.Persistent" {
+  class AppDbContext {
+    +CurrentUserId: guid
+    +Residents: DbSet<Resident>
+    +ResidentNotes: DbSet<ResidentNote>
+    +MedicineRecord: DbSet<MedicineRecord>
+    +PainkillerRecord: DbSet<PainkillerRecord>
+    +PhoneAssignments: DbSet<PhoneAssignment>
+    +StaffAssignments: DbSet<StaffAssignment>
+    +Employees: DbSet<Employee>
+    +TaskLists: DbSet<TaskList>
+    +RetentionPolicies: DbSet<RetentionPolicy>
+    +RetentionPolicyAudits: DbSet<RetentionPolicyAudit>
+    +AnonymizationCandidates: DbSet<AnonymizationCandidate>
+    +SecurityIncidents: DbSet<SecurityIncident>
+    +SubjectAccessRequests: DbSet<SubjectAccessRequest>
+    +LoginAttempts: DbSet<LoginAttempt>
+    +RefreshTokens: DbSet<RefreshToken>
+    +AuditEntries: DbSet<AuditEntry>
+    +ChangeDetails: DbSet<ChangeDetail>
+  }
+  class AuditInterceptor {
+    -_auditEntries: IEnumerable<AuditEntry>
+    +SavingChangesAsync(eventData: DbContextEventData, result: InterceptionResult<int>, cancellationToken: CancellationToken): ValueTask<InterceptionResult<int>>
+    +SavedChangesAsync(eventData: SaveChangesCompletedEventData, result: int, cancellationToken: CancellationToken): ValueTask<int>
+    +SaveChangesFailedAsync(eventData: DbContextErrorEventData, cancellationToken: CancellationToken): Task
+  }
+}
+
+package "Infrastructure.Data.Persistent.Views" {
+  class MedicineStatusView <<view>>
+  class PainkillerStatusView <<view>>
+  class ResidentNoteView <<view>>
+  class PhoneAssignmentView <<view>>
+}
+
+package "Infrastructure.Data.Repositories" {
+  class Repository<TEntity> {
+    #_context: AppDbContext
+    #_dbSet: DbSet<TEntity>
+    +CreateAsync(entity: TEntity, cancellationToken: CancellationToken): Task<TEntity>
+    +CreateRangeAsync(entities: IEnumerable<TEntity>, cancellationToken: CancellationToken): Task<IEnumerable<TEntity>>
+    +GetByIdAsync(id: guid, cancellationToken: CancellationToken): Task<TEntity Nullable>
+    +GetAllAsync(cancellationToken: CancellationToken): Task<IEnumerable<TEntity>>
+    +UpdateAsync(entity: TEntity, cancellationToken: CancellationToken): Task
+    +UpdateRangeAsync(entities: IEnumerable<TEntity>, cancellationToken: CancellationToken): Task
+    +DeleteAsync(entity: TEntity, cancellationToken: CancellationToken): Task
+    +DeleteRangeAsync(entities: IEnumerable<TEntity>, cancellationToken: CancellationToken): Task
+  }
+  class AnonymizationCandidateRepository
+  class AuditRepository {
+    +GetRecentAsync(limit: int Nullable, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntry>>
+    +GetByEntityNameAsync(entityName: string, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntry>>
+    +GetWithDetailsAsync(id: guid, cancellationToken: CancellationToken): Task<AuditEntry Nullable>
+  }
+  class EmployeeRepository
+  class LoginAttemptRepository
+  class MedicineRepository {
+    +GetMedicineStatusLast24HoursAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<MedicineRecord>>
+  }
+  class PainKillerRepository {
+    +GetPainkillerStatusLast24HoursAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<PainkillerRecord>>
+  }
+  class PhoneAssignmentRepository {
+    +GetByShiftTypeAsync(shiftType: ShiftType, cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignment>>
+    +GetDtoByShiftTypeAsync(shiftType: ShiftType, cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignmentDto>>
+  }
+  class ResidentRepository {
+    +GetAllAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<Resident>>
+  }
+  class ResidentNoteRepository
+  class RetentionPolicyAuditRepository
+  class RetentionPolicyRepository
+  class SecurityIncidentRepository
+  class StaffAssignmentRepository {
+    +GetByResidentAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<StaffAssignment>>
+    +GetByShiftAsync(shiftType: ShiftType, assignmentDate: DateTime, cancellationToken: CancellationToken): Task<IEnumerable<StaffAssignment>>
+    +GetExistingAssignmentAsync(residentId: guid, employeeId: guid, shiftType: ShiftType, assignmentDate: DateTime, cancellationToken: CancellationToken): Task<StaffAssignment Nullable>
+    +GetByIdWithDetailsAsync(assignmentId: guid, cancellationToken: CancellationToken): Task<StaffAssignment Nullable>
+  }
+  class SubjectAccessRequestRepository
+  class TaskListRepository {
+    +GetDashboardTasksByDepartmentAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<TaskList>>
+  }
+  class UserRepository
+}
+
+package "Infrastructure.Data.Persistent.Configurations" {
+  class ChangeDetailConfiguration {
+    +Configure(builder: EntityTypeBuilder<ChangeDetail>): void
+  }
+  class EmployeeConfiguration {
+    +Configure(builder: EntityTypeBuilder<Employee>): void
+  }
+  class LoginAttemptConfiguration {
+    +Configure(builder: EntityTypeBuilder<LoginAttempt>): void
+  }
+  class MedicineRecordConfiguration {
+    +Configure(builder: EntityTypeBuilder<MedicineRecord>): void
+    +SeedingData(builder: EntityTypeBuilder<MedicineRecord>): void
+  }
+  class PainkillerRecordConfiguration {
+    +Configure(builder: EntityTypeBuilder<PainkillerRecord>): void
+  }
+  class RefreshTokenConfiguration {
+    +Configure(builder: EntityTypeBuilder<RefreshToken>): void
+  }
+  class ResidentConfiguration {
+    +Configure(builder: EntityTypeBuilder<Resident>): void
+    +SeedingData(builder: EntityTypeBuilder<Resident>): void
+  }
+  class ResidentNoteConfiguration {
+    +Configure(builder: EntityTypeBuilder<ResidentNote>): void
+    +SeedingData(builder: EntityTypeBuilder<ResidentNote>): void
+  }
+  class RetentionPolicyConfiguration {
+    +Configure(builder: EntityTypeBuilder<RetentionPolicy>): void
+  }
+  class SubjectAccessRequestConfiguration {
+    +Configure(builder: EntityTypeBuilder<SubjectAccessRequest>): void
+  }
+  class TaskListConfiguration {
+    +Configure(builder: EntityTypeBuilder<TaskList>): void
+    +SeedingData(builder: EntityTypeBuilder<TaskList>): void
+  }
+}
+
+package "Infrastructure.Data.Persistent.Configurations" {
+  class IdentitySeed {
+    +UserSeed(modelBuilder: ModelBuilder): void
+    +RolesClaimSeed(modelBuilder: ModelBuilder): void
+    +UserRoleSeed(modelBuilder: ModelBuilder): void
+    +UserClaimSeed(modelBuilder: ModelBuilder): void
+  }
+}
+
+package "Infrastructure.Data.Persistent.Views" {
+  class MedicineStatusView <<view>>
+  class PainkillerStatusView <<view>>
+  class ResidentNoteView <<view>>
+  class PhoneAssignmentView <<view>>
+}
+
+package "Domain.Entities" {
+  class AnonymizationCandidate <<domain>>
+  class AuditEntry <<domain>>
+  class ChangeDetail <<domain>>
+  class Employee <<domain>>
+  class MedicineRecord <<domain>>
+  class PainkillerRecord <<domain>>
+  class PhoneAssignment <<domain>>
+  class RefreshToken <<domain>>
+  class Resident <<domain>>
+  class ResidentNote <<domain>>
+  class RetentionPolicy <<domain>>
+  class RetentionPolicyAudit <<domain>>
+  class SecurityIncident <<domain>>
+  class StaffAssignment <<domain>>
+  class SubjectAccessRequest <<domain>>
+  class TaskList <<domain>>
+  class User <<domain>>
+}
+
+'package "Domain.Enums" {
+'  enum AnonymizationStatus <<domain>>
+'  enum Department <<domain>>
+'  enum IncidentSeverity <<domain>>
+'  enum IncidentStatus <<domain>>
+'  enum RetentionDataCategory <<domain>>
+'  enum ShiftType <<domain>>
+'  enum TaskListStatus <<domain>>
+'  enum TrafficLightStatus <<domain>>
+'}
+
+package "Microsoft.EntityFrameworkCore" {
+  interface IEntityTypeConfiguration<TEntity> <<EFCore>>
+}
+
+package "Microsoft.Extensions.DependencyInjection" {
+  interface IServiceCollection <<DI>>
+}
+
+package "Microsoft.AspNetCore.Identity" {
+  interface IdentityUserClaim<Guid>
+  interface IdentityUserRole<Guid>
+  interface IdentityRoleClaim<Guid>
+}
+
+package "Microsoft.AspNetCore.Identity.EntityFrameworkCore" {
+  class IdentityDbContext<TUser, TRole, TKey>
+}
+
+
+IAuditRepository <|-- AuditRepository
+IAnonymizationCandidateRepository <|-- AnonymizationCandidateRepository
+IEmployeeRepository <|-- EmployeeRepository
+ILoginAttemptRepository <|-- LoginAttemptRepository
+IMedicineRepository <|-- MedicineRepository
+IPainkillerRepository <|-- PainkillerRepository
+IPhoneAssignmentRepository <|-- PhoneAssignmentRepository
+IResidentNoteRepository <|-- ResidentNoteRepository
+IResidentRepository <|-- ResidentRepository
+IRetentionPolicyAuditRepository <|-- RetentionPolicyAuditRepository
+IRetentionPolicyRepository <|-- RetentionPolicyRepository
+ISecurityIncidentRepository <|-- SecurityIncidentRepository
+IStaffAssignmentRepository <|-- StaffAssignmentRepository
+ISubjectAccessRequestRepository <|-- SubjectAccessRequestRepository
+ITaskListRepository <|-- TaskListRepository
+IUserRepository <|-- UserRepository
+IRepository <|-- "Repository~TEntity~"
+
+'IDatabaseService <|.. DatabaseService
+IRefreshTokenStore <|.. RefreshTokenStore
+
+DatabaseService --> AppDbContext : uses
+RefreshTokenStore --> AppDbContext : uses
+RefreshTokenStore --> ITokenService : uses
+
+Repository <|-- ResidentRepository
+Repository <|-- StaffAssignmentRepository
+Repository <|-- AuditRepository
+Repository <|-- MedicineRepository
+Repository <|-- PainKillerRepository
+Repository <|-- PhoneAssignmentRepository
+Repository <|-- TaskListRepository
+Repository <|-- RetentionPolicyRepository
+Repository <|-- RetentionPolicyAuditRepository
+Repository <|-- AnonymizationCandidateRepository
+Repository <|-- SecurityIncidentRepository
+Repository <|-- SubjectAccessRequestRepository
+Repository <|-- LoginAttemptRepository
+Repository <|-- EmployeeRepository
+Repository <|-- UserRepository
+
+AppDbContext --> AuditInterceptor : uses
+AppDbContext --> IdentityDbContext : generalization
+AppDbContext "1" *-- "0..*" Resident : Residents
+AppDbContext "1" *-- "0..*" ResidentNote : ResidentNotes
+AppDbContext "1" *-- "0..*" MedicineRecord : MedicineRecord
+AppDbContext "1" *-- "0..*" PainkillerRecord : PainkillerRecord
+AppDbContext "1" *-- "0..*" PhoneAssignment : PhoneAssignments
+AppDbContext "1" *-- "0..*" StaffAssignment : StaffAssignments
+AppDbContext "1" *-- "0..*" Employee : Employees
+AppDbContext "1" *-- "0..*" TaskList : TaskLists
+AppDbContext "1" *-- "0..*" RetentionPolicy : RetentionPolicies
+AppDbContext "1" *-- "0..*" RetentionPolicyAudit : RetentionPolicyAudits
+AppDbContext "1" *-- "0..*" AnonymizationCandidate : AnonymizationCandidates
+AppDbContext "1" *-- "0..*" SecurityIncident : SecurityIncidents
+AppDbContext "1" *-- "0..*" SubjectAccessRequest : SubjectAccessRequests
+AppDbContext "1" *-- "0..*" LoginAttempt : LoginAttempts
+AppDbContext "1" *-- "0..*" RefreshToken : RefreshTokens
+AppDbContext "1" *-- "0..*" AuditEntry : AuditEntries
+AppDbContext "1" *-- "0..*" ChangeDetail : ChangeDetails
+
+AppDbContext ..> ResidentConfiguration : applies
+AppDbContext ..> RefreshTokenConfiguration : applies
+AppDbContext ..> ResidentNoteConfiguration : applies
+AppDbContext ..> MedicineRecordConfiguration : applies
+AppDbContext ..> PainkillerRecordConfiguration : applies
+AppDbContext ..> ChangeDetailConfiguration : applies
+AppDbContext ..> EmployeeConfiguration : applies
+AppDbContext ..> RetentionPolicyConfiguration : applies
+AppDbContext ..> SubjectAccessRequestConfiguration : applies
+AppDbContext ..> LoginAttemptConfiguration : applies
+AppDbContext ..> TaskListConfiguration : applies
+AppDbContext ..> IdentitySeed : seeds
+
+AuditInterceptor ..> AuditEntry : creates
+AuditInterceptor ..> ChangeDetail : creates
+AuditInterceptor ..> DbContext : uses
+AuditInterceptor ..> SaveChangesInterceptor : generalization
+AuditInterceptor --> AuditEntry : _auditEntries
+
+ResidentRepository --> AppDbContext : uses
+ResidentRepository --> Resident : manages
+StaffAssignmentRepository --> AppDbContext : uses
+StaffAssignmentRepository --> StaffAssignment : manages
+AuditRepository --> AppDbContext : uses
+AuditRepository --> AuditEntry : manages
+MedicineRepository --> AppDbContext : uses
+MedicineRepository --> MedicineRecord : manages
+PainKillerRepository --> AppDbContext : uses
+PainKillerRepository --> PainkillerRecord : manages
+PhoneAssignmentRepository --> AppDbContext : uses
+PhoneAssignmentRepository --> PhoneAssignment : manages
+TaskListRepository --> AppDbContext : uses
+TaskListRepository --> TaskList : manages
+RetentionPolicyRepository --> AppDbContext : uses
+RetentionPolicyRepository --> RetentionPolicy : manages
+RetentionPolicyAuditRepository --> AppDbContext : uses
+RetentionPolicyAuditRepository --> RetentionPolicyAudit : manages
+AnonymizationCandidateRepository --> AppDbContext : uses
+AnonymizationCandidateRepository --> AnonymizationCandidate : manages
+SecurityIncidentRepository --> AppDbContext : uses
+SecurityIncidentRepository --> SecurityIncident : manages
+SubjectAccessRequestRepository --> AppDbContext : uses
+SubjectAccessRequestRepository --> SubjectAccessRequest : manages
+LoginAttemptRepository --> AppDbContext : uses
+LoginAttemptRepository --> LoginAttempt : manages
+EmployeeRepository --> AppDbContext : uses
+EmployeeRepository --> Employee : manages
+UserRepository --> AppDbContext : uses
+UserRepository --> User : manages
+
+ResidentConfiguration ..> IEntityTypeConfiguration : realization
+EmployeeConfiguration ..> IEntityTypeConfiguration : realization
+TaskListConfiguration ..> IEntityTypeConfiguration : realization
+RefreshTokenConfiguration ..> IEntityTypeConfiguration : realization
+MedicineRecordConfiguration ..> IEntityTypeConfiguration : realization
+PainkillerRecordConfiguration ..> IEntityTypeConfiguration : realization
+ResidentNoteConfiguration ..> IEntityTypeConfiguration : realization
+ChangeDetailConfiguration ..> IEntityTypeConfiguration : realization
+SubjectAccessRequestConfiguration ..> IEntityTypeConfiguration : realization
+LoginAttemptConfiguration ..> IEntityTypeConfiguration : realization
+RetentionPolicyConfiguration ..> IEntityTypeConfiguration : realization
+
+ResidentConfiguration --> Resident : seeds
+EmployeeConfiguration --> Employee : seeds
+TaskListConfiguration --> TaskList : seeds
+MedicineRecordConfiguration --> MedicineRecord : seeds
+ResidentNoteConfiguration --> ResidentNote : seeds
+RetentionPolicyConfiguration --> RetentionPolicy : seeds
+ChangeDetailConfiguration --> AuditEntry : relates
+SubjectAccessRequestConfiguration --> SubjectAccessRequest : configures
+LoginAttemptConfiguration --> LoginAttempt : configures
+RefreshTokenConfiguration --> RefreshToken : configures
+PainkillerRecordConfiguration --> PainkillerRecord : configures
+IdentitySeed --> User : seeds
+IdentitySeed --> IdentityRole : seeds
+IdentitySeed --> IdentityRoleClaim : seeds
+IdentitySeed --> IdentityUserRole : seeds
+IdentitySeed --> IdentityUserClaim : seeds
+
+note as N1
+Infrastructure.Data only.
+Includes EF Core repositories, AppDbContext, configurations, and supporting services.
+end note
+
+@enduml

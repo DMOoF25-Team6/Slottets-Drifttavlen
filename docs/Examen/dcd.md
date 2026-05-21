@@ -968,6 +968,123 @@ namespace Core.DTOs.Security {
     }
   }
 
+  namespace Core {
+    class DependencyInjection {
+      <<static>>
+      +AddCore(services: IServiceCollection): IServiceCollection
+    }
+  }
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %% Infrastructure Managers Layer
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  namespace Infrastructure.Managers {
+    class AccountManager {
+      <<class>>
+      +CreateAccountAsync(registrationRequestDto: RegisterRequestDto): Task<RegistrationResponseDto>
+      +LoginAsync(loginRequestDto: LoginRequestDto): Task<ILoginResult>
+      +LogoutAsync(logoutRequestDto: LogoutRequestDto): Task<ILogoutResult>
+      +RefreshTokenAsync(refreshTokenRequestDto: RefreshTokenRequestDto): Task<RefreshTokenResponseDto>
+    }
+
+    class AnonymizationManager {
+      <<class>>
+      +GetCandidatesAsync(cancellationToken: CancellationToken): Task<IEnumerable<AnonymizationCandidateDto>>
+      +ApproveAnonymizationAsync(candidateId: guid, cancellationToken: CancellationToken): Task<AnonymizationResultDto>
+      +RejectAnonymizationAsync(candidateId: guid, reason: string, cancellationToken: CancellationToken): Task<bool>
+    }
+
+    class AuditManager {
+      <<class>>
+      +GetRecentAsync(limit: int Nullable, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntryDto>>
+      +GetByEntityNameAsync(entityName: string, cancellationToken: CancellationToken): Task<IEnumerable<AuditEntryDto>>
+      +GetWithDetailsAsync(id: guid, cancellationToken: CancellationToken): Task<AuditEntryDto Nullable>
+    }
+
+    class DatabaseConnectionManager {
+      <<class>>
+      +CheckAndUpdateConnectionStateAsync(): Task
+    }
+
+    class EmployeeManager {
+      <<class>>
+      +GetAllAsync(cancellationToken: CancellationToken): Task<IEnumerable<EmployeeDto>>
+    }
+
+    class HttpApiManagerBase {
+      <<abstract>>
+    }
+
+    class MedicineRecordManager {
+      <<class>>
+    }
+
+    class MedicineStatusManager {
+      <<class>>
+      +GetMedicineStatusAsync(residentId: guid, cancellationToken: CancellationToken): Task<MedicineStatusDto Nullable>
+      +GetPainkillerStatusAsync(residentId: guid, cancellationToken: CancellationToken): Task<PainkillerStatusDto Nullable>
+    }
+
+    class PhoneAssignmentManager {
+      <<class>>
+      +GetCurrentPhoneAssignmentsForActiveShift(cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignmentDto>>
+    }
+
+    class ResidentManager {
+      <<class>>
+      +CreateAsync(dto: ResidentCreateRequestDto, ct: CancellationToken): Task
+      +CreateRangeAsync(dtos: IEnumerable<ResidentCreateRequestDto>, ct: CancellationToken): Task
+      +DeleteAsync(id: guid, ct: CancellationToken): Task
+      +DeleteRangeAsync(ids: IEnumerable<guid>, ct: CancellationToken): Task
+      +GetAllAsync(ct: CancellationToken): Task<IEnumerable<ResidentResponseDto>>
+      +GetByIdAsync(id: guid, ct: CancellationToken): Task<ResidentResponseDto Nullable>
+      +GetByDepartmentsAsync(departments: IList<Department>, ct: CancellationToken): Task<IEnumerable<ResidentResponseDto>>
+      +UpdateAsync(id: guid, dto: ResidentUpdateRequestDto, ct: CancellationToken): Task
+      +UpdateRangeAsync(dtos: IEnumerable<ResidentUpdateRequestDto>, ct: CancellationToken): Task
+    }
+
+    class ResidentNoteManager {
+      <<class>>
+      +GetAllByResidentIdAsync(residentId: guid, cancellationToken: CancellationToken): Task<IEnumerable<ResidentNoteDto>>
+      +AddAsync(residentId: guid, noteText: string, cancellationToken: CancellationToken): Task<bool>
+      +UpdateAsync(noteId: guid, newText: string, cancellationToken: CancellationToken): Task<bool>
+      +DeleteAsync(noteId: guid, cancellationToken: CancellationToken): Task<bool>
+    }
+
+    class RetentionPolicyManager {
+      <<class>>
+      +GetPoliciesAsync(cancellationToken: CancellationToken): Task<IEnumerable<RetentionPolicyDto>>
+      +UpdateRetentionPolicyAsync(dto: UpdateRetentionPolicyDto, changedByEmployeeId: guid, cancellationToken: CancellationToken): Task<RetentionPolicyDto>
+    }
+
+    class SecurityIncidentManager {
+      <<class>>
+      +GetIncidentsAsync(cancellationToken: CancellationToken): Task<IEnumerable<SecurityIncidentDto>>
+      +EscalateIncidentAsync(incidentId: guid, isBreach: bool, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+      +AddInvestigationNotesAsync(dto: AddInvestigationNotesDto, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+      +CloseIncidentAsync(incidentId: guid, cancellationToken: CancellationToken): Task<SecurityIncidentDto>
+    }
+
+    class StaffAssignmentManager {
+      <<class>>
+      +AssignAsync(dto: StaffAssignmentDto, cancellationToken: CancellationToken): Task<AssignmentOverviewDto>
+      +GetAssignmentsByShiftAsync(shiftType: ShiftType, assignmentDate: DateTime, cancellationToken: CancellationToken): Task<IEnumerable<AssignmentOverviewDto>>
+      +DeleteAssignmentAsync(assigmentId: guid, cancellationToken: CancellationToken): Task
+      +UpdateAssignmentAsync(assignmentId: guid, dto: StaffAssignmentDto, cancellationToken: CancellationToken): Task<AssignmentOverviewDto>
+    }
+
+    class SubjectAccessRequestManager {
+      <<class>>
+      +GenerateExportAsync(dto: SarExportRequestDto, cancellationToken: CancellationToken): Task<SarExportPackageDto>
+      +MarkFulfilledAsync(dto: SarFulfilledDto, cancellationToken: CancellationToken): Task<bool>
+    }
+
+    class TaskListManager {
+      <<class>>
+      +GetDashboardTasksByDepartmentAsync(department: Department, cancellationToken: CancellationToken): Task<IEnumerable<TaskListDto>>
+    }
+  }
+
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %% Domain Associations
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1159,6 +1276,23 @@ namespace Core.DTOs.Security {
   ITokenService --> User : CreateJwtTokenAsync
   ITokenService --> RefreshToken : CreateRefreshTokenAsync
 
+  DependencyInjection --> IServiceCollection : AddCore
+  DependencyInjection --> IResidentService : AddCore
+  DependencyInjection --> IResidentNoteService : AddCore
+  DependencyInjection --> IMedicineStatusService : AddCore
+  DependencyInjection --> IPhoneAssignmentService : AddCore
+  DependencyInjection --> IAccountService : AddCore
+  DependencyInjection --> ITaskListService : AddCore
+  DependencyInjection --> IDatabaseConnectionService : AddCore
+  DependencyInjection --> ITokenService : AddCore
+  DependencyInjection --> IDatabaseConnectionStateProvider : AddCore
+  DependencyInjection --> IRetentionPolicyService : AddCore
+  DependencyInjection --> IAnonymizationService : AddCore
+  DependencyInjection --> ISecurityIncidentService : AddCore
+  DependencyInjection --> ISubjectAccessRequestService : AddCore
+  DependencyInjection --> IArt33NotificationService : AddCore
+  DependencyInjection --> IPseudonymizationService : AddCore
+
   %% Manager associations
   IResidentNoteManager --> ResidentNoteDto : GetAllByResidentIdAsync
   IResidentNoteManager --> ResidentNote : AddAsync
@@ -1285,4 +1419,42 @@ namespace Core.DTOs.Security {
 
   DataConnection --> DbConnectionState : State
 
-```
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %% Infrastructure Managers Assorcations
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %% Infrastructure manager associations
+  AccountManager --> IAccountManager : implements
+  AccountManager --> IHttpClientFactory : CreateClient
+  AnonymizationManager --> IAnonymizationManager : implements
+  AnonymizationManager --> IHttpClientFactory : CreateClient
+  AuditManager --> IAuditManager : implements
+  AuditManager --> IHttpClientFactory : CreateClient
+  DatabaseConnectionManager --> IDatabaseConnectionManager : implements
+  DatabaseConnectionManager --> IHttpClientFactory : CreateClient
+  DatabaseConnectionManager --> IDatabaseConnectionStateProvider : updates
+  EmployeeManager --> IEmployeeManager : implements
+  EmployeeManager --> IHttpClientFactory : CreateClient
+  HttpApiManagerBase --> IHttpClientFactory : CreateClient
+  MedicineRecordManager --> IMedicineRecordManager : implements
+  MedicineRecordManager --> HttpClient : uses
+  MedicineStatusManager --> IMedicineStatusManager : implements
+  MedicineStatusManager --> IHttpClientFactory : CreateClient
+  PhoneAssignmentManager --> IPhoneAssignmentManager : implements
+  PhoneAssignmentManager --> IHttpClientFactory : CreateClient
+  ResidentManager --> IResidentManager : implements
+  ResidentManager --> IHttpClientFactory : CreateClient
+  ResidentNoteManager --> IResidentNoteManager : implements
+  ResidentNoteManager --> IHttpClientFactory : CreateClient
+  RetentionPolicyManager --> IRetentionPolicyManager : implements
+  RetentionPolicyManager --> IHttpClientFactory : CreateClient
+  SecurityIncidentManager --> ISecurityIncidentManager : implements
+  SecurityIncidentManager --> IHttpClientFactory : CreateClient
+  StaffAssignmentManager --> IStaffAssignmentService : implements
+  StaffAssignmentManager --> IStaffAssignmentRepository : uses
+  SubjectAccessRequestManager --> ISubjectAccessRequestManager : implements
+  SubjectAccessRequestManager --> IHttpClientFactory : CreateClient
+  TaskListManager --> ITaskListManager : implements
+  TaskListManager --> IHttpClientFactory : CreateClient
+  
+  
+  ```

@@ -2,12 +2,18 @@
 skinparam classAttributeIconSize 0
 left to right direction
 
+package "Microsoft.AspNetCore.Identity" {
+  class "IdentityUser<Guid>" as IdentityUserGuid <<external>>
+}
+
 package "Domain.Enums" {
   enum AnonymizationStatus {
-    Suggested
+    Pending
     Approved
     Rejected
-    Anonymized
+    Postponed
+    OnHold
+    Completed
   }
   enum DbConnectionState {
     Online
@@ -71,6 +77,8 @@ package "Domain.Entities" {
     +SuggestedAt: DateTime
     +Reason: string
     +Status: AnonymizationStatus
+    +Resident: Resident
+    +RetentionPolicy: RetentionPolicy
   }
   class AuditEntry {
     +Id: guid
@@ -80,6 +88,7 @@ package "Domain.Entities" {
     +Succeeded: bool
     +UserId: guid
     +ErrorMessage: string
+    +ChangeDetails: ICollection<ChangeDetail>
   }
   class ChangeDetail {
     +Id: guid
@@ -94,18 +103,18 @@ package "Domain.Entities" {
     +LastName: string
     +Initials: string
     +UserId: guid
+    +StaffAssignments: ICollection<StaffAssignment>
     +Department: Department
-    *StaffAssignments: ICollection<StaffAssignment>
-    *User: User
+    +User: User
   }
   class LoginAttempt {
     +Id: guid
     +AttemptedAt: DateTime
     +EmailHash: string
     +UserId: guid
-    +Timestamp: DateTime
     +Succeeded: bool
     +IpAddress: string
+    +FailureReason: string
   }
   class MedicineRecord {
     +Id: guid
@@ -126,6 +135,7 @@ package "Domain.Entities" {
     +CaregiverId: guid
     +PhoneNumber: string
     +ShiftType: string
+    +ShiftTypeEnum: ShiftType
   }
   class RefreshToken {
     +Id: guid
@@ -135,9 +145,8 @@ package "Domain.Entities" {
     +CreatedAt: DateTime
     +RevokedAt: DateTime Nullable
     +CreatedByIp: string Nullable
-    +RevokedByIp: string Nullable
     +RevokedReason: string Nullable
-    *User: User
+    +User: User
   }
   class Resident {
     +Id: guid
@@ -147,16 +156,16 @@ package "Domain.Entities" {
     +TrafficLightStatus: TrafficLightStatus
     +Department: Department
     +DischargedAt: DateTime Nullable
-    *Notes: ICollection<ResidentNote>
-    *Medicines: ICollection<ResidentMedicine>
-    *Painkillers: ICollection<ResidentPainkiller>
-    *StaffAssignments: ICollection<StaffAssignment>
+    +Notes: ICollection<ResidentNote>
+    +Medicines: ICollection<MedicineRecord>
+    +Painkillers: ICollection<PainkillerRecord>
+    +StaffAssignments: ICollection<StaffAssignment>
   }
   class ResidentNote {
     +Id: guid
     +Note: string
     +CreatedAt: DateTime
-    +EditedAt: DateTime Nullable
+    +EditedAt: DateTime
     +ResidentId: guid
   }
   class RetentionPolicy {
@@ -164,14 +173,19 @@ package "Domain.Entities" {
     +Category: RetentionDataCategory
     +RetentionPeriod: TimeSpan
     +LegalMinimum: TimeSpan
-    +EffectiveFrom: TimeDate
-    *AuditHistory: ICollection<RetentionPolicyAudit>
-    *Candidates: ICollection<AnonymizationCandidate>
+    +EffectiveFrom: DateTime
+    +AuditHistory: ICollection<RetentionPolicyAudit>
+    +Candidates: ICollection<AnonymizationCandidate>
   }
   class RetentionPolicyAudit {
     +Id: guid
     +RetentionPolicyId: guid
     +ChangedByEmployeeId: guid
+    +PreviousPeriod: TimeSpan
+    +NewPeriod: TimeSpan
+    +ChangedAt: DateTime
+    +Reason: string
+    +RetentionPolicy: RetentionPolicy
   }
   class SecurityIncident {
     +Id: guid
@@ -191,8 +205,8 @@ package "Domain.Entities" {
     +AssignmentDate: DateTime
     +CreatedAt: DateTime
     +UpdatedAt: DateTime Nullable
-    *Resident: Resident
-    *Employee: Employee
+    +Resident: Resident
+    +Employee: Employee
   }
   class SubjectAccessRequest {
     +Id: guid
@@ -204,6 +218,7 @@ package "Domain.Entities" {
     +ExportGeneratedAt: DateTime
     +FulfilledAt: DateTime Nullable
     +FulfilledByEmployeeId: guid Nullable
+    +Resident: Resident
   }
   class TaskList {
     +Id: guid
@@ -215,6 +230,8 @@ package "Domain.Entities" {
   }
   class User {
     +Id: guid
+    +UserName: string
+    +Department: Department Nullable
   }
 }
 
@@ -226,62 +243,71 @@ package "Domain.UiModels" {
   }
 }
 
-AnonymizationCandidate --> AnonymizationStatus : Status
-AnonymizationCandidate --> User : ResidentId
-AnonymizationCandidate --> RetentionDataCategory : RetentionPolicyId
-AuditEntry --> User : UserId
-ChangeDetail --> AuditEntry : AuditEntryId
+IdentityUserGuid <|-- User
+
+IEntity <|.. AnonymizationCandidate
+IEntity <|.. AuditEntry
+IEntity <|.. ChangeDetail
+IEntity <|.. Employee
+IEntity <|.. LoginAttempt
+IEntity <|.. MedicineRecord
+IEntity <|.. PainkillerRecord
+IEntity <|.. PhoneAssignment
+IEntity <|.. RefreshToken
+IEntity <|.. Resident
+IEntity <|.. ResidentNote
+IEntity <|.. RetentionPolicy
+IEntity <|.. RetentionPolicyAudit
+IEntity <|.. SecurityIncident
+IEntity <|.. StaffAssignment
+IEntity <|.. SubjectAccessRequest
+IEntity <|.. TaskList
+IEntity <|.. User
+
+AuditEntry "1" *-- "0..*" ChangeDetail : ChangeDetails
+Resident "1" *-- "0..*" ResidentNote : Notes
+Resident "1" *-- "0..*" MedicineRecord : Medicines
+Resident "1" *-- "0..*" PainkillerRecord : Painkillers
+RetentionPolicy "1" *-- "0..*" RetentionPolicyAudit : AuditHistory
+RetentionPolicy "1" *-- "0..*" AnonymizationCandidate : Candidates
+
+Employee "1" o-- "0..*" StaffAssignment : StaffAssignments
+Resident "1" o-- "0..*" StaffAssignment : StaffAssignments
+
+Employee "0..1" <-- "1" User : UserId
+User "1" <-- "0..*" AuditEntry : UserId
+User "1" <-- "0..*" LoginAttempt : UserId
+User "1" <-- "0..*" RefreshToken : UserId
+
+Resident "1" <-- "0..*" AnonymizationCandidate : ResidentId
+RetentionPolicy "1" <-- "0..*" AnonymizationCandidate : RetentionPolicyId
+Resident "1" <-- "0..*" SubjectAccessRequest : ResidentId
+Employee "1" <-- "0..*" SubjectAccessRequest : RequestedByEmployeeId
+Employee "1" <-- "0..*" SubjectAccessRequest : FulfilledByEmployeeId
+
+RetentionPolicy "1" <-- "0..*" RetentionPolicyAudit : RetentionPolicyId
+Employee "1" <-- "0..*" RetentionPolicyAudit : ChangedByEmployeeId
+
+Resident "1" <-- "0..*" MedicineRecord : ResidentId
+Resident "1" <-- "0..*" PainkillerRecord : ResidentId
+Resident "1" <-- "0..*" ResidentNote : ResidentId
+Resident "1" <-- "0..*" StaffAssignment : ResidentId
+Employee "1" <-- "0..*" StaffAssignment : EmployeeId
+
+Employee "1" <-- "0..*" SecurityIncident : ReportedByEmployeeId
+Employee "1" <-- "0..*" SecurityIncident : ResolvedByEmployeeId
+
 Employee --> Department : Department
-Employee --> User : UserId
-Employee --> StaffAssignment : StaffAssignments
-LoginAttempt --> User : UserId
-MedicineRecord --> Resident : ResidentId
-PainkillerRecord --> Resident : ResidentId
-PhoneAssignment --> Employee : CaregiverId
-RefreshToken --> User : UserId
 Resident --> Department : Department
 Resident --> TrafficLightStatus : TrafficLightStatus
-Resident --> ResidentNote : Notes
-Resident --> MedicineRecord : Medicines
-Resident --> PainkillerRecord : Painkillers
-Resident --> StaffAssignment : StaffAssignments
-ResidentNote --> Resident : ResidentId
-RetentionPolicy --> RetentionDataCategory : Category
-RetentionPolicy --> RetentionPolicyAudit : AuditHistory
-RetentionPolicy --> AnonymizationCandidate : Candidates
-RetentionPolicyAudit --> RetentionPolicy : RetentionPolicyId
-RetentionPolicyAudit --> Employee : ChangedByEmployeeId
-SecurityIncident --> IncidentSeverity : Severity
-SecurityIncident --> IncidentStatus : Status
-SecurityIncident --> Employee : ReportedByEmployeeId
-SecurityIncident --> Employee : ResolvedByEmployeeId
-StaffAssignment --> Resident : ResidentId
-StaffAssignment --> Employee : EmployeeId
-StaffAssignment --> ShiftType : ShiftType
-SubjectAccessRequest --> Resident : ResidentId
-SubjectAccessRequest --> Employee : RequestedByEmployeeId
-SubjectAccessRequest --> Employee : FulfilledByEmployeeId
 TaskList --> TaskListStatus : TaskStatus
 TaskList --> Department : Department
-DataConnection --> DbConnectionState : State
-
-AnonymizationCandidate --|> IEntity
-AuditEntry --|> IEntity
-ChangeDetail --|> IEntity
-Employee --|> IEntity
-LoginAttempt --|> IEntity
-MedicineRecord --|> IEntity
-PainkillerRecord --|> IEntity
-PhoneAssignment --|> IEntity
-RefreshToken --|> IEntity
-Resident --|> IEntity
-ResidentNote --|> IEntity
-RetentionPolicy --|> IEntity
-RetentionPolicyAudit --|> IEntity
-SecurityIncident --|> IEntity
-StaffAssignment --|> IEntity
-SubjectAccessRequest --|> IEntity
-TaskList --|> IEntity
-User --|> IEntity
+StaffAssignment --> ShiftType : ShiftType
+PhoneAssignment ..> ShiftType : ShiftTypeEnum
+AnonymizationCandidate --> AnonymizationStatus : Status
+RetentionPolicy --> RetentionDataCategory : Category
+SecurityIncident --> IncidentSeverity : Severity
+SecurityIncident --> IncidentStatus : Status
+DataConnection ..> DbConnectionState : State
 
 @enduml
