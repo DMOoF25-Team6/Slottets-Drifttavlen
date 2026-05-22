@@ -1,0 +1,447 @@
+@startuml
+title dcd for api layer
+skinparam classAttributeIconSize 0
+left to right direction
+skinparam linetype polyline
+skinparam ranksep 100
+skinparam pathHoverColor red
+
+package "Microsoft.AspNetCore.Mvc" {
+  abstract class ControllerBase
+  abstract class Controller
+}
+
+package "Microsoft.Extensions.Hosting" {
+  abstract class BackgroundService
+}
+
+package "Microsoft.AspNetCore.Identity" {
+  class UserManager~TUser~
+  interface IEmailSender~TUser~ {
+    +SendConfirmationLinkAsync(user: TUser, email: string, confirmationLink: string): Task
+    +SendPasswordResetLinkAsync(user: TUser, email: string, resetLink: string): Task
+    +SendPasswordResetCodeAsync(user: TUser, email: string, resetCode: string): Task
+  }
+}
+
+package "Infrastructure.Data.Persistent" {
+  class AppDbContext <<Infrastructure.Data>>
+}
+
+package "Api" {
+  class Program {
+    +Main(args: string[]): void
+    +ConfigureDbContext(builder: WebApplicationBuilder, conf: ConfigurationManager): string
+    -ConfigureIdentity(builder: WebApplicationBuilder): void
+    -ConfigureJwtAuthentication(builder: WebApplicationBuilder): void
+  }
+
+  class DummyEmailSenderForUser {
+    +SendConfirmationLinkAsync(user: User, email: string, confirmationLink: string): Task
+    +SendPasswordResetLinkAsync(user: User, email: string, resetLink: string): Task
+    +SendPasswordResetCodeAsync(user: User, email: string, resetCode: string): Task
+  }
+
+  class CurrentUserMiddleware {
+    -_next: RequestDelegate
+    +InvokeAsync(context: HttpContext, dbContext: AppDbContext): Task
+  }
+}
+
+package "Api.BackgroundServices" {
+  class RetentionBackgroundService {
+    -_serviceProvider: IServiceProvider
+    -_logger: ILogger~RetentionBackgroundService~
+    -_interval: TimeSpan
+    #ExecuteAsync(stoppingToken: CancellationToken): Task
+  }
+
+  class IncidentDetectionService {
+    -_serviceProvider: IServiceProvider
+    -_logger: ILogger~IncidentDetectionService~
+    -_interval: TimeSpan
+    -_lookbackWindow: TimeSpan
+    -_bruteForceWindow: TimeSpan
+    -_massExportWindow: TimeSpan
+    #ExecuteAsync(stoppingToken: CancellationToken): Task
+  }
+}
+
+package "Api.Controllers" {
+  class ResidentController {
+    -_residentRepository: IResidentRepository
+    +GetAll(cancellationToken: CancellationToken): Task<ActionResult~IEnumerable~ResidentResponseDto~~>
+    +GetByDepartment(department: Department, cancellationToken: CancellationToken): Task<ActionResult~IEnumerable~ResidentResponseDto~~>
+    +Create(dto: ResidentCreateRequestDto, cancellationToken: CancellationToken): Task<ActionResult~ResidentResponseDto~>
+    +GetById(id: guid, cancellationToken: CancellationToken): Task<ActionResult~ResidentResponseDto~>
+    +Update(id: guid, dto: ResidentUpdateRequestDto, cancellationToken: CancellationToken): Task<ActionResult>
+    +Delete(id: guid, cancellationToken: CancellationToken): Task<ActionResult>
+    +Discharge(id: guid, cancellationToken: CancellationToken): Task<ActionResult~ResidentResponseDto~>
+  }
+
+  class ResidentNoteController {
+    -_residentNoteService: IResidentNoteService
+    +GetAllByResidentId(residentId: guid, cancellationToken: CancellationToken): Task<IActionResult>
+    +Add(dto: AddResidentNoteDto, cancellationToken: CancellationToken): Task<IActionResult>
+    +Update(noteId: guid, newText: string, cancellationToken: CancellationToken): Task<IActionResult>
+    +Delete(noteId: guid, cancellationToken: CancellationToken): Task<IActionResult>
+  }
+
+  class EmployeeController {
+    -_repository: IEmployeeRepository
+    +GetAll(cancellationToken: CancellationToken): Task<ActionResult~IEnumerable~EmployeeDto~~>
+  }
+
+  class AuditController {
+    -_auditRepository: IAuditRepository
+    +GetRecent(limit: int Nullable, cancellationToken: CancellationToken): Task<IActionResult>
+    +GetByEntityName(entityName: string, cancellationToken: CancellationToken): Task<IActionResult>
+    +GetWithDetails(id: guid, cancellationToken: CancellationToken): Task<IActionResult>
+  }
+
+  class AccountController {
+    -_loginAttemptRepository: ILoginAttemptRepository
+    -_pseudonymizationService: IPseudonymizationService
+    +Register(request: RegisterRequestDto): Task<IActionResult>
+    +DeleteUserAsync(userId: string): Task<IActionResult>
+    +GetUserIdByEmailAsync(content: GetUserIdByEmailRequestDto): Task<IActionResult>
+    +Login(request: LoginRequestDto): Task<IActionResult>
+    +Refresh(request: RefreshTokenRequestDto): Task<IActionResult>
+    +LogoutAsync(request: LogoutRequestDto): Task<IActionResult>
+  }
+
+  class AnonymizationController {
+    -_candidateRepository: IAnonymizationCandidateRepository
+    -_residentRepository: IResidentRepository
+    -_residentNoteRepository: IResidentNoteRepository
+    -_pseudonymizationService: IPseudonymizationService
+    +GetCandidates(cancellationToken: CancellationToken): Task<ActionResult<IEnumerable<AnonymizationCandidateDto>>>
+    +Approve(candidateId: guid, cancellationToken: CancellationToken): Task<ActionResult<AnonymizationResultDto>>
+    +Reject(candidateId: guid, reason: string, cancellationToken: CancellationToken): Task<ActionResult<bool>>
+  }
+
+  class RetentionPolicyController {
+    -_retentionPolicyRepository: IRetentionPolicyRepository
+    -_retentionPolicyAuditRepository: IRetentionPolicyAuditRepository
+    +GetAll(cancellationToken: CancellationToken): Task<ActionResult<IEnumerable<RetentionPolicyDto>>>
+    +Update(dto: UpdateRetentionPolicyDto, changedByEmployeeId: guid, cancellationToken: CancellationToken): Task<ActionResult<RetentionPolicyDto>>
+  }
+
+  class PhoneAssignmentsController {
+    -_phoneAssignmentService: IPhoneAssignmentService
+    +GetCurrentPhoneAssignmentsForActiveShift(cancellationToken: CancellationToken): Task<ActionResult<IEnumerable<PhoneAssignmentDto>>>
+  }
+
+  class MedicineController {
+    -_medicineRepository: IMedicineRepository
+    -_painkillerRepository: IPainkillerRepository
+    +GetMedicineStatus(residentId: guid): Task<ActionResult<MedicineStatusDto>>
+    +GetPainkillerStatus(residentId: guid): Task<ActionResult<PainkillerStatusDto>>
+  }
+
+  class TaskListController {
+    -_taskListRepository: ITaskListRepository
+    +GetDashboardTasksByDepartment(department: Department, cancellationToken: CancellationToken): Task<IActionResult>
+  }
+
+  class SecurityIncidentController {
+    -_incidentRepository: ISecurityIncidentRepository
+    -_art33NotificationService: IArt33NotificationService
+    +GetAll(cancellationToken: CancellationToken): Task<ActionResult<IEnumerable<SecurityIncidentDto>>>
+    +Escalate(incidentId: guid, dto: EscalateIncidentDto, cancellationToken: CancellationToken): Task<ActionResult<SecurityIncidentDto>>
+    +AddNotes(incidentId: guid, dto: AddInvestigationNotesDto, cancellationToken: CancellationToken): Task<ActionResult<SecurityIncidentDto>>
+    +Close(incidentId: guid, cancellationToken: CancellationToken): Task<ActionResult<SecurityIncidentDto>>
+  }
+
+  class StaffAssignmentController {
+    -_service: IStaffAssignmentService
+    +CreateAssignment(dto: StaffAssignmentDto, cancellationToken: CancellationToken): Task<ActionResult<AssignmentOverviewDto>>
+    +GetAssignments(shiftType: int, assignmentDate: string): Task<ActionResult<IEnumerable<AssignmentOverviewDto>>>
+    +DeleteAssignment(assignmentId: guid, cancellationToken: CancellationToken): Task<IActionResult>
+    +UpdateAssignment(assignmentId: guid, dto: StaffAssignmentDto, cancellationToken: CancellationToken): Task<ActionResult<AssignmentOverviewDto>>
+  }
+
+  class SubjectAccessRequestController {
+    -_residentRepository: IResidentRepository
+    -_residentNoteRepository: IResidentNoteRepository
+    -_medicineRepository: IMedicineRepository
+    -_painkillerRepository: IPainkillerRepository
+    -_auditRepository: IAuditRepository
+    -_retentionPolicyRepository: IRetentionPolicyRepository
+    -_sarRepository: ISubjectAccessRequestRepository
+    +GenerateExport(dto: SarExportRequestDto, cancellationToken: CancellationToken): Task<ActionResult<SarExportPackageDto>>
+    +MarkFulfilled(dto: SarFulfilledDto, cancellationToken: CancellationToken): Task<ActionResult<bool>>
+  }
+
+  class DatabaseController {
+    +IsConnected(): ActionResult<bool>
+  }
+
+  class TestController {
+    +CreateAuditTest(): Task<IActionResult>
+  }
+}
+
+package "Core.Interfaces.Repositories" {
+  interface IResidentRepository
+  interface IResidentNoteRepository
+  interface IEmployeeRepository
+  interface IAuditRepository
+  interface ILoginAttemptRepository
+  interface IAnonymizationCandidateRepository
+  interface IRetentionPolicyRepository
+  interface IRetentionPolicyAuditRepository
+  interface IPhoneAssignmentRepository
+  interface IMedicineRepository
+  interface IPainkillerRepository
+  interface ITaskListRepository
+  interface ISecurityIncidentRepository
+  interface ISubjectAccessRequestRepository
+}
+
+package "Core.Interfaces.Services" {
+  interface IResidentNoteService
+  interface IPseudonymizationService
+  interface IPhoneAssignmentService
+  interface IArt33NotificationService
+  interface IStaffAssignmentService
+  interface IAuditService
+  interface ITokenService
+  interface IRefreshTokenStore
+  interface IDatabaseService
+}
+
+package "Core.DTOs" {
+  class ResidentResponseDto
+  class ResidentCreateRequestDto
+  class ResidentUpdateRequestDto
+  class ResidentNoteDto
+  class AddResidentNoteDto
+  class EmployeeDto
+  class PhoneAssignmentDto
+  class MedicineStatusDto
+  class PainkillerStatusDto
+  class AssignmentOverviewDto
+  class StaffAssignmentDto
+  class TaskListDto
+  class ErrorDto
+}
+
+package "Core.DTOs.Audit" {
+  class AuditEntryDto
+}
+
+package "Core.DTOs.Identity" {
+  class RegisterRequestDto
+  class RegistrationResponseDto
+  class LoginRequestDto
+  class LoginResponseDto
+  class RefreshTokenRequestDto
+  class RefreshTokenResponseDto
+  class LogoutRequestDto
+  class LogoutResponseDto
+  class DeleteUserResponseDto
+  class GetUserIdByEmailRequestDto
+}
+
+package "Core.DTOs.Anonymization" {
+  class AnonymizationCandidateDto
+  class AnonymizationResultDto
+}
+
+package "Core.DTOs.Retention" {
+  class RetentionPolicyDto
+  class UpdateRetentionPolicyDto
+}
+
+package "Core.DTOs.Security" {
+  class SecurityIncidentDto
+  class EscalateIncidentDto
+  class AddInvestigationNotesDto
+}
+
+package "Core.DTOs.Sar" {
+  class SarExportRequestDto
+  class SarExportPackageDto
+  class SarFulfilledDto
+}
+
+package "Domain" {
+  class User
+}
+
+package "Domain.Entities" {
+  class Resident
+  class ResidentNote
+  class RefreshToken
+  class RetentionPolicy
+  class RetentionPolicyAudit
+  class AnonymizationCandidate
+  class SecurityIncident
+  class SubjectAccessRequest
+  class LoginAttempt
+  class AuditEntry
+  class MedicineRecord
+  class PainkillerRecord
+  class TaskList
+  class PhoneAssignment
+  class Employee
+}
+
+package "Domain.Enums" {
+  enum Department
+  enum IncidentStatus
+  enum IncidentSeverity
+  enum RetentionDataCategory
+  enum AnonymizationStatus
+  enum ShiftType
+}
+
+Program ..> CurrentUserMiddleware : uses
+Program ..> RetentionBackgroundService : registers
+Program ..> IncidentDetectionService : registers
+Program ..> DummyEmailSenderForUser : registers
+Program ..> IDatabaseService : uses
+Program ..> IRefreshTokenStore : uses
+
+DummyEmailSenderForUser ..|> IEmailSender
+
+CurrentUserMiddleware --> RequestDelegate
+CurrentUserMiddleware ..> AppDbContext : updates current user
+
+RetentionBackgroundService --|> BackgroundService
+IncidentDetectionService --|> BackgroundService
+
+ResidentController --|> ControllerBase
+ResidentNoteController --|> ControllerBase
+EmployeeController --|> ControllerBase
+AuditController --|> ControllerBase
+AccountController --|> ControllerBase
+AnonymizationController --|> ControllerBase
+RetentionPolicyController --|> ControllerBase
+PhoneAssignmentsController --|> ControllerBase
+MedicineController --|> Controller
+TaskListController --|> ControllerBase
+SecurityIncidentController --|> ControllerBase
+StaffAssignmentController --|> ControllerBase
+SubjectAccessRequestController --|> ControllerBase
+DatabaseController --|> ControllerBase
+TestController --|> ControllerBase
+
+ResidentController --> IResidentRepository
+ResidentController ..> ResidentResponseDto
+ResidentController ..> ResidentCreateRequestDto
+ResidentController ..> ResidentUpdateRequestDto
+ResidentController ..> Department
+ResidentController ..> Resident
+
+ResidentNoteController --> IResidentNoteService
+ResidentNoteController ..> ResidentNoteDto
+ResidentNoteController ..> AddResidentNoteDto
+
+EmployeeController --> IEmployeeRepository
+EmployeeController ..> EmployeeDto
+
+AuditController --> IAuditRepository
+AuditController ..> AuditEntryDto
+
+AccountController --> UserManager
+AccountController --> IRefreshTokenStore
+AccountController --> ITokenService
+AccountController --> ILoginAttemptRepository
+AccountController --> IPseudonymizationService
+AccountController ..> RegisterRequestDto
+AccountController ..> RegistrationResponseDto
+AccountController ..> LoginRequestDto
+AccountController ..> LoginResponseDto
+AccountController ..> RefreshTokenRequestDto
+AccountController ..> RefreshTokenResponseDto
+AccountController ..> LogoutRequestDto
+AccountController ..> LogoutResponseDto
+AccountController ..> DeleteUserResponseDto
+AccountController ..> GetUserIdByEmailRequestDto
+AccountController ..> ErrorDto
+AccountController ..> User
+AccountController ..> RefreshToken
+
+AnonymizationController --> IAnonymizationCandidateRepository
+AnonymizationController --> IResidentRepository
+AnonymizationController --> IResidentNoteRepository
+AnonymizationController --> IPseudonymizationService
+AnonymizationController ..> AnonymizationCandidateDto
+AnonymizationController ..> AnonymizationResultDto
+AnonymizationController ..> AnonymizationStatus
+AnonymizationController ..> AnonymizationCandidate
+AnonymizationController ..> Resident
+AnonymizationController ..> ResidentNote
+
+RetentionPolicyController --> IRetentionPolicyRepository
+RetentionPolicyController --> IRetentionPolicyAuditRepository
+RetentionPolicyController ..> RetentionPolicyDto
+RetentionPolicyController ..> UpdateRetentionPolicyDto
+RetentionPolicyController ..> RetentionPolicy
+RetentionPolicyController ..> RetentionPolicyAudit
+
+PhoneAssignmentsController --> IPhoneAssignmentService
+PhoneAssignmentsController ..> PhoneAssignmentDto
+
+MedicineController --> IMedicineRepository
+MedicineController --> IPainkillerRepository
+MedicineController ..> MedicineStatusDto
+MedicineController ..> PainkillerStatusDto
+MedicineController ..> MedicineRecord
+MedicineController ..> PainkillerRecord
+
+TaskListController --> ITaskListRepository
+TaskListController ..> TaskListDto
+TaskListController ..> TaskList
+TaskListController ..> Department
+
+SecurityIncidentController --> ISecurityIncidentRepository
+SecurityIncidentController --> IArt33NotificationService
+SecurityIncidentController ..> SecurityIncidentDto
+SecurityIncidentController ..> EscalateIncidentDto
+SecurityIncidentController ..> AddInvestigationNotesDto
+SecurityIncidentController ..> SecurityIncident
+SecurityIncidentController ..> IncidentStatus
+SecurityIncidentController ..> IncidentSeverity
+
+StaffAssignmentController --> IStaffAssignmentService
+StaffAssignmentController ..> StaffAssignmentDto
+StaffAssignmentController ..> AssignmentOverviewDto
+StaffAssignmentController ..> ShiftType
+
+SubjectAccessRequestController --> IResidentRepository
+SubjectAccessRequestController --> IResidentNoteRepository
+SubjectAccessRequestController --> IMedicineRepository
+SubjectAccessRequestController --> IPainkillerRepository
+SubjectAccessRequestController --> IAuditRepository
+SubjectAccessRequestController --> IRetentionPolicyRepository
+SubjectAccessRequestController --> ISubjectAccessRequestRepository
+SubjectAccessRequestController ..> SarExportRequestDto
+SubjectAccessRequestController ..> SarExportPackageDto
+SubjectAccessRequestController ..> SarFulfilledDto
+SubjectAccessRequestController ..> SubjectAccessRequest
+SubjectAccessRequestController ..> Resident
+SubjectAccessRequestController ..> ResidentNote
+SubjectAccessRequestController ..> MedicineRecord
+SubjectAccessRequestController ..> PainkillerRecord
+SubjectAccessRequestController ..> AuditEntry
+SubjectAccessRequestController ..> RetentionPolicy
+
+DatabaseController --> IDatabaseService
+TestController --> IAuditService
+
+RetentionBackgroundService ..> IRetentionPolicyRepository
+RetentionBackgroundService ..> IResidentRepository
+RetentionBackgroundService ..> IResidentNoteRepository
+RetentionBackgroundService ..> IMedicineRepository
+RetentionBackgroundService ..> IPainkillerRepository
+RetentionBackgroundService ..> IAnonymizationCandidateRepository
+IncidentDetectionService ..> IAuditRepository
+IncidentDetectionService ..> ISecurityIncidentRepository
+IncidentDetectionService ..> ILoginAttemptRepository
+IncidentDetectionService ..> ISubjectAccessRequestRepository
+IncidentDetectionService ..> UserManager
+
+@enduml

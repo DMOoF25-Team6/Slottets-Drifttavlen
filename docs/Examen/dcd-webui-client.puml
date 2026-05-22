@@ -1,0 +1,280 @@
+@startuml
+title dcd for webui.client layer
+skinparam classAttributeIconSize 0
+left to right direction
+skinparam linetype polyline
+skinparam ranksep 100
+skinparam pathHoverColor red
+
+package "Microsoft.AspNetCore.Components" {
+  abstract class ComponentBase
+  class NavigationManager
+}
+
+package "Microsoft.AspNetCore.Components.Authorization" {
+  abstract class AuthenticationStateProvider
+  class AuthenticationState
+}
+
+package "Microsoft.AspNetCore.Components.WebAssembly.Hosting" {
+  class WebAssemblyHostBuilder
+}
+
+package "Microsoft.JSInterop" {
+  interface IJSRuntime
+}
+
+package "Microsoft.AspNetCore.Components" {
+  class RequestDelegate
+  class HttpContext
+}
+
+package "Microsoft.AspNetCore.Components" {
+  class AuthorizationState
+}
+
+package "WebUI.Client" {
+  class Program {
+    +Main(args: string[]): Task
+  }
+
+  class AuthService {
+    -tokenStorageService: TokenStorageService
+    -authenticationStateProvider: AuthenticationStateProvider
+    -accountService: IAccountService
+    +LoginAsync(username: string, password: string): Task<bool>
+    +LogoutAsync(): Task
+  }
+
+  class JwtAuthorizationMessageHandler {
+    +SendAsync(request: HttpRequestMessage, cancellationToken: CancellationToken): Task<HttpResponseMessage>
+  }
+
+  class JwtRefreshMessageHandler {
+    -RefreshEndpoint: string
+    +SendAsync(request: HttpRequestMessage, cancellationToken: CancellationToken): Task<HttpResponseMessage>
+  }
+
+  class JwtAuthenticationStateProvider {
+    +GetAuthenticationStateAsync(): Task<AuthenticationState>
+    +NotifyAuthenticationStateChanged(): void
+  }
+}
+
+package "WebUI.Client.Services" {
+  class TokenStorageService {
+    +SetTokenAsync(token: string): ValueTask
+    +GetTokenAsync(): ValueTask<string?>
+    +SetRefreshTokenAsync(refreshToken: string): ValueTask
+    +GetRefreshTokenAsync(): ValueTask<string?>
+    +SetTokensAsync(accessToken: string, refreshToken: string): ValueTask
+    +RemoveTokenAsync(): ValueTask
+  }
+}
+
+package "WebUI.Client.Components.Pages" {
+  class Login {
+    -AuthService: AuthService
+    -Navigation: NavigationManager
+    -JSRuntime: IJSRuntime
+    +SetQuickLoginCredentialsAsync(email: string, password: string): Task
+  }
+
+  class Dashboard {
+    -AuthService: AuthService
+    -AuthenticationStateProvider: AuthenticationStateProvider
+    -TaskListManager: ITaskListManager
+  }
+}
+
+package "WebUI.Client.Components.Pages.Management.Residents" {
+  class Residents {
+    -ResidentService: IResidentService
+    -AuthenticationStateProvider: AuthenticationStateProvider
+  }
+}
+
+package "WebUI.Client.Components.Pages.Gdpr" {
+  class SecurityIncidentsPage {
+    -SecurityIncidentService: ISecurityIncidentService
+    -AuthenticationStateProvider: AuthenticationStateProvider
+  }
+  class SubjectAccessRequestPage {
+    -SubjectAccessRequestService: ISubjectAccessRequestService
+  }
+}
+
+package "WebUI.Client.Components" {
+  class NavBar {
+    -Navigation: NavigationManager
+    -AuthService: AuthService
+  }
+  class RedirectToLogin {
+    -NavigationManager: NavigationManager
+  }
+}
+
+package "WebUI.Client.Components.DevTools" {
+  class QuickLoginPanel {
+    +LoginPage: Login
+  }
+}
+
+package "WebUI.Client.Components.Residents" {
+  class ResidentCard {
+    -ResidentNoteService: IResidentNoteService
+    -MedicineStatusService: IMedicineStatusService
+    -_countdownTimer: Timer
+  }
+}
+
+package "WebUI.Client.Components.TaskList" {
+  class TaskList {
+    +Tasks: IEnumerable<TaskListDto>
+  }
+}
+
+package "Core.Interfaces.Services" {
+  interface IAccountService
+  interface IResidentNoteService
+  interface IMedicineStatusService
+  interface ITaskListManager
+  interface IResidentService
+  interface ISecurityIncidentService
+  interface ISubjectAccessRequestService
+}
+
+package "Core.DTOs" {
+  class TaskListDto
+  class ResidentResponseDto
+  class ResidentCreateRequestDto
+  class ResidentUpdateRequestDto
+  class ResidentNoteDto
+  class MedicineStatusDto
+  class PainkillerStatusDto
+}
+
+package "Core.DTOs.Identity" {
+  class LoginRequestDto
+  class LoginResponseDto
+  class LogoutRequestDto
+}
+
+package "Core.DTOs.Security" {
+  class SecurityIncidentDto
+  class AddInvestigationNotesDto
+  class EscalateIncidentDto
+}
+
+package "Core.DTOs.Sar" {
+  class SarExportRequestDto
+  class SarExportPackageDto
+  class SarFulfilledDto
+}
+
+package "Domain.Entities" {
+  class Resident
+  class ResidentNote
+}
+
+package "Domain.Enums" {
+  enum Department
+  enum IncidentSeverity
+  enum IncidentStatus
+}
+
+Program ..> WebAssemblyHostBuilder
+Program ..> TokenStorageService : registers
+Program ..> JwtAuthorizationMessageHandler : registers
+Program ..> JwtRefreshMessageHandler : registers
+Program ..> AuthService : registers
+Program ..> AuthenticationStateProvider : registers
+Program ..> IAccountService
+
+AuthService --> TokenStorageService
+AuthService --> AuthenticationStateProvider
+AuthService --> IAccountService
+AuthService ..> LoginRequestDto
+AuthService ..> LoginResponseDto
+AuthService ..> LogoutRequestDto
+
+JwtAuthorizationMessageHandler --> TokenStorageService
+JwtRefreshMessageHandler --> TokenStorageService
+JwtRefreshMessageHandler ..> LoginResponseDto
+
+JwtAuthenticationStateProvider --|> AuthenticationStateProvider
+JwtAuthenticationStateProvider --> TokenStorageService
+JwtAuthenticationStateProvider ..> AuthenticationState
+
+Login --|> ComponentBase
+Dashboard --|> ComponentBase
+Residents --|> ComponentBase
+SecurityIncidentsPage --|> ComponentBase
+SubjectAccessRequestPage --|> ComponentBase
+NavBar --|> ComponentBase
+RedirectToLogin --|> ComponentBase
+QuickLoginPanel --|> ComponentBase
+ResidentCard --|> ComponentBase
+TaskList --|> ComponentBase
+
+Login --> AuthService
+Login --> NavigationManager
+Login --> IJSRuntime
+Login ..> QuickLoginPanel : uses
+Login ..> LoginRequestDto
+
+Dashboard --> AuthService
+Dashboard --> AuthenticationStateProvider
+Dashboard --> ITaskListManager
+Dashboard ..> ResidentResponseDto
+Dashboard ..> Department
+Dashboard ..> TaskListDto
+
+Residents --> IResidentService
+Residents --> AuthenticationStateProvider
+Residents ..> Resident
+Residents ..> ResidentCreateRequestDto
+Residents ..> ResidentUpdateRequestDto
+Residents ..> Department
+
+SecurityIncidentsPage --> ISecurityIncidentService
+SecurityIncidentsPage --> AuthenticationStateProvider
+SecurityIncidentsPage ..> SecurityIncidentDto
+SecurityIncidentsPage ..> AddInvestigationNotesDto
+SecurityIncidentsPage ..> EscalateIncidentDto
+SecurityIncidentsPage ..> IncidentSeverity
+SecurityIncidentsPage ..> IncidentStatus
+
+SubjectAccessRequestPage --> ISubjectAccessRequestService
+SubjectAccessRequestPage ..> SarExportRequestDto
+SubjectAccessRequestPage ..> SarExportPackageDto
+SubjectAccessRequestPage ..> SarFulfilledDto
+
+NavBar --> NavigationManager
+NavBar --> AuthService
+RedirectToLogin --> NavigationManager
+QuickLoginPanel --> Login
+ResidentCard --> IResidentNoteService
+ResidentCard --> IMedicineStatusService
+ResidentCard ..> Resident
+ResidentCard ..> ResidentNote
+ResidentCard ..> MedicineStatusDto
+ResidentCard ..> PainkillerStatusDto
+TaskList ..> TaskListDto
+
+IAccountService ..> LoginRequestDto
+IAccountService ..> LoginResponseDto
+IAccountService ..> LogoutRequestDto
+IResidentService ..> ResidentResponseDto
+IResidentService ..> ResidentCreateRequestDto
+IResidentService ..> ResidentUpdateRequestDto
+IResidentNoteService ..> ResidentNoteDto
+IMedicineStatusService ..> MedicineStatusDto
+IMedicineStatusService ..> PainkillerStatusDto
+ITaskListManager ..> TaskListDto
+ISecurityIncidentService ..> SecurityIncidentDto
+ISubjectAccessRequestService ..> SarExportRequestDto
+ISubjectAccessRequestService ..> SarExportPackageDto
+ISubjectAccessRequestService ..> SarFulfilledDto
+
+@enduml

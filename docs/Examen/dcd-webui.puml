@@ -1,0 +1,160 @@
+@startuml
+title dcd for webui layer
+skinparam classAttributeIconSize 0
+left to right direction
+skinparam linetype polyline
+skinparam ranksep 100
+skinparam pathHoverColor red
+
+package "Microsoft.AspNetCore.Builder" {
+  class WebApplicationBuilder
+  class WebApplication
+}
+
+package "Microsoft.AspNetCore.Components" {
+  abstract class ComponentBase
+  class NavigationManager
+}
+
+package "Microsoft.AspNetCore.Components.Authorization" {
+  abstract class AuthenticationStateProvider
+}
+
+package "Microsoft.AspNetCore.Authorization" {
+  class AuthorizationPolicyBuilder
+}
+
+package "Microsoft.AspNetCore.Authentication.JwtBearer" {
+  class JwtBearerDefaults
+}
+
+package "Microsoft.AspNetCore.DataProtection" {
+  class DataProtectionBuilder
+}
+
+package "WebUI" {
+  class Program {
+    +Main(args: string[]): void
+  }
+}
+
+package "WebUI.Components.Layout" {
+  class MainLayout {
+    -DbConnectionStateProvider: IDatabaseConnectionStateProvider
+    -DbConnectionService: IDatabaseConnectionService
+    -_timer: Timer
+    -IsDbConnected: bool
+  }
+}
+
+package "WebUI.Components.PhoneList" {
+  class PhoneList {
+    -PhoneAssignmentManager: IPhoneAssignmentManager
+    -_periodicTimer: PeriodicTimer
+    -_cts: CancellationTokenSource
+  }
+}
+
+package "WebUI.Components" {
+  class App
+  class Error
+}
+
+package "WebUI.Client" {
+  class AuthService
+  class JwtAuthenticationStateProvider
+  class TokenStorageService
+}
+
+package "WebUI.Client.Services" {
+  class TokenStorageService
+}
+
+package "Core.Interfaces.Services" {
+  interface IAccountService
+  interface IDatabaseConnectionService {
+    +CheckDatabaseConnectionAsync(): Task
+  }
+}
+
+package "Core.Interfaces.Providers" {
+  interface IDatabaseConnectionStateProvider {
+    +IsConnected: bool
+    +SetConnectionState(isConnected: bool): void
+    +StateChanged: Action
+  }
+}
+
+package "Core.Interfaces.Managers" {
+  interface IPhoneAssignmentManager {
+    +GetCurrentPhoneAssignmentsForActiveShift(cancellationToken: CancellationToken): Task<IEnumerable<PhoneAssignmentDto>>
+  }
+}
+
+'package "Core.Interfaces.Dto.Identity" {
+'  interface ILoginResult
+'  interface ILogoutResult
+'}
+
+'package "Core.Services" {
+'  class AccountService {
+'    -_AccountManager: IAccountManager
+'    +CreateAccountAsync(registrationRequestDto: RegisterRequestDto): Task<RegistrationResponseDto>
+'    +LoginAsync(loginRequestDto: LoginRequestDto): Task<ILoginResult>
+'    +RefreshTokenAsync(refreshTokenRequestDto: RefreshTokenRequestDto): Task<RefreshTokenResponseDto>
+'    +LogoutAsync(logoutRequestDto: LogoutRequestDto): Task<ILogoutResult>
+'  }
+'}
+
+package "Core.Interfaces.Managers" {
+  interface IAccountManager
+}
+
+package "Core.DTOs" {
+  class PhoneAssignmentDto
+}
+
+'package "Core.DTOs.Identity" {
+'  class RegisterRequestDto
+'  class RegistrationResponseDto
+'  class LoginRequestDto
+'  class RefreshTokenRequestDto
+'  class LogoutRequestDto
+'  class RefreshTokenResponseDto
+'}
+
+'package "Domain.Enums" {
+'  enum Department
+'}
+
+Program ..> WebApplicationBuilder
+Program ..> WebApplication
+Program ..> AuthService : registers
+Program ..> JwtAuthenticationStateProvider : registers
+Program ..> WebUI.Client.TokenStorageService : registers
+Program ..> IAccountService
+Program ..> IDatabaseConnectionService
+Program ..> IPhoneAssignmentManager
+
+Program ..> JwtBearerDefaults
+Program ..> DataProtectionBuilder
+Program ..> AuthorizationPolicyBuilder
+
+MainLayout --|> ComponentBase
+WebUI.Components.PhoneList.PhoneList --|> ComponentBase
+Error --|> ComponentBase
+
+MainLayout --> IDatabaseConnectionStateProvider
+MainLayout --> IDatabaseConnectionService
+WebUI.Components.PhoneList.PhoneList --> IPhoneAssignmentManager
+
+JwtAuthenticationStateProvider --|> AuthenticationStateProvider
+JwtAuthenticationStateProvider --> WebUI.Client.TokenStorageService
+
+AuthService ..> WebUI.Client.TokenStorageService
+AuthService ..> IAccountService
+
+WebUI.Components.Layout.MainLayout ..> WebUI.Client.JwtAuthenticationStateProvider : uses shared auth state
+WebUI.Components.Layout.MainLayout ..> WebUI.Client.AuthService : uses shared auth flow
+
+@enduml
