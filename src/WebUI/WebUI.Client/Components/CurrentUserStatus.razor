@@ -1,0 +1,17 @@
+@rendermode InteractiveWebAssembly
+@using Microsoft.AspNetCore.Components.Authorization
+
+<AuthorizeView>
+    <Authorized>
+        <span title="Aktuel bruger" class="border-end px-3">
+            <span>&#x1F464;</span>
+            <span class="ms-1">@GetDisplayName(context.User)</span>
+        </span>
+    </Authorized>
+    <NotAuthorized>
+        <span title="Ikke logget ind" class="border-end px-3 text-muted">
+            <span>&#x1F464;</span>
+            <span class="ms-1">Ikke logget ind</span>
+        </span>
+    </NotAuthorized>
+</AuthorizeView>
