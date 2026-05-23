@@ -4,6 +4,7 @@
 using System.Net.Http;
 using Core.DTOs;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using WebUI.Client.Services;
 
 namespace WebUI.Client.Components.Pages.Management.MedicineDeliveries;
@@ -13,6 +14,9 @@ public partial class MedicineDeliveries
     #region Fields
     [Inject]
     private MedicineDeliveryClient Client { get; set; } = default!;
+
+    [Inject]
+    private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
     private List<MedicineDeliveryResponseDto> _deliveries = new();
     private bool _isLoading = true;
@@ -31,12 +35,25 @@ public partial class MedicineDeliveries
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && !_firstRenderDone)
+        if (!firstRender || _firstRenderDone)
         {
-            _firstRenderDone = true;
-            await LoadAsync();
-            StateHasChanged();
+            return;
         }
+        _firstRenderDone = true;
+
+        // Materialise WASM auth state from localStorage before any API calls.
+        // Without this the InteractiveAuto pre-render fires API calls before the
+        // JWT is available, and every request returns 401. Same pattern as
+        // RetentionSettingsPage and other GDPR pages.
+        await InitializeAuthorizationAsync();
+        await LoadAsync();
+        StateHasChanged();
+    }
+
+    private async Task InitializeAuthorizationAsync()
+    {
+        AuthenticationState authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _ = authState.User;
     }
 
     private async Task LoadAsync()

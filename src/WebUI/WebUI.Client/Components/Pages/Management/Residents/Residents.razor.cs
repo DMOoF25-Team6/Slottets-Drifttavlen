@@ -163,7 +163,11 @@ public partial class Residents : ComponentBase
             FirstName = resident.FirstName,
             LastName = resident.LastName,
             TrafficLightStatus = resident.TrafficLightStatus,
-            Department = resident.Department
+            Department = resident.Department,
+            Activity = resident.Activity,
+            Companion = resident.Companion,
+            Amount = resident.Amount,
+            Info = resident.Info
         };
         _formError = null;
         _showFormModal = true;
@@ -189,7 +193,11 @@ public partial class Residents : ComponentBase
                     FirstName = _formModel.FirstName,
                     LastName = _formModel.LastName,
                     TrafficLightStatus = _formModel.TrafficLightStatus,
-                    Department = _formModel.Department
+                    Department = _formModel.Department,
+                    Activity = _formModel.Activity,
+                    Companion = _formModel.Companion,
+                    Amount = _formModel.Amount,
+                    Info = _formModel.Info
                 });
             }
             else
@@ -200,7 +208,11 @@ public partial class Residents : ComponentBase
                     FirstName = _formModel.FirstName,
                     LastName = _formModel.LastName,
                     TrafficLightStatus = _formModel.TrafficLightStatus,
-                    Department = _formModel.Department
+                    Department = _formModel.Department,
+                    Activity = _formModel.Activity,
+                    Companion = _formModel.Companion,
+                    Amount = _formModel.Amount,
+                    Info = _formModel.Info
                 });
             }
 

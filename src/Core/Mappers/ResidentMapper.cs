@@ -1,19 +1,12 @@
-// Copyright (c) 2026 Team6. All rights reserved. 
+// Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 
 using Core.DTOs;
-
 using Domain.Entities;
 using Domain.Enums;
 
 namespace Core.Mappers;
 
-/// <summary>
-/// Provides mapping methods for converting between resident DTOs and domain entities.
-/// </summary>
-/// <remarks>
-/// This class contains static methods to transform <see cref="ResidentResponseDto"/> and <see cref="ResidentNoteDto"/> objects to their corresponding domain entities.
-/// </remarks>
 public class ResidentMapper
 {
     public static Resident ToResident(ResidentResponseDto dto)
@@ -25,7 +18,11 @@ public class ResidentMapper
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             TrafficLightStatus = (TrafficLightStatus?)dto.TrafficLightStatus,
-            Department = dto.Department
+            Department = dto.Department,
+            Activity = dto.Activity,
+            Companion = dto.Companion,
+            Amount = dto.Amount,
+            Info = dto.Info
         };
     }
 
@@ -39,7 +36,11 @@ public class ResidentMapper
             LastName = entity.LastName,
             TrafficLightStatus = (int?)entity.TrafficLightStatus,
             Notes = entity.Notes?.Select(ToResidentNoteDto).ToList() ?? [],
-            Department = entity.Department
+            Department = entity.Department,
+            Activity = entity.Activity,
+            Companion = entity.Companion,
+            Amount = entity.Amount,
+            Info = entity.Info
         };
     }
 
@@ -52,11 +53,7 @@ public class ResidentMapper
             Timestamp = note.EditedAt
         };
     }
-    /// <summary>
-    /// Maps a <see cref="ResidentCreateDto"/> to a <see cref="Resident"/> domain entity.
-    /// </summary>
-    /// <param name="dto">A data transfer object for creating a resident.</param>
-    /// <returns>A <see cref="Resident"/> domain entity mapped from the DTO.</returns>
+
     public static Resident ToResident(ResidentCreateRequestDto dto)
     {
         return new Resident
@@ -66,15 +63,29 @@ public class ResidentMapper
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             TrafficLightStatus = dto.TrafficLightStatus,
-            Department = dto.Department
+            Department = dto.Department,
+            Activity = dto.Activity,
+            Companion = dto.Companion,
+            Amount = dto.Amount,
+            Info = dto.Info
         };
     }
 
-    /// <summary>
-    /// Maps a <see cref="ResidentNoteDto"/> to a <see cref="ResidentNote"/> domain entity.
-    /// </summary>
-    /// <param name="dto">A data transfer object representing a resident note.</param>
-    /// <returns>A <see cref="ResidentNote"/> domain entity mapped from the DTO.</returns>
+    public static void ApplyUpdate(Resident entity, ResidentUpdateRequestDto dto)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+        ArgumentNullException.ThrowIfNull(dto);
+        entity.Initials = dto.Initials;
+        entity.FirstName = dto.FirstName;
+        entity.LastName = dto.LastName;
+        entity.TrafficLightStatus = dto.TrafficLightStatus;
+        entity.Department = dto.Department;
+        entity.Activity = dto.Activity;
+        entity.Companion = dto.Companion;
+        entity.Amount = dto.Amount;
+        entity.Info = dto.Info;
+    }
+
     public static ResidentNote ToResidentNote(ResidentNoteDto dto)
     {
         return new ResidentNote

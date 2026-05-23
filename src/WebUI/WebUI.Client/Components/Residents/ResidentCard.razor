@@ -28,13 +28,13 @@
                             </thead>
                             <tbody>
                                 <tr scope="row">
-                                    <td>Handle</td>
-                                    <td>👤</td>
-                                    <td>300kr</td>
+                                    <td>@(string.IsNullOrEmpty(Resident.Activity) ? "—" : Resident.Activity)</td>
+                                    <td>@(string.IsNullOrEmpty(Resident.Companion) ? "—" : Resident.Companion)</td>
+                                    <td>@(string.IsNullOrEmpty(Resident.Amount) ? "—" : Resident.Amount)</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">Info</th>
-                                    <td colspan="2">Eget kort</td>
+                                    <td colspan="2">@(string.IsNullOrEmpty(Resident.Info) ? "—" : Resident.Info)</td>
                                 </tr>
                             </tbody>
                         </table>

@@ -1,57 +1,69 @@
 @page "/management/medicinedeliveries"
-@rendermode InteractiveWebAssembly
-@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "admin")]
+@rendermode InteractiveAuto
 @using Core.DTOs
+@using Microsoft.AspNetCore.Components.Authorization
 @using WebUI.Client.Components.MedicineDeliveries
 
-<h2>Medicin leveringer</h2>
+<AuthorizeView Roles="admin">
+  <Authorized>
+    <PageTitle>Medicin leveringer</PageTitle>
+    <main class="container mt-4">
+      <h2>Medicin leveringer</h2>
 
-@if (_isLoading)
-{
-    <p>Indlaeser...</p>
-}
-else if (_hasError)
-{
-    <div class="alert alert-danger">@_errorMessage</div>
-}
-else
-{
-    <button class="btn btn-primary mb-3" @onclick="OpenCreateModal">+ Tilfoej levering</button>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Tidspunkt</th>
-                <th>Resident ID</th>
-                <th>Medicin</th>
-                <th>Givet</th>
-                <th>Handlinger</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var d in _deliveries)
-            {
-                <tr>
-                    <td>@d.Timestamp.ToString("yyyy-MM-dd HH:mm")</td>
-                    <td>@d.ResidentId</td>
-                    <td>@d.MedicineName</td>
-                    <td>@(d.Given ? "Ja" : "Nej")</td>
-                    <td>
-                        <button class="btn btn-sm btn-secondary" @onclick="() => OpenEditModal(d)">Rediger</button>
-                        <button class="btn btn-sm btn-danger" @onclick="() => OpenDeleteModal(d)">Slet</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+      @if (_isLoading)
+      {
+          <p>Indlaeser...</p>
+      }
+      else if (_hasError)
+      {
+          <div class="alert alert-danger">@_errorMessage</div>
+      }
+      else
+      {
+          <button class="btn btn-primary mb-3" @onclick="OpenCreateModal">+ Tilfoej levering</button>
+          <table class="table">
+              <thead>
+                  <tr>
+                      <th>Tidspunkt</th>
+                      <th>Resident ID</th>
+                      <th>Medicin</th>
+                      <th>Givet</th>
+                      <th>Handlinger</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  @foreach (var d in _deliveries)
+                  {
+                      <tr>
+                          <td>@d.Timestamp.ToString("yyyy-MM-dd HH:mm")</td>
+                          <td>@d.ResidentId</td>
+                          <td>@d.MedicineName</td>
+                          <td>@(d.Given ? "Ja" : "Nej")</td>
+                          <td>
+                              <button class="btn btn-sm btn-secondary" @onclick="() => OpenEditModal(d)">Rediger</button>
+                              <button class="btn btn-sm btn-danger" @onclick="() => OpenDeleteModal(d)">Slet</button>
+                          </td>
+                      </tr>
+                  }
+              </tbody>
+          </table>
+      }
 
-<MedicineDeliveryFormModal Show="_showFormModal"
-                           IsEditing="_isEditing"
-                           FormModel="_formModel"
-                           OnCancel="CloseFormModal"
-                           OnSave="SaveAsync" />
+      <MedicineDeliveryFormModal Show="_showFormModal"
+                                 IsEditing="_isEditing"
+                                 FormModel="_formModel"
+                                 OnCancel="CloseFormModal"
+                                 OnSave="SaveAsync" />
 
-<MedicineDeliveryDeleteModal Show="_showDeleteModal"
-                             Delivery="_selectedDelivery"
-                             OnCancel="CloseDeleteModal"
-                             OnDelete="DeleteAsync" />
+      <MedicineDeliveryDeleteModal Show="_showDeleteModal"
+                                   Delivery="_selectedDelivery"
+                                   OnCancel="CloseDeleteModal"
+                                   OnDelete="DeleteAsync" />
+    </main>
+  </Authorized>
+  <NotAuthorized>
+    <div class="container mt-4">
+      <div class="alert alert-warning">Du har ikke adgang til denne side.</div>
+    </div>
+  </NotAuthorized>
+</AuthorizeView>

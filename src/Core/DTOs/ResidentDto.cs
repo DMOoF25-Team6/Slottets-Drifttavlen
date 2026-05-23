@@ -38,6 +38,17 @@ public class ResidentCreateRequestDto
     /// Gets or sets the department the resident belongs to.
     /// </summary>
     public Department Department { get; set; }
+
+    /// <summary>Free-text activity shown on the dashboard card.</summary>
+    public string? Activity { get; set; }
+    /// <summary>Initials of the staff member accompanying the resident.</summary>
+    public string? Companion { get; set; }
+    /// <summary>Amount allowed (free-text, e.g. "300kr").</summary>
+    public string? Amount { get; set; }
+    /// <summary>Free-text info shown on the dashboard card.</summary>
+    public string? Info { get; set; }
+
+    // ResidentCreateRequestDto-extended-fields-added
 }
 
 /// <summary>
@@ -73,6 +84,17 @@ public class ResidentUpdateRequestDto
     /// Gets or sets the department the resident belongs to.
     /// </summary>
     public Department Department { get; set; }
+
+    /// <summary>Free-text activity shown on the dashboard card.</summary>
+    public string? Activity { get; set; }
+    /// <summary>Initials of the staff member accompanying the resident.</summary>
+    public string? Companion { get; set; }
+    /// <summary>Amount allowed (free-text, e.g. "300kr").</summary>
+    public string? Amount { get; set; }
+    /// <summary>Free-text info shown on the dashboard card.</summary>
+    public string? Info { get; set; }
+
+    // ResidentUpdateRequestDto-extended-fields-added
 }
 
 /// <summary>
@@ -120,4 +142,15 @@ public class ResidentResponseDto
     /// Gets or sets the department the resident belongs to.
     /// </summary>
     public Department Department { get; set; }
+
+    /// <summary>Free-text activity shown on the dashboard card.</summary>
+    public string? Activity { get; set; }
+    /// <summary>Initials of the staff member accompanying the resident.</summary>
+    public string? Companion { get; set; }
+    /// <summary>Amount allowed (free-text, e.g. "300kr").</summary>
+    public string? Amount { get; set; }
+    /// <summary>Free-text info shown on the dashboard card.</summary>
+    public string? Info { get; set; }
+
+    // ResidentResponseDto-extended-fields-added
 }
