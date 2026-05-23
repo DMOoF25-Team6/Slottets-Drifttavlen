@@ -44,6 +44,10 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
             Initials = r.Initials,
             TrafficLightStatus = r.TrafficLightStatus.HasValue ? (int)r.TrafficLightStatus.Value : null,
             Department = r.Department,
+            Activity = r.Activity,
+            Companion = r.Companion,
+            Amount = r.Amount,
+            Info = r.Info,
             Notes = [.. r.Notes.Select(n => new ResidentNoteDto
             {
                 Id = n.Id,
@@ -65,6 +69,10 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
             Initials = r.Initials,
             TrafficLightStatus = r.TrafficLightStatus.HasValue ? (int)r.TrafficLightStatus.Value : null,
             Department = r.Department,
+            Activity = r.Activity,
+            Companion = r.Companion,
+            Amount = r.Amount,
+            Info = r.Info,
             Notes = [.. r.Notes.Select(n => new ResidentNoteDto
         {
             Id = n.Id,
@@ -107,7 +115,11 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             TrafficLightStatus = dto.TrafficLightStatus,
-            Department = dto.Department
+            Department = dto.Department,
+            Activity = dto.Activity,
+            Companion = dto.Companion,
+            Amount = dto.Amount,
+            Info = dto.Info
         };
 
         Resident created = await _residentRepository.CreateAsync(resident, cancellationToken);
@@ -118,6 +130,10 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
             Initials = created.Initials,
             TrafficLightStatus = created.TrafficLightStatus.HasValue ? (int)created.TrafficLightStatus.Value : null,
             Department = created.Department,
+            Activity = created.Activity,
+            Companion = created.Companion,
+            Amount = created.Amount,
+            Info = created.Info,
             Notes = []
         };
 
@@ -144,6 +160,10 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
             Initials = resident.Initials,
             TrafficLightStatus = resident.TrafficLightStatus.HasValue ? (int)resident.TrafficLightStatus.Value : null,
             Department = resident.Department,
+            Activity = resident.Activity,
+            Companion = resident.Companion,
+            Amount = resident.Amount,
+            Info = resident.Info,
             Notes = [.. resident.Notes.Select(n => new ResidentNoteDto
             {
                 Id = n.Id,
@@ -196,6 +216,10 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
         existing.LastName = dto.LastName;
         existing.TrafficLightStatus = dto.TrafficLightStatus;
         existing.Department = dto.Department;
+        existing.Activity = dto.Activity;
+        existing.Companion = dto.Companion;
+        existing.Amount = dto.Amount;
+        existing.Info = dto.Info;
 
         await _residentRepository.UpdateAsync(existing, cancellationToken);
         return NoContent();
@@ -277,6 +301,10 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
             Initials = resident.Initials,
             TrafficLightStatus = resident.TrafficLightStatus.HasValue ? (int)resident.TrafficLightStatus.Value : null,
             Department = resident.Department,
+            Activity = resident.Activity,
+            Companion = resident.Companion,
+            Amount = resident.Amount,
+            Info = resident.Info,
             Notes = []
         };
         return Ok(dto);

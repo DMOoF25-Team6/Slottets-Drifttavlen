@@ -42,6 +42,7 @@ public static class DependencyInjection
         _ = services.AddScoped<IPhoneAssignmentManager, PhoneAssignmentManager>();
         _ = services.AddScoped<IResidentNoteManager, ResidentNoteManager>();
         _ = services.AddScoped<IMedicineStatusManager, MedicineStatusManager>();
+        _ = services.AddScoped<IMedicineDeliveryManager, MedicineDeliveryManager>();
         _ = services.AddScoped<IEmployeeManager, EmployeeManager>();
         _ = services.AddScoped<ITaskListManager, TaskListManager>();
         _ = services.AddScoped<IAuditManager, AuditManager>();

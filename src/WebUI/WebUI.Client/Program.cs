@@ -53,8 +53,6 @@ internal class Program
         _ = builder.Services.AddTransient<JwtAuthorizationMessageHandler>();
         _ = builder.Services.AddTransient<JwtRefreshMessageHandler>();
 
-        _ = builder.Services.AddScoped<MedicineDeliveryClient>();
-
         _ = builder.Services.AddHttpClient("SlottetApi")
             .AddHttpMessageHandler<JwtRefreshMessageHandler>()
             .AddHttpMessageHandler<JwtAuthorizationMessageHandler>();
