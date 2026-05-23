@@ -22,7 +22,7 @@ sequenceDiagram
     Repo-->>Svc: created
     Svc->>Map: ToResponseDto(created)
     Svc-->>Api: ResponseDto
-    Api-->>Client: 200 OK + dto
+    Api-->>Client: 201 Created + dto
     Client-->>UI: dto
     UI->>UI: Refresh tabel
 ```

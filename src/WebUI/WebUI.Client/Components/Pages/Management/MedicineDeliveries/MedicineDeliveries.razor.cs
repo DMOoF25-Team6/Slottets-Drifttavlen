@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Team6. All rights reserved.
 //  No warranty, explicit or implicit, provided.
 
+using System.Net.Http;
 using Core.DTOs;
 using Microsoft.AspNetCore.Components;
 using WebUI.Client.Services;
@@ -25,11 +26,17 @@ public partial class MedicineDeliveries
 
     private bool _showDeleteModal;
     private MedicineDeliveryResponseDto? _selectedDelivery;
+    private bool _firstRenderDone;
     #endregion
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await LoadAsync();
+        if (firstRender && !_firstRenderDone)
+        {
+            _firstRenderDone = true;
+            await LoadAsync();
+            StateHasChanged();
+        }
     }
 
     private async Task LoadAsync()
@@ -40,7 +47,12 @@ public partial class MedicineDeliveries
             _hasError = false;
             _deliveries = (await Client.GetAllAsync()).ToList();
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
+        {
+            _hasError = true;
+            _errorMessage = ex.Message;
+        }
+        catch (TaskCanceledException ex)
         {
             _hasError = true;
             _errorMessage = ex.Message;
@@ -55,7 +67,7 @@ public partial class MedicineDeliveries
     {
         _isEditing = false;
         _editingId = null;
-        _formModel = new MedicineDeliveryFormModel { Timestamp = DateTime.Now };
+        _formModel = new MedicineDeliveryFormModel { Timestamp = DateTime.UtcNow };
         _showFormModal = true;
     }
 
@@ -82,6 +94,7 @@ public partial class MedicineDeliveries
     {
         try
         {
+            bool ok;
             if (_isEditing && _editingId.HasValue)
             {
                 MedicineDeliveryUpdateRequestDto dto = new()
@@ -91,7 +104,7 @@ public partial class MedicineDeliveries
                     Timestamp = _formModel.Timestamp,
                     Given = _formModel.Given
                 };
-                _ = await Client.UpdateAsync(_editingId.Value, dto);
+                ok = await Client.UpdateAsync(_editingId.Value, dto);
             }
             else
             {
@@ -102,12 +115,26 @@ public partial class MedicineDeliveries
                     Timestamp = _formModel.Timestamp,
                     Given = _formModel.Given
                 };
-                _ = await Client.CreateAsync(dto);
+                MedicineDeliveryResponseDto? created = await Client.CreateAsync(dto);
+                ok = created is not null;
             }
+
+            if (!ok)
+            {
+                _hasError = true;
+                _errorMessage = "Kunne ikke gemme leveringen.";
+                return;
+            }
+
             _showFormModal = false;
             await LoadAsync();
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
+        {
+            _hasError = true;
+            _errorMessage = ex.Message;
+        }
+        catch (TaskCanceledException ex)
         {
             _hasError = true;
             _errorMessage = ex.Message;
@@ -133,11 +160,22 @@ public partial class MedicineDeliveries
         }
         try
         {
-            _ = await Client.DeleteAsync(_selectedDelivery.Id);
+            bool ok = await Client.DeleteAsync(_selectedDelivery.Id);
+            if (!ok)
+            {
+                _hasError = true;
+                _errorMessage = "Kunne ikke slette leveringen.";
+                return;
+            }
             _showDeleteModal = false;
             await LoadAsync();
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
+        {
+            _hasError = true;
+            _errorMessage = ex.Message;
+        }
+        catch (TaskCanceledException ex)
         {
             _hasError = true;
             _errorMessage = ex.Message;
@@ -149,6 +187,6 @@ public class MedicineDeliveryFormModel
 {
     public Guid ResidentId { get; set; }
     public string MedicineName { get; set; } = string.Empty;
-    public DateTime Timestamp { get; set; } = DateTime.Now;
+    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     public bool Given { get; set; }
 }
