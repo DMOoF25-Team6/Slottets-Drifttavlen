@@ -161,9 +161,13 @@ public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiMana
     /// <exception cref="NotImplementedException">
     /// Always thrown as this method is not implemented.
     /// </exception>
-    public Task DeleteAsync(Guid id, CancellationToken ct = default)
+    public async Task DeleteAsync(Guid id, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        HttpResponseMessage response = await HttpClient.DeleteAsync($"residents/{id}", ct);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Failed to delete resident. Status code: {response.StatusCode}");
+        }
     }
 
     /// <summary>
