@@ -102,8 +102,15 @@ public partial class Residents : ComponentBase
         AuthenticationState authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         ClaimsPrincipal user = authState.User;
 
-        _hasManageClaim = user.HasClaim(c => c.Type == "permission" && c.Value == "manage:residents");
-        _userDepartment = user.FindFirst("department")?.Value;
+        // Admins and superusers may manage all residents; a "CanManageResidents" role
+        // claim grants the same without full admin. Mirrors the WebApi "CanManageResidents" policy.
+        _hasManageClaim = user.IsInRole("admin")
+            || user.IsInRole("superuser")
+            || user.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "CanManageResidents");
+
+        // Non-admins may be restricted to a single department via the "Department" claim
+        // emitted by TokenService. Admins have no Department claim, so they are unrestricted.
+        _userDepartment = user.FindFirst("Department")?.Value;
     }
     #endregion
 

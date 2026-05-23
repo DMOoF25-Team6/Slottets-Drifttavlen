@@ -42,6 +42,8 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
         {
             Id = r.Id,
             Initials = r.Initials,
+            FirstName = r.FirstName,
+            LastName = r.LastName,
             TrafficLightStatus = r.TrafficLightStatus.HasValue ? (int)r.TrafficLightStatus.Value : null,
             Department = r.Department,
             Activity = r.Activity,
@@ -128,6 +130,8 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
         {
             Id = created.Id,
             Initials = created.Initials,
+            FirstName = created.FirstName,
+            LastName = created.LastName,
             TrafficLightStatus = created.TrafficLightStatus.HasValue ? (int)created.TrafficLightStatus.Value : null,
             Department = created.Department,
             Activity = created.Activity,
@@ -158,6 +162,8 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
         {
             Id = resident.Id,
             Initials = resident.Initials,
+            FirstName = resident.FirstName,
+            LastName = resident.LastName,
             TrafficLightStatus = resident.TrafficLightStatus.HasValue ? (int)resident.TrafficLightStatus.Value : null,
             Department = resident.Department,
             Activity = resident.Activity,
@@ -299,6 +305,8 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
         {
             Id = resident.Id,
             Initials = resident.Initials,
+            FirstName = resident.FirstName,
+            LastName = resident.LastName,
             TrafficLightStatus = resident.TrafficLightStatus.HasValue ? (int)resident.TrafficLightStatus.Value : null,
             Department = resident.Department,
             Activity = resident.Activity,
