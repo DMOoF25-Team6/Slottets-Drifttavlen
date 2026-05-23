@@ -52,6 +52,32 @@
               <option value="@TrafficLightStatus.Red">Rød</option>
             </InputSelect>
           </div>
+          <hr/>
+          <h6 class="text-muted">Dashboard kort</h6>
+          <div class="mb-3">
+            <label for="activity" class="form-label">Aktivitet</label>
+            <InputText id="activity" class="form-control" @bind-Value="FormModel.Activity"
+                       maxlength="100" placeholder="f.eks. Handle, Spadseretur" />
+            <ValidationMessage For="@(() => FormModel.Activity)" class="text-danger small" />
+          </div>
+          <div class="mb-3">
+            <label for="companion" class="form-label">Ledsager</label>
+            <InputText id="companion" class="form-control" @bind-Value="FormModel.Companion"
+                       maxlength="50" placeholder="f.eks. AB" />
+            <ValidationMessage For="@(() => FormModel.Companion)" class="text-danger small" />
+          </div>
+          <div class="mb-3">
+            <label for="amount" class="form-label">Beloeb</label>
+            <InputText id="amount" class="form-control" @bind-Value="FormModel.Amount"
+                       maxlength="20" placeholder="f.eks. 300kr" />
+            <ValidationMessage For="@(() => FormModel.Amount)" class="text-danger small" />
+          </div>
+          <div class="mb-3">
+            <label for="info" class="form-label">Info</label>
+            <InputText id="info" class="form-control" @bind-Value="FormModel.Info"
+                       maxlength="200" placeholder="f.eks. Eget kort" />
+            <ValidationMessage For="@(() => FormModel.Info)" class="text-danger small" />
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" @onclick="OnCancel"

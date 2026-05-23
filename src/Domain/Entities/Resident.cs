@@ -37,6 +37,22 @@ public class Resident : IEntity
     /// data model with the "DischargedAt + 90 days" rule documented in
     /// <c>docs/use-cases/uc-010-ensure-data-security-and-gdpr-compliance/uc-010.usecase.da.md</c>.
     /// </remarks>
+    /// <summary>Free-text activity shown on the dashboard card (e.g. Handle, Spadseretur).</summary>
+    [MaxLength(100)]
+    public string? Activity { get; set; }
+
+    /// <summary>Initials or name of the staff member accompanying the resident for the activity.</summary>
+    [MaxLength(50)]
+    public string? Companion { get; set; }
+
+    /// <summary>Amount allowed for the activity (free-text, e.g. "300kr").</summary>
+    [MaxLength(20)]
+    public string? Amount { get; set; }
+
+    /// <summary>Additional free-text info shown on the dashboard card (e.g. Eget kort).</summary>
+    [MaxLength(200)]
+    public string? Info { get; set; }
+
     public DateTime? DischargedAt { get; set; }
 
     public virtual ICollection<ResidentNote> Notes { get; set; } = [];
