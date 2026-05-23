@@ -76,7 +76,7 @@ public class ResidentService(IResidentManager residentManager) : IResidentServic
         // Validation logic
         ArgumentNullException.ThrowIfNull(dto);
         _ = ResidentMapper.ToResident(dto);
-        _ = residentManager.CreateAsync(dto, ct);
+        await residentManager.CreateAsync(dto, ct);
         await Task.CompletedTask;
     }
 
