@@ -2,7 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 using Core.DTOs;
-using Core.Interfaces.Repositories;
+using Core.Interfaces.Managers;
 using Core.Services;
 using Domain.Entities;
 using Moq;
@@ -12,17 +12,17 @@ namespace Core.Tests.Services;
 
 public class MedicineDeliveryServiceTests
 {
-    private readonly Mock<IMedicineRepository> _repositoryMock;
+    private readonly Mock<IMedicineDeliveryManager> _managerMock;
     private readonly MedicineDeliveryService _sut;
 
     public MedicineDeliveryServiceTests()
     {
-        _repositoryMock = new Mock<IMedicineRepository>();
-        _sut = new MedicineDeliveryService(_repositoryMock.Object);
+        _managerMock = new Mock<IMedicineDeliveryManager>();
+        _sut = new MedicineDeliveryService(_managerMock.Object);
     }
 
     [Fact]
-    public async Task CreateAsync_PersistsRecord_ReturnsDto()
+    public async Task CreateAsync_DelegatesToManager()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         MedicineDeliveryCreateRequestDto dto = new()
@@ -32,100 +32,89 @@ public class MedicineDeliveryServiceTests
             Timestamp = DateTime.UtcNow,
             Given = true
         };
-        _repositoryMock
-            .Setup(r => r.CreateAsync(It.IsAny<MedicineRecord>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((MedicineRecord r, CancellationToken _) => r);
 
-        MedicineDeliveryResponseDto result = await _sut.CreateAsync(dto, ct);
+        await _sut.CreateAsync(dto, ct);
 
-        Assert.Equal(dto.MedicineName, result.MedicineName);
-        Assert.Equal(dto.ResidentId, result.ResidentId);
-        _repositoryMock.Verify(r => r.CreateAsync(It.IsAny<MedicineRecord>(), It.IsAny<CancellationToken>()), Times.Once);
+        _managerMock.Verify(m => m.CreateAsync(dto, ct), Times.Once);
     }
 
     [Fact]
-    public async Task UpdateAsync_WhenNotFound_ReturnsFalse()
+    public async Task UpdateAsync_DelegatesToManager()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
-        _repositoryMock
-            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((MedicineRecord?)null);
-
+        Guid id = Guid.NewGuid();
         MedicineDeliveryUpdateRequestDto dto = new()
         {
             ResidentId = Guid.NewGuid(),
-            MedicineName = "X",
-            Timestamp = DateTime.UtcNow
-        };
-
-        bool result = await _sut.UpdateAsync(Guid.NewGuid(), dto, ct);
-
-        Assert.False(result);
-    }
-
-    [Fact]
-    public async Task UpdateAsync_WhenFound_UpdatesAndReturnsTrue()
-    {
-        CancellationToken ct = TestContext.Current.CancellationToken;
-        MedicineRecord existing = new()
-        {
-            Id = Guid.NewGuid(),
-            ResidentId = Guid.NewGuid(),
-            MedicineName = "Old",
+            MedicineName = "Ipren",
             Timestamp = DateTime.UtcNow,
             Given = false
         };
-        _repositoryMock
-            .Setup(r => r.GetByIdAsync(existing.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(existing);
 
-        MedicineDeliveryUpdateRequestDto dto = new()
-        {
-            ResidentId = existing.ResidentId,
-            MedicineName = "New",
-            Timestamp = existing.Timestamp,
-            Given = true
-        };
+        await _sut.UpdateAsync(id, dto, ct);
 
-        bool result = await _sut.UpdateAsync(existing.Id, dto, ct);
-
-        Assert.True(result);
-        Assert.Equal("New", existing.MedicineName);
-        Assert.True(existing.Given);
-        _repositoryMock.Verify(r => r.UpdateAsync(existing, It.IsAny<CancellationToken>()), Times.Once);
+        _managerMock.Verify(m => m.UpdateAsync(id, dto, ct), Times.Once);
     }
 
     [Fact]
-    public async Task DeleteAsync_WhenFound_DeletesAndReturnsTrue()
+    public async Task DeleteAsync_DelegatesToManager()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
-        MedicineRecord existing = new()
+        Guid id = Guid.NewGuid();
+
+        await _sut.DeleteAsync(id, ct);
+
+        _managerMock.Verify(m => m.DeleteAsync(id, ct), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_MapsResponseDtosToEntities()
+    {
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        Guid residentId = Guid.NewGuid();
+        List<MedicineDeliveryResponseDto> dtos =
+        [
+            new() { Id = Guid.NewGuid(), ResidentId = residentId, MedicineName = "Panodil", Timestamp = DateTime.UtcNow, Given = true }
+        ];
+        _managerMock.Setup(m => m.GetAllAsync(ct)).ReturnsAsync(dtos);
+
+        List<MedicineRecord> result = (await _sut.GetAllAsync(ct)).ToList();
+
+        Assert.Single(result);
+        Assert.Equal("Panodil", result[0].MedicineName);
+        Assert.Equal(residentId, result[0].ResidentId);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_WhenManagerReturnsNull_ReturnsNull()
+    {
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        _managerMock.Setup(m => m.GetByIdAsync(It.IsAny<Guid>(), ct)).ReturnsAsync((MedicineDeliveryResponseDto?)null);
+
+        MedicineRecord? result = await _sut.GetByIdAsync(Guid.NewGuid(), ct);
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_WhenFound_ReturnsMappedEntity()
+    {
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        Guid id = Guid.NewGuid();
+        MedicineDeliveryResponseDto dto = new()
         {
-            Id = Guid.NewGuid(),
+            Id = id,
             ResidentId = Guid.NewGuid(),
-            MedicineName = "X",
-            Timestamp = DateTime.UtcNow
+            MedicineName = "Ipren",
+            Timestamp = DateTime.UtcNow,
+            Given = false
         };
-        _repositoryMock
-            .Setup(r => r.GetByIdAsync(existing.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(existing);
+        _managerMock.Setup(m => m.GetByIdAsync(id, ct)).ReturnsAsync(dto);
 
-        bool result = await _sut.DeleteAsync(existing.Id, ct);
+        MedicineRecord? result = await _sut.GetByIdAsync(id, ct);
 
-        Assert.True(result);
-        _repositoryMock.Verify(r => r.DeleteAsync(existing, It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task DeleteAsync_WhenNotFound_ReturnsFalse()
-    {
-        CancellationToken ct = TestContext.Current.CancellationToken;
-        _repositoryMock
-            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((MedicineRecord?)null);
-
-        bool result = await _sut.DeleteAsync(Guid.NewGuid(), ct);
-
-        Assert.False(result);
+        Assert.NotNull(result);
+        Assert.Equal(id, result!.Id);
+        Assert.Equal("Ipren", result.MedicineName);
     }
 }

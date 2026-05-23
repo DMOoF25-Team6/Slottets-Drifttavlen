@@ -1,4 +1,4 @@
-@using Core.DTOs
+@using Domain.Entities
 
 @if (Show && Delivery is not null)
 {
@@ -24,7 +24,7 @@
 
 @code {
     [Parameter] public bool Show { get; set; }
-    [Parameter] public MedicineDeliveryResponseDto? Delivery { get; set; }
+    [Parameter] public MedicineRecord? Delivery { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
     [Parameter] public EventCallback OnDelete { get; set; }
 }

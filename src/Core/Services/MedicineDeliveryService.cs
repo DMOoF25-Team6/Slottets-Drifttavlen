@@ -2,64 +2,47 @@
 //  No warranty, explicit or implicit, provided.
 
 using Core.DTOs;
-using Core.Interfaces.Repositories;
+using Core.Interfaces.Managers;
 using Core.Interfaces.Services;
 using Core.Mappers;
+
 using Domain.Entities;
 
 namespace Core.Services;
 
-public class MedicineDeliveryService : IMedicineDeliveryService
+/// <summary>
+/// Service responsible for medicine-delivery business logic. Delegates data access to
+/// <see cref="IMedicineDeliveryManager"/> and maps response DTOs to <see cref="MedicineRecord"/>
+/// domain entities, following Clean Architecture and the Dependency Inversion principle.
+/// </summary>
+public class MedicineDeliveryService(IMedicineDeliveryManager medicineDeliveryManager) : IMedicineDeliveryService
 {
-    private readonly IMedicineRepository _repository;
-
-    public MedicineDeliveryService(IMedicineRepository repository)
+    public async Task<IEnumerable<MedicineRecord>> GetAllAsync(CancellationToken ct = default)
     {
-        ArgumentNullException.ThrowIfNull(repository);
-        _repository = repository;
+        IEnumerable<MedicineDeliveryResponseDto> deliveries = await medicineDeliveryManager.GetAllAsync(ct);
+        return deliveries.Select(MedicineDeliveryMapper.ToMedicineRecord);
     }
 
-    public async Task<MedicineDeliveryResponseDto> CreateAsync(MedicineDeliveryCreateRequestDto dto, CancellationToken cancellationToken = default)
+    public async Task<MedicineRecord?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        MedicineDeliveryResponseDto? dto = await medicineDeliveryManager.GetByIdAsync(id, ct);
+        return dto is null ? null : MedicineDeliveryMapper.ToMedicineRecord(dto);
+    }
+
+    public async Task CreateAsync(MedicineDeliveryCreateRequestDto dto, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(dto);
-        MedicineRecord record = MedicineDeliveryMapper.ToMedicineRecord(dto);
-        MedicineRecord created = await _repository.CreateAsync(record, cancellationToken);
-        return MedicineDeliveryMapper.ToResponseDto(created);
+        await medicineDeliveryManager.CreateAsync(dto, ct);
     }
 
-    public async Task<bool> UpdateAsync(Guid id, MedicineDeliveryUpdateRequestDto dto, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Guid id, MedicineDeliveryUpdateRequestDto dto, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(dto);
-        MedicineRecord? existing = await _repository.GetByIdAsync(id, cancellationToken);
-        if (existing is null)
-        {
-            return false;
-        }
-        MedicineDeliveryMapper.ApplyUpdate(existing, dto);
-        await _repository.UpdateAsync(existing, cancellationToken);
-        return true;
+        await medicineDeliveryManager.UpdateAsync(id, dto, ct);
     }
 
-    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(Guid id, CancellationToken ct = default)
     {
-        MedicineRecord? existing = await _repository.GetByIdAsync(id, cancellationToken);
-        if (existing is null)
-        {
-            return false;
-        }
-        await _repository.DeleteAsync(existing, cancellationToken);
-        return true;
-    }
-
-    public async Task<IEnumerable<MedicineDeliveryResponseDto>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        IEnumerable<MedicineRecord> records = await _repository.GetAllAsync(cancellationToken);
-        return records.Select(MedicineDeliveryMapper.ToResponseDto);
-    }
-
-    public async Task<MedicineDeliveryResponseDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        MedicineRecord? record = await _repository.GetByIdAsync(id, cancellationToken);
-        return record is null ? null : MedicineDeliveryMapper.ToResponseDto(record);
+        await medicineDeliveryManager.DeleteAsync(id, ct);
     }
 }

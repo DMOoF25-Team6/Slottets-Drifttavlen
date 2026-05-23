@@ -21,6 +21,19 @@ public static class MedicineDeliveryMapper
         };
     }
 
+    public static MedicineRecord ToMedicineRecord(MedicineDeliveryResponseDto dto)
+    {
+        ArgumentNullException.ThrowIfNull(dto);
+        return new MedicineRecord
+        {
+            Id = dto.Id,
+            ResidentId = dto.ResidentId,
+            MedicineName = dto.MedicineName,
+            Timestamp = dto.Timestamp,
+            Given = dto.Given
+        };
+    }
+
     public static void ApplyUpdate(MedicineRecord record, MedicineDeliveryUpdateRequestDto dto)
     {
         ArgumentNullException.ThrowIfNull(record);

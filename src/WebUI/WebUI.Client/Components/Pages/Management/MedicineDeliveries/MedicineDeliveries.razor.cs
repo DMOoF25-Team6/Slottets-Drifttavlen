@@ -3,9 +3,10 @@
 
 using System.Net.Http;
 using Core.DTOs;
+using Core.Interfaces.Services;
+using Domain.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using WebUI.Client.Services;
 
 namespace WebUI.Client.Components.Pages.Management.MedicineDeliveries;
 
@@ -13,12 +14,12 @@ public partial class MedicineDeliveries
 {
     #region Fields
     [Inject]
-    private MedicineDeliveryClient Client { get; set; } = default!;
+    private IMedicineDeliveryService MedicineDeliveryService { get; set; } = default!;
 
     [Inject]
     private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
-    private List<MedicineDeliveryResponseDto> _deliveries = new();
+    private List<MedicineRecord> _deliveries = new();
     private bool _isLoading = true;
     private bool _hasError;
     private string _errorMessage = string.Empty;
@@ -29,7 +30,7 @@ public partial class MedicineDeliveries
     private Guid? _editingId;
 
     private bool _showDeleteModal;
-    private MedicineDeliveryResponseDto? _selectedDelivery;
+    private MedicineRecord? _selectedDelivery;
     private bool _firstRenderDone;
     #endregion
 
@@ -41,10 +42,8 @@ public partial class MedicineDeliveries
         }
         _firstRenderDone = true;
 
-        // Materialise WASM auth state from localStorage before any API calls.
-        // Without this the InteractiveAuto pre-render fires API calls before the
-        // JWT is available, and every request returns 401. Same pattern as
-        // RetentionSettingsPage and other GDPR pages.
+        // Materialise WASM auth state from localStorage before any API call so the
+        // JWT bearer token is attached; mirrors the GDPR pages pattern.
         await InitializeAuthorizationAsync();
         await LoadAsync();
         StateHasChanged();
@@ -62,7 +61,7 @@ public partial class MedicineDeliveries
         {
             _isLoading = true;
             _hasError = false;
-            _deliveries = (await Client.GetAllAsync()).ToList();
+            _deliveries = (await MedicineDeliveryService.GetAllAsync()).ToList();
         }
         catch (HttpRequestException ex)
         {
@@ -88,7 +87,7 @@ public partial class MedicineDeliveries
         _showFormModal = true;
     }
 
-    private void OpenEditModal(MedicineDeliveryResponseDto d)
+    private void OpenEditModal(MedicineRecord d)
     {
         _isEditing = true;
         _editingId = d.Id;
@@ -111,7 +110,6 @@ public partial class MedicineDeliveries
     {
         try
         {
-            bool ok;
             if (_isEditing && _editingId.HasValue)
             {
                 MedicineDeliveryUpdateRequestDto dto = new()
@@ -121,7 +119,7 @@ public partial class MedicineDeliveries
                     Timestamp = _formModel.Timestamp,
                     Given = _formModel.Given
                 };
-                ok = await Client.UpdateAsync(_editingId.Value, dto);
+                await MedicineDeliveryService.UpdateAsync(_editingId.Value, dto);
             }
             else
             {
@@ -132,15 +130,7 @@ public partial class MedicineDeliveries
                     Timestamp = _formModel.Timestamp,
                     Given = _formModel.Given
                 };
-                MedicineDeliveryResponseDto? created = await Client.CreateAsync(dto);
-                ok = created is not null;
-            }
-
-            if (!ok)
-            {
-                _hasError = true;
-                _errorMessage = "Kunne ikke gemme leveringen.";
-                return;
+                await MedicineDeliveryService.CreateAsync(dto);
             }
 
             _showFormModal = false;
@@ -158,7 +148,7 @@ public partial class MedicineDeliveries
         }
     }
 
-    private void OpenDeleteModal(MedicineDeliveryResponseDto d)
+    private void OpenDeleteModal(MedicineRecord d)
     {
         _selectedDelivery = d;
         _showDeleteModal = true;
@@ -177,13 +167,7 @@ public partial class MedicineDeliveries
         }
         try
         {
-            bool ok = await Client.DeleteAsync(_selectedDelivery.Id);
-            if (!ok)
-            {
-                _hasError = true;
-                _errorMessage = "Kunne ikke slette leveringen.";
-                return;
-            }
+            await MedicineDeliveryService.DeleteAsync(_selectedDelivery.Id);
             _showDeleteModal = false;
             await LoadAsync();
         }
