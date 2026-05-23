@@ -428,3 +428,6 @@ FodyWeavers.xsd
 .Trashes
 /Data
 pull.ps1.bak
+
+# Local one-shot setup scripts
+uc*setup.sh

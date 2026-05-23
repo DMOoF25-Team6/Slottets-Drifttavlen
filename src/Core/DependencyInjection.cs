@@ -21,6 +21,7 @@ public static class DependencyInjection
         _ = services.AddScoped<IResidentService, ResidentService>();
         _ = services.AddScoped<IResidentNoteService, ResidentNoteService>();
         _ = services.AddScoped<IMedicineStatusService, MedicineStatusService>();
+        _ = services.AddScoped<IMedicineDeliveryService, MedicineDeliveryService>();
         _ = services.AddScoped<IPhoneAssignmentService, PhoneAssignmentService>();
         _ = services.AddScoped<IAccountService, AccountService>();
         _ = services.AddScoped<ITaskListService, TaskListService>();

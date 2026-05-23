@@ -1,0 +1,30 @@
+@using Core.DTOs
+
+@if (Show && Delivery is not null)
+{
+    <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="medDeliveryDeleteTitle" style="background-color: rgba(0,0,0,0.4);">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="medDeliveryDeleteTitle">Slet levering?</h5>
+                    <button type="button" class="btn-close" aria-label="Luk" @onclick="OnCancel"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@Delivery.Timestamp.ToString("yyyy-MM-dd HH:mm") - @Delivery.MedicineName</p>
+                    <p>Resident: @Delivery.ResidentId</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="OnCancel">Annuller</button>
+                    <button class="btn btn-danger" @onclick="OnDelete">Slet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Show { get; set; }
+    [Parameter] public MedicineDeliveryResponseDto? Delivery { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public EventCallback OnDelete { get; set; }
+}

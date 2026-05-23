@@ -1,0 +1,46 @@
+@using Core.DTOs
+@using WebUI.Client.Components.Pages.Management.MedicineDeliveries
+
+@if (Show)
+{
+    <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="medDeliveryFormTitle" style="background-color: rgba(0,0,0,0.4);">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="medDeliveryFormTitle">@(IsEditing ? "Rediger levering" : "Ny levering")</h5>
+                    <button type="button" class="btn-close" aria-label="Luk" @onclick="OnCancel"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="residentId">Resident ID</label>
+                        <input id="residentId" class="form-control" @bind="FormModel.ResidentId" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="medicineName">Medicin</label>
+                        <input id="medicineName" class="form-control" @bind="FormModel.MedicineName" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="medicineTimestamp">Tidspunkt</label>
+                        <input id="medicineTimestamp" type="datetime-local" class="form-control" @bind="FormModel.Timestamp" />
+                    </div>
+                    <div class="form-check">
+                        <input id="medicineGiven" type="checkbox" class="form-check-input" @bind="FormModel.Given" />
+                        <label class="form-check-label" for="medicineGiven">Givet</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="OnCancel">Annuller</button>
+                    <button class="btn btn-primary" @onclick="OnSave">Gem</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Show { get; set; }
+    [Parameter] public bool IsEditing { get; set; }
+    [Parameter] public MedicineDeliveryFormModel FormModel { get; set; } = new();
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+}
