@@ -1,0 +1,133 @@
+<svg width="100%" viewBox="0 0 960 700" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Sikkerhedskomponenter i Clean Architecture med trusler</title>
+<desc>Strukturdiagram der viser hvor sikkerheden ligger i Clean Architecture, og hvilke trusler hvert lag blokerer.</desc>
+
+<style>
+.t { font-family: Arial, sans-serif; font-size: 14px; font-weight: 500; }
+.ts { font-family: Arial, sans-serif; font-size: 12px; }
+.tsm { font-family: Arial, sans-serif; font-size: 11px; }
+.threat-title { font-family: Arial, sans-serif; font-size: 11px; font-weight: 700; fill: #501313; }
+.threat-text { font-family: Arial, sans-serif; font-size: 10.5px; fill: #791F1F; }
+.code { font-family: Consolas, monospace; font-size: 10.5px; fill: #791F1F; }
+</style>
+
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+
+<text x="40" y="32" class="t" fill="#141413">Clean Architecture — hvor ligger sikkerheden, og hvad blokerer hvert lag?</text>
+<text x="40" y="50" class="ts" fill="#3D3D3A">Afhængigheder peger indad mod Domain. Hvert lag har sit eget sikkerhedsansvar (venstre) og blokerer specifikke angreb (højre).</text>
+
+<text x="335" y="78" class="ts" text-anchor="middle" font-weight="700" fill="#2C2C2A">Lag i Clean Architecture</text>
+<text x="800" y="78" class="ts" text-anchor="middle" font-weight="700" fill="#501313">Trusler dette lag blokerer</text>
+
+<g>
+<rect x="40" y="90" width="280" height="70" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="180" y="112" class="t" text-anchor="middle" fill="#444441">WebUI (Blazor klient)</text>
+<text x="180" y="132" class="ts" text-anchor="middle" fill="#5F5E5A">Razor-encoding → XSS-beskyttelse</text>
+<text x="180" y="148" class="ts" text-anchor="middle" fill="#5F5E5A">[Authorize] på sider</text>
+</g>
+
+<g>
+<rect x="360" y="90" width="280" height="70" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="500" y="112" class="t" text-anchor="middle" fill="#042C53">Api (Controllers)</text>
+<text x="500" y="132" class="ts" text-anchor="middle" fill="#185FA5">AccountController · ModelState.IsValid</text>
+<text x="500" y="148" class="ts" text-anchor="middle" fill="#185FA5">[Authorize(Roles="admin")]</text>
+</g>
+
+<rect x="680" y="90" width="240" height="70" rx="6" fill="#FCEBEB" stroke="#A32D2D" stroke-width="0.5"/>
+<text x="690" y="108" class="threat-title">XSS · uautoriseret adgang</text>
+<text x="690" y="124" class="threat-text">Indsprøjtet script i input (XSS) →</text>
+<text x="690" y="138" class="threat-text">Razor encoder automatisk. Request</text>
+<text x="690" y="152" class="threat-text">til admin-endpoint uden token afvises.</text>
+
+<line x1="180" y1="160" x2="180" y2="188" stroke="#888780" stroke-width="1" marker-end="url(#arrow)"/>
+<line x1="500" y1="160" x2="500" y2="188" stroke="#888780" stroke-width="1" marker-end="url(#arrow)"/>
+
+<g>
+<rect x="40" y="190" width="600" height="100" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="340" y="214" class="t" text-anchor="middle" fill="#3C3489">Core (Application)</text>
+<text x="340" y="232" class="ts" text-anchor="middle" fill="#534AB7">Interfaces · Mappers · Services</text>
+
+<rect x="60" y="246" width="270" height="34" rx="4" fill="#CECBF6" stroke="#534AB7" stroke-width="0.5"/>
+<text x="195" y="259" class="ts" text-anchor="middle" fill="#26215C">LoginRequestDto · RegisterRequestDto</text>
+<text x="195" y="273" class="ts" text-anchor="middle" fill="#3C3489">[Required] [EmailAddress] [MinLength]</text>
+
+<rect x="350" y="246" width="270" height="34" rx="4" fill="#CECBF6" stroke="#534AB7" stroke-width="0.5"/>
+<text x="485" y="259" class="ts" text-anchor="middle" fill="#26215C">ITokenService · IUserRepository</text>
+<text x="485" y="273" class="ts" text-anchor="middle" fill="#3C3489">Kontrakter — ingen implementering</text>
+</g>
+
+<rect x="680" y="190" width="240" height="100" rx="6" fill="#FCEBEB" stroke="#A32D2D" stroke-width="0.5"/>
+<text x="690" y="208" class="threat-title">Mass assignment / over-posting</text>
+<text x="690" y="224" class="code">{ "email":..., "isAdmin":true }</text>
+<text x="690" y="238" class="threat-text">DTO eksponerer ikke IsAdmin →</text>
+<text x="690" y="252" class="threat-text">feltet ignoreres af modelbinderen.</text>
+<text x="690" y="270" class="threat-title">Malformed input</text>
+<text x="690" y="284" class="threat-text">Tom email, for kort password → 400.</text>
+
+<line x1="340" y1="290" x2="340" y2="318" stroke="#888780" stroke-width="1" marker-end="url(#arrow)"/>
+
+<g>
+<rect x="40" y="320" width="600" height="100" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+<text x="340" y="344" class="t" text-anchor="middle" fill="#04342C">Infrastructure (Identity, Managers)</text>
+<text x="340" y="362" class="ts" text-anchor="middle" fill="#1D9E75">Implementerer Core-interfaces</text>
+
+<rect x="60" y="376" width="270" height="34" rx="4" fill="#9FE1CB" stroke="#1D9E75" stroke-width="0.5"/>
+<text x="195" y="389" class="ts" text-anchor="middle" fill="#04342C">UserManager · SignInManager</text>
+<text x="195" y="403" class="ts" text-anchor="middle" fill="#0F6E56">PBKDF2-hash + salt af passwords</text>
+
+<rect x="350" y="376" width="270" height="34" rx="4" fill="#9FE1CB" stroke="#1D9E75" stroke-width="0.5"/>
+<text x="485" y="389" class="ts" text-anchor="middle" fill="#04342C">TokenService (JWT)</text>
+<text x="485" y="403" class="ts" text-anchor="middle" fill="#0F6E56">Signering med secret fra .env</text>
+</g>
+
+<rect x="680" y="320" width="240" height="100" rx="6" fill="#FCEBEB" stroke="#A32D2D" stroke-width="0.5"/>
+<text x="690" y="338" class="threat-title">Brute force · credential stuffing</text>
+<text x="690" y="352" class="threat-text">Automatiseret password-gætning →</text>
+<text x="690" y="366" class="threat-text">PBKDF2 + salt + lockout (5 forsøg).</text>
+<text x="690" y="384" class="threat-title">Token tampering / hijacking</text>
+<text x="690" y="398" class="threat-text">Ændret JWT afvises (signatur).</text>
+<text x="690" y="412" class="threat-text">Refresh tokens hashed i DB.</text>
+
+<line x1="340" y1="420" x2="340" y2="448" stroke="#888780" stroke-width="1" marker-end="url(#arrow)"/>
+
+<g>
+<rect x="40" y="450" width="600" height="80" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
+<text x="340" y="474" class="t" text-anchor="middle" fill="#412402">Infrastructure.Data (EF Core)</text>
+<text x="340" y="492" class="ts" text-anchor="middle" fill="#BA7517">Eneste lag med database-adgang</text>
+<rect x="60" y="504" width="560" height="20" rx="4" fill="#FAC775" stroke="#BA7517" stroke-width="0.5"/>
+<text x="340" y="517" class="ts" text-anchor="middle" fill="#412402">AppDbContext · LINQ → parametriseret SQL → SQL injection-beskyttelse</text>
+</g>
+
+<rect x="680" y="450" width="240" height="80" rx="6" fill="#FCEBEB" stroke="#A32D2D" stroke-width="0.5"/>
+<text x="690" y="468" class="threat-title">SQL injection</text>
+<text x="690" y="484" class="threat-text">Klassisk:</text>
+<text x="744" y="484" class="code">' OR 1=1 --</text>
+<text x="690" y="500" class="threat-text">Input sendes som parameter (@p0),</text>
+<text x="690" y="514" class="threat-text">aldrig konkateneret ind i SQL.</text>
+<text x="690" y="526" class="threat-text">EF Core gør det altid sikkert.</text>
+
+<line x1="340" y1="530" x2="340" y2="558" stroke="#888780" stroke-width="1" marker-end="url(#arrow)"/>
+
+<g>
+<rect x="40" y="560" width="600" height="70" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
+<text x="340" y="584" class="t" text-anchor="middle" fill="#4A1B0C">Domain</text>
+<text x="340" y="602" class="ts" text-anchor="middle" fill="#993C1D">Entities · Enums · Domain-regler</text>
+<text x="340" y="616" class="ts" text-anchor="middle" fill="#993C1D">Invariant-tjek — afviser ugyldige tilstande</text>
+</g>
+
+<rect x="680" y="560" width="240" height="70" rx="6" fill="#FCEBEB" stroke="#A32D2D" stroke-width="0.5"/>
+<text x="690" y="578" class="threat-title">Ugyldige forretningstilstande</text>
+<text x="690" y="594" class="threat-text">Fx negativ medicinmængde, eller</text>
+<text x="690" y="608" class="threat-text">tildeling af samme telefon til to</text>
+<text x="690" y="622" class="threat-text">medarbejdere — afvises i Domain.</text>
+
+<rect x="40" y="650" width="14" height="14" rx="2" fill="#888780"/>
+<text x="60" y="661" class="ts" fill="#3D3D3A">Afhængighedsretning (peger indad mod Domain)</text>
+<rect x="400" y="650" width="14" height="14" rx="2" fill="#FCEBEB" stroke="#A32D2D" stroke-width="0.5"/>
+<text x="420" y="661" class="ts" fill="#501313">Trusler dette lag blokerer (defense in depth)</text>
+
+</svg>
