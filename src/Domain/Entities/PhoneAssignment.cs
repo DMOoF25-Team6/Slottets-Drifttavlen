@@ -2,6 +2,7 @@
 //  No warranty, explicit or implicit, provided.
 
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 using Domain.Interfaces;
 
@@ -13,6 +14,7 @@ public class PhoneAssignment : IEntity
     public Guid Id { get; set; }
 
     [Required]
+    [ForeignKey(nameof(Employee))]
     public Guid CaregiverId { get; set; }
 
     [Required]

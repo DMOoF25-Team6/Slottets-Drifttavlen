@@ -1,18 +1,13 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using Domain.Enums;
 using Domain.Interfaces;
 
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+//using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Domain.Entities;
 
@@ -31,12 +26,12 @@ public class StaffAssignment : IEntity
 
     // Gets or sets the ID of the resident assigned to the employee.
     [Required]
-    [ForeignKey(nameof(Resident))]
+    [ForeignKey(nameof(Domain.Entities.Resident))]
     public Guid ResidentId { get; set; }
 
     // Gets or sets the ID of the employee assigned to the resident.
     [Required]
-    [ForeignKey(nameof(Employee))]
+    [ForeignKey(nameof(Domain.Entities.Employee))]
     public Guid EmployeeId { get; set; }
 
     // Gets or sets the type of shift for this assignment (Day, Evening, Night).
