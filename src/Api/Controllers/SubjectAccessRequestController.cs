@@ -29,6 +29,12 @@ public class SubjectAccessRequestController : ControllerBase
 {
     #region Fields
 
+    private static readonly JsonSerializerOptions s_jsonOptions = new()
+    {
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+
     private readonly IResidentRepository _residentRepository;
     private readonly IResidentNoteRepository _residentNoteRepository;
     private readonly IMedicineRepository _medicineRepository;
@@ -186,12 +192,8 @@ public class SubjectAccessRequestController : ControllerBase
             automatedDecisionMaking = false
         };
 
-        string payload = JsonSerializer.Serialize(artifact, new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            // Camel-case for downstream tooling compatibility.
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
+        // Camel-case for downstream tooling compatibility.
+        string payload = JsonSerializer.Serialize(artifact, s_jsonOptions);
 
         // Persist the SAR lifecycle for GDPR Art. 30 record-of-processing. The Id
         // is the same value returned to the caller as ExportId, so the subsequent

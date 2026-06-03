@@ -47,9 +47,7 @@ public static class DependencyInjection
         _ = services.AddScoped<ITaskListManager, TaskListManager>();
         _ = services.AddScoped<IAuditManager, AuditManager>();
 
-        _ = services.AddScoped<ITokenService, TokenService>();
-
-        _ = services.AddScoped<IDatabaseConnectionManager, DatabaseConnectionManager>();
+        _ = services.AddSingleton<IDatabaseConnectionManager, DatabaseConnectionManager>();
 
 
         // UC-010 GDPR compliance — Manager HTTP clients

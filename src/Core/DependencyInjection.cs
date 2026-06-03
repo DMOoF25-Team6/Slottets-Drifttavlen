@@ -7,8 +7,6 @@ using Core.Interfaces.Services;
 using Core.Providers;
 using Core.Services;
 
-using Domain.Entities;
-
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Core;
@@ -27,7 +25,7 @@ public static class DependencyInjection
         _ = services.AddScoped<ITaskListService, TaskListService>();
 
         // Other services
-        _ = services.AddScoped<IDatabaseConnectionService, DatabaseConnectionService>();
+        _ = services.AddSingleton<IDatabaseConnectionService, DatabaseConnectionService>();
 
         // Register the TokenService for handling JWT token generation and validation
         _ = services.AddScoped<ITokenService, TokenService>();

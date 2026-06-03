@@ -55,8 +55,8 @@ public partial class ResidentCard : ComponentBase, IDisposable
     protected override async Task OnInitializedAsync()
     {
         _countdownTimer = new Timer(_ =>
-        { 
-            InvokeAsync(StateHasChanged); 
+        {
+            _ = InvokeAsync(StateHasChanged);
         }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
 
 
@@ -238,17 +238,11 @@ public partial class ResidentCard : ComponentBase, IDisposable
 
         TimeSpan remaining = _painkillerStatus.NextAllowedTime - DateTime.UtcNow;
 
-        if (remaining <= TimeSpan.Zero)
-        {
-            return "Tilladt nu";
-        }
-
-        if (remaining.TotalHours >= 24)
-        {
-            return $"{(int)remaining.TotalDays}d {remaining.Hours:D2}:{remaining.Minutes:D2}:{remaining.Seconds:D2}";
-        }
-
-        return $"{(int)remaining.TotalHours:D2}:{remaining.Minutes:D2}:{remaining.Seconds:D2}";
+        return remaining <= TimeSpan.Zero
+            ? "Tilladt nu"
+            : remaining.TotalHours >= 24
+            ? $"{(int)remaining.TotalDays}d {remaining.Hours:D2}:{remaining.Minutes:D2}:{remaining.Seconds:D2}"
+            : $"{(int)remaining.TotalHours:D2}:{remaining.Minutes:D2}:{remaining.Seconds:D2}";
     }
 
     private string GetPainKillerBadgeClass()
@@ -267,12 +261,13 @@ public partial class ResidentCard : ComponentBase, IDisposable
             return "badge-warning";
         }
 
-            return "badge-secondary";
+        return "badge-secondary";
     }
 
     public void Dispose()
     {
-            _countdownTimer?.Dispose();
+        _countdownTimer?.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     #endregion

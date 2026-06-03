@@ -5,5 +5,5 @@ namespace Core.Interfaces.Managers;
 
 public interface IDatabaseConnectionManager
 {
-    Task CheckAndUpdateConnectionStateAsync();
+    Task<bool> CheckAndUpdateConnectionStateAsync();
 }

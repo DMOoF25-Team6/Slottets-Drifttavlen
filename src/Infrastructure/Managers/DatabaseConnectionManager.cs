@@ -37,17 +37,19 @@ public class DatabaseConnectionManager : IDatabaseConnectionManager
     /// <summary>
     /// Calls the API to check if the database is connected and updates the state provider.
     /// </summary>
-    public async Task CheckAndUpdateConnectionStateAsync()
+    public async Task<bool> CheckAndUpdateConnectionStateAsync()
     {
         try
         {
             // Adjust the endpoint as needed
             bool isConnected = await _httpClient.GetFromJsonAsync<bool>("database/isconnected");
-            _stateProvider.SetConnectionState(isConnected);
+            _stateProvider.IsConnected = isConnected;
+            return isConnected;
         }
         catch
         {
-            _stateProvider.SetConnectionState(false);
+            _stateProvider.IsConnected = false;
+            return false;
         }
     }
 }

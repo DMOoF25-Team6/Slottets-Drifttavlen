@@ -3,7 +3,7 @@
 
 namespace Core.Interfaces.Services;
 
-public interface IDatabaseConnectionService
+public interface IDatabaseConnectionService : IDisposable
 {
-    Task CheckDatabaseConnectionAsync();
+    Task<bool> CheckDatabaseConnectionAsync();
 }
