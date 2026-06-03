@@ -101,8 +101,6 @@
                 }
               </td>
               <td class="text-end">
-                @if (CanManageResident(resident))
-                {
                   <button type="button" class="btn btn-outline-primary btn-sm me-1"
                           @onclick="() => OpenEditModal(resident)">
                     Rediger
@@ -111,7 +109,6 @@
                           @onclick="() => OpenDeleteConfirm(resident)">
                     Slet
                   </button>
-                }
               </td>
             </tr>
           }

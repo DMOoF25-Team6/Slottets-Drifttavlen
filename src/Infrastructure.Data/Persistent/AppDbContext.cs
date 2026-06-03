@@ -63,9 +63,11 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : Iden
         _ = modelBuilder.ApplyConfiguration(new Configurations.ResidentNoteConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.MedicineRecordConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.PainkillerRecordConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new Configurations.PhoneAssignmentConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.ChangeDetailConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.EmployeeConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.RetentionPolicyConfiguration());
+        _ = modelBuilder.ApplyConfiguration(new Configurations.SecurityIncidentConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.SubjectAccessRequestConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.LoginAttemptConfiguration());
         _ = modelBuilder.ApplyConfiguration(new Configurations.TaskListConfiguration());
