@@ -4,11 +4,9 @@
 using System.Security.Claims;
 using System.Text;
 
-using Core.Interfaces.Managers;
 using Core.Services;
 
 using Infrastructure;
-using Infrastructure.Managers;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -92,10 +90,6 @@ public class Program
 
         _ = builder.Services.AddAuthorization(options =>
         {
-            options.AddPolicy("CanManageResidents", policy =>
-                policy.RequireAssertion(ctx =>
-                    ctx.User.IsInRole("admin") ||
-                    ctx.User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "CanManageResidents")));
         });
 
         WebApplication app = builder.Build();

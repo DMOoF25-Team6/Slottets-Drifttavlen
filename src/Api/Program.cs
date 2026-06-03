@@ -99,16 +99,16 @@ public class Program
         WebApplication app = builder.Build();
 
         // Apply any pending migrations at startup
-        
+
         //using IServiceScope scope = app.Services.CreateScope();
 
-       // AppDbContext ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        // AppDbContext ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-       // if (ctx.Database.IsRelational())
-       // {
+        // if (ctx.Database.IsRelational())
+        // {
         //    ctx.Database.Migrate();
-       // }
-        
+        // }
+
 
         // Configure the HTTP request pipeline.
         //if (app.Environment.IsDevelopment())
@@ -198,10 +198,15 @@ public class Program
             });
         _ = builder.Services.AddAuthorization(options =>
         {
-            // Require one of the emitted role claims so the policy matches the JWT contents.
-            // This preserves the intended authorization behavior without changing token issuance.
-            //options.AddPolicy("CanManageResidents", policy =>
-            //    policy.RequireRole("admin", "superuser"));
+            // Authorize users who either have a claim type named "manage:residents"
+            // OR have a scope/sCP claim containing the value "manage:residents".
+            // Tokens from different providers may expose permissions as a claim type
+            // or as a space-separated scope/scp value. Use RequireAssertion to
+            // accept either form.
+            options.AddPolicy("ManageResidents", policy =>
+                policy.RequireAssertion(ctx =>
+                    ctx.User.IsInRole("admin") ||
+                    ctx.User.HasClaim(c => c.Type == "permission" && c.Value == "manage:residents")));
         });
     }
 
