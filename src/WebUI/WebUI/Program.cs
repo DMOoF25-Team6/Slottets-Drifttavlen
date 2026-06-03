@@ -52,9 +52,7 @@ public class Program
         _ = builder.Services.AddDataProtection()
             .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysDir));
 
-        // And for the interface, e.g.:
-        _ = builder.Services.AddScoped<IAccountManager, AccountManager>();
-
+        // WebUI-specific services
         _ = builder.Services.AddScoped<TokenStorageService>();
         _ = builder.Services.AddScoped<AuthService>();
         _ = builder.Services.AddAuthorizationCore(options =>

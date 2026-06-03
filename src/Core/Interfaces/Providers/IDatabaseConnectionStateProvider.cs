@@ -11,13 +11,7 @@ public interface IDatabaseConnectionStateProvider
     /// <summary>
     /// Gets a value indicating whether the database is connected.
     /// </summary>
-    bool IsConnected { get; }
-
-    /// <summary>
-    /// Sets the connection state.
-    /// </summary>
-    /// <param name="isConnected">True if connected, otherwise false.</param>
-    void SetConnectionState(bool isConnected);
+    bool IsConnected { get; set; }
 
     /// <summary>
     /// Event triggered when the connection state changes.

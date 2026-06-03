@@ -10,6 +10,7 @@ namespace Core.Providers;
 /// </summary>
 public class DatabaseConnectionStateProvider : IDatabaseConnectionStateProvider
 {
+    // Event triggered when the connection state changes.
     public event Action? StateChanged;
 
     // Do not use auto property to avoid unnecessary event invocations
@@ -20,7 +21,7 @@ public class DatabaseConnectionStateProvider : IDatabaseConnectionStateProvider
     public bool IsConnected
     {
         get => _isConnected;
-        private set
+        set
         {
             if (_isConnected != value)
             {
@@ -28,10 +29,5 @@ public class DatabaseConnectionStateProvider : IDatabaseConnectionStateProvider
                 StateChanged?.Invoke();
             }
         }
-    }
-
-    public void SetConnectionState(bool isConnected)
-    {
-        IsConnected = isConnected;
     }
 }

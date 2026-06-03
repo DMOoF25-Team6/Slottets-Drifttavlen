@@ -15,9 +15,7 @@ public partial class MainLayout : IDisposable
     private IDatabaseConnectionStateProvider DbConnectionStateProvider { get; set; } = default!;
 
     [Inject]
-    private IDatabaseConnectionService DbConnectionService { get; set; } = default!;
-
-    private System.Threading.Timer? _timer;
+    private IDatabaseConnectionService? DatabaseConnectionService { get; set; } = default!;
 
     // Dotnet 8 issue
 #pragma warning disable IDE0032 // Use auto property
@@ -37,32 +35,24 @@ public partial class MainLayout : IDisposable
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         DbConnectionStateProvider.StateChanged += OnDbConnectionStateChanged;
-        await FetchDbConnectionStateAsync();
-        // Poll every 30 seconds (adjust as needed)
-        _timer = new System.Threading.Timer(async _ =>
-        {
-            await InvokeAsync(FetchDbConnectionStateAsync);
-        }, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
-    }
-
-    private async Task FetchDbConnectionStateAsync()
-    {
-        await DbConnectionService.CheckDatabaseConnectionAsync();
+        _ = DatabaseConnectionService!.CheckDatabaseConnectionAsync();
         IsDbConnected = DbConnectionStateProvider.IsConnected;
     }
 
     private void OnDbConnectionStateChanged()
     {
-        IsDbConnected = DbConnectionStateProvider.IsConnected;
+        _ = InvokeAsync(() =>
+        {
+            IsDbConnected = DbConnectionStateProvider.IsConnected;
+        });
     }
 
     void IDisposable.Dispose()
     {
-        DbConnectionStateProvider.StateChanged -= OnDbConnectionStateChanged;
-        _timer?.Dispose();
+        //DbConnectionStateProvider.StateChanged -= OnDbConnectionStateChanged;
         // Suppress finalization to avoid unnecessary GC overhead
         GC.SuppressFinalize(this);
     }

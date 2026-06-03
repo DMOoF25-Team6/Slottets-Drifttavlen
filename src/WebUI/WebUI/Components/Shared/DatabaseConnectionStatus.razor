@@ -1,0 +1,15 @@
+@rendermode InteractiveServer
+@using Core.Interfaces.Providers
+@inject IDatabaseConnectionStateProvider DbStateProvider
+
+<span title="Database forbindelse" class="fw-bold border-end pe-3">
+  <span>&#x1F5C4;</span>
+  @if (DbStateProvider.IsConnected)
+  {
+    <span style="color:green;font-size:1.2em;vertical-align:middle;">&#x1F7E2;</span>
+  }
+  else
+  {
+    <span style="color:red;font-size:1.2em;vertical-align:middle;">&#x1F534;</span>
+  }
+</span>
