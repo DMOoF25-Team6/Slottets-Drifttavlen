@@ -191,7 +191,8 @@ public class ResidentManagerTests
             .ReturnsAsync(response);
 
         // Act & Assert
-        Exception ex = await Assert.ThrowsAsync<Exception>(() => _residentManager.CreateAsync(dto, CancellationToken.None));
+        // The manager throws InvalidOperationException when the API returns a non-success status.
+        InvalidOperationException ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _residentManager.CreateAsync(dto, CancellationToken.None));
         Assert.Contains("Failed to create resident", ex.Message);
     }
 
@@ -236,7 +237,8 @@ public class ResidentManagerTests
             .ReturnsAsync(response);
 
         // Act & Assert
-        Exception ex = await Assert.ThrowsAsync<Exception>(() => _residentManager.UpdateAsync(id, dto, CancellationToken.None));
+        // The manager throws InvalidOperationException when the API returns a non-success status.
+        InvalidOperationException ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _residentManager.UpdateAsync(id, dto, CancellationToken.None));
         Assert.Contains("Failed to update resident", ex.Message);
     }
 

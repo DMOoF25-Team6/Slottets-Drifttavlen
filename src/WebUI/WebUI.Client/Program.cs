@@ -16,9 +16,6 @@ internal class Program
     {
         WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-        // Register infrastructure (HttpClient "SlottetApi" + managers + services).
-        _ = builder.Services.AddInfrastructure(builder.Configuration);
-
         // Token storage and authentication services (client-side).
         _ = builder.Services.AddScoped<TokenStorageService>();
         _ = builder.Services.AddScoped<JwtAuthorizationMessageHandler>();
@@ -29,10 +26,10 @@ internal class Program
         //   - a "CanManageResidents" role claim (for more granular control without granting full admin privileges).
         _ = builder.Services.AddAuthorizationCore(options =>
         {
-            options.AddPolicy("CanManageResidents", policy =>
+            options.AddPolicy("ManageResidents", policy =>
                 policy.RequireAssertion(ctx =>
                     ctx.User.IsInRole("admin") ||
-                    ctx.User.HasClaim(c => c.Type == System.Security.Claims.ClaimTypes.Role && c.Value == "CanManageResidents")));
+                    ctx.User.HasClaim(c => c.Type == "permission" && c.Value == "manage:residents")));
         });
 
         _ = builder.Services.AddCascadingAuthenticationState();
@@ -53,6 +50,11 @@ internal class Program
         _ = builder.Services.AddTransient<JwtAuthorizationMessageHandler>();
         _ = builder.Services.AddTransient<JwtRefreshMessageHandler>();
 
+        // Register infrastructure (HttpClient "SlottetApi" + managers + services).
+        // This must come AFTER the handlers are registered so we can attach them to the HttpClient.
+        _ = builder.Services.AddInfrastructure(builder.Configuration);
+
+        // Attach JWT handlers to the SlottetApi HttpClient (already configured by AddInfrastructure).
         _ = builder.Services.AddHttpClient("SlottetApi")
             .AddHttpMessageHandler<JwtRefreshMessageHandler>()
             .AddHttpMessageHandler<JwtAuthorizationMessageHandler>();

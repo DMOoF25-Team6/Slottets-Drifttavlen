@@ -16,7 +16,7 @@ namespace Infrastructure.Managers;
 /// <remarks>
 /// Implements <see cref="IResidentManager"/> for retrieving and manipulating resident data.
 /// </remarks>
-public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiManagerBase(httpClientFactory, "SlottetApi"), IResidentManager
+public sealed class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiManagerBase(httpClientFactory, "SlottetApi"), IResidentManager
 {
     #region Methods create
     /// <summary>
@@ -35,7 +35,9 @@ public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiMana
         HttpResponseMessage response = await HttpClient.PostAsJsonAsync("residents/Create", dto, ct);
         if (!response.IsSuccessStatusCode)
         {
-            throw new Exception("Failed to create resident. Status code: " + response.StatusCode);
+            string errorContent = await response.Content.ReadAsStringAsync(ct);
+            throw new InvalidOperationException(
+                $"Failed to create resident. Status: {response.StatusCode}. Details: {errorContent}");
         }
     }
 
@@ -130,7 +132,9 @@ public class ResidentManager(IHttpClientFactory httpClientFactory) : HttpApiMana
         HttpResponseMessage response = await HttpClient.PutAsJsonAsync($"residents/{id}", entity, ct);
         if (!response.IsSuccessStatusCode)
         {
-            throw new Exception($"Failed to update resident. Status code: {response.StatusCode}");
+            string errorContent = await response.Content.ReadAsStringAsync(ct);
+            throw new InvalidOperationException(
+                $"Failed to update resident. Status: {response.StatusCode}. Details: {errorContent}");
         }
     }
 

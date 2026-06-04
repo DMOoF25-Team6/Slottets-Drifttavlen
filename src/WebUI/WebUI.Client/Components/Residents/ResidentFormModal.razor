@@ -45,11 +45,11 @@
           </div>
           <div class="mb-3">
             <label for="trafficLight" class="form-label">Trafiklys</label>
-            <InputSelect id="trafficLight" class="form-select" @bind-Value="FormModel.TrafficLightStatus">
+            <InputSelect id="trafficLight" class="form-select" @bind-Value="FormModel.TrafficLightStatusString">
               <option value="">— Vælg status —</option>
-              <option value="@TrafficLightStatus.Green">Grøn</option>
-              <option value="@TrafficLightStatus.Yellow">Gul</option>
-              <option value="@TrafficLightStatus.Red">Rød</option>
+              <option value="Green">Grøn</option>
+              <option value="Yellow">Gul</option>
+              <option value="Red">Rød</option>
             </InputSelect>
           </div>
           <hr/>

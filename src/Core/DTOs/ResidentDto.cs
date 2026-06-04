@@ -78,7 +78,7 @@ public class ResidentUpdateRequestDto
     /// Gets or sets the status of the resident's traffic light.
     /// </summary>
     /// <value>One of the <see cref="TrafficLightStatus"/> enumeration values that specifies the resident's status. <see langword="null"/> if no status is set.</value>
-    public required TrafficLightStatus? TrafficLightStatus { get; set; }
+    public TrafficLightStatus? TrafficLightStatus { get; set; }
 
     /// <summary>
     /// Gets or sets the department the resident belongs to.

@@ -25,6 +25,26 @@ public class ResidentFormModel
 
     public TrafficLightStatus? TrafficLightStatus { get; set; }
 
+    /// <summary>
+    /// Helper property for binding TrafficLightStatus to InputSelect.
+    /// InputSelect requires a non-nullable type, so we use string and convert.
+    /// </summary>
+    public string TrafficLightStatusString
+    {
+        get => TrafficLightStatus?.ToString() ?? string.Empty;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                TrafficLightStatus = null;
+            }
+            else if (Enum.TryParse<TrafficLightStatus>(value, out TrafficLightStatus result))
+            {
+                TrafficLightStatus = result;
+            }
+        }
+    }
+
     [MaxLength(100, ErrorMessage = "Aktivitet maa hoejst vaere 100 tegn.")]
     public string? Activity { get; set; }
 

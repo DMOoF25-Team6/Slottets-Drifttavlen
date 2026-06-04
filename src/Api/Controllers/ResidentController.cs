@@ -92,7 +92,7 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
     /// <param name="dto">The resident creation data transfer object.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>An <see cref="ActionResult{T}"/> containing the created <see cref="IResidentResult"/> and location header.</returns>
-    [Authorize(Policy = "CanManageResidents")]
+    [Authorize(Policy = "ManageResidents")]
     [HttpPost("Create")]
     public async Task<ActionResult<ResidentResponseDto>> Create([FromBody] ResidentCreateRequestDto dto, CancellationToken cancellationToken)
     {
@@ -188,7 +188,7 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
     /// <param name="dto">The updated resident data.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns><see cref="NoContentResult"/> on success; <see cref="NotFoundResult"/> if no resident with the given id exists; <see cref="ForbidResult"/> if the user's department does not match.</returns>
-    [Authorize(Policy = "CanManageResidents")]
+    [Authorize(Policy = "ManageResidents")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult> Update(Guid id, [FromBody] ResidentUpdateRequestDto dto, CancellationToken cancellationToken)
     {
@@ -237,7 +237,7 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
     /// <param name="id">The unique identifier of the resident to delete.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns><see cref="NoContentResult"/> on success; <see cref="NotFoundResult"/> if no resident with the given id exists; <see cref="ForbidResult"/> if the user's department does not match.</returns>
-    [Authorize(Policy = "CanManageResidents")]
+    [Authorize(Policy = "ManageResidents")]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
@@ -271,7 +271,7 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
     /// returns 409 Conflict so the original discharge date — and therefore the
     /// retention deadline — cannot be silently reset.
     /// </remarks>
-    [Authorize(Policy = "CanManageResidents")]
+    [Authorize(Policy = "ManageResidents")]
     [HttpPost("{id:guid}/discharge")]
     public async Task<ActionResult<ResidentResponseDto>> Discharge(Guid id, CancellationToken cancellationToken)
     {
