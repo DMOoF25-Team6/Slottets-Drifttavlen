@@ -1,19 +1,20 @@
 // Copyright (c) 2026 Team6. All rights reserved. 
 //  No warranty, explicit or implicit, provided.
-using System.Security.Claims;
 
-using Microsoft.AspNetCore.Components.Authorization;
+using System.Net.Http.Json;
+using System.Security.Claims;
 
 using Core.DTOs;
 using Core.Interfaces.Services;
-
-using System.Net.Http.Json;
 
 using Domain.Entities;
 using Domain.Enums;
 
 using Microsoft.AspNetCore.Components;
-
+/// <summary>
+/// Page for viewing and managing staff assignments for residents during shifts.
+/// </summary>
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace WebUI.Client.Components.Pages.StaffAssignments;
 
@@ -23,8 +24,13 @@ namespace WebUI.Client.Components.Pages.StaffAssignments;
 /// </summary>
 public partial class StaffAssignments : ComponentBase
 {
-    
-
+    // [TODO] CRITICAL: Direct HttpClient usage bypasses service layer, violating Clean Architecture principles.
+    //          This component should use StaffAssignmentService -> StaffAssignmentManager to handle business logic instead of raw HTTP calls.
+    //          ** Use clean architecture where infrastructure.manager know how to handle HTTP requests. **
+    // [TODO] SECURITY: Catches all exceptions generically without inspecting specific error types.
+    //          Replace with try-catch blocks that distinguish between ApiException, ValidationException, etc.
+    // [TODO] PERFORMANCE: HttpClientFactory is called multiple times per request via LoadAssignmentsAsync().LoadEmployeesAsync(),RemoveAssignmentAsync().
+    //          Consider reusing a single configured HttpClient as a field-level property to avoid factory overhead.
     [Inject]
     private IHttpClientFactory HttpClientFactory { get; set; } = default!;
 
@@ -38,18 +44,25 @@ public partial class StaffAssignments : ComponentBase
     [Inject]
     private IResidentService ResidentService { get; set; } = default!;
 
+    #region fields
+    /// <summary>
+    /// TODO: Replace with application service call to avoid bypassing business logic.
+    /// This component should use StaffAssignmentService instead of direct HttpClient calls.
+    /// </summary>
+    #endregion
+
     // Stores the list of assignments shown by the component.
     private IReadOnlyList<AssignmentOverviewDto> _assignments = [];
     private IReadOnlyList<Resident> _residents = [];
     private IReadOnlyList<EmployeeDto> _employees = [];
 
-    //while data is being loaded.
+
     private bool _isLoading;
 
     // True if something goes wrong while loading assignments.
     private bool _hasError;
 
-    private ShiftType _selectedShiftType= ShiftType.Day;
+    private ShiftType _selectedShiftType = ShiftType.Day;
     private DateTime _selectedDate = DateTime.Today;
 
     private string? _selectedEmployeeId;
@@ -63,7 +76,8 @@ public partial class StaffAssignments : ComponentBase
     private Guid? _editingAssignmentId;
 
     // Indicates whether the page is currently editing an assignment.
-   // private bool _isEditing;
+    // private bool _isEditing;
+
 
     // Loads assignments based on the selected date and shift type.
     private async Task LoadAssignmentsAsync()
@@ -133,24 +147,19 @@ public partial class StaffAssignments : ComponentBase
     // Creates or updates a nstaff assignment depending on edit state
     private async Task SaveAssignmentAsync()
     {
-      
-
         if (string.IsNullOrWhiteSpace(_selectedResidentId))
         {
             _assignmentError = "Please select a resident.";
             return;
         }
-
         if (_selectedEmployeeId is null)
         {
             _assignmentError = "Please select an employee.";
             return;
         }
-
         try
         {
             HttpClient client = HttpClientFactory.CreateClient("SlottetApi");
-
             StaffAssignmentDto dto = new()
             {
                 ResidentId = Guid.Parse(_selectedResidentId!),
@@ -219,7 +228,9 @@ public partial class StaffAssignments : ComponentBase
         catch (HttpRequestException)
         {
             _hasError = true;
+            // [TODO] STATE MANAGEMENT: This state should be cleared when navigating away from this page using IAsyncDisposable pattern or OnNavigationStart event.
         }
+
     }
 
 
@@ -229,7 +240,7 @@ public partial class StaffAssignments : ComponentBase
         // Store the ID of the assignment currently being edited.
         _editingAssignmentId = assignment.AssignmentId;
 
-       
+
 
         // Populate the form fields with existing assignment values.
         _selectedResidentId = assignment.ResidentId.ToString();

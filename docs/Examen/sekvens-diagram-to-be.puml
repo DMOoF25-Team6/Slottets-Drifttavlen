@@ -1,0 +1,40 @@
+@startuml
+title The way it should have been
+actor User
+participant WebUI.Client.Components.Pages.StaffAssignments as WebUI
+participant Core.Services.StaffAssignmentService as StaffAssignmentService  << (?,#ADD1B2) MIA >>
+participant Infrastructure.Services.StaffAssignmentManagent as StaffAssignmentManagent  << (?,#ADD1B2) MIA >>
+participant WebApi as WebApi  << (S,#ADD1B2) Server >>
+participant Infrastructure.Data.Persistence as Persistence
+participant MySql as MySql  << (D,#ADD1B2) SQL Server >>
+
+User -> WebUI: Fill out form and submit
+activate WebUI
+WebUI -> WebUI: SaveAssignmentAsync()
+alt "_editingAssignmentId is null"
+WebUI -> StaffAssignmentService: AddAsync(StaffAssignmentDto)
+StaffAssignmentService -> StaffAssignmentManagent: AddAsync(StaffAssignmentDto)
+StaffAssignmentManagent -> WebApi: _httpClient.PostAsJsonAsync("staff-assignments", StaffAssignmentRequestDto)
+WebApi -> Persistence: AddAsync(StaffAssignmentRequestDto)
+Persistence -> MySql: Insert into StaffAssignments
+MySql --> Persistence: Insert result
+Persistence --> WebApi: AddStaffAssignmentResultDto
+WebApi --> StaffAssignmentManagent: StaffAssignmentResponce
+StaffAssignmentManagent --> StaffAssignmentService: StaffAssignmentResponce
+StaffAssignmentService --> WebUI: StaffAssignmentResponce
+
+else "_editingAssignmentId is not null"
+WebUI -> StaffAssignmentService: UpdateAsync(StaffAssignmentDto)
+StaffAssignmentService -> StaffAssignmentManagent: UpdateAsync(StaffAssignmentDto)
+StaffAssignmentManagent -> WebApi: _httpClient.PutAsJsonAsync("staff-assignments/{_editingAssignmentId}",StaffAssignmentRequestDto)
+WebApi -> Persistence: UpdateAsync(StaffAssignmentRequestDto)
+Persistence -> MySql: Update StaffAssignments
+MySql --> Persistence: Update result
+Persistence --> WebApi: UpdateStaffAssignmentResultDto
+WebApi --> StaffAssignmentManagent: updateStaffAssignmentResultDto
+StaffAssignmentManagent --> StaffAssignmentService: updateStaffAssignmentResultDto
+StaffAssignmentService --> WebUI: updateStaffAssignmentResultDto
+WebUI --> WebUI: StateHasChanged
+end
+deactivate WebUI
+@enduml

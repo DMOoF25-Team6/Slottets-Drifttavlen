@@ -217,6 +217,7 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
             return Forbid();
         }
 
+        // TODO: Should have used mappings instead of direct property assignment
         existing.Initials = dto.Initials;
         existing.FirstName = dto.FirstName;
         existing.LastName = dto.LastName;
@@ -228,7 +229,7 @@ public class ResidentController(IResidentRepository residentRepository) : Contro
         existing.Info = dto.Info;
 
         await _residentRepository.UpdateAsync(existing, cancellationToken);
-        return NoContent();
+        return NoContent(); // TODO: should return 200 OK instead of NoContent
     }
 
     /// <summary>
