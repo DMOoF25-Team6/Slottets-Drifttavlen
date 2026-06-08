@@ -22,7 +22,7 @@ box "Core" #FFFFBA
 participant ResidentService as Service
 end box
 
-box "Infrastruckture" #BAFFC9
+box "Infrastructure" #BAFFC9
 participant ResidentManager as Manager
 end box
 
