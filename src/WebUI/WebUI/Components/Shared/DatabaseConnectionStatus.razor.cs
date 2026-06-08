@@ -52,7 +52,10 @@ public partial class DatabaseConnectionStatus : IDisposable
     public void Dispose()
     {
         // Unsubscribe to avoid memory leaks. Guard against null/partial construction.
-        DbStateProvider?.StateChanged -= OnStateChanged;
+        if (DbStateProvider is not null)
+        {
+            DbStateProvider.StateChanged -= OnStateChanged;
+        }
 
         GC.SuppressFinalize(this);
     }
