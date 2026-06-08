@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 
 using MySqlConnector;
 namespace Api;
@@ -89,7 +90,23 @@ public class Program
 
         // Add services to the container.
         _ = builder.Services.AddControllers();
-        _ = builder.Services.AddSwaggerGen();
+        _ = builder.Services.AddSwaggerGen(options =>
+        {
+            const string bearerScheme = "Bearer";
+
+            options.AddSecurityDefinition(bearerScheme, new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                Description = "Indsæt JWT-tokenet fra POST /Account/login. Skriv kun tokenet uden 'Bearer '."
+            });
+
+            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference(bearerScheme, document, null)] = []
+            });
+        });
 
         //_ = builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
 
