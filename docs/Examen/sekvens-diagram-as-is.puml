@@ -45,7 +45,7 @@ end
 deactivate Persistence
 Repositories --> WebApi: AddStaffAssignmentResultDto
 deactivate Repositories
-alt "Succes"
+alt "Success"
 WebApi --> StaffAssignments: response (Ok)
 else "BadRequest"
 WebApi --> StaffAssignments: response (BadRequest)
