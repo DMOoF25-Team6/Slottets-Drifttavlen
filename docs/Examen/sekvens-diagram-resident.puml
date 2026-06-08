@@ -1,0 +1,89 @@
+@startuml
+title Sequence Diagram for Edit Resident
+header
+An actor has made changes in the resident form and submitted it.
+end header
+
+'Pastel Pink: #FFB3BA
+'Peach: #FFDFBA
+'Light Yellow: #FFFFBA
+'Mint Green: #BAFFC9
+'Sky Blue: #AEC6CF
+'Lavender: #E1BFE3
+'Soft Coral: #F89C74
+'Baby Blue: #9EB9F3
+'Butter Yellow: #F6CF71
+
+box "WebUI.Client" #FFDFBA
+participant Components.Pages.Management.Residents as Page
+end box
+
+box "Core" #FFFFBA
+participant ResidentService as Service
+end box
+
+box "Infrastructure" #BAFFC9
+participant ResidentManager as Manager
+end box
+
+box "WebApi" #E1BFE3
+participant ResidentController as Controller
+end box
+
+box "Infrastruckture.Data" #AEC6CF
+participant ResidentRepository as Repository
+participant Persistence as Persistence
+end box
+
+box "Sql server" #F89C74
+participant Mysql as Mysql
+end box
+
+activate Page
+Page -> Service: UpdateAsync(Guid id, ResidentUpdateRequestDto)
+activate Service
+Service -> Manager: UpdateAsync(Guid id, ResidentUpdateRequestDto)
+activate Manager
+Manager -> Controller: Put residents/{id}\n[Body: ResidentUpdateRequestDto JSON]
+activate Controller
+Controller -> Repository: UpdateAsync(Resident, CancellationToken)
+activate Repository
+alt "not ArgumentNullException.ThrowIfNull(entity)"
+    Repository -> Persistence: UpdateAsync(Resident)
+    activate Persistence
+    Persistence --> Repository
+    deactivate Persistence
+    Repository -> Persistence: SaveChangesAsync(CancellationToken)
+    activate Persistence
+    Persistence -> Mysql: EF Core SaveChangesAsync()
+    activate Mysql
+    Mysql --> Persistence
+    deactivate Mysql
+    Persistence --> Repository
+    deactivate Persistence
+    Repository --> Controller
+else "ArgumentNullException.ThrowIfNull(entity)"
+    Repository --> Controller: ArgumentNullException.ThrowIfNull(entity)
+    deactivate Repository
+end alt
+
+alt "Success"
+    Controller -> Manager: 200 OK
+else "401 Unauthorized"
+    Controller -> Manager: 401 Unauthorized
+else "403 Forbidden"
+    Controller -> Manager: 403 Forbidden
+else "404 Not Found"
+    Controller -> Manager: 404 Not Found
+    deactivate Controller
+end alt
+alt "IsSuccessStatusCode"
+    Manager --> Service
+else "not IsSuccessStatusCode"
+    Manager --> Service: InvalidOperationException(\n$"Failed to update resident. \nStatus: {response.StatusCode}. \nDetails: {errorContent}")
+    deactivate Manager
+end alt
+Service --> Page
+deactivate Service
+deactivate Page
+@enduml

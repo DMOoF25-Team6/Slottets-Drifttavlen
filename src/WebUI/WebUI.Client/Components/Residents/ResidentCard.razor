@@ -6,57 +6,50 @@
 @using Domain.Entities
 @using Domain.Enums
 
+<article class="card h-100 w-100 resident-card">
+  <header class="card-header @GetTrafficLightClass(Resident.TrafficLightStatus) flex-fill">
+    <h5 class="card-title">@Resident.Initials</h5>
+    <span class="badge bg-success position-absolute top-0 end-0 m-0 px-4 col-auto">PN-Tid: @GetPainkillerCountdownText()</span>
+  </header>
+  <section class="card-body">
 
+    <div class="col">
+      <table class="table table-sm resident-table mb-1">
+        <thead>
+          <tr>
+            <th scope="col">Aktivitet </th>
+            <th scope="col">Ledsager</th>
+            <th scope="col">Beløb</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr scope="row">
+            <td>@(string.IsNullOrEmpty(Resident.Activity) ? "—" : Resident.Activity)</td>
+            <td>@(string.IsNullOrEmpty(Resident.Companion) ? "—" : Resident.Companion)</td>
+            <td>@(string.IsNullOrEmpty(Resident.Amount) ? "—" : Resident.Amount)</td>
+          </tr>
+          <tr>
+            <th scope="row">Info</th>
+            <td colspan="2">@(string.IsNullOrEmpty(Resident.Info) ? "—" : Resident.Info)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
+    @* UC003 - Medicine and painkiller status section *@
+    <div class="row">
 
+      @* Medicine Section *@
+      <MedicineStatus MedicineStatusData="_medicineStatus" />
 
-            <article class="card h-100 w-100 resident-card">
-                <header class="card-header @GetTrafficLightClass(Resident.TrafficLightStatus) flex-fill">
-                    <h5 class="card-title">@Resident.Initials</h5>
-            <span class="badge bg-success position-absolute top-0 end-0 m-0 px-4 col-auto">PN-Tid: @GetPainkillerCountdownText()</span>
-                </header>
-                <section class="card-body">
+      @* Painkiller Section *@
 
-                    <div class="col">
-                        <table class="table table-sm resident-table mb-1">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Aktivitet </th>
-                                    <th scope="col">Ledsager</th>
-                                    <th scope="col">Beløb</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr scope="row">
-                                    <td>@(string.IsNullOrEmpty(Resident.Activity) ? "—" : Resident.Activity)</td>
-                                    <td>@(string.IsNullOrEmpty(Resident.Companion) ? "—" : Resident.Companion)</td>
-                                    <td>@(string.IsNullOrEmpty(Resident.Amount) ? "—" : Resident.Amount)</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Info</th>
-                                    <td colspan="2">@(string.IsNullOrEmpty(Resident.Info) ? "—" : Resident.Info)</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+    </div>
 
-                    @* UC003 - Medicine and painkiller status section *@
-                    <div class="row">
+    @* UC002 - Notes section *@
+    <div class="row">
+      <NotesSection Resident="Resident" Notes="Resident.Notes.ToList()" />
+    </div>
 
-                        @* Medicine Section *@
-                        <MedicineStatus MedicineStatusData="_medicineStatus" />
-
-                        @* Painkiller Section *@
-                        
-                    </div>
-
-                    @* UC002 - Notes section *@
-                    <div class="row">
-                        <NotesSection Resident="Resident" Notes="Resident.Notes.ToList()" />
-                    </div>
-
-                </section>
-            </article>
-
-
-
+  </section>
+</article>

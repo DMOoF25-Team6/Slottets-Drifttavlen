@@ -1,0 +1,82 @@
+@startuml
+title The way it is
+actor User
+
+box "WebUI.Client" #B1FF6E
+participant Components.Pages.StaffAssignments as StaffAssignments
+end box
+
+box "WebAPI" #FFC76E
+participant WebApi as WebApi  << (S,#ADD1B2) Server >>
+end box
+
+box "Infrastructure.Manager" #FFC76E
+participant StaffAssignmentManager as Manager
+end box
+
+box "Infrastructure.Data" #6EFFCA
+participant Repositories as Repositories
+participant Persistence as Persistence
+end box
+
+box "SQL Server" #FF6EEE
+participant MySql as MySql  << (D,#ADD1B2) SQL Server >>
+end box
+
+User -> StaffAssignments: Fill out form and submit
+activate StaffAssignments
+StaffAssignments -> StaffAssignments: SaveAssignmentAsync()
+alt "_editingAssignmentId is null"
+StaffAssignments -> WebApi: POST /staff-assignments\n[Body: StaffAssignmentDto JSON]
+activate WebApi
+WebApi -> Repositories: AssignAsync(StaffAssignmentRequestDto)
+activate Repositories
+Repositories -> Persistence: AddAsync(StaffAssignmentRequestDto)
+activate Persistence
+Persistence -> MySql: Insert into StaffAssignments
+activate MySql
+MySql --> Persistence: Insert result
+deactivate MySql
+alt "success"
+Persistence --> Repositories: persisted result
+else "failure"
+Persistence --> Repositories: Exceptions("Entity not found after adding")
+end
+deactivate Persistence
+Repositories --> WebApi: AddStaffAssignmentResultDto
+deactivate Repositories
+alt "Success"
+WebApi --> StaffAssignments: response (Ok)
+else "BadRequest"
+WebApi --> StaffAssignments: response (BadRequest)
+deactivate WebApi
+end
+else "_editingAssignmentId is not null"
+StaffAssignments -> WebApi: POST /staff-assignments\n[Body: StaffAssignmentDto/{_editingAssignmentId} JSON] "
+activate WebApi
+WebApi -> Repositories: UpdateAsync(StaffAssignmentRequestDto)
+activate Repositories
+Repositories -> Persistence: UpdateAsync(StaffAssignmentRequestDto)
+activate Persistence
+Persistence -> MySql: Update StaffAssignments
+activate MySql
+MySql --> Persistence: Update result
+deactivate MySql
+alt "success"
+Persistence --> Repositories: UpdateStaffAssignmentResultDto
+else "failure"
+Persistence --> Repositories: ArgumentNullException(entities)
+end
+deactivate Persistence
+Repositories --> WebApi: UpdateStaffAssignmentResultDto
+deactivate Repositories
+alt "Succes"
+WebApi --> StaffAssignments: response (Ok)
+else "BadRequest"
+WebApi --> StaffAssignments: response (BadRequest)
+deactivate WebApi
+end
+deactivate StaffAssignments
+end
+
+@enduml

@@ -33,7 +33,6 @@ public partial class Dashboard
     //private static readonly string DashboardEmail = Environment.GetEnvironmentVariable("Dashboard__AutoLoginEmail") ?? string.Empty;
     //private static readonly string DashboardPassword = Environment.GetEnvironmentVariable("Dashboard__AutoLoginPassword") ?? string.Empty;
 
-
     private IEnumerable<Resident> _residents = [];
     private bool _isLoading = true;
 
