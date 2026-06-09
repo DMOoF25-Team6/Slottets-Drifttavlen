@@ -2,189 +2,158 @@
 
 ## Formål
 
-Diagrammerne viser projektets faktiske metodekald. De er opdelt ved HTTP-grænsen,
-så teksten kan læses i VS Codes Markdown Preview uden kraftig zoom.
+Disse sekvensdiagrammer viser de faktiske metodekald i projektet. Navnene kan
+derfor findes direkte i koden og bruges som breakpoints under en demonstration.
 
-- **Client-side:** Koden kører i Blazor WebAssembly i browseren.
-- **Server-side:** Koden kører i ASP.NET Core API'et.
-- **Grænsen:** Et HTTP-request sendes fra clienten til API'et.
+Projektet har ikke ét ensartet flow for alle funktioner:
 
-Det oprindelige, planlagte sekvensdiagram er bevaret separat i
-`docs/Examen/sekvens-diagram.md`.
+- Opdatering af en beboer går gennem et Core-service og en HTTP-manager.
+- Hentning af vagtoversigten kalder API'et direkte fra Blazor-komponenten.
+- Flere API-controllere kalder repositories direkte, mens andre kalder services.
 
 ---
 
-## Opdater Beboer - Samlet Oversigt
+## Opdater Beboer - Faktisk Implementeret Flow
+
+Udgangspunktet er administrationssiden for beboere. Brugeren redigerer en
+beboer og indsender formularen.
 
 ```mermaid
-%%{init: {"themeVariables": {"fontSize": "18px"}, "sequence": {"useMaxWidth": false}}}%%
-sequenceDiagram
-    actor User as Bruger
-    participant Client as Blazor Client
-    participant API as ASP.NET Core API
-    participant DB as MySQL
-
-    User->>Client: HandleFormSubmitAsync()
-    Client->>API: HTTP PUT /residents/{id}<br/>Authorization: Bearer token
-    API->>DB: SELECT og UPDATE Resident
-    DB-->>API: Opdatering gennemført
-    API-->>Client: HTTP 204 No Content
-    Client-->>User: Vis opdateret beboerliste
-```
-
-## Opdater Beboer - Client-side
-
-Alt i dette diagram kører i browseren. Det sidste kald sender requestet over
-client/server-grænsen.
-
-```mermaid
-%%{init: {"themeVariables": {"fontSize": "18px"}, "sequence": {"useMaxWidth": false}}}%%
 sequenceDiagram
     actor User as Bruger
     participant Page as Residents.razor.cs
     participant Service as ResidentService
     participant Manager as ResidentManager
-    participant JWT as JwtAuthorizationMessageHandler
-    participant API as API-grænse
+    participant JwtHandler as JwtAuthorizationMessageHandler
+    participant Auth as ASP.NET Authentication/Authorization
+    participant Controller as ResidentController
+    participant Repository as ResidentRepository / Repository of Resident
+    participant Context as AppDbContext / EF Core
+    participant Database as MySQL
 
     User->>Page: HandleFormSubmitAsync()
+    activate Page
     Page->>Service: UpdateAsync(_editingId, ResidentUpdateRequestDto)
+    activate Service
     Service->>Manager: UpdateAsync(id, resident, ct)
-    Manager->>JWT: HttpClient.PutAsJsonAsync("residents/{id}", entity, ct)
-    JWT->>JWT: SendAsync(request, cancellationToken)
-    JWT->>JWT: tokenStorageService.GetTokenAsync()
-    JWT->>JWT: Tilføj Authorization: Bearer token
-    JWT->>API: HTTP PUT /residents/{id}
+    activate Manager
+    Manager->>JwtHandler: HttpClient.PutAsJsonAsync("residents/{id}", entity, ct)
+    activate JwtHandler
+    JwtHandler->>JwtHandler: SendAsync(request, cancellationToken)<br/>GetTokenAsync()<br/>Tilføj Authorization: Bearer token
+    JwtHandler->>Auth: HTTP PUT /residents/{id}
+    deactivate JwtHandler
+    Auth->>Auth: UseAuthentication() og UseAuthorization()<br/>Kontroller [Authorize(Policy = "ManageResidents")]
 
-    alt API svarer 204 No Content
-        API-->>JWT: HttpResponseMessage
-        JWT-->>Manager: HttpResponseMessage
-        Manager-->>Service: UpdateAsync completed
-        Service-->>Page: UpdateAsync completed
-        Page->>Page: LoadResidentsAsync()
-        Page-->>User: Vis opdateret beboerliste
-    else API svarer 4xx
-        API-->>JWT: HttpResponseMessage
-        JWT-->>Manager: HttpResponseMessage
+    alt Token eller policy afvises
+        Auth-->>JwtHandler: 401 Unauthorized eller 403 Forbidden
+        JwtHandler-->>Manager: HttpResponseMessage
         Manager-->>Service: throw InvalidOperationException
         Service-->>Page: Exception
         Page-->>User: Vis fejlbesked
+    else Godkendt
+        Auth->>Controller: Update(id, dto, cancellationToken)
+        activate Controller
+        Controller->>Repository: GetByIdAsync(id, cancellationToken)
+        activate Repository
+        Repository->>Context: DbSet.FindAsync(id)
+        Context->>Database: SELECT Resident
+        Database-->>Context: Resident eller null
+        Context-->>Repository: Resident eller null
+        Repository-->>Controller: Resident eller null
+        deactivate Repository
+
+        alt Beboer findes ikke
+            Controller-->>Auth: NotFound()
+            Auth-->>JwtHandler: HTTP 404 Not Found
+            JwtHandler-->>Manager: HttpResponseMessage
+            Manager-->>Service: throw InvalidOperationException
+            Service-->>Page: Exception
+            Page-->>User: Vis fejlbesked
+        else Beboer findes og bruger må redigere
+            Controller->>Controller: UserCanManageDepartment(department)<br/>Opdater felter på existing
+            Controller->>Repository: UpdateAsync(existing, cancellationToken)
+            activate Repository
+            Repository->>Context: DbSet.Update(existing)<br/>SaveChangesAsync(cancellationToken)
+            Context->>Database: SQL UPDATE Residents
+            Database-->>Context: Opdatering gennemført
+            Context-->>Repository: SaveChangesAsync returnerer
+            Repository-->>Controller: Task completed
+            deactivate Repository
+            Controller-->>Auth: NoContent()
+            deactivate Controller
+            Auth-->>JwtHandler: HTTP 204 No Content
+            JwtHandler-->>Manager: HttpResponseMessage
+            Manager-->>Service: UpdateAsync completed
+            deactivate Manager
+            Service-->>Page: UpdateAsync completed
+            deactivate Service
+            Page->>Page: LoadResidentsAsync()
+            Page-->>User: Vis opdateret beboerliste
+        end
     end
+    deactivate Page
 ```
 
-### Client-metoder at finde
+### Metoder at finde og sætte breakpoints i
 
 1. `Residents.HandleFormSubmitAsync()`
 2. `ResidentService.UpdateAsync(Guid, ResidentUpdateRequestDto, CancellationToken)`
 3. `ResidentManager.UpdateAsync(Guid, ResidentUpdateRequestDto, CancellationToken)`
 4. `JwtAuthorizationMessageHandler.SendAsync(HttpRequestMessage, CancellationToken)`
-
-## Opdater Beboer - Server-side
-
-Dette diagram begynder, når API'et modtager `PUT /residents/{id}`.
-
-```mermaid
-%%{init: {"themeVariables": {"fontSize": "18px"}, "sequence": {"useMaxWidth": false}}}%%
-sequenceDiagram
-    participant Client as Blazor Client
-    participant Auth as Authentication / Authorization
-    participant Controller as ResidentController
-    participant Repo as Repository of Resident
-    participant EF as AppDbContext / EF Core
-    participant DB as MySQL
-
-    Client->>Auth: HTTP PUT /residents/{id}<br/>Bearer token + ResidentUpdateRequestDto
-    Auth->>Auth: UseAuthentication()
-    Auth->>Auth: UseAuthorization()<br/>ManageResidents-policy
-
-    alt Token eller policy afvises
-        Auth-->>Client: HTTP 401 eller 403
-    else Godkendt
-        Auth->>Controller: Update(id, dto, cancellationToken)
-        Controller->>Repo: GetByIdAsync(id, cancellationToken)
-        Repo->>EF: DbSet.FindAsync(id)
-        EF->>DB: SQL SELECT Resident
-        DB-->>EF: Resident eller null
-        EF-->>Repo: Resident eller null
-        Repo-->>Controller: Resident eller null
-
-        alt Beboer findes ikke
-            Controller-->>Client: NotFound() / HTTP 404
-        else Beboer findes
-            Controller->>Controller: UserCanManageDepartment(department)
-            Controller->>Controller: Opdater felter på existing
-            Controller->>Repo: UpdateAsync(existing, cancellationToken)
-            Repo->>EF: DbSet.Update(existing)
-            Repo->>EF: SaveChangesAsync(cancellationToken)
-            EF->>DB: SQL UPDATE Residents
-            DB-->>EF: Opdatering gennemført
-            EF-->>Repo: SaveChangesAsync returnerer
-            Repo-->>Controller: Task completed
-            Controller-->>Client: NoContent() / HTTP 204
-        end
-    end
-```
-
-### Server-metoder at finde
-
-1. `ResidentController.Update(Guid, ResidentUpdateRequestDto, CancellationToken)`
-2. `ResidentController.UserCanManageDepartment(Department)`
-3. `Repository<Resident>.GetByIdAsync(Guid, CancellationToken)`
-4. `Repository<Resident>.UpdateAsync(Resident, CancellationToken)`
-5. EF Core-metoderne `FindAsync()` og `SaveChangesAsync()`
+5. `ResidentController.Update(Guid, ResidentUpdateRequestDto, CancellationToken)`
+6. `Repository<Resident>.GetByIdAsync(Guid, CancellationToken)`
+7. `Repository<Resident>.UpdateAsync(Resident, CancellationToken)`
+8. `AppDbContext.SaveChangesAsync()` kaldes af repositoryet via EF Core
 
 ---
 
-## Hent Vagtoversigt - Client til API
+## Hent Vagtoversigt - Faktisk Implementeret Flow
 
-Vagtoversigten kalder API'et direkte fra Blazor-komponenten. Den bruger ikke et
-client-side Core-service til dette request.
+Dette flow går direkte fra Blazor-komponenten til API'et. Der er ikke et
+klient-side Core-service mellem siden og API'et.
 
 ```mermaid
-%%{init: {"themeVariables": {"fontSize": "18px"}, "sequence": {"useMaxWidth": false}}}%%
 sequenceDiagram
     actor User as Bruger
     participant Page as StaffAssignments.razor.cs
-    participant JWT as JwtAuthorizationMessageHandler
-    participant API as StaffAssignmentController
+    participant JwtHandler as JwtAuthorizationMessageHandler
+    participant Controller as StaffAssignmentController
+    participant Service as StaffAssignmentManager<br/>(IStaffAssignmentService)
+    participant Repository as StaffAssignmentRepository
+    participant Context as AppDbContext / EF Core
+    participant Database as MySQL
 
     User->>Page: Åbn vagtoversigt eller vælg dato/vagt
+    activate Page
     Page->>Page: LoadAssignmentsAsync()
-    Page->>JWT: GetFromJsonAsync("staff-assignments/list?...")
-    JWT->>JWT: SendAsync(request, cancellationToken)
-    JWT->>JWT: Tilføj Bearer token hvis det findes
-    JWT->>API: HTTP GET /staff-assignments/list
-    API-->>JWT: HTTP 200 + AssignmentOverviewDto[]
-    JWT-->>Page: AssignmentOverviewDto[]
+    Page->>JwtHandler: GetFromJsonAsync("staff-assignments/list?shiftType=...&assignmentDate=...")
+    activate JwtHandler
+    JwtHandler->>JwtHandler: SendAsync(request, cancellationToken)<br/>Tilføj Bearer token hvis det findes
+    JwtHandler->>Controller: HTTP GET /staff-assignments/list
+    deactivate JwtHandler
+    activate Controller
+    Controller->>Service: GetAssignmentsByShiftAsync((ShiftType)shiftType, DateTime.Parse(assignmentDate))
+    activate Service
+    Service->>Repository: GetByShiftAsync(shiftType, assignmentDate, cancellationToken)
+    activate Repository
+    Repository->>Context: DbSet.Include(Resident).Include(Employee)<br/>Where(...).ToListAsync(cancellationToken)
+    Context->>Database: SQL SELECT StaffAssignments med relationer
+    Database-->>Context: StaffAssignment[]
+    Context-->>Repository: StaffAssignment[]
+    Repository-->>Service: IEnumerable of StaffAssignment
+    deactivate Repository
+    Service->>Service: assignments.Select(MapToOverviewDto)
+    Service-->>Controller: IEnumerable of AssignmentOverviewDto
+    deactivate Service
+    Controller-->>JwtHandler: Ok(result) / HTTP 200
+    deactivate Controller
+    JwtHandler-->>Page: AssignmentOverviewDto[]
     Page->>Page: _assignments = assignments.ToList()
     Page-->>User: Vis vagtoversigt
+    deactivate Page
 ```
 
-## Hent Vagtoversigt - API til Database
-
-```mermaid
-%%{init: {"themeVariables": {"fontSize": "18px"}, "sequence": {"useMaxWidth": false}}}%%
-sequenceDiagram
-    participant API as StaffAssignmentController
-    participant Service as StaffAssignmentManager
-    participant Repo as StaffAssignmentRepository
-    participant EF as AppDbContext / EF Core
-    participant DB as MySQL
-
-    API->>Service: GetAssignmentsByShiftAsync((ShiftType)shiftType,<br/>DateTime.Parse(assignmentDate))
-    Service->>Repo: GetByShiftAsync(shiftType, assignmentDate, cancellationToken)
-    Repo->>EF: DbSet.Include(Resident).Include(Employee)
-    Repo->>EF: Where(...).ToListAsync(cancellationToken)
-    EF->>DB: SQL SELECT StaffAssignments med relationer
-    DB-->>EF: StaffAssignment[]
-    EF-->>Repo: StaffAssignment[]
-    Repo-->>Service: IEnumerable of StaffAssignment
-    Service->>Service: assignments.Select(MapToOverviewDto)
-    Service-->>API: IEnumerable of AssignmentOverviewDto
-    API-->>API: Ok(result)
-```
-
-### Vagtoversigt-metoder at finde
+### Metoder at finde og sætte breakpoints i
 
 1. `StaffAssignments.LoadAssignmentsAsync()`
 2. `JwtAuthorizationMessageHandler.SendAsync(HttpRequestMessage, CancellationToken)`
@@ -195,25 +164,29 @@ sequenceDiagram
 
 ---
 
-## Sådan Følges Et Nyt Flow Uden Debugging
+## Sådan Følges Et Nyt Flow
 
 1. Start ved brugerhandlingen i en `.razor.cs`-fil.
 2. Find event-handleren, eksempelvis `HandleFormSubmitAsync()`.
-3. Brug **Peek Call Hierarchy**, **Find All References** og `Cmd + klik`.
-4. Hvis kaldet rammer et interface, brug **Go to Implementations**.
+3. Følg hvert metodekald med `Cmd + klik` eller `F12`.
+4. Hvis kaldet rammer et interface, find implementeringen i en
+   `DependencyInjection.cs`-fil.
 5. Når du finder `GetFromJsonAsync`, `PostAsJsonAsync`, `PutAsJsonAsync` eller
-   `DeleteAsync`, har du fundet client/server-grænsen.
-6. Match URL'en med API-controllerens `[Route]` og HTTP-attribut.
+   `DeleteAsync`, stopper det lokale call stack. Kaldet fortsætter som HTTP.
+6. Match URL'en med API-controllerens `[Route]` og `[HttpGet]`, `[HttpPost]`,
+   `[HttpPut]` eller `[HttpDelete]`.
 7. Følg controllerens injected service eller repository.
-8. `SaveChangesAsync`, `ToListAsync`, `FindAsync` og `FirstOrDefaultAsync`
-   markerer normalt kommunikationen gennem EF Core til MySQL.
+8. Når du finder `SaveChangesAsync`, `ToListAsync`, `FindAsync` eller
+   `FirstOrDefaultAsync`, kommunikerer EF Core med MySQL.
+9. Følg returværdien baglæns til UI'et.
 
 ## Vigtig Arkitektur-Bemærkning
 
-Ved HTTP-kald fra WebUI:
-
-`Blazor Client -> Core-service eller direkte HttpClient -> JWT-handler -> WebApi`
-
-Ved API-kald mod databasen:
+Det tidligere diagram viste `Infrastructure.Data -> WebApi`. Det er ikke det
+implementerede runtime-flow. Ved API-kald er retningen:
 
 `WebApi -> service/repository -> Infrastructure.Data -> AppDbContext/EF Core -> MySQL`
+
+Ved HTTP-kald fra WebUI er retningen:
+
+`Blazor WebUI -> Core-service eller direkte HttpClient -> HTTP-manager/JWT-handler -> WebApi`
